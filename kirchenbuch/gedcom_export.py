@@ -29,8 +29,10 @@ import sqlite3
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
-DB = ROOT / "daten" / "ofb_haberschlacht.sqlite"
+from . import konfig as _k
+
+ROOT = _k.WURZEL
+DB = _k.bestand()
 JOURNAL = ROOT / "daten" / "aenderung.sqlite"
 
 # Zeilen, die die Identitaet des aufgehenden Records ausmachen und

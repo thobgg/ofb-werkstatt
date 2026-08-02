@@ -24,8 +24,18 @@ import argparse
 import sqlite3
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+from . import konfig as _k
+
+ROOT = _k.WURZEL
 DB = ROOT / "daten" / "erfassung.sqlite"
+
+
+def FELDER(art=None):
+    """Feldreihenfolge je Registerart — kommt aus konfig.toml."""
+    from . import konfig as k
+    if art:
+        return k.felder(art)
+    return {a: k.felder(a) for a in k.register()}
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS eintrag (
@@ -61,29 +71,6 @@ CREATE VIEW IF NOT EXISTS wert AS
   FROM feld f JOIN eintrag e ON e.id = f.eintrag_id;
 """
 
-# Feldreihenfolge je Registerart — steuert auch die Anzeige in der Maske
-FELDER = {
-    "taufe": ["lfd_nr", "kind_vorname", "kind_geschlecht",
-              "geburt_datum", "geburt_ort", "tauf_datum", "tauf_ort",
-              "vater_name", "vater_beruf", "vater_ort", "vater_religion",
-              "mutter_name", "mutter_herkunft", "mutter_religion",
-              "taufender", "paten", "fam_reg_seite", "randvermerk"],
-    # Eheregister Bd. 6: Spalte 6 nennt Geburtsdatum UND -ort beider
-    # Brautleute — der einzige tagesgenaue Anker. Stand ('ehelicher Sohn',
-    # 'Witwer') steht im OFB als _NOTE_HEIRAT und darf nicht verlorengehen.
-    "ehe": ["lfd_nr",
-            "braeutigam_name", "braeutigam_beruf", "braeutigam_ort",
-            "braeutigam_stand", "braeutigam_vater", "braeutigam_mutter",
-            "braeutigam_geburt_datum", "braeutigam_geburt_ort",
-            "braeutigam_religion",
-            "braut_name", "braut_ort",
-            "braut_stand", "braut_vater", "braut_mutter",
-            "braut_geburt_datum", "braut_geburt_ort", "braut_religion",
-            "proklamation", "trauung_datum", "trauung_ort",
-            "trauender", "zeugen", "fam_reg_seite", "randvermerk"],
-    "begraebnis": ["name", "beruf", "ort", "sterbe_datum", "begraebnis_datum",
-                   "alter", "todursache", "hinterbliebene", "randvermerk"],
-}
 
 
 def verbinde():

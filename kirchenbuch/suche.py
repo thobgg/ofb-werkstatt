@@ -18,9 +18,11 @@ import unicodedata
 from functools import lru_cache
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
-DB = ROOT / "daten" / "ofb_haberschlacht.sqlite"
-KLASSEN = ROOT / "wissen" / "namensklassen.json"
+from . import konfig as _k
+
+ROOT = _k.WURZEL
+DB = _k.bestand()
+KLASSEN = ROOT / "daten" / "namensklassen.json"
 
 
 def falte(s):

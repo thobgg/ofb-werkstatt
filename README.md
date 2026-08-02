@@ -45,22 +45,33 @@ next thousand.
 | ⬜ | GEDCOM export of newly recorded entries |
 | ⬜ | Double-click bundle, no Python installation required |
 
-## Two modes
+## An LLM is required, not optional
 
-Transcription needs an LLM (Anthropic API), everything else does not. The tool
-is therefore useful at two levels:
+The whole point is *machine reads first, human corrects*. Without that, this is
+just another data entry form — and Ahnenblatt, Gramps and webtrees already have
+those. An API key (Anthropic) is therefore a prerequisite, not an add-on.
 
-| without API key | with API key |
+Cost is roughly 0.13 USD per page, paid by whoever supplies the key. That rules
+out a self-contained offline bundle: either every user brings their own key, or
+whoever hosts the service supplies one and carries the cost.
+
+Two parts of the code do run without a model — dataset maintenance (duplicate
+detection, equivalence classes, integrity checks) and GEDCOM export. Useful, but
+not the reason this project exists.
+
+## What is missing
+
+**The core is not built yet.** Everything around it is: database, search,
+family linking, equivalence classes, change journal, export, entry form. The
+transcription itself is currently done by hand outside the tool.
+
+| | |
 |---|---|
-| entry form with the image beside it, autocomplete against the existing dataset, family linking, duplicate detection, GEDCOM export — fully offline | fields arrive pre-filled from the scan; you only correct what is wrong |
-
-Level one already beats clicking through a desktop genealogy program. Level two
-is where the time is actually saved — roughly 0.13 USD per page at current
-prices, paid by whoever supplies the key.
-
-This rules out a fully self-contained offline bundle for the transcription part:
-either each user brings their own API key, or whoever hosts the service supplies
-one and carries the cost.
+| ⬜ | API client, key from configuration |
+| ⬜ | page segmentation: overview → row boundaries → one strip per entry |
+| ⬜ | transcription prompt, including the known error patterns of the scribe's hand |
+| ⬜ | parsing the response into the record structure |
+| ⬜ | anchor matching as an automatic step after reading |
 
 ## Configuration
 

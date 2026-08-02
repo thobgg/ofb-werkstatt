@@ -23,9 +23,11 @@ import sqlite3
 import unicodedata
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
-DB = ROOT / "daten" / "ofb_haberschlacht.sqlite"
-EXPORT = ROOT / "wissen" / "namensklassen.json"
+from . import konfig as _k
+
+ROOT = _k.WURZEL
+DB = _k.bestand()
+EXPORT = ROOT / "daten" / "namensklassen.json"
 
 # Aufnahmeregel fuer eine Kante, datengetrieben aus dem Graubereich bestimmt:
 #   sicher   ab Naehe 0.65 (Neck->Beck, Keßer->Käser, Rohr->Rorer ...)

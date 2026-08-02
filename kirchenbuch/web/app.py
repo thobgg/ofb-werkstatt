@@ -19,12 +19,11 @@ import urllib.parse
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+from .seite import SEITE
+from .. import suche
+from .. import konfig as _k
 
-from maske_seite import SEITE  # noqa: E402
-import suche  # noqa: E402
-
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = _k.WURZEL
 DB = ROOT / "daten" / "erfassung.sqlite"
 
 
