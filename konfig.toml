@@ -1,0 +1,47 @@
+# Konfiguration. Alles Ortsspezifische steht hier, nicht im Code.
+
+[gemeinde]
+name       = "Musterhausen"
+ort_default = "Musterhausen"      # Vorbelegung fuer Orts-Felder
+religion_default = "evangelisch"
+
+[bestand]
+# Optional: vorhandener GEDCOM-Bestand, gegen den angebunden wird.
+# Leer lassen, wenn bei Null angefangen wird — dann waechst der
+# Bestand aus der eigenen Erfassung.
+gedcom = ""
+
+[register.ehe]
+titel   = "Eheregister"
+ordner  = "bilder/ehe"
+personen = ["braeutigam", "braut"]
+felder  = ["lfd_nr",
+           "braeutigam_name", "braeutigam_beruf", "braeutigam_ort",
+           "braeutigam_stand", "braeutigam_vater", "braeutigam_mutter",
+           "braeutigam_geburt_datum", "braeutigam_geburt_ort",
+           "braut_name", "braut_ort", "braut_stand",
+           "braut_vater", "braut_mutter",
+           "braut_geburt_datum", "braut_geburt_ort",
+           "proklamation", "trauung_datum", "trauung_ort",
+           "trauender", "zeugen", "randvermerk"]
+datum   = ["trauung_datum"]
+
+[register.taufe]
+titel   = "Taufregister"
+ordner  = "bilder/taufe"
+personen = ["kind", "vater", "mutter"]
+felder  = ["lfd_nr", "kind_vorname", "kind_geschlecht",
+           "geburt_datum", "geburt_ort", "tauf_datum", "tauf_ort",
+           "vater_name", "vater_beruf", "vater_ort",
+           "mutter_name", "mutter_herkunft",
+           "taufender", "paten", "randvermerk"]
+datum   = ["geburt_datum", "tauf_datum"]
+
+[register.tod]
+titel   = "Sterberegister"
+ordner  = "bilder/tod"
+personen = ["verstorbener"]
+felder  = ["lfd_nr", "verstorbener_name", "verstorbener_beruf",
+           "verstorbener_ort", "sterbe_datum", "begraebnis_datum",
+           "alter", "todesursache", "hinterbliebene", "randvermerk"]
+datum   = ["sterbe_datum", "begraebnis_datum"]

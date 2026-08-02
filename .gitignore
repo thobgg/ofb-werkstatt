@@ -1,0 +1,20 @@
+# --- niemals einchecken: fremde Rechte und Personendaten -------------------
+# Kirchenbuch-Scans (Archion, Ancestry, Archive) duerfen nicht weiterverbreitet
+# werden. Erfasste Daten und GEDCOM-Bestaende bleiben ebenfalls lokal.
+bilder/**
+!bilder/**/LIESMICH.txt
+daten/**
+!daten/.gitkeep
+ausgabe/
+*.ged
+*.sqlite
+*.sqlite3
+
+# --- Technisches ----------------------------------------------------------
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+konfig.local.toml
+.DS_Store
