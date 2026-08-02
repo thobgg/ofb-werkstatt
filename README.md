@@ -45,6 +45,23 @@ next thousand.
 | ⬜ | GEDCOM export of newly recorded entries |
 | ⬜ | Double-click bundle, no Python installation required |
 
+## Two modes
+
+Transcription needs an LLM (Anthropic API), everything else does not. The tool
+is therefore useful at two levels:
+
+| without API key | with API key |
+|---|---|
+| entry form with the image beside it, autocomplete against the existing dataset, family linking, duplicate detection, GEDCOM export — fully offline | fields arrive pre-filled from the scan; you only correct what is wrong |
+
+Level one already beats clicking through a desktop genealogy program. Level two
+is where the time is actually saved — roughly 0.13 USD per page at current
+prices, paid by whoever supplies the key.
+
+This rules out a fully self-contained offline bundle for the transcription part:
+either each user brings their own API key, or whoever hosts the service supplies
+one and carries the cost.
+
 ## Configuration
 
 Everything place-specific lives in `konfig.toml` — register types, fields,
@@ -68,6 +85,9 @@ belong in a public repository.
 
 ## Language
 
-Code, comments and configuration keys are currently in German, as is the user
-interface. Translation is planned but not done — contributions welcome once the
-core stabilises.
+German is the primary language: code, comments, configuration keys and the user
+interface. The registers being transcribed are German, and so are the people
+this is built for.
+
+Interface strings are to be separated from the code so other languages can be
+added without touching logic. Not done yet.
