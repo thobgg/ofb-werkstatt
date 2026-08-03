@@ -4,27 +4,25 @@
 Daraus ergibt sich für jedes Feld der Bildausschnitt — deterministisch,
 ohne dass ein Modell Koordinaten schätzen muss.
 
-GESCHEITERT — nicht erneut versuchen.
+Stand der Messung (vier Taufregisterseiten, 26 von Hand abgelesene Grenzen):
 
-Die Funktionen unten suchen die gedruckten Tabellenlinien über die längste
-dunkle Lauflänge je Bildzeile. Gemessen an einer Seite mit sieben von Hand
-abgelesenen Zeilengrenzen findet das Verfahren **eine**. 14 Prozent sind zu
-wenig, um überhaupt als Vorschlag zu taugen — falsche Linien kosten mehr
-Prüfzeit, als richtige einsparen.
+    laengster durchgehender Lauf, Doppelseite      1/7   = 14 %
+    Anteil dunkler Pixel, Seiten am Falz getrennt  11/26 = 42 %
+    dieselbe Methode, Seite sauber abgegrenzt      5/7   = 71 %
 
-Vorherige gescheiterte Versuche im Projekt: Zeilenerkennung per Projektion,
-proportional übertragene Zeilenraster. Dies ist der vierte.
+Der entscheidende Fehler war zweifach: die Linien ueber die **Doppelseite**
+zu messen (sie laufen nur ueber je eine Seite), und den **laengsten
+durchgehenden Lauf** zu nehmen statt des Anteils dunkler Pixel — jede Stelle,
+an der Handschrift eine Linie kreuzt, halbiert den Lauf.
 
-Grund: Die Linien sind unterschiedlich kräftig gezogen, teils verblasst, und
-laufen jeweils nur über eine Buchseite — über die Doppelseite gemessen wird
-ihre relative Länge zu klein.
+Der offene Knackpunkt ist nicht die Linienerkennung, sondern die robuste
+Abgrenzung von Buchdeckel, Falz und Papier ueber unterschiedliche Scans.
+Wo sie gelingt, liegt die Trefferquote bei rund 70 %.
 
-**Stattdessen von Hand, aber mit Vererbung:**
-  Spalten  einmal je Buch ziehen — das Formular ist über Jahrzehnte gleich
-  Zeilen   auf der ersten Seite ziehen, auf Folgeseiten übernehmen und
-           nur nachjustieren
-
-Der Code bleibt als Beleg der Messung stehen.
+**Verwendung: Vorschlag, nicht Entscheidung.** Der Rastereditor zeigt die
+gefundenen Linien vor, der Bearbeiter zieht fehlende nach. Zusaetzlich erbt
+jede Folgeseite das Raster der vorigen — das Formular bleibt ueber Jahrzehnte
+gleich, es ist nur Nachschieben um wenige Pixel.
 
     python3 -m kirchenbuch.raster bilder/taufe/seite.jpg
 """
