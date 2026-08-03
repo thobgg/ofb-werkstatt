@@ -5,8 +5,8 @@ Verlustfrei: der vollständige Quellrecord bleibt in `raw` erhalten, die
 Spalten sind ein Index darauf. Damit ist ein zeichengleicher Export möglich
 und nichts geht unterwegs verloren.
 
-    python3 -m kirchenbuch.import_gedcom pfad/zur/datei.ged
-    python3 -m kirchenbuch.import_gedcom --aus-konfig
+    python3 -m werkstatt.import_gedcom pfad/zur/datei.ged
+    python3 -m werkstatt.import_gedcom --aus-konfig
 """
 import argparse
 import re

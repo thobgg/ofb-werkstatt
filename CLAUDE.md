@@ -1,8 +1,15 @@
-# parish-scribe
+# OFB-Werkstatt
 
-Werkzeug zum **Fortschreiben** eines genealogischen Bestands aus Kirchenbüchern:
-Registerseite lesen, gegen den vorhandenen Bestand abgleichen, anbinden oder neu
-anlegen, am Ende GEDCOM ausgeben.
+Werkstatt für ein **Ortsfamilienbuch**: Kirchenbuchseite lesen lassen, korrigieren,
+gegen den Bestand abgleichen, anbinden oder neu anlegen, am Ende GEDCOM ausgeben.
+
+**Funktioniert mit und ohne vorhandenen Bestand.** Wer eines fortschreibt, ankert
+gegen sein GEDCOM; wer bei Null anfängt, gegen die eigenen früheren Einträge —
+die ersten hundert tragen die nächsten tausend. Zwei der vier Ankertypen
+(Chronologie, Kontext) brauchen überhaupt keinen Bestand.
+
+⚠️ Der Nullstart ist **nie getestet** — alle bisherigen Messwerte stammen aus
+einem Lauf gegen ein reiches Ortsfamilienbuch mit 4.111 Personen.
 
 **Ausführliche Begründung aller Entwurfsentscheidungen: `doku/ansatz.md`.
 Stand und offene Punkte: `doku/naechste-sitzung.md`. Beide vor der Arbeit lesen.**
@@ -10,7 +17,7 @@ Stand und offene Punkte: `doku/naechste-sitzung.md`. Beide vor der Arbeit lesen.
 ## Verzeichnis
 
 ```
-kirchenbuch/     Paket: db, konfig, suche, import_gedcom, raster, klassen, web/
+werkstatt/     Paket: db, konfig, suche, import_gedcom, raster, klassen, web/
 konfig.toml      Registerarten, Felder, Vorbelegungen — alles Ortsspezifische
 bilder/{ehe,taufe,tod}/   Scans je Aktart (nie einchecken)
 daten/           erfassung.sqlite (nie einchecken)

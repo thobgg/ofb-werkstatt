@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Startet parish-scribe: Datenbank anlegen, falls noetig, dann die Maske.
+"""Startet OFB-Werkstatt: Datenbank anlegen, falls noetig, dann die Maske.
 
     python3 start.py            Maske auf http://127.0.0.1:8765
     python3 start.py --port 9000
@@ -10,8 +10,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from kirchenbuch import db, konfig            # noqa: E402
-from kirchenbuch.web import app as webapp     # noqa: E402
+from werkstatt import db, konfig            # noqa: E402
+from werkstatt.web import app as webapp     # noqa: E402
 
 
 def main():

@@ -24,7 +24,7 @@ gefundenen Linien vor, der Bearbeiter zieht fehlende nach. Zusaetzlich erbt
 jede Folgeseite das Raster der vorigen — das Formular bleibt ueber Jahrzehnte
 gleich, es ist nur Nachschieben um wenige Pixel.
 
-    python3 -m kirchenbuch.raster bilder/taufe/seite.jpg
+    python3 -m werkstatt.raster bilder/taufe/seite.jpg
 """
 import argparse
 import json

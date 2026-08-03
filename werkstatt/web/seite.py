@@ -2,7 +2,7 @@
 
 SEITE = r"""<!doctype html><html lang=de><head><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1">
-<title>parish-scribe</title><style>
+<title>OFB-Werkstatt</title><style>
 *{box-sizing:border-box}
 body{margin:0;font:15px/1.45 system-ui,sans-serif;background:#14161a;color:#e6e8ec}
 header{position:sticky;top:0;background:#1b1e24;border-bottom:1px solid #2c313a;
@@ -78,7 +78,7 @@ details summary{cursor:pointer;color:#8b93a3;font-size:.84rem;padding:.3rem 0}
 .anbind .hinw{color:#9aa3b2}
 .leer{padding:3rem;text-align:center;color:#9aa3b2}
 </style></head><body>
-<header><b>parish-scribe</b><span class=zaehler id=z></span>
+<header><b>OFB-Werkstatt</b><span class=zaehler id=z></span>
 <span style=flex:1></span>
 <span class=zaehler><kbd>Enter</kbd> nächstes Feld · <kbd>Strg</kbd>+<kbd>Enter</kbd> Eintrag fertig
  · <kbd>Alt</kbd>+<kbd>N</kbd> neu anlegen</span></header>
