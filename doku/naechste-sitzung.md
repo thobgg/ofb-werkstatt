@@ -74,6 +74,13 @@ Die Reihenfolge ist wichtig — das Werkzeug hat derzeit alles **außer** dem Ke
    gezielten Bildausschnitte. Nicht automatisieren — ist zweimal gescheitert.
 3. **Matching anschließen.** Die Logik liegt fertig vor
    (`Transkription-1808/skripte/paar.py`, `suche.py`, `klassen.py`).
+4. **Wissensbasis als Auswertung.** Fehlerkatalog aus `gelesen` gegen
+   `korrigiert`, fließt zurück in den Prompt. Vorhandenes Wissen aus
+   `Transkription-1808/CLAUDE.md` und `wissen/haberschlacht.md` importieren.
+
+**Kosten:** Die Batch-API ist etwa halb so teuer wie Einzelanfragen. Bei
+seitenweiser Verarbeitung ist Batch der natürliche Modus — von Anfang an,
+nicht als spätere Optimierung. Aus 0,13 $/Seite werden dann grob 0,07 $.
 
 Erst danach lohnen Generalisierung und Oberflächenpolitur.
 
