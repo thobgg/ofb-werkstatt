@@ -99,6 +99,11 @@ ein Befehl.
 
 ## Ungelöst
 
+- **Der Nullstart ist nie getestet.** Alle Messwerte stammen aus einem Lauf
+  gegen ein Ortsfamilienbuch mit 4.111 Personen. Ob das Verfahren trägt, wenn
+  jemand ohne Bestand anfängt, ist offen — dann greifen nur Chronologie und
+  Kontext als Anker.
+
 - **Seitenzerlegung** — bisher nur von Hand gemacht.
 - **Ob das Verfahren ohne reichen Bestand trägt.** Bei Nachbarorten ohne
   eigenes Ortsfamilienbuch (Bönnigheim, Löchgau, Michelbach) war der Pilotlauf

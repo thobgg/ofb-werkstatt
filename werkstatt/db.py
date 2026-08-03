@@ -4,8 +4,8 @@
 GEDCOM, Tabellen und die eigene Erfassung schreiben in dieselben Tabellen.
 Die Suche kennt keine Herkunft, nur den Inhalt.
 
-    python3 -m kirchenbuch.db --init
-    python3 -m kirchenbuch.db --stand
+    python3 -m werkstatt.db --init
+    python3 -m werkstatt.db --stand
 """
 import argparse
 import sqlite3

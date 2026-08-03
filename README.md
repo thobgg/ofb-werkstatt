@@ -1,8 +1,13 @@
-# parish-scribe
+# OFB-Werkstatt
 
-A tool for **extending** a genealogical dataset from parish registers: read a
-page, match it against what you already have, link or create — and export to
-GEDCOM when you're done.
+Werkstatt für ein **Ortsfamilienbuch**: Kirchenbuchseite lesen lassen,
+gegen den vorhandenen Bestand abgleichen, anbinden oder neu anlegen —
+und als GEDCOM ausgeben.
+
+*A workshop for building a German* Ortsfamilienbuch *(local family register)
+from parish registers: the machine reads a page, you correct it, entries are
+matched against what you already have — or against what you recorded earlier,
+if you are starting from scratch.*
 
 > **Work in progress.** Being built against a real dataset (parish registers of
 > Haberschlacht, Württemberg, from 1808 onwards). Not yet usable by others.
