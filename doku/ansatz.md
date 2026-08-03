@@ -169,6 +169,49 @@ visuelle Arbeit am Bild, Zuordnen ist Entscheidungsarbeit an Daten. Sie im
 selben Arbeitsschritt zu vermischen kostet Tempo — siehe Dreischritt oben.
 Dieselbe Person, zwei Kopfhaltungen.
 
+## Wissensbasis: waechst aus der Arbeit
+
+Jede Transkription erzeugt Wissen ueber die Quelle. Das darf nicht in einer
+von Hand gepflegten Textdatei liegen, sondern gehoert in die Anwendung — und
+das meiste davon faellt ohnehin an:
+
+| Wissen | Herkunft |
+|---|---|
+| Fehlerkatalog der Handschrift | **jede Korrektur** — `gelesen` gegen `korrigiert` |
+| Namensinventar mit Haeufigkeit | Personentabelle |
+| Orte, Berufe, Formeln, Abkuerzungen | erfasste Felder |
+| Aequivalenzklassen | bestaetigte Zuordnungen |
+| Movierungs-Ausnahmen | **Handpflege** — echte `-in`-Namen (Eberwein, Feuerstein) |
+| Schreiber und Zeitraeume | **Handpflege** |
+
+### Der Kreislauf
+
+    Modell liest  ──►  Mensch korrigiert  ──►  Korrektur wird Wissen
+         ▲                                              │
+         └──────────  fliesst in den Prompt  ◄──────────┘
+
+Lernen ohne Modelltraining. Nach zwanzig Seiten weiss die Anwendung, dass diese
+Hand `Koch` wie `Roth` schreibt, und schreibt es dem Modell in den Prompt,
+bevor es die einundzwanzigste Seite liest.
+
+**Belegt aus dem Pilotlauf:** Der Fehlerkatalog existierte dort bereits als
+Notiz, wurde aber nicht systematisch angewandt — Ergebnis 42 % Rohfehler.
+Bei `Roßin` haette die notierte Regel "`R`↔`K`, `ß`↔`ch` bei dieser Hand belegt"
+den Fehler sofort aufgeworfen.
+
+### Auswertung, nicht Pflege
+
+Der Fehlerkatalog ist eine Abfrage, keine Datei:
+
+    SELECT gelesen, korrigiert, count(*)
+    FROM feld
+    WHERE korrigiert IS NOT NULL AND korrigiert <> gelesen
+    GROUP BY gelesen, korrigiert
+    ORDER BY count(*) DESC
+
+Vorhandenes Wissen aus Vorarbeiten wird **importiert**, nicht abgetippt — es ist
+der erste Datensatz, nicht die Ausnahme.
+
 ## Zielbild
 
 Veroeffentlicht wird nicht ein Dienst, sondern **Software zum Selbstbetreiben**.
