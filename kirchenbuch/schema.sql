@@ -121,6 +121,22 @@ CREATE TABLE IF NOT EXISTS feld (
 CREATE INDEX IF NOT EXISTS ix_feld_eintrag ON feld(eintrag_id);
 CREATE INDEX IF NOT EXISTS ix_feld_person  ON feld(person);
 
+-- Chronologie-Anker: Datum jedes Eintrags gegen seine Nachbarn.
+-- Register sind chronologisch geführt — ein Datum außerhalb des
+-- Nachbarintervalls ist widerlegt, ohne dass etwas nachgeschlagen wird.
+CREATE VIEW IF NOT EXISTS chronologie AS
+  SELECT e.id, e.register, e.bild, e.nr, e.jahr,
+         f.name  AS feld,
+         COALESCE(f.korrigiert, f.gelesen) AS datum,
+         LAG(COALESCE(f.korrigiert, f.gelesen))
+             OVER (PARTITION BY e.register, f.name
+                   ORDER BY e.bild, CAST(e.nr AS INTEGER)) AS davor,
+         LEAD(COALESCE(f.korrigiert, f.gelesen))
+             OVER (PARTITION BY e.register, f.name
+                   ORDER BY e.bild, CAST(e.nr AS INTEGER)) AS danach
+  FROM eintrag e JOIN feld f ON f.eintrag_id = e.id
+  WHERE f.name LIKE '%datum%';
+
 -- Bequemer Zugriff auf den geltenden Wert
 CREATE VIEW IF NOT EXISTS wert AS
   SELECT e.register, e.bild, e.nr, e.jahr, f.name, f.rolle,
