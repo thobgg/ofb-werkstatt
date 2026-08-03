@@ -170,10 +170,31 @@ traf die geschaetzte Position mehrfach daneben. Stattdessen deterministisch:
 
 Kirchenbuchformulare haben feste, gedruckte Spalten. Sind deren Grenzen einmal
 bestimmt, ist fuer jedes Feld bekannt, wo es liegt — fuer den ganzen Band, oft
-ueber Jahrzehnte. Das Raster einmal geführt ziehen (sechs bis neun senkrechte
-Linien auf der Seitenuebersicht) kostet Minuten und ersetzt jede Automatik.
-Automatische Zeilen- und Spaltenerkennung ist im Projekt bereits zweimal
-gescheitert.
+ueber Jahrzehnte.
+
+### Automatik: viermal gescheitert
+
+| Versuch | Ergebnis |
+|---|---|
+| Zeilenerkennung per Textprojektion | gescheitert |
+| proportional uebertragene Zeilenraster | gescheitert |
+| Bounding Boxes vom Modell schaetzen lassen | ungenau, Ausschnitte trafen daneben |
+| gedruckte Tabellenlinien ueber Lauflaenge suchen | **1 von 7 Zeilengrenzen** = 14 % |
+
+Der letzte Versuch ist in `kirchenbuch/raster.py` samt Messung dokumentiert.
+Die Linien sind unterschiedlich kraeftig, teils verblasst, und laufen jeweils
+nur ueber eine Buchseite — ueber die Doppelseite gemessen wird ihre relative
+Laenge zu klein. 14 Prozent taugen nicht einmal als Vorschlag: falsche Linien
+kosten mehr Pruefzeit, als richtige einsparen.
+
+### Stattdessen von Hand, mit Vererbung
+
+    Spalten   einmal je Buch ziehen — das Formular bleibt ueber Jahrzehnte gleich
+    Zeilen    auf der ersten Seite ziehen, auf Folgeseiten uebernehmen und
+              nur nachjustieren
+
+Bei einem Band mit fuenfzig gleichartigen Seiten faellt echte Arbeit nur einmal
+an; danach ist es Nachschieben um wenige Pixel.
 
 ### Kontext ist Teil der Information
 
