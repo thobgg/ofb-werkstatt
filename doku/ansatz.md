@@ -147,8 +147,29 @@ Linien auf der Seitenuebersicht) kostet Minuten und ersetzt jede Automatik.
 Automatische Zeilen- und Spaltenerkennung ist im Projekt bereits zweimal
 gescheitert.
 
-Sicherheitsnetz: grosszuegiger Rand, und ein Klick blendet den ganzen Streifen
-ein, falls der Ausschnitt danebenliegt.
+### Kontext ist Teil der Information
+
+**Ein isolierter Ausschnitt ist schlechter lesbar als derselbe Ausschnitt im
+Zusammenhang** — fuer den Menschen wie fuer das Modell.
+
+Dieselbe Hand schreibt in jedem Eintrag `B. u. Weingaertner in Haberschlacht`.
+An diesen wiederkehrenden Woertern eicht man die Buchstabenformen. Wer nur den
+zweifelhaften Namen sieht, hat diese Eichung nicht.
+
+Daraus zwei Regeln:
+
+**Oberflaeche:** nicht Ausschnitt *statt* Streifen, sondern **Lupe** — der
+Zeilenstreifen bleibt sichtbar, die fragliche Stelle ist darin markiert, die
+Vergroesserung steht daneben. Nachbarzeilen werden abgedunkelt, nicht
+weggeschnitten. Ausschnitte grosszuegig mit Rand, sonst werden Buchstaben
+abgetrennt und die Zuordnung geht verloren.
+
+**Prompt:** dem Modell nie einzelne Streifen isoliert vorlegen, sondern mit den
+Nachbarzeilen. Ein Teil der 42 % Rohfehler des Pilotlaufs entstand vermutlich
+genau dort — beim Nachzoomen auf eine Einzelstelle ging der Zusammenhang
+verloren.
+
+Sicherheitsnetz: ein Klick blendet die ganze Seite ein.
 
 ## Ein Bearbeiter, zwei Kopfhaltungen
 
