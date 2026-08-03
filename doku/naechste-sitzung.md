@@ -80,6 +80,16 @@ Erst danach lohnen Generalisierung und Oberflächenpolitur.
 **Nicht bauen:** Login, Hosting, Upload, Mehrbenutzerbetrieb, Paket zum
 Doppelklick. Das Werkzeug ist für eine Person, die Python bedienen kann.
 
+**Aber gleich mitnehmen, weil später teuer:**
+- Anzeigetexte in `sprache/de.json` statt im Code — Englisch als zweite Datei
+- `herkunft`-Spalte je Datensatz (für die Belegführung ohnehin nötig; nimmt
+  später auch auf, *wer* etwas eingetragen hat)
+
+**Veröffentlichen** sobald der Kern an echten Seiten funktioniert — dann stehen
+im README Zahlen statt Absichten. Das Repo lag schon einmal auf GitHub und
+wurde bewusst wieder gelöscht; lokal ist alles versioniert, Veröffentlichen ist
+ein Befehl.
+
 ## Ungelöst
 
 - **Seitenzerlegung** — bisher nur von Hand gemacht.

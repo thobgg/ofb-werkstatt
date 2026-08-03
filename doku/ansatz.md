@@ -169,6 +169,49 @@ visuelle Arbeit am Bild, Zuordnen ist Entscheidungsarbeit an Daten. Sie im
 selben Arbeitsschritt zu vermischen kostet Tempo — siehe Dreischritt oben.
 Dieselbe Person, zwei Kopfhaltungen.
 
+## Zielbild
+
+Veroeffentlicht wird nicht ein Dienst, sondern **Software zum Selbstbetreiben**.
+Nicht viele Helfer an einem Projekt, sondern viele Einzelne an ihren eigenen.
+Die Architektur bleibt damit Einzelplatz; teilbar muss nur die Einrichtung sein.
+
+**Zielgruppe, realistisch:** einige hundert aktive Ortsfamilienbuch-Projekte im
+deutschsprachigen Raum, davon ein kleiner Teil — Dutzende, nicht Tausende.
+Dazu **deutschamerikanische Genealogen**, die dieselben Quellen bearbeiten:
+gleiche Kirchenbuecher, gleiche Kurrentschrift, gleiche Ortsfamilienbuecher,
+nur andere Bediensprache. Sie beginnen meist ohne bestehenden Bestand — fuer
+sie ist der Fall "bei Null anfangen" der Normalfall.
+
+### Sprache
+
+Deutsch ist Standard, Englisch die zweite Sprache. Anzeigetexte gehoeren
+deshalb von Anfang an in Sprachdateien:
+
+    sprache/de.json      Standard
+    sprache/en.json
+    konfig.toml          sprache = "de"
+
+Rund sechzig Texte — heute eine ueberschaubare Arbeit, nachtraeglich muessten
+sie aus HTML, Python und Fehlermeldungen zusammengesucht werden.
+
+**Nicht uebersetzt wird:** die Register selbst (das ist die Quelle), die
+Kirchenbuchformen, und die Feldnamen in `konfig.toml` — die sind frei waehlbar.
+Die Software behandelt Feldnamen als beliebige Zeichenketten; nur die **Rollen**
+(`personen = [...]`) sind bedeutungstragend, weil die Anbindungslogik daran
+haengt. Ein englischsprachiger Nutzer definiert sein Register vollstaendig auf
+Englisch, solange die Rollen stimmen.
+
+### Spaeter erweiterbar, nicht jetzt
+
+Mehrbenutzerbetrieb ist nicht ausgeschlossen, wird aber nicht auf Vorrat gebaut.
+Es genuegt **eine** Vorkehrung, die ohnehin noetig ist: eine `herkunft`-Spalte
+je Datensatz. Sie wird fuer die Belegfuehrung gebraucht — woher stammt dieser
+Wert — und kann spaeter auch aufnehmen, *wer* ihn eingetragen hat. Damit wird
+aus der Erweiterung eine Spalte statt eines Umbaus.
+
+Login, Sitzungen, Rechte, Sperren bei gleichzeitigem Bearbeiten: erst wenn
+gebraucht.
+
 ## Eine Datenbasis, viele Eingangstüren
 
     GEDCOM ─┐
