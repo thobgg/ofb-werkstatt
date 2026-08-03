@@ -172,22 +172,31 @@ Kirchenbuchformulare haben feste, gedruckte Spalten. Sind deren Grenzen einmal
 bestimmt, ist fuer jedes Feld bekannt, wo es liegt — fuer den ganzen Band, oft
 ueber Jahrzehnte.
 
-### Automatik: viermal gescheitert
+### Automatik: taugt als Vorschlag
 
-| Versuch | Ergebnis |
+Register ab 1800 sind streng tabellarisch gedruckt — das sind gute
+Voraussetzungen, besser als bei aelteren Fliesstexteintraegen. Gemessen an
+vier Seiten mit 26 von Hand abgelesenen Grenzen:
+
+| Verfahren | Treffer |
 |---|---|
-| Zeilenerkennung per Textprojektion | gescheitert |
-| proportional uebertragene Zeilenraster | gescheitert |
+| Zeilenerkennung per Textprojektion | gescheitert (frueher) |
+| proportional uebertragene Zeilenraster | gescheitert (frueher) |
 | Bounding Boxes vom Modell schaetzen lassen | ungenau, Ausschnitte trafen daneben |
-| gedruckte Tabellenlinien ueber Lauflaenge suchen | **1 von 7 Zeilengrenzen** = 14 % |
+| laengster durchgehender Lauf, ueber die Doppelseite | 1/7 = **14 %** |
+| Anteil dunkler Pixel, Seiten am Falz getrennt | 11/26 = **42 %** |
+| dieselbe Methode, Seite sauber abgegrenzt | 5/7 = **71 %** |
 
-Der letzte Versuch ist in `kirchenbuch/raster.py` samt Messung dokumentiert.
-Die Linien sind unterschiedlich kraeftig, teils verblasst, und laufen jeweils
-nur ueber eine Buchseite — ueber die Doppelseite gemessen wird ihre relative
-Laenge zu klein. 14 Prozent taugen nicht einmal als Vorschlag: falsche Linien
-kosten mehr Pruefzeit, als richtige einsparen.
+Zwei Fehler hatten die ersten Messungen verdorben: die Linien ueber die
+**Doppelseite** zu messen, obwohl sie nur ueber je eine Seite laufen, und den
+**laengsten durchgehenden Lauf** zu nehmen statt des Anteils dunkler Pixel —
+jede Stelle, an der Handschrift eine Linie kreuzt, halbiert den Lauf.
 
-### Stattdessen von Hand, mit Vererbung
+Offen ist nicht die Linienerkennung, sondern die robuste Abgrenzung von
+Buchdeckel, Falz und Papier ueber unterschiedliche Scans. Wo sie gelingt,
+liegt die Trefferquote bei rund 70 %.
+
+### Vorschlag plus Hand, mit Vererbung
 
     Spalten   einmal je Buch ziehen — das Formular bleibt ueber Jahrzehnte gleich
     Zeilen    auf der ersten Seite ziehen, auf Folgeseiten uebernehmen und
