@@ -150,33 +150,24 @@ gescheitert.
 Sicherheitsnetz: grosszuegiger Rand, und ein Klick blendet den ganzen Streifen
 ein, falls der Ausschnitt danebenliegt.
 
-## Zwei Rollen, nicht zwei Betriebsarten
+## Ein Bearbeiter, zwei Kopfhaltungen
 
-Transkribieren und Korrigieren sind verschiedene Taetigkeiten und duerfen nicht
-derselben Person zugemutet werden.
+Gebaut wird fuer **eine Person**, die ihre eigene Parochie abschreibt. Kein
+Login, kein Hosting, kein Upload, keine Mehrbenutzerverwaltung.
 
-| Rolle | wo | braucht |
-|---|---|---|
-| **Bearbeiter** | lokal, mit API-Schluessel | Seiten vorbereiten, transkribieren lassen, Matching, Export |
-| **Korrektor** | Browser, Login | nur Ausschnitt anschauen und tippen |
+Das ist keine Bescheidenheit, sondern die Lage: Wer ein Kirchenbuch abschreibt,
+tut das aus persoenlichem Bezug zum Ort. Das sind Einzelne, keine Crowd — und
+jeder hat sein eigenes Dorf, seinen eigenen Bestand, seine eigene Handschrift.
+Ein gemeinsamer Dienst haette keinen gemeinsamen Gegenstand.
 
-**Die Korrekturoberflaeche braucht kein Modell.** Das Vorlesen ist vorher
-passiert, zentral und im Batch. Damit entfallen fuer Mitarbeitende saemtliche
-Huerden: keine Installation, kein Python, keine Konfigurationsdatei, kein
-eigener API-Schluessel. Die Kosten bleiben beim Bearbeiter und damit
-kontrollierbar.
+Der Bearbeiter bedient ein Startskript; ein Paket zum Doppelklick ist nicht
+noetig. `http.server` aus der Standardbibliothek genuegt, es braucht kein
+Web-Framework.
 
-Auch die Bildrechte entschaerfen sich: verbreitet werden keine ganzen Scans,
-sondern Ausschnitte von wenigen Quadratzentimetern.
-
-Stufenweise, jede Stufe fuer sich nuetzlich:
-
-    1  lokal, nur der Bearbeiter    Transkription + Matching + Korrektur
-    2  + Export                     der Bestand waechst
-    3  + Korrekturoberflaeche       Helfer bekommen Zugang
-
-Voraussetzung fuer Stufe 3 ist lediglich eine `benutzer`-Spalte von Anfang an —
-sonst wird daraus eine Migration statt eines Aufsatzes.
+Was dennoch getrennt bleibt, sind die **Taetigkeiten**: Transkribieren ist
+visuelle Arbeit am Bild, Zuordnen ist Entscheidungsarbeit an Daten. Sie im
+selben Arbeitsschritt zu vermischen kostet Tempo — siehe Dreischritt oben.
+Dieselbe Person, zwei Kopfhaltungen.
 
 ## Eine Datenbasis, viele Eingangstüren
 
