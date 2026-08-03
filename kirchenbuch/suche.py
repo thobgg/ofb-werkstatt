@@ -18,10 +18,10 @@ import unicodedata
 from functools import lru_cache
 from pathlib import Path
 
+from . import db as _db
 from . import konfig as _k
 
 ROOT = _k.WURZEL
-DB = _k.bestand()
 KLASSEN = ROOT / "daten" / "namensklassen.json"
 
 
@@ -40,11 +40,15 @@ def klassen():
 @lru_cache(maxsize=1)
 def inventar():
     """Nachname -> (Anzahl, kanonische Form der Klasse, Klassengroesse)."""
-    con = sqlite3.connect(DB)
+    con = _db.verbinde()
     # nach gefalteter Form gruppieren; angezeigt wird die gebraeuchlichste
     # Schreibung, nicht die Kleinschreib-Normalform aus surn_norm
     gruppen = {}
-    for surn, norm in con.execute("SELECT surn, surn_norm FROM indi"):
+    quellen = list(con.execute(
+        "SELECT surn AS a, surn_kanon AS b FROM person WHERE surn IS NOT NULL"))
+    quellen += list(con.execute(
+        "SELECT wert AS a, NULL AS b FROM namensform WHERE art='surn'"))
+    for surn, norm in ((r["a"], r["b"]) for r in quellen):
         for v in (surn, norm):
             v = (v or "").strip()
             if not v:
@@ -77,19 +81,20 @@ def inventar():
 @lru_cache(maxsize=1)
 def personen():
     """Liste aller Personen mit Kurzinfo für die Trefferanzeige."""
-    con = sqlite3.connect(DB)
-    con.row_factory = sqlite3.Row
+    con = _db.verbinde()
     ev, ehe = {}, {}
-    for r in con.execute("SELECT owner, tag, date FROM event"):
-        ev.setdefault(r["owner"], {}).setdefault(r["tag"], r["date"])
-    for r in con.execute("SELECT id, husb, wife FROM fam"):
-        m = ev.get(r["id"], {}).get("MARR")
-        for p, andere in ((r["husb"], r["wife"]), (r["wife"], r["husb"])):
+    for r in con.execute(
+            "SELECT person, familie, art, datum FROM ereignis"):
+        schl = r["person"] if r["person"] is not None else ("F", r["familie"])
+        ev.setdefault(schl, {}).setdefault(r["art"], r["datum"])
+    for r in con.execute("SELECT id, mann, frau FROM familie"):
+        m = ev.get(("F", r["id"]), {}).get("MARR")
+        for p, andere in ((r["mann"], r["frau"]), (r["frau"], r["mann"])):
             if p:
                 ehe.setdefault(p, []).append((r["id"], m, andere))
-    namen = {r["id"]: r["name"] for r in con.execute("SELECT id, name FROM indi")}
+    namen = {r["id"]: r["name"] for r in con.execute("SELECT id, name FROM person")}
     raus = []
-    for r in con.execute("SELECT id, name, givn, surn, sex FROM indi"):
+    for r in con.execute("SELECT id, name, givn, surn, sex FROM person"):
         e = ev.get(r["id"], {})
         lebt = []
         for t, kurz in (("CHR", "~"), ("BIRT", "*"), ("DEAT", "†")):
@@ -171,26 +176,24 @@ if __name__ == "__main__":
 # ---------------------------------------------------------------- Anbindung
 @lru_cache(maxsize=1)
 def familien():
-    """fam-Id -> Daten; plus Zuordnung Person -> Ehen und Herkunftsfamilie."""
-    con = sqlite3.connect(DB)
-    con.row_factory = sqlite3.Row
-    namen = {r["id"]: r["name"] for r in con.execute("SELECT id, name FROM indi")}
-    marr = {r["owner"]: r["date"] for r in con.execute(
-        "SELECT owner, date FROM event WHERE tag='MARR'")}
+    """Familie -> Daten; plus Zuordnung Person -> Ehen und Herkunftsfamilie."""
+    con = _db.verbinde()
+    namen = {r["id"]: r["name"] for r in con.execute("SELECT id, name FROM person")}
+    marr = {r["familie"]: r["datum"] for r in con.execute(
+        "SELECT familie, datum FROM ereignis WHERE art='MARR' AND familie IS NOT NULL")}
     fam, fams, famc = {}, {}, {}
-    for r in con.execute("SELECT id, husb, wife FROM fam"):
-        fam[r["id"]] = dict(id=r["id"], husb=r["husb"], wife=r["wife"],
-                            husb_name=namen.get(r["husb"], ""),
-                            wife_name=namen.get(r["wife"], ""),
+    for r in con.execute("SELECT id, mann, frau FROM familie"):
+        fam[r["id"]] = dict(id=r["id"], husb=r["mann"], wife=r["frau"],
+                            husb_name=namen.get(r["mann"], ""),
+                            wife_name=namen.get(r["frau"], ""),
                             marr=marr.get(r["id"]), kinder=[])
-        for p in (r["husb"], r["wife"]):
+        for p in (r["mann"], r["frau"]):
             if p:
                 fams.setdefault(p, []).append(r["id"])
-    for r in con.execute("SELECT indi, fam, role FROM link"):
-        if r["role"] == "CHIL" and r["fam"] in fam:
-            fam[r["fam"]]["kinder"].append(r["indi"])
-        elif r["role"] == "FAMC":
-            famc.setdefault(r["indi"], []).append(r["fam"])
+    for r in con.execute("SELECT familie, person FROM kind"):
+        if r["familie"] in fam:
+            fam[r["familie"]]["kinder"].append(r["person"])
+        famc.setdefault(r["person"], []).append(r["familie"])
     con.close()
     return fam, fams, famc
 
