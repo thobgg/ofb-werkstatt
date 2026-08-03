@@ -72,6 +72,34 @@ Bestand vor und hätte jeden Plausibilitätstest bestanden.
 
 Ein Familienname startet daher gelb, auch wenn er sauber lesbar wirkt.
 
+## Anker aus der Registerordnung
+
+Der billigste Anker — er braucht **weder Bestand noch Modell**, nur die
+Struktur des Registers. Damit traegt er ab der ersten Seite, auch bei wem,
+der bei Null anfaengt.
+
+**Kirchenbuecher sind chronologisch gefuehrt.** Jedes Datum ist eingeklemmt
+zwischen dem des vorigen und dem des naechsten Eintrags:
+
+    Nr. 11   ...              <=
+    Nr. 12   30. Sept.            <- gesucht
+    Nr. 13   ... Oktobr.      >=
+
+Ein gelesenes "30. Nov." ist damit sofort widerlegt, ohne Nachschlagen.
+Dasselbe gilt fuer die **laufende Nummer**: lueckenlos, Sprung auf 1 bedeutet
+Jahrgangswechsel.
+
+| Nutzen | |
+|---|---|
+| **Pruefung** | Datum ausserhalb des Nachbarintervalls -> rot, unabhaengig von der Zuversicht des Modells |
+| **Eingrenzung** | unleserliches Datum -> "zwischen 12. Sept. und 3. Okt." ist immer noch eine Aussage |
+| **Prompt** | Nachbardaten mitgeben — schraenkt den Loesungsraum drastisch ein |
+| **Vollstaendigkeit** | fehlende laufende Nummer = uebersprungener Eintrag oder fehlende Seite |
+
+Im Pilotlauf blieb dieser Anker ungenutzt: Die Datumsspalten wurden gar nicht
+gelesen. Belegt wurde er beim Durchsehen der Mockups — das Datum von Nr. 12
+(00365) liess sich lesen, **weil im Eintrag darunter "Oktobr." steht**.
+
 ## Anker je Registerart
 
     Taufe        Eltern      → Elternehe im Bestand
