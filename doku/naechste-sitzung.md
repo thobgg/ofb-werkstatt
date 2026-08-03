@@ -75,8 +75,10 @@ Die Reihenfolge ist wichtig — das Werkzeug hat derzeit alles **außer** dem Ke
 3. **Matching anschließen.** Die Logik liegt fertig vor
    (`Transkription-1808/skripte/paar.py`, `suche.py`, `klassen.py`).
 
-Erst danach lohnen Generalisierung, Oberflächenpolitur und die Frage nach
-Hosting.
+Erst danach lohnen Generalisierung und Oberflächenpolitur.
+
+**Nicht bauen:** Login, Hosting, Upload, Mehrbenutzerbetrieb, Paket zum
+Doppelklick. Das Werkzeug ist für eine Person, die Python bedienen kann.
 
 ## Ungelöst
 

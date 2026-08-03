@@ -6,6 +6,11 @@ GEDCOM when you're done.
 
 > **Work in progress.** Being built against a real dataset (parish registers of
 > Haberschlacht, Württemberg, from 1808 onwards). Not yet usable by others.
+>
+> Built for a **single researcher** transcribing their own parish — no accounts,
+> no hosting, no multi-user setup. People who transcribe a parish do so out of a
+> personal connection to the place; they are individuals, not a crowd, and each
+> has their own village, dataset and handwriting.
 
 ## Why
 
