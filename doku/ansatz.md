@@ -125,6 +125,59 @@ Bestätigung ist eine neue Kante im Klassengraphen: gilt `Bührlin` einmal als
 zu einer Klasse von 231 Personen. Bestätigte Kanten brauchen dieselbe Prüfung
 wie importierte: Schreibnähe plus Belegzahl.
 
+## Gezielter Bildausschnitt statt ganzer Seite
+
+Der eigentliche Geschwindigkeitshebel: Bei jeder unsicheren Stelle wird genau
+dieser Ausschnitt geschnitten und neben das Eingabefeld gelegt.
+
+    heute      grosses Bild -> Stelle suchen -> hin und her -> tippen
+    Ziel       kleiner Ausschnitt direkt am Feld -> tippen
+
+**Nicht ueber Bounding Boxes des Modells** — die sind ungenau; beim Pilotlauf
+traf die geschaetzte Position mehrfach daneben. Stattdessen deterministisch:
+
+    Spaltenraster (einmal je Buch, von Hand gezogen)  -> horizontaler Bereich
+    Zeilengrenze  (je Eintrag, ohnehin vorhanden)     -> vertikaler Bereich
+    Modellhinweis (welche Textzeile in der Zelle)     -> Feinjustierung
+
+Kirchenbuchformulare haben feste, gedruckte Spalten. Sind deren Grenzen einmal
+bestimmt, ist fuer jedes Feld bekannt, wo es liegt — fuer den ganzen Band, oft
+ueber Jahrzehnte. Das Raster einmal geführt ziehen (sechs bis neun senkrechte
+Linien auf der Seitenuebersicht) kostet Minuten und ersetzt jede Automatik.
+Automatische Zeilen- und Spaltenerkennung ist im Projekt bereits zweimal
+gescheitert.
+
+Sicherheitsnetz: grosszuegiger Rand, und ein Klick blendet den ganzen Streifen
+ein, falls der Ausschnitt danebenliegt.
+
+## Zwei Rollen, nicht zwei Betriebsarten
+
+Transkribieren und Korrigieren sind verschiedene Taetigkeiten und duerfen nicht
+derselben Person zugemutet werden.
+
+| Rolle | wo | braucht |
+|---|---|---|
+| **Bearbeiter** | lokal, mit API-Schluessel | Seiten vorbereiten, transkribieren lassen, Matching, Export |
+| **Korrektor** | Browser, Login | nur Ausschnitt anschauen und tippen |
+
+**Die Korrekturoberflaeche braucht kein Modell.** Das Vorlesen ist vorher
+passiert, zentral und im Batch. Damit entfallen fuer Mitarbeitende saemtliche
+Huerden: keine Installation, kein Python, keine Konfigurationsdatei, kein
+eigener API-Schluessel. Die Kosten bleiben beim Bearbeiter und damit
+kontrollierbar.
+
+Auch die Bildrechte entschaerfen sich: verbreitet werden keine ganzen Scans,
+sondern Ausschnitte von wenigen Quadratzentimetern.
+
+Stufenweise, jede Stufe fuer sich nuetzlich:
+
+    1  lokal, nur der Bearbeiter    Transkription + Matching + Korrektur
+    2  + Export                     der Bestand waechst
+    3  + Korrekturoberflaeche       Helfer bekommen Zugang
+
+Voraussetzung fuer Stufe 3 ist lediglich eine `benutzer`-Spalte von Anfang an —
+sonst wird daraus eine Migration statt eines Aufsatzes.
+
 ## Eine Datenbasis, viele Eingangstüren
 
     GEDCOM ─┐
