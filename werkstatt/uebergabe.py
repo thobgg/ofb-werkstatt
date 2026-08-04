@@ -152,8 +152,6 @@ def uebernimm(con, art, schreib=False):
             ziel_f = fam if traeger == "familie" else None
             if not (ziel_p or ziel_f):
                 continue
-            if schreib and (ziel_p or 0) > 0 or (ziel_f or 0) > 0:
-                pass
             if schreib:
                 con.execute(
                     "INSERT INTO ereignis (person,familie,art,datum,jahr,ort,quelle) "
