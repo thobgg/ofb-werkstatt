@@ -186,15 +186,44 @@ vier Seiten mit 26 von Hand abgelesenen Grenzen:
 | laengster durchgehender Lauf, ueber die Doppelseite | 1/7 = **14 %** |
 | Anteil dunkler Pixel, Seiten am Falz getrennt | 11/26 = **42 %** |
 | dieselbe Methode, Seite sauber abgegrenzt | 5/7 = **71 %** |
+| Abgrenzung ueber die Linien statt ueber die Helligkeit | 22/22 = **100 %** (±40 px) |
 
 Zwei Fehler hatten die ersten Messungen verdorben: die Linien ueber die
 **Doppelseite** zu messen, obwohl sie nur ueber je eine Seite laufen, und den
 **laengsten durchgehenden Lauf** zu nehmen statt des Anteils dunkler Pixel —
 jede Stelle, an der Handschrift eine Linie kreuzt, halbiert den Lauf.
 
-Offen ist nicht die Linienerkennung, sondern die robuste Abgrenzung von
-Buchdeckel, Falz und Papier ueber unterschiedliche Scans. Wo sie gelingt,
-liegt die Trefferquote bei rund 70 %.
+### Warum Helligkeit die Seite nicht abgrenzen kann
+
+Die Abgrenzung galt als der offene Knackpunkt. Gemessen an den vier Seiten
+ist sie mit Helligkeit **grundsaetzlich** nicht loesbar:
+
+    Formular   Median 250–252
+    darueber   Median 244–251      <- die weisse Unterlage neben dem Buch
+    darunter   Median   4– 46      <- Buchschnitt und Deckel
+
+Die Unterlage ist so hell wie das Papier. Keine Schwelle trennt beide, auch
+keine relative — der Fehler lag nicht in der Zahl 140, sondern im Merkmal.
+
+Was das Formular auszeichnet, sind seine **gedruckten Linien**: dunkle Pixel
+mit hellen Nachbarn quer zur Laufrichtung. Buchdeckel ist dunkel mit dunklen
+Nachbarn, Unterlage hell ohne Struktur. Damit grenzt sich die Seite ueber
+dasselbe Merkmal ab, das ohnehin gesucht wird.
+
+Der **Falz** ist die dunkelste Spalte im mittleren Drittel — ueber alle
+sieben Seiten x=3024–3072 bei Kontrast 5–46 gegen ein Papiermittel von ~220.
+Das stabilste Merkmal der ganzen Seite. Die naheliegenderen Kandidaten
+(staerkste senkrechte Linie, Unterbrechung der waagerechten) sprangen
+dagegen um bis zu 400 px.
+
+Ergebnis: 22 von 22 Zeilenlinien bei ±40 px, **ohne einen einzigen
+ueberzaehligen Vorschlag** im Eintragsbereich. Nachpruefbar mit
+`python3 -m werkstatt.messung`.
+
+Zwei Einschraenkungen, damit die Zahl nicht mehr verspricht als sie traegt:
+Die Sollwerte sind aus den von Hand geschnittenen Streifen zurueckgewonnen
+und selbst nur auf ±40 px genau; und gemessen ist eine Hand, ein Formular,
+sieben Seiten.
 
 ### Vorschlag plus Hand, mit Vererbung
 

@@ -1,0 +1,99 @@
+{
+  "herkunft": "Zurueckgewonnen aus den von Hand geschnittenen Eintragsstreifen in Transkription-1808/scans/zeilen/ (Kreuzkorrelation im vollen Seitenscan, r>=0.92). Die Grenze zwischen zwei Eintraegen ist die Mitte ihrer Ueberlappung.",
+  "genauigkeit": "Die Streifen wurden grosszuegig um den Text geschnitten, nicht exakt an den Linien. Gemessener Versatz gegen die tatsaechliche gedruckte Linie: bis 45 px. Toleranzen unter +-40 px messen daher teilweise diesen Rekonstruktionsfehler mit.",
+  "seiten": {
+    "00361": {
+      "bild": "1184798-00361.jpg",
+      "eintraege": [
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "formular_x": [
+        1080,
+        5010
+      ],
+      "linien": [
+        1180,
+        1655,
+        2132,
+        2612,
+        3012,
+        3370
+      ],
+      "ende_erfassung": 3901
+    },
+    "00363": {
+      "bild": "1184798-00363.jpg",
+      "eintraege": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "formular_x": [
+        1088,
+        4998
+      ],
+      "linien": [
+        1196,
+        1666,
+        2115,
+        2676,
+        3016
+      ],
+      "ende_erfassung": 3438
+    },
+    "00364": {
+      "bild": "1184798-00364.jpg",
+      "eintraege": [
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "formular_x": [
+        1140,
+        5000
+      ],
+      "linien": [
+        1084,
+        1543,
+        1914,
+        2383,
+        2864
+      ],
+      "ende_erfassung": 3331
+    },
+    "00365": {
+      "bild": "1184798-00365.jpg",
+      "eintraege": [
+        11,
+        12,
+        13,
+        14,
+        15,
+        16
+      ],
+      "formular_x": [
+        1160,
+        5000
+      ],
+      "linien": [
+        1020,
+        1426,
+        1875,
+        2365,
+        2795,
+        3158
+      ],
+      "ende_erfassung": 3528
+    }
+  },
+  "ende_erfassung": "Untergrenze des letzten erfassten Eintrags — NICHT die Papierkante. Auf 00363 und 00364 laeuft die Tabelle darunter leer bis zum Papierende weiter; der Bearbeiter hat nur die beschriebenen Zeilen geschnitten. Taugt daher nur als untere Schranke: die erkannte Papierkante muss darunter liegen, nie darueber."
+}
