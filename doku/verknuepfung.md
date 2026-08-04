@@ -33,6 +33,18 @@ register-übergreifend verbindet:
 Damit fallen Taufe, Ehe und Tod derselben Familie von selbst zusammen — die
 Kaskade unten wird dort überflüssig, wo die Nummer lesbar ist.
 
+### In allen drei Registern vorhanden
+
+| Register | Spalte |
+|---|---|
+| Taufen Bd. 4 | 9, letzte — *Seitenzahl des Familien-Registers* |
+| Sterberegister | letzte Spalte |
+| Eheregister Bd. 6 | letzte Spalte (zu prüfen) |
+
+Damit verbindet die Nummer nicht nur innerhalb eines Registers, sondern **über
+alle drei hinweg** — genau die Kette Taufe → Ehe → Tod, für die sonst die
+Kaskade nötig ist.
+
 ### Vorbehalte
 
 1. **Kleine Ziffern, teils unsicher.** Bei Nr. 9 ist `146` oder `445` lesbar.
@@ -52,6 +64,25 @@ Kaskade unten wird dort überflüssig, wo die Nummer lesbar ist.
     3  Elternehe               Mutter wird abgeleitet statt gesucht
     4  Chronologie, Kontext    kostenlos, bestandsunabhängig
     5  Vokabular               rankt, bestätigt nie
+
+### Schreibweisen stabilisieren sich ab ~1810
+
+Gegenüber dem 16./17. Jahrhundert sind die Namensformen ab etwa 1810 gefestigt.
+Das wirkt zweifach:
+
+**Für die Lesung günstig** — kleinerer Lösungsraum. Ein gelesenes `Kröneck` ist
+um 1830 wahrscheinlich genau so geschrieben; 1650 stehen `Krönich`, `Kroneck`,
+`Krönegk` nebeneinander.
+
+**Für den Rückbezug entscheidend** — und deshalb bleiben die Äquivalenzklassen
+nötig, nur in umgekehrter Richtung als zunächst gedacht: Die **stabile Form von
+1830 muss die variablen alten Formen finden**, wenn Eltern und Großeltern in
+Beständen von 1750 gesucht werden. `Bierle` muss `Bührlen`, `Bürle`, `Bierlen`
+treffen.
+
+Das erklärt, warum `kirchenbuch.db` mit 21.565 Namensvarianten aus dem
+16.–18. Jahrhundert für die Arbeit ab 1808 wertvoll bleibt, obwohl die
+Zeiträume sich nicht überschneiden.
 
 ## Taufe
 
