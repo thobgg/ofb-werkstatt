@@ -87,14 +87,84 @@ bedienen kann. `http.server` genügt.
 Gleich mitnehmen, weil später teuer: Anzeigetexte in Sprachdateien (Deutsch
 Standard, Englisch zweite Datei) und die `herkunft`-Spalte je Datensatz.
 
-## Stand
+## Der Durchlauf
 
-Fertig: Datenbasis (`person`/`familie`/`ereignis`/`namensform` mit Herkunft),
-GEDCOM-Import verlustfrei, Suche mit Äquivalenzklassen, Familienanbindung,
-Sichten `wert`/`fehlerkatalog`/`chronologie`.
+Eine **Runde** ist eine Tranche: so und so viele Seiten EINES Registers, die
+zusammen gelesen, korrigiert und übergeben werden. Der Zustand liegt in der
+Datenbank, nicht im Prozess — der Läufer arbeitet weiter, wenn das Browser-
+fenster zugeht, und ein Abbruch hinterlässt einen lesbaren Zustand.
 
-**Der Kern fehlt:** API-Client und Transkriptionsprompt. Das Vorlesen geschieht
-bisher von Hand außerhalb des Werkzeugs.
+    geplant ──lesen──► korrigieren ──übergeben──► fertig
+                            │
+                            └── die Maske zeigt genau diese Runde
+
+    /            Stand und der nächste Schritt als EIN Knopf
+    /lesen       Tranche planen, Fortschritt je Seite
+    /korrektur   Maske, auf die Runde eingeschränkt
+    /uebergabe   Probelauf zeigen, auf zweiten Klick schreiben
+
+Auf der Kommandozeile dasselbe:
+
+```sh
+python3 -m werkstatt.runde --stand
+python3 -m werkstatt.runde --plane taufe --seiten 4 --quelle testdaten
+python3 -m werkstatt.runde --lies 1
+python3 -m werkstatt.runde --uebergib 1 --schreib
+python3 -m werkstatt.runde --verwirf 1      # rückstandslos zurücknehmen
+```
+
+**Zwei Lesequellen.** `--quelle testdaten` spielt die 22 Piloteinträge ein
+und braucht keinen API-Schlüssel. Das ist keine Bequemlichkeit: Die Maske war
+seit dem Schemawechsel kaputt (`ofb_id` gegen `person`) und niemandem
+aufgefallen, weil sie nur zwei Zustände kannte — leer, oder Schlüssel und
+echtes Geld. Was nur gegen Bezahlung sichtbar wird, wird nicht geprüft.
+
+Die Testquelle liefert **nur die Rohlesung**; die 39 geprüften Verweise
+bleiben als Maßstab zurück (`werkstatt.abgleich --messe`). Wer sie mitliefert,
+misst hinterher nur, dass er sie mitgeliefert hat.
+
+⚠️ Ihre `gelesen`-Werte sind bereits die *korrigierten* Lesungen des
+Pilotlaufs. Sie prüfen den Durchlauf, nicht die Lesequalität.
+
+## Kontextquellen: was darf bestätigen
+
+`[[kontext]]` in `konfig.toml`, eigene Pfade in `konfig.local.toml` (in
+`.gitignore`). Jede Quelle trägt ihren Rang:
+
+    gilt = "beleg"       darf bestätigen  → ein Treffer macht grün
+    gilt = "vokabular"   rankt nur        → ein Treffer bleibt gelb
+
+Der Rang landet in `herkunft.gilt`; damit ist die Ampelregel eine Abfrage und
+keine Sonderlogik. Keine Quelle eingetragen = Nullstart: alles bleibt gelb,
+die Maske legt jedes Feld vor. Langsam, aber nicht falsch.
+
+## Stand — gemessen 4. August 2026
+
+Fertig: Datenbasis mit Herkunftsrang, GEDCOM-Import verlustfrei, Suche mit
+Äquivalenzklassen, Familienanbindung, Rundenautomat mit Hintergrundläufer,
+Abgleich mit Ampel, Übergabe je Runde, vier Seiten Oberfläche.
+
+Voller Durchlauf gegen die Testquelle, 4 Seiten Taufregister:
+
+| | |
+|---|---|
+| gelesen | 22 Einträge, 102 gefüllte Felder |
+| Ampel | 20 grün · 18 gelb · 6 rot · 58 grau |
+| vorgelegt | 24 Felder von 102 brauchen eine Entscheidung |
+| übergeben | 45 Personen neu, 20 verknüpft, 22 Familien, 22 Kinder |
+| Abgleich gegen die geprüfte Wahrheit | **18 von 39 wiedergefunden (46 %), 0 falsch** |
+
+Die 46 % sind die Untergrenze: Die Piloteinträge enthalten nur Nachnamen,
+keine Vornamen und keine Daten — der Abgleich hat nur Nachname+Nachname+Ehe.
+
+**Ein Falschtreffer, den die Messung gefunden hat.** Der Taufe Nr. 12 von 1809
+wurde ein Paar zugeordnet, das 1699 und 1703 geboren wurde und dessen Frau
+1767 starb — einziger gemeinsamer Nachname im Bestand, kein Trauungsdatum,
+und damit **grün**. Seither prüft `abgleich._plausibel()` Lebensgrenzen, und
+ohne ein Datum, das die Familie zeitlich einordnet, wird nichts mehr grün.
+
+**Was noch fehlt:** GEDCOM-Ausgabe aus den eigenen Tabellen (siehe unten),
+Kaskaden für Ehe und Tod, Bildausschnitte je Feld.
 
 ## Nächste Schritte
 
@@ -102,12 +172,24 @@ bisher von Hand außerhalb des Werkzeugs.
    (die Unterlage ist so hell wie das Papier), sondern über die gedruckten
    Linien. 22/22 Zeilenlinien bei ±40 px, 0 überzählige Vorschläge.
    Messung: `python3 -m werkstatt.messung`, Sollwerte in `daten/soll_zeilen.json`.
-2. **Rastereditor** — Vorschläge anzeigen, fehlende Linien von Hand nachziehen,
-   Folgeseiten erben das Raster. `raster.vorschlag()` liefert je Buchseite
-   `zeilen`/`spalten` plus eine vereinte Zeilenliste.
-3. **API-Client und Prompt** — mit Fehlerkatalog aus der Sicht `fehlerkatalog`
-   und den Nachbarzeilen als Kontext.
-4. **Matching anschließen** — Logik liegt fertig in `suche.py`.
+2. **GEDCOM-Ausgabe** — `gedcom_export.py` ist das falsche Werkzeug: Es liest
+   `rec`/`vorgang`/`meta` aus dem Haberschlacht-Index, die es hier nicht gibt,
+   und bricht mit `TypeError` ab. Zwei Arten sind nötig: **Fortschreibung**
+   (unberührte Records zeichengleich aus `person.raw` — bei 4.111 von 4.111
+   vorhanden; Leerlauftest byte-identisch) und **Neuausgabe** aus
+   `person`/`familie`/`ereignis` mit `_KB_NAME`, `_BERUF_KB`, `_NOTE_TAUFE`.
+3. **Kaskaden für Ehe und Tod** — nach dem Muster von Taufe. `kaskade_tod.py`
+   liegt fertig vor und ist noch nicht angeschlossen.
+4. **Bildausschnitte je Feld.** Arbeitsteilung statt Entweder-Oder: Das Modell
+   sagt, *welche* Zeile und *welche* Spalte (das braucht keine Pixel, weil
+   Einträge und Zeilenbänder dieselbe Reihenfolge haben), die Geometrie
+   liefert die Pixel. Koordinaten schätzen zu lassen ist zweimal gescheitert.
+   `feld.bild_x/y/w/h` stehen im Schema und werden nie gefüllt.
+5. **Registernamen aus dem Code lösen.** `ansatz.md` verspricht, ein
+   englischsprachiger Nutzer könne sein Register frei benennen. Gemessen
+   stimmt das nicht: `uebergabe.BAUPLAN` ist auf `ehe`/`taufe`/`tod` und
+   deutsche Feldnamen verdrahtet, die Maske auf `vater`/`mutter`/`braeutigam`.
+   `[register.marriage]` liefert „kein Bauplan für marriage".
 
 **Spaltenraster bleibt Handarbeit.** Die Zeilen sitzen jetzt, die Spalten
 nicht: die äußerste Randlinie fehlt teils (00365 beginnt bei x=1264 statt

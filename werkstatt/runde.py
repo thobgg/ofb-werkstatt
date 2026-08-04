@@ -1,0 +1,425 @@
+#!/usr/bin/env python3
+"""Der Durchlauf: Tranche planen, lesen lassen, übergeben, weiterschalten.
+
+    python3 -m werkstatt.runde --stand
+    python3 -m werkstatt.runde --plane taufe --seiten 4 --quelle testdaten
+    python3 -m werkstatt.runde --lies 1
+    python3 -m werkstatt.runde --uebergib 1
+
+Eine Runde ist eine Tranche: so und so viele Seiten EINES Registers, die
+zusammen gelesen, zusammen korrigiert und zusammen übergeben werden.
+
+    geplant  ──lesen──►  korrigieren  ──übergeben──►  fertig
+                              │
+                              └── die Maske zeigt genau diese Runde
+
+**Die Reihenfolge Ehen → Taufen → Tode ist Bedingung, nicht Empfehlung.**
+Der Elternehe-Anker trägt im Taufjahr 1808 noch 94 %, 1813 noch 53 %, 1820
+nur 18 % — es sei denn, die Ehen ab 1808 sind vorher übergeben, dann wächst
+er mit. Wer die Taufen vorzieht, prüft sie später ein zweites Mal. Deshalb
+schlägt `vorschlag()` das nächste Register selbst vor, und eine neue Runde
+beginnt erst, wenn die vorige übergeben ist.
+"""
+import argparse
+import threading
+import traceback
+from datetime import datetime, timezone
+from pathlib import Path
+
+from . import db, konfig, seiten, testdaten
+
+STAENDE = ("geplant", "liest", "korrigieren", "uebergeben", "fertig")
+
+
+def jetzt():
+    return datetime.now(timezone.utc).isoformat(timespec="seconds")
+
+
+# ----------------------------------------------------------------- Planung
+def register_reihe():
+    """Registerreihenfolge — wie in konfig.toml notiert."""
+    return list(konfig.register())
+
+
+def gelesene_bilder(con, register):
+    return {r["bild"] for r in con.execute(
+        "SELECT DISTINCT bild FROM eintrag WHERE register=?", (register,))}
+
+
+def offene_bilder(con, register, quelle="api"):
+    """Bilder dieses Registers, die noch nicht gelesen sind.
+
+    Bei `quelle=testdaten` zählt nur, was die Testquelle abdeckt — sonst
+    plante die Werkstatt zwanzig Seiten und läse vier.
+    """
+    schon = gelesene_bilder(con, register)
+    if quelle == "testdaten":
+        alle = testdaten.seiten(register)
+    else:
+        alle = [f.stem for f in seiten.bilder(konfig.bilderordner(register))]
+    return [b for b in alle if b not in schon]
+
+
+def offene_runde(con):
+    """Die eine Runde, die noch läuft. Es gibt immer höchstens eine."""
+    r = con.execute("SELECT * FROM runde WHERE stand<>'fertig' "
+                    "ORDER BY id DESC LIMIT 1").fetchone()
+    return dict(r) if r else None
+
+
+def vorschlag(con, quelle="api"):
+    """Welches Register als Nächstes — und warum.
+
+    Der Vorschlag zählt immer den **Bilderbestand**, nicht die gewählte
+    Quelle. Sonst meldet die Werkstatt „alle Seiten gelesen", während 148
+    Bilder ungelesen im Ordner liegen und bloß die Testquelle erschöpft ist.
+    """
+    offen = offene_runde(con)
+    if offen:
+        return dict(register=offen["register"], runde=offen,
+                    grund="läuft bereits")
+    reihe = register_reihe()
+    letzte = con.execute("SELECT register FROM runde WHERE stand='fertig' "
+                         "ORDER BY id DESC LIMIT 1").fetchone()
+    start = (reihe.index(letzte["register"]) + 1) % len(reihe) if letzte else 0
+    for i in range(len(reihe)):
+        reg = reihe[(start + i) % len(reihe)]
+        rest = offene_bilder(con, reg, "api")
+        if rest:
+            grund = ("erste Runde — Ehen zuerst, sie bauen den Anker"
+                     if not letzte and reg == reihe[0]
+                     else f"{len(rest)} Seiten offen")
+            if quelle == "testdaten" and not offene_bilder(con, reg, "testdaten"):
+                grund += " — die Testquelle ist erschöpft, dafür braucht es die API"
+            return dict(register=reg, runde=None, grund=grund, offen=len(rest))
+    return dict(register=None, runde=None, grund="alle Seiten gelesen")
+
+
+def plane(con, register, anzahl=20, quelle="api"):
+    offen = offene_runde(con)
+    if offen:
+        raise SystemExit(
+            f"Runde {offen['nr']} ({offen['register']}) steht noch auf "
+            f"'{offen['stand']}' — erst abschließen.")
+    bilder = offene_bilder(con, register, quelle)[:anzahl]
+    if not bilder:
+        raise SystemExit(f"keine ungelesenen Seiten in {register} "
+                         f"(Quelle {quelle})")
+    nr = (con.execute("SELECT COALESCE(MAX(nr),0)+1 FROM runde").fetchone()[0])
+    cur = con.execute(
+        "INSERT INTO runde (nr, register, von_bild, bis_bild, seiten, quelle, "
+        "stand, begonnen) VALUES (?,?,?,?,?,?,'geplant',?)",
+        (nr, register, bilder[0], bilder[-1], len(bilder), quelle, jetzt()))
+    rid = cur.lastrowid
+    a = con.execute(
+        "INSERT INTO auftrag (runde, art, stand, seiten_gesamt) "
+        "VALUES (?,'lesen','wartet',?)", (rid, len(bilder)))
+    for b in bilder:
+        con.execute("INSERT OR IGNORE INTO auftrag_seite (auftrag, bild) "
+                    "VALUES (?,?)", (a.lastrowid, b))
+    con.commit()
+    return rid
+
+
+# ------------------------------------------------------------------ Lesen
+def _rolle(art, feldname):
+    """Welches Feld trägt den Namen welcher Person."""
+    for r in konfig.personen_rollen(art):
+        if feldname in (f"{r}_name", f"{r}_vorname", r):
+            return r
+    return None
+
+
+def speichere(con, art, bild, ergebnis, runde_id=None, hid=None):
+    """Gelesene Einträge festhalten — für beide Quellen derselbe Weg."""
+    reihen = {n: i for i, n in enumerate(konfig.felder(art))}
+    n_e = n_f = 0
+    for e in ergebnis.get("eintraege", []):
+        nr = str(e.get("lfd_nr") or "")
+        con.execute(
+            "INSERT OR IGNORE INTO eintrag "
+            "(register, band, bild, nr, jahr, ausschnitt, herkunft, runde) "
+            "VALUES (?,?,?,?,?,?,?,?)",
+            (art, e.get("band"), bild, nr, e.get("jahr"),
+             e.get("ausschnitt"), hid, runde_id))
+        row = con.execute(
+            "SELECT id FROM eintrag WHERE register=? AND bild=? AND nr=?",
+            (art, bild, nr)).fetchone()
+        if not row:
+            continue
+        eid = row["id"]
+        n_e += 1
+        for name, f in (e.get("felder") or {}).items():
+            if not isinstance(f, dict):
+                f = {"wert": f}
+            con.execute(
+                "INSERT OR IGNORE INTO feld "
+                "(eintrag_id, name, rolle, gelesen, kb_form, zuversicht, "
+                " beleg, reihe) VALUES (?,?,?,?,?,?,?,?)",
+                (eid, name, _rolle(art, name), f.get("wert"), f.get("kb"),
+                 f.get("zuversicht"), f.get("notiz"), reihen.get(name, 99)))
+            n_f += 1
+    con.commit()
+    return n_e, n_f
+
+
+def lauf(runde_id):
+    """Der Läufer. Eigene Verbindung — er arbeitet in einem eigenen Thread."""
+    con = db.verbinde()
+    r = con.execute("SELECT * FROM runde WHERE id=?", (runde_id,)).fetchone()
+    a = con.execute("SELECT * FROM auftrag WHERE runde=? AND art='lesen' "
+                    "ORDER BY id DESC LIMIT 1", (runde_id,)).fetchone()
+    if not r or not a:
+        return
+    art, quelle, aid = r["register"], r["quelle"], a["id"]
+    con.execute("UPDATE runde SET stand='liest' WHERE id=?", (runde_id,))
+    con.execute("UPDATE auftrag SET stand='laeuft', begonnen=? WHERE id=?",
+                (jetzt(), aid))
+    con.commit()
+
+    schluessel = None
+    if quelle == "api":
+        import os
+        schluessel = os.environ.get("ANTHROPIC_API_KEY")
+        if not schluessel:
+            con.execute("UPDATE auftrag SET stand='fehler', meldung=?, "
+                        "beendet=? WHERE id=?",
+                        ("ANTHROPIC_API_KEY nicht gesetzt", jetzt(), aid))
+            con.execute("UPDATE runde SET stand='geplant' WHERE id=?", (runde_id,))
+            con.commit()
+            return
+
+    hid = db.herkunft_id(
+        con, "erfassung" if quelle == "api" else "testdaten",
+        f"{art} Runde {r['nr']}",
+        notiz=f"gelesen aus {quelle}")
+
+    fertig = 0
+    for s in list(con.execute(
+            "SELECT * FROM auftrag_seite WHERE auftrag=? AND stand<>'fertig' "
+            "ORDER BY bild", (aid,))):
+        bild = s["bild"]
+        con.execute("UPDATE auftrag_seite SET stand='laeuft' WHERE id=?", (s["id"],))
+        con.execute("UPDATE auftrag SET aktuell=? WHERE id=?", (bild, aid))
+        con.commit()
+        try:
+            if quelle == "testdaten":
+                erg = testdaten.lies_seite(bild)
+                nutzung = {}
+            else:
+                from . import lesen
+                pfad = konfig.bilderordner(art) / f"{bild}.jpg"
+                erg, nutzung = lesen.lies_seite(pfad, art, schluessel, con)
+            n_e, n_f = speichere(con, art, bild, erg, runde_id, hid)
+            con.execute(
+                "UPDATE auftrag_seite SET stand='fertig', eintraege=?, felder=? "
+                "WHERE id=?", (n_e, n_f, s["id"]))
+            con.execute(
+                "UPDATE auftrag SET tokens_ein=tokens_ein+?, "
+                "tokens_aus=tokens_aus+? WHERE id=?",
+                (nutzung.get("input_tokens", 0),
+                 nutzung.get("output_tokens", 0), aid))
+        except Exception as e:
+            # Fehler gelten je Seite, nicht je Lauf. Ein SystemExit mitten
+            # in zwanzig Seiten wäre in einem Hintergrund-Thread ein stiller
+            # Tod: Die ersten Seiten wären gespeichert, und niemand wüsste,
+            # warum es aufgehört hat.
+            con.execute("UPDATE auftrag_seite SET stand='fehler', meldung=? "
+                        "WHERE id=?", (f"{type(e).__name__}: {e}"[:400], s["id"]))
+            traceback.print_exc()
+        fertig += 1
+        con.execute("UPDATE auftrag SET seiten_fertig=? WHERE id=?", (fertig, aid))
+        con.commit()
+
+    schlecht = con.execute(
+        "SELECT count(*) FROM auftrag_seite WHERE auftrag=? AND stand='fehler'",
+        (aid,)).fetchone()[0]
+    con.execute("UPDATE auftrag SET stand=?, aktuell=NULL, beendet=?, "
+                "meldung=? WHERE id=?",
+                ("fehler" if schlecht == a["seiten_gesamt"] else "fertig",
+                 jetzt(), f"{schlecht} Seite(n) mit Fehler" if schlecht else None,
+                 aid))
+    con.execute("UPDATE runde SET stand='korrigieren' WHERE id=?", (runde_id,))
+    con.commit()
+
+    from . import abgleich
+    abgleich.runde_pruefen(con, runde_id)
+    con.close()
+
+
+LAEUFER = {}
+
+
+def starte(runde_id):
+    """Läufer im Hintergrund — der Browser darf zugemacht werden."""
+    t = LAEUFER.get(runde_id)
+    if t and t.is_alive():
+        return False
+    t = threading.Thread(target=lauf, args=(runde_id,), daemon=True,
+                         name=f"runde-{runde_id}")
+    LAEUFER[runde_id] = t
+    t.start()
+    return True
+
+
+# --------------------------------------------------------------- Übergabe
+def uebergib(con, runde_id, schreib=False):
+    """Bestätigte Einträge dieser Runde werden zum Bestand.
+
+    Erst danach kann die nächste Tranche gegen sie ankern — das ist der
+    ganze Sinn der Reihenfolge Ehen → Taufen → Tode. Ohne diesen Schritt
+    ist der Registerwechsel wirkungslos.
+    """
+    from . import uebergabe
+    r = con.execute("SELECT * FROM runde WHERE id=?", (runde_id,)).fetchone()
+    if not r:
+        raise SystemExit(f"keine Runde {runde_id}")
+    z = uebergabe.uebernimm(con, r["register"], schreib, runde_id,
+                            marke=f"{r['register']} Runde {r['nr']}")
+    if schreib:
+        con.execute("UPDATE runde SET stand='fertig', beendet=? WHERE id=?",
+                    (jetzt(), runde_id))
+        con.commit()
+    return z
+
+
+def verwerfen(con, runde_id):
+    """Eine Runde rückstandslos zurücknehmen.
+
+    Nötig, damit sich derselbe Durchlauf wiederholen lässt — zum Prüfen, zum
+    Vorführen, und wenn eine Runde mit falschen Einstellungen lief. Gelöscht
+    wird nur, was diese Runde erzeugt hat: ihre Einträge und die Personen und
+    Familien ihrer Übergabe. Der eingelesene Bestand bleibt unberührt.
+    """
+    r = con.execute("SELECT * FROM runde WHERE id=?", (runde_id,)).fetchone()
+    if not r:
+        return {}
+    marke = f"{r['register']} Runde {r['nr']}"
+    h = con.execute("SELECT id FROM herkunft WHERE art='erfassung' AND datei=?",
+                    (marke,)).fetchone()
+    z = dict(eintraege=0, personen=0, familien=0)
+    z["eintraege"] = con.execute(
+        "SELECT count(*) FROM eintrag WHERE runde=?", (runde_id,)).fetchone()[0]
+    if h:
+        z["personen"] = con.execute(
+            "SELECT count(*) FROM person WHERE herkunft=?", (h["id"],)).fetchone()[0]
+        z["familien"] = con.execute(
+            "SELECT count(*) FROM familie WHERE herkunft=?", (h["id"],)).fetchone()[0]
+        con.execute("DELETE FROM ereignis WHERE person IN "
+                    "(SELECT id FROM person WHERE herkunft=?)", (h["id"],))
+        con.execute("DELETE FROM ereignis WHERE familie IN "
+                    "(SELECT id FROM familie WHERE herkunft=?)", (h["id"],))
+        con.execute("DELETE FROM kind WHERE person IN "
+                    "(SELECT id FROM person WHERE herkunft=?)", (h["id"],))
+        con.execute("DELETE FROM familie WHERE herkunft=?", (h["id"],))
+        con.execute("DELETE FROM person WHERE herkunft=?", (h["id"],))
+        con.execute("DELETE FROM herkunft WHERE id=?", (h["id"],))
+    con.execute("DELETE FROM eintrag WHERE runde=?", (runde_id,))
+    con.execute("DELETE FROM auftrag WHERE runde=?", (runde_id,))
+    con.execute("DELETE FROM runde WHERE id=?", (runde_id,))
+    con.commit()
+    return z
+
+
+def offen_in_runde(con, runde_id):
+    """Was in dieser Runde noch auf Bestätigung wartet."""
+    r = con.execute(
+        "SELECT count(*) n, SUM(status='bestaetigt') fix FROM eintrag "
+        "WHERE runde=?", (runde_id,)).fetchone()
+    a = dict(gruen=0, gelb=0, rot=0, grau=0)
+    for x in con.execute(
+            "SELECT f.ampel, count(*) n FROM feld f "
+            "JOIN eintrag e ON e.id=f.eintrag_id WHERE e.runde=? "
+            "GROUP BY f.ampel", (runde_id,)):
+        a[x["ampel"]] = x["n"]
+    return dict(eintraege=r["n"] or 0, bestaetigt=r["fix"] or 0, ampel=a)
+
+
+# -------------------------------------------------------------- Fortschritt
+def fortschritt(con, runde_id):
+    a = con.execute("SELECT * FROM auftrag WHERE runde=? ORDER BY id DESC "
+                    "LIMIT 1", (runde_id,)).fetchone()
+    if not a:
+        return None
+    d = dict(a)
+    d["seiten"] = [dict(x) for x in con.execute(
+        "SELECT bild, stand, eintraege, felder, meldung FROM auftrag_seite "
+        "WHERE auftrag=? ORDER BY bild", (a["id"],))]
+    return d
+
+
+def stand(con):
+    """Was der Startbildschirm zeigt — echte Zahlen, keine Vermutungen."""
+    raus = []
+    for art in register_reihe():
+        ordner = konfig.bilderordner(art)
+        bilder = seiten.bilder(ordner)
+        gelesen = gelesene_bilder(con, art)
+        e = con.execute(
+            "SELECT count(*) n, "
+            "SUM(status='bestaetigt') fix FROM eintrag WHERE register=?",
+            (art,)).fetchone()
+        raus.append(dict(
+            register=art, titel=konfig.register(art).get("titel", art),
+            ordner=str(ordner.relative_to(konfig.WURZEL)),
+            bilder=len(bilder), gelesen=len(gelesen),
+            eintraege=e["n"] or 0, bestaetigt=e["fix"] or 0,
+            offen_api=len(offene_bilder(con, art, "api")),
+            offen_test=len(offene_bilder(con, art, "testdaten"))))
+    return raus
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--stand", action="store_true")
+    ap.add_argument("--plane")
+    ap.add_argument("--seiten", type=int, default=20)
+    ap.add_argument("--quelle", default="api", choices=("api", "testdaten"))
+    ap.add_argument("--lies", type=int)
+    ap.add_argument("--uebergib", type=int)
+    ap.add_argument("--verwirf", type=int)
+    ap.add_argument("--schreib", action="store_true")
+    a = ap.parse_args()
+    con = db.verbinde()
+
+    if a.verwirf:
+        z = verwerfen(con, a.verwirf)
+        print("verworfen: " + " · ".join(f"{k} {v}" for k, v in z.items()))
+        return
+
+    if a.uebergib:
+        z = uebergib(con, a.uebergib, a.schreib)
+        print(("geschrieben: " if a.schreib else "Probelauf: ")
+              + " · ".join(f"{k} {v}" for k, v in z.items()))
+        if not a.schreib:
+            print("(nichts geschrieben — mit --schreib übernehmen)")
+        return
+
+    if a.plane:
+        rid = plane(con, a.plane, a.seiten, a.quelle)
+        r = con.execute("SELECT * FROM runde WHERE id=?", (rid,)).fetchone()
+        print(f"Runde {r['nr']}: {r['register']}, {r['seiten']} Seiten "
+              f"({r['von_bild']} – {r['bis_bild']}), Quelle {r['quelle']}")
+        return
+    if a.lies:
+        lauf(a.lies)
+        f = fortschritt(con, a.lies)
+        print(f"gelesen: {f['seiten_fertig']}/{f['seiten_gesamt']} Seiten")
+        for s in f["seiten"]:
+            print(f"  {s['bild']}  {s['stand']:7} {s['eintraege']:3} Einträge"
+                  + (f"  ⚠ {s['meldung']}" if s["meldung"] else ""))
+        return
+
+    for z in stand(con):
+        print(f"  {z['titel']:16} {z['bilder']:4} Bilder · "
+              f"{z['gelesen']:3} gelesen · {z['eintraege']:4} Einträge · "
+              f"{z['bestaetigt']:4} bestätigt")
+    v = vorschlag(con)
+    print(f"\n  nächster Schritt: {v['register'] or '—'}  ({v['grund']})")
+    r = offene_runde(con)
+    if r:
+        print(f"  offene Runde {r['nr']}: {r['register']}, Stand {r['stand']}")
+
+
+if __name__ == "__main__":
+    main()

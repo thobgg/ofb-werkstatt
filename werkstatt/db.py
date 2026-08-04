@@ -8,6 +8,7 @@ Die Suche kennt keine Herkunft, nur den Inhalt.
     python3 -m werkstatt.db --stand
 """
 import argparse
+import re
 import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
@@ -19,11 +20,68 @@ DB = ROOT / "daten" / "erfassung.sqlite"
 SCHEMA = Path(__file__).resolve().parent / "schema.sql"
 
 
+# `CREATE TABLE IF NOT EXISTS` erweitert eine bestehende Tabelle nicht. Ohne
+# Nachrüstung laufen alte Datenbanken auf eine neuere schema.sql auf, und zwar
+# lautlos: Die Tabelle existiert ja, nur eine Spalte fehlt.
+#
+# Belegt beim Einbau dieser Funktion: `eintrag` stand seit Längerem mit
+# `fam_reg` und `schreiber` in schema.sql und hatte beide in der laufenden
+# Datenbank nicht. `fam_reg` ist nach doku/verknuepfung.md der stärkste Anker
+# überhaupt — die Spalte war da, wo man sie liest, und fehlte da, wo man sie
+# schreibt. Eine von Hand gepflegte Liste hätte genau das wieder übersehen;
+# deshalb wird gegen die Schemadatei verglichen statt gegen eine Aufzählung.
+SPALTE = re.compile(r"^\s*([a-z_][a-z0-9_]*)\s+(.+?)\s*$", re.I)
+KEIN_FELD = ("unique", "primary", "foreign", "check", "constraint")
+
+
+def _spalten_aus_schema(text):
+    """Tabelle -> {Spalte: Definition}, aus den CREATE-TABLE-Blöcken."""
+    raus = {}
+    for m in re.finditer(
+            r"CREATE TABLE IF NOT EXISTS\s+(\w+)\s*\((.*?)\n\);",
+            text, re.S | re.I):
+        tabelle, rumpf = m.group(1), m.group(2)
+        spalten = {}
+        for zeile in rumpf.split("\n"):
+            zeile = zeile.split("--")[0].strip().rstrip(",").strip()
+            if not zeile or zeile.lower().startswith(KEIN_FELD):
+                continue
+            t = SPALTE.match(zeile)
+            if t:
+                spalten[t.group(1)] = t.group(2)
+        raus[tabelle] = spalten
+    return raus
+
+
+def wandere(con, melde=None):
+    """Fehlende Spalten ergänzen. Idempotent, ohne Datenverlust."""
+    getan = []
+    for tabelle, spalten in _spalten_aus_schema(
+            SCHEMA.read_text(encoding="utf-8")).items():
+        da = {r[1] for r in con.execute(f"PRAGMA table_info({tabelle})")}
+        if not da:                        # Tabelle wurde gerade neu angelegt
+            continue
+        for spalte, defi in spalten.items():
+            if spalte in da or "primary key" in defi.lower():
+                continue
+            # SQLite verweigert ADD COLUMN mit NOT NULL ohne Vorgabewert.
+            # Lieber die Bedingung fallen lassen als die Spalte.
+            if "not null" in defi.lower() and "default" not in defi.lower():
+                defi = re.sub(r"\bNOT\s+NULL\b", "", defi, flags=re.I).strip()
+            con.execute(f"ALTER TABLE {tabelle} ADD COLUMN {spalte} {defi}")
+            getan.append(f"{tabelle}.{spalte}")
+    con.commit()
+    if getan and melde:
+        melde("nachgerüstet: " + ", ".join(getan))
+    return getan
+
+
 def verbinde():
     DB.parent.mkdir(parents=True, exist_ok=True)
     con = sqlite3.connect(DB)
     con.row_factory = sqlite3.Row
     con.executescript(SCHEMA.read_text(encoding="utf-8"))
+    wandere(con)
     return con
 
 
@@ -34,15 +92,55 @@ def felder(art=None):
     return {a: _k.felder(a) for a in _k.register()}
 
 
-def herkunft_id(con, art, datei, notiz=None):
+def herkunft_id(con, art, datei, notiz=None, gilt=None, parochien=None):
     """Herkunftseintrag anlegen oder finden."""
     jetzt = datetime.now(timezone.utc).isoformat(timespec="seconds")
     con.execute(
         "INSERT OR IGNORE INTO herkunft (art, datei, angelegt, notiz) "
         "VALUES (?,?,?,?)", (art, datei, jetzt, notiz))
-    return con.execute(
+    hid = con.execute(
         "SELECT id FROM herkunft WHERE art=? AND datei IS ?",
         (art, datei)).fetchone()["id"]
+    if gilt:
+        con.execute("UPDATE herkunft SET gilt=?, parochien=? WHERE id=?",
+                    (gilt, ",".join(parochien or []) or None, hid))
+    return hid
+
+
+def kontext_anwenden(con):
+    """Rang aus konfig.toml auf die vorhandenen Herkünfte übertragen.
+
+    Zugeordnet wird über den Dateinamen, nicht den Pfad — ein verschobener
+    Bestand soll seinen Rang behalten.
+
+    Die **eigene bestätigte Erfassung** ist immer `beleg`. Das ist keine
+    Selbstgefälligkeit: `uebergabe.py` übernimmt ausschließlich bestätigte
+    Einträge, also hat ein Mensch jeden davon gesehen. Genau darauf beruht
+    „die ersten hundert tragen die nächsten tausend".
+    """
+    aus_konfig = {Path(q["datei"]).name: q for q in _k.kontext() if q["datei"]}
+    gesetzt, offen = [], []
+    for r in con.execute("SELECT id, art, datei, gilt FROM herkunft"):
+        if r["art"] == "erfassung":
+            con.execute("UPDATE herkunft SET gilt='beleg', name=? WHERE id=?",
+                        (f"eigene Erfassung ({r['datei']})", r["id"]))
+            continue
+        q = aus_konfig.get(Path(r["datei"] or "").name)
+        if q:
+            con.execute(
+                "UPDATE herkunft SET gilt=?, parochien=?, name=? WHERE id=?",
+                (q["gilt"], ",".join(q["parochien"]) or None, q["name"], r["id"]))
+            gesetzt.append(q["name"])
+        else:
+            offen.append(r["datei"])
+    con.commit()
+    return gesetzt, offen
+
+
+def belegherkuenfte(con):
+    """IDs der Herkünfte, die bestätigen dürfen. Leer = alles bleibt gelb."""
+    return {r["id"] for r in con.execute(
+        "SELECT id FROM herkunft WHERE gilt='beleg'")}
 
 
 def stand(con):

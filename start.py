@@ -20,14 +20,33 @@ def main():
     a = ap.parse_args()
 
     k = konfig.konfig()
+    con = db.verbinde()
+    db.kontext_anwenden(con)
+
+    # Der Stand kommt aus der Datenbank, nicht aus konfig.toml. Die alte
+    # Fassung meldete "Bestand: keiner", während 4.111 Personen darin lagen —
+    # sie las den leeren gedcom-Eintrag der Konfiguration.
+    z = db.stand(con)
+    beleg = list(con.execute(
+        "SELECT COALESCE(name, datei) t, "
+        "(SELECT count(*) FROM person p WHERE p.herkunft=herkunft.id) n "
+        "FROM herkunft WHERE gilt='beleg' ORDER BY n DESC"))
     print(f"Gemeinde : {k.get('gemeinde', {}).get('name', '—')}")
     print(f"Register : {', '.join(konfig.register())}")
-    bestand = konfig.bestand()
-    print(f"Bestand  : {bestand if bestand else 'keiner — beginnt bei Null'}")
-
-    con = db.verbinde()
-    n = con.execute("SELECT count(*) FROM eintrag").fetchone()[0]
-    print(f"Erfasst  : {n} Einträge\n")
+    if beleg:
+        for b in beleg:
+            print(f"Beleg    : {b['t']}  ({b['n']} Personen)")
+    else:
+        print("Beleg    : keine Quelle darf bestätigen — Nullstart, "
+              "alles wird vorgelegt")
+    print(f"Bestand  : {z['person']} Personen, {z['familie']} Familien, "
+          f"{z['ereignis']} Ereignisse")
+    print(f"Erfasst  : {z['eintrag']} Einträge, {z['feld']} Felder")
+    r = con.execute("SELECT nr, register, stand FROM runde "
+                    "WHERE stand<>'fertig' ORDER BY id DESC LIMIT 1").fetchone()
+    if r:
+        print(f"Runde    : {r['nr']} ({r['register']}), Stand {r['stand']}")
+    print()
 
     sys.argv = [sys.argv[0], "--port", str(a.port)]
     webapp.main()

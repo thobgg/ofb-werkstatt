@@ -11,6 +11,47 @@ religion_default = "evangelisch"
 # Bestand aus der eigenen Erfassung.
 gedcom = ""
 
+# ---------------------------------------------------------------- Kontext
+# Womit abgeglichen wird. Beliebig viele Quellen, jede mit ihrem RANG:
+#
+#     gilt = "beleg"       darf bestaetigen  -> ein Treffer macht gruen
+#     gilt = "vokabular"   rankt nur         -> ein Treffer bleibt gelb
+#
+# Der Unterschied ist nicht Feinheit, sondern die Lehre aus dem Pilotlauf:
+# `Roth` kommt 59-mal im Bestand vor und haette jeden Plausibilitaetstest
+# bestanden — dabei stand `Koch` da. Haeufigkeit und Wortschatz duerfen
+# ranken, aber niemals bestaetigen. Gruen wird nur, was ein Anker traegt.
+#
+# Ein Bestand kann beides sein: fuer die eigene Parochie belastbar, fuer
+# fremde nur Wortschatz. Dafuer `parochien` setzen und `sonst`.
+#
+# Nichts eingetragen heisst Nullstart. Das ist erlaubt: dann bleibt alles
+# gelb und die Maske legt jedes Feld vor. Langsamer, aber nicht falsch.
+#
+# Eigene Pfade gehoeren nach konfig.local.toml — die steht in .gitignore.
+#
+# [[kontext]]
+# name      = "Eigenes Ortsfamilienbuch"
+# art       = "gedcom"
+# datei     = "quellen/OFB_Musterhausen.ged"
+# gilt      = "beleg"
+# parochien = ["Musterhausen"]
+# bis_jahr  = 1807                 # danach traegt es nicht mehr
+#
+# [[kontext]]
+# name      = "Kirchenbuchdatenbank der Nachbarschaft"
+# art       = "sqlite"
+# datei     = "~/kirchenbuch.db"
+# gilt      = "beleg"
+# parochien = ["Musterhausen", "Nachbarort"]   # nur hier belastbar
+# sonst     = "vokabular"                      # ueberall sonst nur Wortschatz
+#
+# [[kontext]]
+# name  = "Namensatlas der Region"
+# art   = "csv"
+# datei = "~/atlas_export/"
+# gilt  = "vokabular"
+
 [register.ehe]
 titel   = "Eheregister"
 ordner  = "bilder/ehe"
