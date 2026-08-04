@@ -27,9 +27,75 @@ ins Live-System, keine Deploy-Kette, kein Risiko für die 240.000 Einträge.
 
 Baustein 3 ist der eigentliche Wert. Siehe `doku/verknuepfung.md`.
 
+## Tranchen — der Registerwechsel
+
+Nicht „erst alle Ehen bis 1855, dann alle Taufen", sondern **Tranchen nach
+Zeitraum, innerhalb der Tranche alle drei Register**:
+
+    Tranche 1808–1820      Tranche 1821–1832      …
+      1. Ehen                1. Ehen
+      2. Taufen              2. Taufen
+      3. Tode                3. Tode
+         ↓                      ↓
+      Übergabe in die        Übergabe
+      Personenbasis
+
+**Warum verzahnt statt registerweise:**
+
+| | |
+|---|---|
+| Der Anker wächst mit | Die Ehe von 1812 ankert die Taufe von 1819 — aber nur, wenn vorher erfasst |
+| Fehler zeigen sich früh | Ein falsch gelesener Bräutigam fällt auf, wenn seine Kinder nicht anschließen |
+| Dieselbe Hand | Innerhalb einer Tranche schreibt meist derselbe Pfarrer, der Fehlerkatalog passt |
+| Früher Abbruch möglich | Nach Tranche 1 ist beurteilbar, ob es trägt — nicht erst nach 66 Ehe-Seiten |
+
+**Reihenfolge innerhalb der Tranche** folgt den Ankern: Ehen liefern
+Elternehen und tagesgenaue Geburtsdaten · Taufen nutzen sie · Tode nutzen
+beide und schließen die Ketten.
+
+**Tranchengröße ~12 Jahre.** Bei Haberschlacht etwa 35–40 Buchöffnungen über
+alle drei Register.
+
+### Der Übergabepunkt — bisher nur behauptet, nicht gebaut
+
+Der Wechsel erzwingt etwas, das noch fehlt: **Die eigene Erfassung muss selbst
+zum Bestand werden.** Bisher sucht `suche.py` nur gegen fremde Bestände
+(kirchenbuch.db, OFB-GEDCOM). Nach jedem Register muss aus `eintrag`/`feld`
+eine Person und ggf. eine Familie entstehen, sonst findet die nächste Tranche
+sie nicht.
+
+Das ist der Mechanismus „die ersten hundert tragen die nächsten tausend".
+Ohne ihn ist die Tranchen-Reihenfolge wirkungslos.
+
 ## Reihenfolge
 
-### 1. Verknüpfungskaskade gegen kirchenbuch.db  ← zuerst
+### erledigt: Verknüpfungskaskade Tod
+59,8 % Treffer, ~¾ verwertbare Auskunft. `doku/verknuepfung.md`.
+
+### erledigt: Bildsichtung
+`werkstatt/seiten.py` — Lücken, Auflösung, Dubletten relativ zum Median.
+
+### 1. `lesen.py` — die Modellanbindung  ← der fehlende Kern
+Ganze Seite hinein, strukturierte Einträge heraus. Zunächst **ohne** Raster:
+Das Modell findet die Einträge auf einer gedruckten Registerseite selbst, und
+das Raster steckt bei 42 %. Damit hängt der Kern nicht an einem ungelösten
+Vorschritt.
+
+Mitzugeben: Nachbarzeilen als Kontext · Fehlerkatalog **je Hand** · Konfidenz
+je Feld · Familienbuchnummer und laufende Nummer als Pflichtfelder.
+
+### 2. Übergabepunkt Erfassung → Personenbasis
+Bestätigte Einträge werden zu Personen und Familien, damit die nächste Tranche
+gegen sie ankern kann. Ohne diesen Schritt bringt der Registerwechsel nichts.
+
+### 3. Kaskaden für Taufe und Heirat
+Nach dem Muster von Tod — kein zweites Konzept nötig, Fleißarbeit.
+
+### 4. Raster für die Lupe
+Erst jetzt nötig: für gezielte Bildausschnitte beim Korrigieren.
+Papierabgrenzung robust machen (71 % wo sie gelingt, sonst 0 %).
+
+### alt: Verknüpfungskaskade gegen kirchenbuch.db
 Lässt sich **ohne Bilder und ohne API** bauen und prüfen, weil die Testdaten
 schon da sind: 115.418 Taufen, 39.040 Heiraten, 89.422 Tode.
 
