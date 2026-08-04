@@ -11,8 +11,24 @@ die ersten hundert tragen die nächsten tausend. Zwei der vier Ankertypen
 ⚠️ Der Nullstart ist **nie getestet** — alle bisherigen Messwerte stammen aus
 einem Lauf gegen ein reiches Ortsfamilienbuch mit 4.111 Personen.
 
-**Ausführliche Begründung aller Entwurfsentscheidungen: `doku/ansatz.md`.
-Stand und offene Punkte: `doku/naechste-sitzung.md`. Beide vor der Arbeit lesen.**
+**Vor der Arbeit lesen — in dieser Reihenfolge:**
+1. `doku/landkarte.md` — wo liegt was, welcher Bestand gilt wofür, **wann Thomas
+   gefragt wird und wie**
+2. `doku/ansatz.md` — Begründung aller Entwurfsentscheidungen, mit Messwerten
+3. `doku/verknuepfung.md` — die Kaskade je Aktart, der anspruchsvollste Teil
+4. `doku/naechste-sitzung.md` — Stand und offene Punkte
+
+## Die drei Regeln der Zusammenarbeit
+
+1. **Erst Regel, dann Ausnahmen.** Nie Einzelfälle abarbeiten, solange eine
+   Regel möglich ist. Am 3.8. wurden acht Doppelehen einzeln diskutiert, bis
+   Thomas bremste — die anschließende fünfzeilige Regel entschied sechs davon
+   allein.
+2. **Fragen sammeln.** Zweifelsfälle einer Runde am Stück vorlegen.
+3. **Mit Empfehlung fragen.** Nicht „was soll ich tun", sondern „ich würde X,
+   weil Y — einverstanden?"
+
+⚠️ `~/ofb-ki/` wird **nur lesend** angefasst. Kein Eingriff ins Live-System.
 
 ## Verzeichnis
 
