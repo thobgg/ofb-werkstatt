@@ -1,0 +1,237 @@
+#!/usr/bin/env python3
+"""Modellanbindung: Registerseite hinein, strukturierte Einträge heraus.
+
+Der Kern der Werkstatt. Alles andere — Sichtung, Suche, Kaskade, Maske —
+arbeitet um diesen Schritt herum.
+
+    export ANTHROPIC_API_KEY=...
+    python3 -m werkstatt.lesen ehe bilder/ehe/seite.jpg
+    python3 -m werkstatt.lesen ehe --alle --grenze 5
+    python3 -m werkstatt.lesen ehe --trocken       nur Prompt zeigen, nichts senden
+
+Bewusst **ganze Seite** statt Zeilenstreifen: Das Modell findet die Einträge
+auf einer gedruckten Registerseite selbst, und die Rastererkennung steckt bei
+42 %. Der Kern haengt damit nicht an einem ungelösten Vorschritt. Streifen
+werden erst für die Lupe beim Korrigieren gebraucht.
+"""
+import argparse
+import base64
+import json
+import os
+import sys
+import urllib.error
+import urllib.request
+from pathlib import Path
+
+from . import db, konfig, seiten
+
+API = "https://api.anthropic.com/v1/messages"
+MODELL = "claude-opus-4-5"
+MAX_KANTE = 1568          # groesser bringt nichts, kostet nur Tokens
+
+
+# --------------------------------------------------------------- Prompt
+BASIS = """Du transkribierst eine Seite aus einem deutschen Kirchenbuch.
+Die Seite ist tabellarisch gedruckt; jede Zeile ist ein Eintrag.
+
+GRUNDREGELN
+
+1. Lies WÖRTLICH, was dasteht — nicht, was plausibel wäre. Abkürzungen,
+   alte Schreibungen und Kürzel bleiben unverändert.
+2. Gib zu jedem Feld an, wie sicher du bist (0.0 bis 1.0). Sei ehrlich:
+   Familiennamen sind erfahrungsgemäß die unsicherste Angabe, Daten und
+   Vornamen die sicherste.
+3. Rate nicht. Ist etwas unlesbar, schreibe null und begründe kurz.
+4. Nutze die Nachbarzeilen: Dieselbe Hand schreibt wiederkehrende Formeln
+   ("B. u. Weingärtner in ...") — daran eichst du die Buchstabenformen.
+   Register sind chronologisch: Das Datum eines Eintrags liegt zwischen dem
+   des vorigen und des nächsten.
+5. Die letzte Spalte nennt meist die Seitenzahl des Familienregisters.
+   Sie ist wertvoll — gib sie immer an, wenn lesbar."""
+
+WARNUNG = """
+BELEGTE FEHLLESUNGEN DIESER HAND — prüfe diese Stellen besonders:
+{katalog}
+Diese Liste stammt aus bestätigten Korrekturen an derselben Handschrift."""
+
+AUSGABE = """
+Antworte NUR mit JSON, ohne Vorspann:
+
+{{"eintraege": [
+  {{"lfd_nr": "11",
+    "felder": {{
+      "{beispiel}": {{"wert": "...", "kb": "wörtlich wie im Buch",
+                    "zuversicht": 0.9, "notiz": null}}
+    }}
+  }}
+]}}
+
+Felder dieses Registers: {felder}
+
+"kb" nur setzen, wenn die Schreibung im Buch von der normalisierten Form
+abweicht. "notiz" nur bei Unsicherheit oder Besonderheit."""
+
+
+def fehlerkatalog(con, schreiber=None, grenze=12):
+    """Belegte Fehllesungen aus den bisherigen Korrekturen — je Hand."""
+    q = ("SELECT gelesen, korrigiert, sum(anzahl) n FROM fehlerkatalog "
+         "GROUP BY gelesen, korrigiert ORDER BY n DESC LIMIT ?")
+    try:
+        rows = list(con.execute(q, (grenze,)))
+    except Exception:
+        return ""
+    if not rows:
+        return ""
+    return "\n".join(f"  gelesen «{r['gelesen']}» → tatsächlich «{r['korrigiert']}» "
+                     f"({r['n']}×)" for r in rows)
+
+
+def prompt(art, con=None, schreiber=None):
+    felder = konfig.felder(art)
+    text = BASIS
+    if con is not None:
+        kat = fehlerkatalog(con, schreiber)
+        if kat:
+            text += WARNUNG.format(katalog=kat)
+    text += AUSGABE.format(felder=", ".join(felder),
+                           beispiel=felder[1] if len(felder) > 1 else felder[0])
+    return text
+
+
+# --------------------------------------------------------------- Bild
+def bild_teil(pfad):
+    """Bild verkleinern und als base64 einbetten."""
+    from PIL import Image
+    import io
+    im = Image.open(pfad)
+    if max(im.size) > MAX_KANTE:
+        im.thumbnail((MAX_KANTE, MAX_KANTE))
+    if im.mode != "RGB":
+        im = im.convert("RGB")
+    puffer = io.BytesIO()
+    im.save(puffer, format="JPEG", quality=88)
+    return {"type": "image", "source": {
+        "type": "base64", "media_type": "image/jpeg",
+        "data": base64.standard_b64encode(puffer.getvalue()).decode()}}
+
+
+# --------------------------------------------------------------- API
+def frage(inhalt, system, schluessel, modell=MODELL, max_tokens=8000):
+    daten = json.dumps({
+        "model": modell, "max_tokens": max_tokens, "system": system,
+        "messages": [{"role": "user", "content": inhalt}],
+    }).encode()
+    req = urllib.request.Request(API, data=daten, headers={
+        "content-type": "application/json",
+        "x-api-key": schluessel,
+        "anthropic-version": "2023-06-01",
+    })
+    try:
+        with urllib.request.urlopen(req, timeout=300) as r:
+            antwort = json.loads(r.read())
+    except urllib.error.HTTPError as e:
+        raise SystemExit(f"API-Fehler {e.code}: {e.read().decode()[:400]}")
+    text = "".join(t["text"] for t in antwort["content"] if t["type"] == "text")
+    return text, antwort.get("usage", {})
+
+
+def json_aus(text):
+    """JSON aus der Antwort schälen, auch wenn Zäune drumherum stehen."""
+    t = text.strip()
+    if t.startswith("```"):
+        t = t.split("```")[1]
+        t = t[4:] if t.startswith("json") else t
+    a, b = t.find("{"), t.rfind("}")
+    return json.loads(t[a:b + 1]) if a >= 0 else {}
+
+
+# --------------------------------------------------------------- Ablauf
+def lies_seite(pfad, art, schluessel, con=None, kontext=None, trocken=False):
+    sys_prompt = prompt(art, con)
+    if trocken:
+        print(sys_prompt)
+        return None, {}
+    inhalt = []
+    if kontext:
+        inhalt.append({"type": "text", "text":
+                       "Vorige Seite endet mit: " + kontext})
+    inhalt.append(bild_teil(pfad))
+    inhalt.append({"type": "text", "text":
+                   f"Transkribiere alle Einträge dieser Seite ({art})."})
+    text, nutzung = frage(inhalt, sys_prompt, schluessel)
+    return json_aus(text), nutzung
+
+
+def speichere(con, art, pfad, ergebnis):
+    """Einträge und Felder in die Erfassungsdatenbank schreiben."""
+    reihen = {n: i for i, n in enumerate(konfig.felder(art))}
+    hid = db.herkunft_id(con, "modell", MODELL, f"gelesen aus {Path(pfad).name}")
+    n_e = n_f = 0
+    for e in ergebnis.get("eintraege", []):
+        nr = str(e.get("lfd_nr") or "")
+        con.execute("INSERT OR IGNORE INTO eintrag (register,bild,nr,herkunft) "
+                    "VALUES (?,?,?,?)", (art, Path(pfad).stem, nr, hid))
+        row = con.execute("SELECT id FROM eintrag WHERE register=? AND bild=? AND nr=?",
+                          (art, Path(pfad).stem, nr)).fetchone()
+        if not row:
+            continue
+        eid = row["id"]
+        n_e += 1
+        for name, f in (e.get("felder") or {}).items():
+            if not isinstance(f, dict):
+                f = {"wert": f}
+            con.execute(
+                "INSERT OR IGNORE INTO feld "
+                "(eintrag_id,name,gelesen,kb_form,zuversicht,beleg,reihe) "
+                "VALUES (?,?,?,?,?,?,?)",
+                (eid, name, f.get("wert"), f.get("kb"), f.get("zuversicht"),
+                 f.get("notiz"), reihen.get(name, 99)))
+            n_f += 1
+    con.commit()
+    return n_e, n_f
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("register")
+    ap.add_argument("bild", nargs="*")
+    ap.add_argument("--alle", action="store_true", help="alle Bilder des Registers")
+    ap.add_argument("--grenze", type=int, default=0, help="höchstens so viele Seiten")
+    ap.add_argument("--trocken", action="store_true", help="nur Prompt zeigen")
+    a = ap.parse_args()
+
+    if a.register not in konfig.register():
+        raise SystemExit(f"unbekanntes Register: {a.register}")
+    con = db.verbinde()
+
+    if a.trocken:
+        print(prompt(a.register, con))
+        return
+
+    schluessel = os.environ.get("ANTHROPIC_API_KEY")
+    if not schluessel:
+        raise SystemExit("ANTHROPIC_API_KEY nicht gesetzt")
+
+    fs = [Path(b) for b in a.bild]
+    if a.alle:
+        fs = seiten.bilder(konfig.bilderordner(a.register))
+    if a.grenze:
+        fs = fs[:a.grenze]
+    if not fs:
+        raise SystemExit("keine Bilder angegeben")
+
+    ein = tok_e = tok_a = 0
+    for i, f in enumerate(fs, 1):
+        print(f"[{i}/{len(fs)}] {f.name} … ", end="", flush=True)
+        erg, nutzung = lies_seite(f, a.register, schluessel, con)
+        n_e, n_f = speichere(con, a.register, f, erg)
+        ein += n_e
+        tok_e += nutzung.get("input_tokens", 0)
+        tok_a += nutzung.get("output_tokens", 0)
+        print(f"{n_e} Einträge, {n_f} Felder")
+    print(f"\n{ein} Einträge aus {len(fs)} Seiten")
+    print(f"Token: {tok_e} hinein, {tok_a} heraus")
+
+
+if __name__ == "__main__":
+    main()
