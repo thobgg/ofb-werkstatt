@@ -63,6 +63,39 @@ Zeilenbreite liegen bereits in `scans/zeilen/`.
 (echte Zweitehe, nicht anfassen), 6 Personendubletten mit identischem
 Sterbedatum.
 
+## Erledigt seit der letzten Sitzung
+
+**Die Papierabgrenzung steht.** Sie galt als der offene Knackpunkt der
+Rastererkennung; die Annahme war, eine bessere Helligkeitsschwelle täte es.
+Das ist widerlegt: die weiße Unterlage neben dem Buch hat Median 244–251,
+das Papier 250–252. **Keine Helligkeitsschwelle kann beide trennen** — der
+Fehler lag im Merkmal, nicht in der Zahl.
+
+Stattdessen grenzt sich die Seite über ihre eigenen gedruckten Linien ab
+(dunkel mit hellen Nachbarn quer zur Laufrichtung). Der Falz ist die
+dunkelste Spalte im mittleren Drittel und über alle sieben Seiten auf
+x=3024–3072 stabil.
+
+    Zeilenlinien  ±40 px  22/22 = 100 %   (vorher 42 %, bestenfalls 71 %)
+                  ±25 px  18/22 =  82 %
+    ueberzaehlige Vorschlaege:  0
+    Falz und Papierkante:       je 7/7 bzw. 4/4 plausibel
+
+Nachprüfbar mit `python3 -m werkstatt.messung`.
+
+⚠️ **Die Sollwerte mussten erst hergestellt werden.** Sie waren entgegen der
+Notiz in `CLAUDE.md` nirgends abgelegt — weder in `raster.py` noch in der
+Versionsgeschichte. Zurückgewonnen aus den von Hand geschnittenen Streifen in
+`Transkription-1808/scans/zeilen/` durch Kreuzkorrelation im vollen Seitenscan
+(r ≥ 0,92, x-Versatz je Seite konstant). Sie liegen jetzt in
+`daten/soll_zeilen.json` — **selbst nur auf ±40 px genau**, weil die Streifen
+großzügig um den Text geschnitten wurden, nicht an den Linien. Unterhalb
+dieser Toleranz misst man den Rekonstruktionsfehler mit; die 82 % bei ±25 px
+sind deshalb eine Untergrenze, keine Aussage über das Verfahren.
+
+Wer echte Zahlen will, liest die Grenzen auf einer Seite von Hand ab und
+trägt sie dort nach.
+
 ## Was zuerst gebaut werden muss
 
 Die Reihenfolge ist wichtig — das Werkzeug hat derzeit alles **außer** dem Kern.
@@ -72,6 +105,8 @@ Die Reihenfolge ist wichtig — das Werkzeug hat derzeit alles **außer** dem Ke
    `ansatz.md` und die Fehlerkataloge.
 2. **Spaltenraster einmal je Buch, geführt gezogen.** Voraussetzung für die
    gezielten Bildausschnitte. Nicht automatisieren — ist zweimal gescheitert.
+   Die Zeilen sitzen jetzt automatisch, die Spalten nicht: die äußerste
+   Randlinie wird nicht immer erfasst.
 3. **Matching anschließen.** Die Logik liegt fertig vor
    (`Transkription-1808/skripte/paar.py`, `suche.py`, `klassen.py`).
 4. **Wissensbasis als Auswertung.** Fehlerkatalog aus `gelesen` gegen

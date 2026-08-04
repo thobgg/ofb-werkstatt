@@ -82,14 +82,20 @@ bisher von Hand außerhalb des Werkzeugs.
 
 ## Nächste Schritte
 
-1. **Papierabgrenzung in `raster.py`** — Buchdeckel/Falz/Papier robust trennen.
-   Wo sie gelingt, findet die Zeilenerkennung 71 % der Grenzen, sonst 0 %.
-   Feste Helligkeitsschwelle 140 durch einen Wert relativ zum Papiermaximum ersetzen.
+1. ~~Papierabgrenzung in `raster.py`~~ — **erledigt.** Nicht über Helligkeit
+   (die Unterlage ist so hell wie das Papier), sondern über die gedruckten
+   Linien. 22/22 Zeilenlinien bei ±40 px, 0 überzählige Vorschläge.
+   Messung: `python3 -m werkstatt.messung`, Sollwerte in `daten/soll_zeilen.json`.
 2. **Rastereditor** — Vorschläge anzeigen, fehlende Linien von Hand nachziehen,
-   Folgeseiten erben das Raster.
+   Folgeseiten erben das Raster. `raster.vorschlag()` liefert je Buchseite
+   `zeilen`/`spalten` plus eine vereinte Zeilenliste.
 3. **API-Client und Prompt** — mit Fehlerkatalog aus der Sicht `fehlerkatalog`
    und den Nachbarzeilen als Kontext.
 4. **Matching anschließen** — Logik liegt fertig in `suche.py`.
+
+**Spaltenraster bleibt Handarbeit.** Die Zeilen sitzen jetzt, die Spalten
+nicht: die äußerste Randlinie fehlt teils (00365 beginnt bei x=1264 statt
+1160). Einmal je Buch ziehen ist ohnehin der vorgesehene Weg.
 
 ## Nicht erneut versuchen
 

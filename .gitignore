@@ -5,6 +5,10 @@ bilder/**
 !bilder/**/LIESMICH.txt
 daten/**
 !daten/.gitkeep
+# Ausnahme: Sollwerte der Rastermessung. Reine Pixelkoordinaten — keine
+# Personendaten, keine Bildinhalte. Sie muessen mit, sonst ist die Messung
+# in werkstatt/messung.py nicht nachvollziehbar.
+!daten/soll_zeilen.json
 ausgabe/
 *.ged
 *.sqlite
