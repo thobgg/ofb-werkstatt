@@ -72,6 +72,58 @@ wird nie wieder geprüft. Deshalb:
 > **Ein Match braucht mindestens zwei übereinstimmende Merkmale, von denen
 > eines nicht der Nachname ist.** Nachname + Jahr genügt nie.
 
+## Machbarkeitsnachweis — gemessen 04.08.2026
+
+`werkstatt/kaskade_tod.py`, gemessen gegen `~/ofb-ki/kirchenbuch.db`,
+Parochie Haberschlacht. Ohne Bilder, ohne API — die Testdaten waren vorhanden.
+
+| Zeitraum | Einträge | Treffer | Umweg nötig | kein Treffer | mehrdeutig |
+|---|---|---|---|---|---|
+| 1800–1807 | 117 | **59,8 %** | 12,8 % | 26,5 % | 0,9 % |
+| 1750–1807 | 788 | **49,5 %** | 14,0 % | 34,4 % | 2,2 % |
+
+Laufzeit für 788 Einträge: wenige Sekunden.
+
+### Der richtige Maßstab
+
+Nicht „wie viel findet die Maschine allein", sondern **wie viel Arbeit spart
+sie**. Danach gerechnet liefert sie bei rund drei Vierteln der Fälle eine
+verwertbare Auskunft:
+
+    Treffer       fertiger Vorschlag mit Begründung -> bestätigen
+    Umweg         "verheiratete Frau, such über die Ehe" -> gezielter Hinweis
+    mehrdeutig    zwei Kandidaten, Entscheidung vorgelegt
+    kein Treffer  teils korrekt (siehe unten), teils Hinweis auf Zuzug
+
+Die Alternative ist, jeden Eintrag von Hand zu durchsuchen.
+
+### Nichtfinden ist oft richtig
+
+Belegt am Fall der Zwillinge Wolff, † 11. und 19.03.1801 nach 14 bzw. 22 Tagen:
+Die Kaskade findet keine Taufe — und im kuratierten OFB steht bei beiden
+`BIRT CAL 25 FEB 1801` **ohne** `CHR`. Sie wurden vermutlich nur nottauft.
+Das Nichtfinden ist die korrekte Auskunft, kein Fehler des Verfahrens.
+
+### Die 26,5 % ohne Treffer, aufgeschlüsselt
+
+    verheiratet, Mädchenname nicht erschließbar   21
+    Kind ohne Taufeintrag im Bestand              18
+    erwachsen, keine Taufe am Ort (Zuzug)         13
+
+Nur die mittlere Gruppe ist teilweise ein Bestandsproblem: `kirchenbuch.db`
+führt für Haberschlacht 1795–1807 **271** Taufen, der kuratierte OFB **392**
+Tauf- und Geburtsereignisse. Für diese Parochie ist der OFB die vollständigere
+Quelle — ein Argument dafür, mehrere Bestände gestaffelt abzufragen.
+
+### Zwei Bugs, die der Test aufgedeckt hat
+
+1. **Geschlechtsprüfung vor dem Mädchennamen-Umweg.** `geschl_verst` ist in
+   835 von 1.292 Einträgen leer; die Prüfung verhinderte den Umweg fast immer.
+   Entfernt — ein genannter Ehepartner genügt als Anlass. Wirkung: Treffer von
+   53,8 auf 59,8 %.
+2. **Naiver Nachname-plus-Jahr-Match.** Hätte `Johannes Bierle` mit
+   `Carl Heinrich Bierle` verknüpft. Verhindert durch die Pflichtregel.
+
 ## Regeln für die Umsetzung
 
 1. **Errechnete Geburtsdaten aus Altersangaben sind stark**, wenn sie Monate und
