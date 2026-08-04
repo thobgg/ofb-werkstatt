@@ -3,6 +3,26 @@
 Festgehalten am 3. August 2026, nach einem Pilotlauf über 22 Taufeinträge
 (Haberschlacht 1808/09). Die Zahlen darin sind gemessen, nicht geschätzt.
 
+## Grundhaltung: kooperativ, nicht arbeitsteilig
+
+Das Verfahren ist **KI und Mensch gemeinsam am selben Text**, nicht Maschine
+liest und Mensch prüft stichprobenartig.
+
+Belegt am Pilotlauf: Das Datum `30. Sept.` und die Form `Löbichin` hat der
+Bearbeiter gelesen, das Modell nicht. Der Hinweis, dass der Nachbareintrag
+(„Oktobr.") die Lesung erst ermöglicht, kam ebenfalls von ihm — daraus wurde
+der Chronologie-Anker.
+
+**Der Maßstab ist deshalb nicht** „wie viel schafft das Modell allein", sondern
+**wie schnell beide gemeinsam zum richtigen Ergebnis kommen.** Die 42 % Rohfehler
+bei Familiennamen sind in diesem Aufbau keine Fehlfunktion, sondern die
+Aufgabenverteilung: Das Modell liefert Vorschlag und Kontext, der Bearbeiter
+entscheidet dort, wo er die Hand besser liest.
+
+Folge für die Oberfläche: Der Zeilenstreifen bleibt **immer** sichtbar, nicht
+nur bei markierten Feldern. Bestätigte Felder werden zusammengefaltet, nicht
+versteckt — wer mitliest, will hinsehen können.
+
 ## Arbeitsteilung: Modell schlägt vor, Skript entscheidet
 
 | Aufgabe | LLM | deterministisches Skript |
