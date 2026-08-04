@@ -8,6 +8,51 @@ verschieden.
 Belege unten stammen aus einem Test gegen `~/ofb-ki/kirchenbuch.db`,
 Parochie Haberschlacht.
 
+## Der stärkste Anker: die Familienbuch-Nummer
+
+Die letzte Spalte der Register ab 1808 nennt die **Seitenzahl des
+Familienregisters**. Beispiel Taufregister Bd. 4, Bild 00361:
+
+    Nr.  7   150      Nr. 10   26
+    Nr.  8    38      Nr. 11   69
+    Nr.  9   146      Nr. 12   78
+
+**Alle Einträge mit derselben Nummer gehören zur selben Familie** — ohne
+Namensabgleich, ohne Datumsvergleich, ohne Wahrscheinlichkeitsrechnung. Der
+Verweis stammt vom Pfarrer selbst und ist damit die höchste verfügbare
+Autorität.
+
+Der Nutzen entsteht **auch ohne das Familienbuch selbst**, weil die Nummer
+register-übergreifend verbindet:
+
+    FB 69   Ehe   1798  Faller ⚭ Maier
+            Taufe 1808  Nr. 11, Johannes
+            Taufe 18xx  Geschwister
+            Tod   1844  Johannes Faller
+
+Damit fallen Taufe, Ehe und Tod derselben Familie von selbst zusammen — die
+Kaskade unten wird dort überflüssig, wo die Nummer lesbar ist.
+
+### Vorbehalte
+
+1. **Kleine Ziffern, teils unsicher.** Bei Nr. 9 ist `146` oder `445` lesbar.
+   Ein Lesefehler verknüpft falsch. Prüfbar dadurch, dass die Nummern über die
+   Jahrgänge meist aufsteigen und mehrere Einträge derselben Familie sich
+   gegenseitig bestätigen.
+2. **Nur innerhalb einer Parochie gültig.** Familienbuch Haberschlacht ist
+   nicht Familienbuch Bönnigheim. Die Nummer muss immer mit der Parochie
+   zusammen geführt werden.
+3. **Nicht jeder Eintrag trägt eine.** Uneheliche Geburten, Auswärtige und
+   Durchreisende bleiben ohne — dort greift weiter die Kaskade.
+
+### Rang unter den Ankern
+
+    1  Familienbuch-Nummer     vom Schreiber gesetzt, register-übergreifend
+    2  Geburtsdatum + Ort      tagesgenau, im Eheregister Spalte 6
+    3  Elternehe               Mutter wird abgeleitet statt gesucht
+    4  Chronologie, Kontext    kostenlos, bestandsunabhängig
+    5  Vokabular               rankt, bestätigt nie
+
 ## Taufe
 
     Vater  ──► suche Person (Name + Ort + plausibles Alter)

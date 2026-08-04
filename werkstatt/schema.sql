@@ -90,6 +90,12 @@ CREATE TABLE IF NOT EXISTS eintrag (
   nr         TEXT,
   jahr       INTEGER,
   ausschnitt TEXT,                  -- Zeilenstreifen, relativ zur Wurzel
+  fam_reg    TEXT,                  -- Seitenzahl des Familienregisters:
+                                    -- der stärkste Anker, vom Pfarrer gesetzt.
+                                    -- Gleiche Nummer = gleiche Familie,
+                                    -- gilt nur innerhalb einer Parochie.
+  schreiber  TEXT,                  -- Hand; der Fehlerkatalog gilt je Hand,
+                                    -- nicht global (Pfarrerwechsel Haberschlacht 1827)
   status     TEXT NOT NULL DEFAULT 'gelesen',
   herkunft   INTEGER REFERENCES herkunft(id),
   bemerkung  TEXT,
