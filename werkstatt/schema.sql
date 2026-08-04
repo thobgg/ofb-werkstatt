@@ -7,6 +7,20 @@ PRAGMA foreign_keys = ON;
 -- ---------------------------------------------------------------- Herkunft
 -- Woher stammt ein Datensatz. Wird für die Belegführung gebraucht und nimmt
 -- später auch auf, WER etwas eingetragen hat (dann Mehrbenutzer ohne Umbau).
+--
+-- `gilt` trägt die Regel aus doku/landkarte.md, die vorher nur dort stand:
+--
+--     kirchenbuch.db ist außerhalb von Haberschlacht und Neipperg
+--     Vokabular, kein Beweis. Es darf ranken, nie bestätigen.
+--
+-- Damit ist der Rang einer Quelle eine Eigenschaft der Quelle, keine
+-- Sonderlogik im Abgleich: Ein Treffer macht grün, wenn die Herkunft des
+-- getroffenen Datensatzes 'beleg' ist und die Parochie passt. Alles andere
+-- rankt die Vorschlagsliste und bleibt gelb.
+--
+-- Ein Bestand kann beides sein — `kirchenbuch.db` belegt für zwei Parochien
+-- und ist für die übrigen 32 nur Wortschatz. Deshalb wird er zweimal
+-- eingetragen, einmal je Rang, mit unterschiedlicher Parochienliste.
 CREATE TABLE IF NOT EXISTS herkunft (
   id        INTEGER PRIMARY KEY,
   art       TEXT NOT NULL,          -- gedcom | xlsx | csv | docx | erfassung
@@ -14,6 +28,9 @@ CREATE TABLE IF NOT EXISTS herkunft (
   bearbeiter TEXT,                  -- leer = lokaler Einzelplatz
   angelegt  TEXT NOT NULL,
   notiz     TEXT,
+  gilt      TEXT NOT NULL DEFAULT 'vokabular',  -- beleg | vokabular
+  parochien TEXT,                   -- kommagetrennt; leer = überall gültig
+  name      TEXT,                   -- Anzeigename aus konfig.toml
   UNIQUE(art, datei)
 );
 
@@ -98,6 +115,7 @@ CREATE TABLE IF NOT EXISTS eintrag (
                                     -- nicht global (Pfarrerwechsel Haberschlacht 1827)
   status     TEXT NOT NULL DEFAULT 'gelesen',
   herkunft   INTEGER REFERENCES herkunft(id),
+  runde      INTEGER REFERENCES runde(id),   -- welche Tranche hat ihn gelesen
   bemerkung  TEXT,
   UNIQUE(register, bild, nr)
 );
@@ -126,6 +144,68 @@ CREATE TABLE IF NOT EXISTS feld (
 );
 CREATE INDEX IF NOT EXISTS ix_feld_eintrag ON feld(eintrag_id);
 CREATE INDEX IF NOT EXISTS ix_feld_person  ON feld(person);
+
+-- ------------------------------------------------------------ Der Durchlauf
+-- Eine Runde ist eine Tranche: so und so viele Seiten EINES Registers,
+-- die zusammen gelesen, zusammen korrigiert und zusammen übergeben werden.
+--
+-- Der Zustand liegt in der Datenbank und nicht im Prozess. Das entscheidet
+-- mehr, als es aussieht: Ein Abbruch mitten in zwanzig Seiten hinterlässt
+-- einen lesbaren Zustand statt eines Rätsels, der Browser darf geschlossen
+-- werden, und die Einschränkung der Korrekturmaske auf die gerade gelesene
+-- Tranche ist ein WHERE statt eines Sonderfalls.
+--
+-- Die Reihenfolge Ehen → Taufen → Tode ist kein Vorschlag, sondern Bedingung:
+-- Der Elternehe-Anker trägt im Taufjahr 1808 noch 94 %, 1813 noch 53 %,
+-- 1820 nur 18 % — es sei denn, die Ehen ab 1808 sind vorher übergeben.
+-- Deshalb prüft runde.py, ob die Vorgängerrunde 'uebergeben' ist.
+CREATE TABLE IF NOT EXISTS runde (
+  id       INTEGER PRIMARY KEY,
+  nr       INTEGER NOT NULL,
+  register TEXT NOT NULL,
+  von_bild TEXT,
+  bis_bild TEXT,
+  seiten   INTEGER NOT NULL DEFAULT 0,
+  quelle   TEXT NOT NULL DEFAULT 'api',      -- api | testdaten
+  stand    TEXT NOT NULL DEFAULT 'geplant',
+           -- geplant → liest → korrigieren → uebergeben → fertig
+  begonnen TEXT,
+  beendet  TEXT
+);
+
+-- Ein Auftrag ist der laufende Vorgang einer Runde; er überlebt das
+-- Browserfenster. Die Kosten stehen hier statt in einer Konsolenzeile,
+-- die niemand mehr sieht.
+CREATE TABLE IF NOT EXISTS auftrag (
+  id            INTEGER PRIMARY KEY,
+  runde         INTEGER REFERENCES runde(id) ON DELETE CASCADE,
+  art           TEXT NOT NULL,              -- lesen | uebergabe
+  stand         TEXT NOT NULL DEFAULT 'wartet',
+                -- wartet | laeuft | fertig | fehler | abgebrochen
+  seiten_gesamt INTEGER NOT NULL DEFAULT 0,
+  seiten_fertig INTEGER NOT NULL DEFAULT 0,
+  aktuell       TEXT,
+  meldung       TEXT,
+  tokens_ein    INTEGER NOT NULL DEFAULT 0,
+  tokens_aus    INTEGER NOT NULL DEFAULT 0,
+  begonnen      TEXT,
+  beendet       TEXT
+);
+
+-- Fehler gelten je Seite, nicht je Lauf. Bricht Seite 7 von 20 ab, sind die
+-- ersten sechs gespeichert, die siebte trägt ihre Meldung, und der Lauf geht
+-- weiter — in einem Hintergrund-Thread wäre ein SystemExit ein stiller Tod.
+CREATE TABLE IF NOT EXISTS auftrag_seite (
+  id        INTEGER PRIMARY KEY,
+  auftrag   INTEGER NOT NULL REFERENCES auftrag(id) ON DELETE CASCADE,
+  bild      TEXT NOT NULL,
+  stand     TEXT NOT NULL DEFAULT 'wartet',  -- wartet|laeuft|fertig|fehler
+  eintraege INTEGER NOT NULL DEFAULT 0,
+  felder    INTEGER NOT NULL DEFAULT 0,
+  meldung   TEXT,
+  UNIQUE(auftrag, bild)
+);
+CREATE INDEX IF NOT EXISTS ix_auftrag_runde ON auftrag(runde);
 
 -- Chronologie-Anker: Datum jedes Eintrags gegen seine Nachbarn.
 -- Register sind chronologisch geführt — ein Datum außerhalb des

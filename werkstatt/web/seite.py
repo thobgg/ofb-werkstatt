@@ -43,6 +43,10 @@ main{padding:1rem;max-width:1500px;margin:0 auto}
  text-transform:uppercase;letter-spacing:.05em;cursor:default}
 .vorschlag .kopfz:hover{background:#191d24;color:#8b93a3}
 .rolle{color:#8b93a3;font-size:.78rem;letter-spacing:.04em;text-transform:uppercase}
+.pkt{width:.6rem;height:.6rem;border-radius:50%;display:inline-block;margin-right:.15rem}
+.gruen{background:#3ecf8e}.gelb{background:#e0b341}.rot{background:#e06c5f}
+.grau{background:#4a515c}
+.person.gruen-zeile{opacity:.72}
 .treffer{font-size:.86rem;color:#8fe3b4}
 .treffer .id{font-family:ui-monospace,monospace;background:#1d4231;padding:.05rem .35rem;
  border-radius:4px}
@@ -78,7 +82,9 @@ details summary{cursor:pointer;color:#8b93a3;font-size:.84rem;padding:.3rem 0}
 .anbind .hinw{color:#9aa3b2}
 .leer{padding:3rem;text-align:center;color:#9aa3b2}
 </style></head><body>
-<header><b>OFB-Werkstatt</b><span class=zaehler id=z></span>
+<header><a href="/" style="color:#9aa3b2;text-decoration:none">&larr;</a>
+<b>OFB-Werkstatt</b><span class=zaehler id=runde></span>
+<span class=zaehler id=z></span>
 <span style=flex:1></span>
 <span class=zaehler><kbd>Enter</kbd> nächstes Feld · <kbd>Strg</kbd>+<kbd>Enter</kbd> Eintrag fertig
  · <kbd>Alt</kbd>+<kbd>N</kbd> neu anlegen</span></header>
@@ -88,10 +94,22 @@ let daten=[],fokus=0;
 const esc=s=>(s??'').toString().replace(/[&<>"]/g,c=>
  ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
+let runde=null;
 async function laden(){
- daten=await (await fetch('/api/eintraege')).json();
+ const stand=await (await fetch('/api/stand')).json();
+ runde=stand.runde;
+ // Die Maske zeigt die gerade gelesene Tranche, nicht den ganzen Bestand.
+ // Ohne diese Einschraenkung waechst sie mit jeder Runde weiter, und der
+ // Bearbeiter sucht das Neue zwischen dem laengst Erledigten.
+ const q=runde?('?runde='+runde.id):'';
+ daten=await (await fetch('/api/eintraege'+q)).json();
+ const r=document.getElementById('runde');
+ if(runde) r.textContent=`Runde ${runde.nr} · ${runde.register} · `
+   +`${runde.von_bild} – ${runde.bis_bild}`;
  const app=document.getElementById('app');
- if(!daten.length){app.className='leer';app.textContent='Noch nichts erfasst.';return}
+ if(!daten.length){app.className='leer';
+  app.innerHTML='Nichts zu korrigieren. <a href="/lesen" style=color:#7fb0ff>Runde lesen</a>';
+  return}
  app.className='';
  app.innerHTML=daten.map((e,i)=>karte(e,i)).join('');
  zaehler(); markiere();
@@ -132,8 +150,8 @@ function karte(e,i){
 function zeilePerson(e,f){
  const v=f.entscheidung;
  return `<div class="person" data-feld="${esc(f.name)}"
-  ${f.ofb_id?`data-ofb="${esc(f.ofb_id)}"`:''}>
-  <span class=rolle>${esc(f.rolle)}</span>
+  ${f.person?`data-person="${esc(f.person)}"`:''}>
+  <span class=rolle><i class="pkt ${esc(f.ampel||'grau')}"></i> ${esc(f.rolle)}</span>
   <span class=feldbox><input data-feld="${esc(f.name)}" value="${esc(f.wert||'')}"
    autocomplete=off
    oninput="this.classList.add('geaendert');vorschlagen(this)"
@@ -141,13 +159,13 @@ function zeilePerson(e,f){
    onblur="setTimeout(()=>schliesse(this),180)"></span>
   <span>${v==='neu'
     ?`<span class=neu>● wird neu angelegt</span>`
-    :f.ofb_id
-      ?`<span class=treffer><span class=id>${esc(f.ofb_id)}</span>
+    :f.person
+      ?`<span class=treffer><span class=id>${esc(f.person)}</span>
          <span class=warum>${esc(f.beleg||'')}</span></span>`
       :`<span class=neu>○ kein Treffer${f.beleg?' — '+esc(f.beleg):''}</span>`}</span>
   <span class=knopf>
    <button class="${v==='verknuepft'?'ja an':''}" title="find and use"
-    onclick="setze(this,'verknuepft')" ${f.ofb_id?'':'disabled'}>übernehmen</button>
+    onclick="setze(this,'verknuepft')" ${f.person?'':'disabled'}>übernehmen</button>
    <button class="${v==='neu'?'ja an':''}" title="create (Alt+N)"
     onclick="setze(this,'neu')">neu</button>
   </span></div>`;
@@ -167,7 +185,7 @@ async function anbindung(el){
  const box=el.querySelector('[data-anbind]'); if(!box)return;
  const hole=r=>{const p=[...el.querySelectorAll('.person')]
    .find(x=>x.querySelector('.rolle').textContent.toLowerCase()===r);
-  return p?(p.dataset.ofb||p.dataset.ofbInit||''):''};
+  return p?(p.dataset.person||''):''};
  const v=hole('vater')||hole('braeutigam'), m=hole('mutter')||hole('braut');
  if(!v&&!m){box.className='anbind';
   box.innerHTML='<span class=lbl>Familie</span><span class=hinw>beide neu</span>';return}
@@ -198,6 +216,9 @@ function markiere(){
 function zaehler(){
  const fix=daten.filter(e=>e.status==='bestaetigt').length;
  document.getElementById('z').textContent=`${fix} von ${daten.length} bestätigt`;
+ if(fix===daten.length&&daten.length)
+  document.getElementById('z').innerHTML+=
+   ' · <a href="/uebergabe" style=color:#8fe3b4>übergeben</a>';
 }
 async function fertig(i){
  const el=document.querySelector(`.eintrag[data-i="${i}"]`);
@@ -208,7 +229,7 @@ async function fertig(i){
   const p=inp.closest('.person');
   felder[n]={wert:inp.value,kb:kb?kb.value:null,
              entscheidung:p?(p.dataset.entscheidung||null):null,
-             ofb_id:p?(p.dataset.ofb??undefined):undefined};
+             person:p?(p.dataset.person??undefined):undefined};
  });
  const r=await fetch('/api/speichern',{method:'POST',
   headers:{'content-type':'application/json'},
@@ -269,7 +290,7 @@ function waehle(inp,el){
  const p=inp.closest('.person');
  if(p){
   if(el.dataset.typ==='person'){
-   p.dataset.ofb=el.dataset.id; p.dataset.entscheidung='verknuepft';
+   p.dataset.person=el.dataset.id; p.dataset.entscheidung='verknuepft';
    const b=p.querySelector('.knopf button'); b.disabled=false;
    setze(b,'verknuepft');
    p.querySelector('.treffer,.neu').outerHTML=

@@ -1,37 +1,48 @@
 #!/usr/bin/env python3
-"""Korrekturmaske: lokaler Webserver gegen daten/erfassung.sqlite.
+"""Lokaler Webserver: Startbildschirm, Lesen, Korrektur, Übergabe.
 
-Zeigt je Registereintrag den Bildstreifen und daneben meine Lesung.
-Aendern, 'Bestätigt' druecken — der Wert gilt danach als fix und wird
-von mir nicht mehr ueberschrieben.
+    python3 start.py            -> http://127.0.0.1:8765
+    python3 start.py --port 9000
 
-  python3 skripte/maske.py            -> http://127.0.0.1:8765
-  python3 skripte/maske.py --port 9000
+Vier Seiten statt einer, weil der Durchlauf vier Kopfhaltungen hat:
 
-Laeuft nur auf 127.0.0.1, keine Abhaengigkeiten ausser der Standardbibliothek.
+    /            Stand und der nächste Schritt als EIN Knopf
+    /lesen       Tranche planen und lesen lassen, mit Fortschritt
+    /korrektur   die Maske, eingeschränkt auf die gerade gelesene Runde
+    /uebergabe   Probelauf zeigen, auf zweiten Klick schreiben
+
+Der Zustand liegt in der Datenbank, nicht im Prozess: Der Läufer arbeitet
+im Hintergrund weiter, wenn das Browserfenster zugeht, und ein Abbruch
+hinterlässt einen lesbaren Zustand statt eines Rätsels.
+
+Läuft nur auf 127.0.0.1, keine Abhängigkeiten außer der Standardbibliothek.
 Beenden mit Strg-C.
 """
 import argparse
 import json
-import sys
 import sqlite3
 import urllib.parse
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from pathlib import Path
 
 from .seite import SEITE
-from .. import suche
-from .. import konfig as _k
+from .start import STARTSEITE
+from .. import abgleich, db, konfig, runde as _runde, suche, testdaten
 
-ROOT = _k.WURZEL
+ROOT = konfig.WURZEL
 DB = ROOT / "daten" / "erfassung.sqlite"
 
+
+def verbinde():
+    con = sqlite3.connect(DB)
+    con.row_factory = sqlite3.Row
+    return con
 
 
 class Handler(BaseHTTPRequestHandler):
     def log_message(self, *a):
         pass
 
+    # ------------------------------------------------------------ Technik
     def _send(self, code, typ, body):
         if isinstance(body, str):
             body = body.encode("utf-8")
@@ -41,46 +52,169 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def _json(self, d, code=200):
+        self._send(code, "application/json; charset=utf-8",
+                   json.dumps(d, ensure_ascii=False, default=str))
+
+    @property
+    def _frage(self):
+        return urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
+
+    def _zahl(self, name):
+        v = (self._frage.get(name) or [""])[0].strip()
+        return int(v) if v.isdigit() else None
+
+    def _rumpf(self):
+        n = int(self.headers.get("Content-Length", 0))
+        return json.loads(self.rfile.read(n) or b"{}")
+
+    # -------------------------------------------------------------- GET
     def do_GET(self):
         pfad = urllib.parse.urlparse(self.path).path
-        if pfad in ("/", "/index.html"):
+        if pfad in ("/", "/index.html", "/lesen", "/uebergabe"):
+            return self._send(200, "text/html; charset=utf-8", STARTSEITE)
+        if pfad == "/korrektur":
             return self._send(200, "text/html; charset=utf-8", SEITE)
+        if pfad == "/api/stand":
+            return self._json(self.stand())
+        if pfad == "/api/fortschritt":
+            con = verbinde()
+            try:
+                rid = self._zahl("runde")
+                return self._json(_runde.fortschritt(con, rid) or {})
+            finally:
+                con.close()
         if pfad == "/api/eintraege":
-            return self._send(200, "application/json; charset=utf-8",
-                              json.dumps(self.eintraege(), ensure_ascii=False))
+            return self._json(self.eintraege(self._zahl("runde"),
+                                             self._frage.get("nur", [""])[0]))
+        if pfad == "/api/uebergabe":
+            con = db.verbinde()
+            try:
+                rid = self._zahl("runde")
+                return self._json(dict(probe=_runde.uebergib(con, rid, False),
+                                       offen=_runde.offen_in_runde(con, rid)))
+            finally:
+                con.close()
         if pfad == "/api/suche":
-            q = urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
-            begriff = (q.get("q") or [""])[0]
-            sex = (q.get("sex") or [None])[0]
-            return self._send(200, "application/json; charset=utf-8", json.dumps({
-                "namen": suche.namen_treffer(begriff),
-                "personen": suche.personen_treffer(begriff, sex=sex),
-            }, ensure_ascii=False))
+            q = self._frage
+            return self._json({
+                "namen": suche.namen_treffer((q.get("q") or [""])[0]),
+                "personen": suche.personen_treffer((q.get("q") or [""])[0],
+                                                   sex=(q.get("sex") or [None])[0]),
+            })
         if pfad == "/api/anbindung":
-            q = urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query)
-            v = (q.get("vater") or [None])[0] or None
-            m = (q.get("mutter") or [None])[0] or None
+            # person.id ist ganzzahlig; aus der URL kommt Text. Ohne die
+            # Wandlung greift keine Zuordnung in suche.familien() — sie
+            # schlüge stillschweigend fehl statt zu melden.
+            v, m = self._zahl("vater"), self._zahl("mutter")
             d = suche.anbindung(v, m)
             d["herkunft_vater"] = suche.herkunft(v) if v else []
             d["herkunft_mutter"] = suche.herkunft(m) if m else []
-            return self._send(200, "application/json; charset=utf-8",
-                              json.dumps(d, ensure_ascii=False))
+            return self._json(d)
         if pfad.startswith("/bild/"):
             rel = urllib.parse.unquote(pfad[len("/bild/"):])
             ziel = (ROOT / rel).resolve()
             if not str(ziel).startswith(str(ROOT.resolve())) or not ziel.is_file():
                 return self._send(404, "text/plain", "nicht gefunden")
-            typ = "image/jpeg" if ziel.suffix.lower() in (".jpg", ".jpeg") else "image/png"
+            typ = ("image/jpeg" if ziel.suffix.lower() in (".jpg", ".jpeg")
+                   else "image/png")
             return self._send(200, typ, ziel.read_bytes())
         self._send(404, "text/plain", "nicht gefunden")
 
+    # ------------------------------------------------------------- POST
     def do_POST(self):
-        if urllib.parse.urlparse(self.path).path != "/api/speichern":
-            return self._send(404, "text/plain", "nicht gefunden")
-        n = int(self.headers.get("Content-Length", 0))
-        d = json.loads(self.rfile.read(n) or b"{}")
-        con = sqlite3.connect(DB)
-        con.row_factory = sqlite3.Row
+        pfad = urllib.parse.urlparse(self.path).path
+        if pfad == "/api/speichern":
+            return self.speichern()
+        if pfad == "/api/runde/plane":
+            d = self._rumpf()
+            con = db.verbinde()
+            try:
+                rid = _runde.plane(con, d["register"], int(d.get("seiten", 20)),
+                                   d.get("quelle", "api"))
+                _runde.starte(rid)
+                return self._json({"runde": rid})
+            except SystemExit as e:
+                return self._json({"fehler": str(e)}, 400)
+            finally:
+                con.close()
+        if pfad == "/api/runde/uebergib":
+            d = self._rumpf()
+            con = db.verbinde()
+            try:
+                z = _runde.uebergib(con, int(d["runde"]), True)
+                return self._json({"ok": True, "zahlen": z})
+            finally:
+                con.close()
+        if pfad == "/api/abgleich":
+            d = self._rumpf()
+            con = db.verbinde()
+            try:
+                return self._json(abgleich.runde_pruefen(con, d.get("runde")))
+            finally:
+                con.close()
+        self._send(404, "text/plain", "nicht gefunden")
+
+    # ------------------------------------------------------------- Daten
+    def stand(self):
+        con = db.verbinde()
+        try:
+            r = _runde.offene_runde(con)
+            quelle = r["quelle"] if r else ("testdaten" if testdaten.vorhanden()
+                                            else "api")
+            v = _runde.vorschlag(con, quelle)
+            k = konfig.konfig().get("gemeinde", {})
+            quellen = []
+            for h in con.execute(
+                    "SELECT h.id, h.art, h.datei, h.gilt, h.parochien, h.name, "
+                    "(SELECT count(*) FROM person p WHERE p.herkunft=h.id) n "
+                    "FROM herkunft h ORDER BY h.gilt, h.id"):
+                quellen.append(dict(h))
+            return dict(
+                gemeinde=k.get("name", "—"),
+                register=_runde.stand(con),
+                quellen=quellen,
+                testdaten=len(testdaten.seiten()),
+                runde=r,
+                vorschlag=v,
+                fortschritt=_runde.fortschritt(con, r["id"]) if r else None,
+                offen=_runde.offen_in_runde(con, r["id"]) if r else None,
+                bestand=db.stand(con),
+            )
+        finally:
+            con.close()
+
+    def eintraege(self, runde_id=None, nur=""):
+        con = verbinde()
+        raus = []
+        wo, par = "1=1", []
+        if runde_id:
+            wo, par = "runde=?", [runde_id]
+        for e in con.execute(
+                f"SELECT * FROM eintrag WHERE {wo} ORDER BY register, bild, "
+                "CAST(nr AS INTEGER), nr", par):
+            felder = [dict(name=f["name"],
+                           wert=f["korrigiert"] if f["korrigiert"] is not None
+                           else f["gelesen"],
+                           kb_form=f["kb_form"], beleg=f["beleg"],
+                           person=f["person"], status=f["status"],
+                           ampel=f["ampel"], zuversicht=f["zuversicht"],
+                           rolle=f["rolle"], entscheidung=f["entscheidung"])
+                      for f in con.execute(
+                          "SELECT * FROM feld WHERE eintrag_id=? "
+                          "ORDER BY reihe, id", (e["id"],))]
+            if nur == "offen" and e["status"] == "bestaetigt":
+                continue
+            raus.append(dict(id=e["id"], register=e["register"], band=e["band"],
+                             bild=e["bild"], nr=e["nr"], jahr=e["jahr"],
+                             ausschnitt=e["ausschnitt"], status=e["status"],
+                             runde=e["runde"], felder=felder))
+        con.close()
+        return raus
+
+    def speichern(self):
+        d = self._rumpf()
+        con = verbinde()
         try:
             for name, v in d.get("felder", {}).items():
                 row = con.execute(
@@ -93,15 +227,19 @@ class Handler(BaseHTTPRequestHandler):
                 korr = None if wert == (row["gelesen"] or "") else wert
                 status = "bestaetigt" if d.get("bestaetigt") else row["status"]
                 ents = v.get("entscheidung")
-                ofb = v.get("ofb_id")
+                pers = v.get("person")
                 sql = "UPDATE feld SET korrigiert=?, kb_form=?, status=?"
                 par = [korr, kb, status]
                 if ents:
                     sql += ", entscheidung=?"
                     par.append(ents)
-                if ofb is not None:
-                    sql += ", ofb_id=?"
-                    par.append(ofb or None)
+                if pers is not None:
+                    sql += ", person=?"
+                    par.append(int(pers) if str(pers).strip().isdigit() else None)
+                # Was ein Mensch bestätigt hat, ist grün — unabhängig davon,
+                # was der Abgleich vorher gefunden hat.
+                if d.get("bestaetigt"):
+                    sql += ", ampel='gruen'"
                 con.execute(sql + " WHERE id=?", par + [row["id"]])
             if d.get("bestaetigt"):
                 con.execute("UPDATE eintrag SET status='bestaetigt' WHERE id=?",
@@ -111,39 +249,16 @@ class Handler(BaseHTTPRequestHandler):
             con.close()
         self._send(200, "application/json", b'{"ok":true}')
 
-    def eintraege(self):
-        con = sqlite3.connect(DB)
-        con.row_factory = sqlite3.Row
-        raus = []
-        for e in con.execute(
-                "SELECT * FROM eintrag ORDER BY register, bild, "
-                "CAST(nr AS INTEGER), nr"):
-            felder = [dict(name=f["name"],
-                           wert=f["korrigiert"] if f["korrigiert"] is not None
-                           else f["gelesen"],
-                           kb_form=f["kb_form"], beleg=f["beleg"],
-                           ofb_id=f["ofb_id"], status=f["status"],
-                           rolle=f["rolle"], entscheidung=f["entscheidung"])
-                      for f in con.execute(
-                          "SELECT * FROM feld WHERE eintrag_id=? "
-                          "ORDER BY reihe, id", (e["id"],))]
-            raus.append(dict(id=e["id"], register=e["register"], band=e["band"],
-                             bild=e["bild"], nr=e["nr"], jahr=e["jahr"],
-                             ausschnitt=e["ausschnitt"], status=e["status"],
-                             felder=felder))
-        con.close()
-        return raus
-
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--port", type=int, default=8765)
     a = ap.parse_args()
     if not DB.exists():
-        print("daten/erfassung.sqlite fehlt — erst skripte/erfassung.py --init")
+        print("daten/erfassung.sqlite fehlt — erst python3 -m werkstatt.db --init")
         return
     srv = HTTPServer(("127.0.0.1", a.port), Handler)
-    print(f"Maske läuft:  http://127.0.0.1:{a.port}    (Strg-C beendet)")
+    print(f"Werkstatt läuft:  http://127.0.0.1:{a.port}    (Strg-C beendet)")
     try:
         srv.serve_forever()
     except KeyboardInterrupt:

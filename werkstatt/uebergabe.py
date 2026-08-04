@@ -92,17 +92,26 @@ def teile_namen(wert):
     return (" ".join(t[:-1]) or None, t[-1]) if len(t) > 1 else (None, t[0])
 
 
-def uebernimm(con, art, schreib=False):
+def uebernimm(con, art, schreib=False, runde_id=None, marke=None):
     plan = BAUPLAN.get(art)
     if not plan:
         return {"uebersprungen": f"kein Bauplan für {art}"}
-    hid = db.herkunft_id(con, "erfassung", art, "aus bestätigter Erfassung")
+    # Die Herkunft wird je Runde geführt, nicht je Register. Damit ist zu
+    # jeder Person nachvollziehbar, welche Tranche sie angelegt hat — und
+    # eine Runde lässt sich rückstandslos verwerfen.
+    hid = db.herkunft_id(con, "erfassung", marke or art,
+                         "aus bestätigter Erfassung", gilt="beleg")
     z = dict(eintraege=0, personen_neu=0, personen_verknuepft=0,
              familien=0, ereignisse=0, kinder=0)
 
+    wo = "register=? AND status='bestaetigt'"
+    par = [art]
+    if runde_id:
+        wo += " AND runde=?"
+        par.append(runde_id)
     for e in con.execute(
-            "SELECT id, bild, nr, jahr FROM eintrag "
-            "WHERE register=? AND status='bestaetigt' ORDER BY bild, nr", (art,)):
+            f"SELECT id, bild, nr, jahr FROM eintrag WHERE {wo} "
+            "ORDER BY bild, nr", par):
         felder = werte(con, e["id"])
         z["eintraege"] += 1
         pid = {}
