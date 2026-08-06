@@ -70,6 +70,57 @@ def gedcom_datum(datum):
     return (datum or "").strip()
 
 
+# Diese Tags schreibt person_record schon unter 1 NAME — als Merkmal
+# noch einmal, und die Angabe stünde zweimal im Record.
+SCHON_AM_NAMEN = {"_KB_NAME", "_RUFNAME"}
+
+# Tags, deren Wert ein Ort ist und deshalb als PLAC darunter gehört.
+ALS_ORT = {"RESI"}
+
+
+def merkmale(con, *, person=None, familie=None):
+    """Merkmalszeilen einer Person oder Familie.
+
+    Der Tag kommt aus dem Feldkatalog und wird unverändert geschrieben —
+    ob er in GEDCOM 5.5.1 steht oder eine eigene Erweiterung ist,
+    entscheidet die Aktkarte, nicht die Ausgabe. Die Einstufung steht im
+    Zahnrad; hier wird sie nicht noch einmal beurteilt.
+
+    Ebene 1, weil die meisten dieser Angaben Eigenschaften der Person sind
+    und nicht Unterangaben eines Ereignisses. Punkt-Ziele wie `BURI.NOTE`
+    werden auf ihre letzte Stufe verkürzt und an das Ereignis gehängt, das
+    ohnehin geschrieben wird.
+    """
+    z = []
+    for m in con.execute(
+            "SELECT tag, wert FROM merkmal WHERE person IS ? AND familie IS ? "
+            "ORDER BY kb, tag, id", (person, familie)):
+        tag = m["tag"]
+        if "." in tag:
+            continue                     # gehört zu einem Ereignis, s.u.
+        if tag in SCHON_AM_NAMEN:
+            continue                     # steht bereits unter 1 NAME
+        if tag in ALS_ORT:
+            # RESI ist in GEDCOM eine Ereignisstruktur, kein Textfeld. Der
+            # Ort gehört als PLAC darunter, sonst lesen ihn manche
+            # Programme gar nicht.
+            z.append(f"1 {tag}")
+            z.append(f"2 PLAC {m['wert']}")
+            continue
+        z.append(f"1 {tag} {m['wert']}")
+    return z
+
+
+def merkmale_zu(con, tag, *, person=None, familie=None):
+    """Unterzeilen eines Ereignisses: Ziele der Form `MARR.NOTE`."""
+    z = []
+    for m in con.execute(
+            "SELECT tag, wert FROM merkmal WHERE person IS ? AND familie IS ? "
+            "AND tag LIKE ? ORDER BY id", (person, familie, f"{tag}.%")):
+        z.append(f"2 {m['tag'].split('.')[-1]} {m['wert']}")
+    return z
+
+
 def person_record(con, p, xref, fam_als_kind, fam_als_gatte):
     """Einen neuen INDI-Record schreiben — für Personen ohne Vorlage."""
     z = [f"0 @{xref}@ INDI"]
@@ -102,6 +153,8 @@ def person_record(con, p, xref, fam_als_kind, fam_als_gatte):
             z.append(f"2 PLAC {e['ort']}")
         if e["quelle"]:
             z.append(f"2 NOTE {e['quelle']}")
+        z += merkmale_zu(con, e["art"], person=p["id"])
+    z += merkmale(con, person=p["id"])
     for f in sorted(fam_als_kind):
         z.append(f"1 FAMC @{f}@")
     for f in sorted(fam_als_gatte):
@@ -128,6 +181,8 @@ def familie_record(con, f, xref, xr):
             z.append(f"2 PLAC {e['ort']}")
         if e["quelle"]:
             z.append(f"2 NOTE {e['quelle']}")
+        z += merkmale_zu(con, e["art"], familie=f["id"])
+    z += merkmale(con, familie=f["id"])
     return "\n".join(z)
 
 
@@ -188,7 +243,22 @@ def fortschreiben(con, schreib=False):
             "keine Vorlage vorhanden — es wurde kein GEDCOM mit Recordtabelle "
             "eingelesen.\nFür einen Bestand ohne Vorlage: --neu")
     eig = eigenschaften(con, hid)
-    neu_p, neu_f = kennungen_vergeben(con, schreib)
+    kennungen_vergeben(con, schreib)
+
+    # „Neu" heißt: steht noch nicht in der Vorlage — nicht „hat gerade
+    # eine Kennung bekommen". Der Unterschied fällt erst beim zweiten Mal
+    # auf: Nach der ersten Ausgabe haben die Personen ihre Kennung, und
+    # eine Fortschreibung, die nur frisch Vergebenes anhängt, ließe sie
+    # sämtlich weg. Die Arbeitskopie der zweiten Runde hätte damit die
+    # erste Runde stillschweigend wieder verloren.
+    in_vorlage = {r["xref"] for r in con.execute(
+        "SELECT xref FROM rec WHERE herkunft=? AND xref IS NOT NULL", (hid,))}
+    neu_p = {r["id"]: r["xref"] for r in con.execute(
+        "SELECT id, xref FROM person WHERE xref IS NOT NULL ORDER BY id")
+        if r["xref"] not in in_vorlage}
+    neu_f = {r["id"]: r["xref"] for r in con.execute(
+        "SELECT id, xref FROM familie WHERE xref IS NOT NULL ORDER BY id")
+        if r["xref"] not in in_vorlage}
 
     # Kennung je Personen- und Familienzeile, alte wie neue
     xr = {r["id"]: r["xref"] for r in con.execute(

@@ -344,6 +344,27 @@ CREATE TABLE IF NOT EXISTS feldwahl (
   PRIMARY KEY (art, name)
 );
 
+-- ------------------------------------------------------------- Merkmale
+-- Alles, was zu einer Person gehoert und kein Ereignis ist: Beruf,
+-- Wohnort, Religion, Rufname, Unehelichkeit — und zu jedem davon die
+-- Kirchenbuchform, wo sie sich unterscheidet.
+--
+-- Als eigene Tabelle statt als Spalten, weil der Feldkatalog waechst und
+-- jede neue Angabe sonst eine Schemaaenderung braeuchte. `tag` ist das
+-- GEDCOM-Ziel aus dem Katalog; die Ausgabe schreibt es unveraendert.
+CREATE TABLE IF NOT EXISTS merkmal (
+  id       INTEGER PRIMARY KEY,
+  person   INTEGER REFERENCES person(id) ON DELETE CASCADE,
+  familie  INTEGER REFERENCES familie(id) ON DELETE CASCADE,
+  tag      TEXT NOT NULL,          -- OCCU, RESI, _BERUF_KB, _KB_NAME ...
+  wert     TEXT NOT NULL,
+  feld     TEXT,                   -- aus welchem Feld der Aktkarte
+  kb       INTEGER NOT NULL DEFAULT 0,   -- 1 = Kirchenbuchform
+  quelle   TEXT,
+  UNIQUE(person, familie, tag, wert)
+);
+CREATE INDEX IF NOT EXISTS ix_merkmal_person ON merkmal(person);
+
 -- Bequemer Zugriff auf den geltenden Wert
 CREATE VIEW IF NOT EXISTS wert AS
   SELECT e.register, e.bild, e.nr, e.jahr, f.name, f.rolle,

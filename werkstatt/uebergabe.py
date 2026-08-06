@@ -19,7 +19,7 @@ verfestigen sich Lesefehler stillschweigend.
 import argparse
 import re
 
-from . import db, journal, konfig
+from . import db, journal, katalog, konfig
 
 # Welche Rolle wird zu welcher Person, und was verbindet sie
 BAUPLAN = {
@@ -119,7 +119,19 @@ def namensteile(felder, rolle):
 
 
 def uebernimm(con, art, schreib=False, runde_id=None, marke=None):
-    plan = BAUPLAN.get(art)
+    # Der Bauplan wird aus dem Feldkatalog abgeleitet, nicht gepflegt. Die
+    # Liste BAUPLAN weiter oben ist nur noch der Rückfall für Register, die
+    # der Katalog nicht kennt — sonst hätte jede Änderung an der Aktkarte
+    # zwei Stellen, und die zweite bliebe zurück. Genau das war beim
+    # Sterbedatum aus dem Randvermerk passiert.
+    plan = katalog.bauplan(art, con) if art in katalog.KATALOG else None
+    if plan:
+        plan = dict(plan, personen=plan["personen"],
+                    familie=plan["paar"], kind=plan["kind"],
+                    ereignis=[(e["tag"], e["datum"], e["ort"], e["traeger"])
+                              for e in plan["ereignis"]])
+    else:
+        plan = BAUPLAN.get(art)
     if not plan:
         return {"uebersprungen": f"kein Bauplan für {art}"}
     # Die Herkunft wird je Runde geführt, nicht je Register. Damit ist zu
@@ -129,7 +141,7 @@ def uebernimm(con, art, schreib=False, runde_id=None, marke=None):
                          "aus bestätigter Erfassung", gilt="beleg")
     z = dict(eintraege=0, personen_neu=0, personen_verknuepft=0,
              familien=0, familien_gefunden=0, nachname_geerbt=0,
-             ereignisse=0, kinder=0)
+             ereignisse=0, kinder=0, merkmale=0)
 
     wo = "register=? AND status='bestaetigt'"
     par = [art]
@@ -231,6 +243,34 @@ def uebernimm(con, art, schreib=False, runde_id=None, marke=None):
                     (ziel_p, ziel_f, art_e, d, jahr(d), ort,
                      f"{art} {e['bild']} Nr. {e['nr']}"))
             z["ereignisse"] += 1
+
+        # Merkmale: alles, was kein Ereignis ist — Beruf, Wohnort,
+        # Religion, Rufname und die Kirchenbuchformen. Ohne diesen Schritt
+        # deklariert der Katalog Ziele, die nie jemand schreibt.
+        for m in plan.get("merkmal", []):
+            f = felder.get(m["feld"])
+            if not f:
+                continue
+            wert = (f.get("kb") if m["kb"] else f.get("wert")) or ""
+            wert = str(wert).strip()
+            # Die Kirchenbuchform nur, wenn sie sich unterscheidet — sonst
+            # steht dieselbe Angabe zweimal im Bestand.
+            if not wert or (m["kb"] and wert == str(f.get("wert") or "").strip()):
+                continue
+            tr = m["traeger"]
+            ziel_p = pid.get(tr) if tr and tr != "familie" else None
+            ziel_f = fam if tr == "familie" else None
+            if not (ziel_p or ziel_f):
+                continue
+            if schreib and (ziel_p or 0) > 0 or (ziel_f or 0) > 0:
+                con.execute(
+                    "INSERT OR IGNORE INTO merkmal "
+                    "(person, familie, tag, wert, feld, kb, quelle) "
+                    "VALUES (?,?,?,?,?,?,?)",
+                    (ziel_p, ziel_f, m["tag"], wert, m["feld"],
+                     1 if m["kb"] else 0,
+                     f"{art} {e['bild']} Nr. {e['nr']}"))
+            z["merkmale"] += 1
 
     if schreib:
         con.commit()
