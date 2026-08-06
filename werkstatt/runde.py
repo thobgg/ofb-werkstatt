@@ -336,6 +336,17 @@ def uebergib(con, runde_id, schreib=False):
         con.execute("UPDATE runde SET stand='fertig', beendet=? WHERE id=?",
                     (jetzt(), runde_id))
         con.commit()
+        # Sofort, nicht am Ende. Wer ein Ortsfamilienbuch für eine andere
+        # Zeit hat, arbeitet in einer Kopie davon — zwei getrennt
+        # gewachsene Bestände hinterher zu verschmelzen ist die Arbeit, die
+        # niemand mehr sauber hinbekommt. Siehe ausgabe.arbeitskopie().
+        from . import ausgabe
+        try:
+            z["arbeitskopie"] = ausgabe.arbeitskopie(con)["datei"]
+        except Exception as e:
+            # Eine gescheiterte Kopie darf die Übergabe nicht zurücknehmen —
+            # die Daten liegen in der Datenbank, die Datei ist ihr Abbild.
+            z["arbeitskopie_fehler"] = f"{type(e).__name__}: {e}"
     return z
 
 

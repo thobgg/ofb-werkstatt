@@ -111,6 +111,13 @@ document.querySelectorAll('header a').forEach(a=>
 async function laden(){
  S=await (await fetch('/api/stand')).json();
  document.getElementById('gem').textContent=S.gemeinde;
+ const m=sessionStorage.getItem('meldung');
+ if(m){sessionStorage.removeItem('meldung');
+  const d=document.createElement('div'); d.className='warn';
+  d.style.background='#13291d'; d.style.borderColor='#1d4231';
+  d.style.color='#8fe3b4'; d.textContent=m;
+  document.getElementById('app').before(d);
+  setTimeout(()=>d.remove(),12000);}
  const app=document.getElementById('app');
  app.className='';
  app.innerHTML = P==='/lesen' ? ansichtLesen()
@@ -483,6 +490,15 @@ async function uebergeben(){
   body:JSON.stringify({runde:S.runde.id})});
  const j=await r.json();
  if(!j.ok){alert('Übergabe fehlgeschlagen');return}
+ // Die Arbeitskopie ist der eigentliche Ertrag der Runde — sie zu
+ // erwähnen, gehört zur Übergabe, nicht in ein Protokoll.
+ const z=j.zahlen||{};
+ if(z.arbeitskopie_fehler)
+  alert('Übergeben — aber die Arbeitskopie ließ sich nicht schreiben:\n'
+        +z.arbeitskopie_fehler);
+ else if(z.arbeitskopie)
+  sessionStorage.setItem('meldung','Übergeben. Arbeitskopie neu geschrieben: '
+        +z.arbeitskopie);
  location.href='/';
 }
 
