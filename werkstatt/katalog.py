@@ -257,8 +257,77 @@ KATALOG = {"taufe": TAUFE, "ehe": EHE, "tod": TOD}
 
 
 # ------------------------------------------------------------------ Zugriff
-def felder(art):
-    return KATALOG.get(art, [])
+def felder(art, con=None):
+    """Die Felder dieser Aktart — Vorrat, angepasst durch die Aktkarte.
+
+    Ohne `con` der reine Katalog. Mit `con` das, was der Bearbeiter im
+    Zahnrad daraus gemacht hat: Abgeschaltetes fehlt, geänderte Ziele
+    gelten, eigene Felder stehen hinten oder an der gewählten Stelle.
+    """
+    z = list(KATALOG.get(art, []))
+    if con is None:
+        return z
+    try:
+        rows = list(con.execute(
+            "SELECT * FROM feldwahl WHERE art=?", (art,)))
+    except Exception:
+        return z
+    wahl = {r["name"]: r for r in rows}
+    raus = []
+    for x in z:
+        w = wahl.pop(x.name, None)
+        if w is None:
+            raus.append(x)
+            continue
+        if not w["aktiv"]:
+            continue
+        raus.append(x._replace(
+            ziel=w["ziel"] if w["ziel"] is not None else x.ziel,
+            ziel_kb=w["ziel_kb"] if w["ziel_kb"] is not None else x.ziel_kb,
+            titel=w["titel"] or x.titel,
+            hinweis=w["hinweis"] if w["hinweis"] is not None else x.hinweis,
+            kb=bool(w["kb"]) if w["kb"] is not None else x.kb))
+    # Was übrig bleibt, kennt der Katalog nicht: eigene Felder.
+    for w in wahl.values():
+        if not w["aktiv"]:
+            continue
+        neu = f(w["name"], w["rolle"], w["feldart"] or "text",
+                kb=bool(w["kb"]), ziel=w["ziel"], ziel_kb=w["ziel_kb"],
+                titel=w["titel"], hinweis=w["hinweis"])
+        stelle = next((i for i, x in enumerate(raus)
+                       if x.name == (w["nach"] or "")), None)
+        raus.insert(stelle + 1, neu) if stelle is not None else raus.append(neu)
+    return raus
+
+
+def setze(con, art, name, **w):
+    """Ein Feld anpassen oder anlegen. Nur genannte Angaben ändern sich."""
+    from datetime import datetime, timezone
+    spalten = ("aktiv", "ziel", "ziel_kb", "titel", "hinweis", "rolle",
+               "feldart", "kb", "eigen", "nach")
+    da = con.execute("SELECT 1 FROM feldwahl WHERE art=? AND name=?",
+                     (art, name)).fetchone()
+    if not da:
+        con.execute(
+            "INSERT INTO feldwahl (art, name, eigen, angelegt) VALUES (?,?,?,?)",
+            (art, name, 1 if feld(art, name) is None else 0,
+             datetime.now(timezone.utc).isoformat(timespec="seconds")))
+    for k, v in w.items():
+        if k in spalten:
+            con.execute(f"UPDATE feldwahl SET {k}=? WHERE art=? AND name=?",
+                        (v, art, name))
+    con.commit()
+
+
+def zuruecksetzen(con, art, name):
+    """Die Anpassung entfernen — der Katalog gilt wieder.
+
+    Bei einem eigenen Feld heißt das: es verschwindet. Bereits erfasste
+    Werte bleiben in `feld` stehen; sie zu löschen wäre Datenverlust für
+    eine Einstellungsänderung.
+    """
+    con.execute("DELETE FROM feldwahl WHERE art=? AND name=?", (art, name))
+    con.commit()
 
 
 def namen(art):
@@ -327,3 +396,95 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+# ------------------------------------------------------- Herkunft der Tags
+# GEDCOM 5.5.1 kennt einen festen Vorrat an Tags. Alles, was mit einem
+# Unterstrich beginnt, ist **per Definition nicht standardisiert** — die
+# Norm gibt den Unterstrich für eigene Erweiterungen frei und sagt nichts
+# darüber, was sie bedeuten. Ob ein anderes Programm sie versteht, hängt
+# allein davon ab, ob es dieselbe Erweiterung kennt.
+#
+# Das ist für ein Ortsfamilienbuch keine Kleinigkeit: Wer den Bestand
+# später nach Gramps, Ahnenblatt oder GEDCOM 7 überführt, verliert genau
+# das, was niemand sonst kennt. Deshalb steht bei jedem Feld, in welche
+# der drei Klassen sein Ziel fällt.
+STANDARD = set("""
+ABBR ADDR ADOP AFN AGE AGNC ALIA ANCE ANCI ANUL ASSO AUTH BAPL BAPM BARM
+BASM BIRT BLES BURI CALN CAST CAUS CENS CHAN CHAR CHIL CHR CHRA CITY CONC
+CONF CONL CONT COPR CORP CREM CTRY DATA DATE DEAT DESC DESI DEST DIV DIVF
+DSCR EDUC EMAIL EMIG ENDL ENGA EVEN FACT FAM FAMC FAMF FAMS FAX FCOM FILE
+FONE FORM GEDC GIVN GRAD HEAD HUSB IDNO IMMI INDI LANG LATI LEGA LONG MAP
+MARB MARC MARL MARR MARS MEDI NAME NATI NATU NCHI NICK NMR NOTE NPFX NSFX
+OBJE OCCU ORDI ORDN PAGE PEDI PHON PLAC POST PROB PROP PUBL QUAY REFN RELA
+RELI REPO RESI RESN RETI RFN RIN ROLE ROMN SEX SLGC SLGS SOUR SPFX SSN
+STAE STAT SUBM SUBN SURN TEMP TEXT TIME TITL TRLR TYPE VERS WIFE WILL WWW
+""".split())
+
+# Eigene Tags, die über dieses Projekt hinaus in Gebrauch sind — vor allem
+# in deutschsprachigen Programmen. Kein Standard, aber die Aussicht, dass
+# ein anderes Programm sie erkennt, ist erheblich besser als bei den
+# hauseigenen. Die Einstufung ist eine Einschätzung, keine Norm.
+VERBREITET = {"_RUFNAME", "_UID", "_LOC", "_STAT", "_MARR", "_GODP",
+              "_ASSO", "_AKA", "_MARNM", "_MILT", "_CREA", "_FREL", "_MREL"}
+
+AMT = {"offiziell": "GEDCOM 5.5.1",
+       "verbreitet": "eigener Tag, in Programmen gebräuchlich",
+       "hauseigen": "eigener Tag, nur in diesem Bestand"}
+
+
+def einstufung(ziel):
+    """Wie belastbar ist dieses Ziel beim Weitergeben des Bestands?"""
+    if not ziel:
+        return None
+    tag = ziel.split(".")[-1]
+    if not tag.startswith("_"):
+        return "offiziell" if tag in STANDARD else "unbekannt"
+    return "verbreitet" if tag in VERBREITET else "hauseigen"
+
+
+def uebersicht(art, con=None):
+    """Jedes Feld mit beiden Zielen und deren Einstufung — für das Zahnrad."""
+    aus_katalog = {x.name for x in KATALOG.get(art, [])}
+    abgeschaltet = []
+    if con is not None:
+        try:
+            abgeschaltet = [r["name"] for r in con.execute(
+                "SELECT name FROM feldwahl WHERE art=? AND aktiv=0", (art,))]
+        except Exception:
+            abgeschaltet = []
+    z = []
+    for x in felder(art, con):
+        z.append(dict(
+            name=x.name, titel=x.titel, rolle=x.rolle, art=x.art, kb=x.kb,
+            hinweis=x.hinweis,
+            ziel=x.ziel, ziel_amt=einstufung(x.ziel),
+            ziel_kb=x.ziel_kb, ziel_kb_amt=einstufung(x.ziel_kb),
+            eigen=x.name not in aus_katalog, aktiv=True))
+    # Abgeschaltetes bleibt sichtbar — sonst findet niemand wieder, was er
+    # weggeklickt hat.
+    for name in abgeschaltet:
+        x = feld(art, name)
+        z.append(dict(name=name, titel=x.titel if x else name,
+                      rolle=x.rolle if x else None,
+                      art=x.art if x else "text", kb=bool(x and x.kb),
+                      hinweis=x.hinweis if x else None,
+                      ziel=x.ziel if x else None,
+                      ziel_amt=einstufung(x.ziel) if x else None,
+                      ziel_kb=x.ziel_kb if x else None,
+                      ziel_kb_amt=einstufung(x.ziel_kb) if x else None,
+                      eigen=name not in aus_katalog, aktiv=False))
+    return z
+
+
+def bilanz(art):
+    """Wie viel des Bestands übersteht einen Programmwechsel."""
+    z = dict(offiziell=0, verbreitet=0, hauseigen=0, unbekannt=0, ohne=0)
+    for x in felder(art):
+        for ziel in (x.ziel, x.ziel_kb if x.kb else None):
+            if not ziel:
+                continue
+            z[einstufung(ziel)] = z.get(einstufung(ziel), 0) + 1
+        if not x.ziel and not x.ziel_kb:
+            z["ohne"] += 1
+    return z

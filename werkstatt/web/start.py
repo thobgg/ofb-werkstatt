@@ -728,10 +728,142 @@ async function quelleWeg(id,btn){
  document.getElementById('app').innerHTML=ansichtEinstellungen();
 }
 
+// ------------------------------------------------------------- Aktkarten
+let karteArt='taufe';
+
+const AMTFARBE={offiziell:'#8fe3b4', verbreitet:'#e0c98a',
+                hauseigen:'#e0a06c', unbekannt:'#e06c5f'};
+
+function tagMarke(ziel,amt){
+ if(!ziel) return '<span class=dim>—</span>';
+ return `<code style="color:${AMTFARBE[amt]||'#c3c9d4'}"
+   title="${esc((E.tag_amt||{})[amt]||'')}">${esc(ziel)}</code>`;
+}
+
+function aktkarten(){
+ const felder=(E.aktkarten||{})[karteArt]||[];
+ const z={offiziell:0,verbreitet:0,hauseigen:0,ohne:0};
+ felder.filter(f=>f.aktiv).forEach(f=>{
+  [[f.ziel,f.ziel_amt],[f.kb?f.ziel_kb:null,f.ziel_kb_amt]].forEach(([t,a])=>{
+   if(t) z[a]=(z[a]||0)+1;});
+  if(!f.ziel&&!f.ziel_kb) z.ohne++;});
+ return `
+ <h2>Aktkarten — welche Felder eine Registerart führt</h2>
+ <div class=karte>
+  <div class=reihe style="margin-bottom:.8rem">
+   ${Object.keys(E.aktkarten||{}).map(a=>`<button
+     class="${a===karteArt?'ja':''}" onclick="karteArt='${a}';neuZeichnen()"
+     >${esc(a)}</button>`).join('')}
+   <span style=flex:1></span>
+   <span class=dim style="font-size:.84rem">
+    ${felder.filter(f=>f.aktiv).length} aktiv, ${felder.length} im Vorrat</span>
+  </div>
+
+  <p class=dim style="font-size:.86rem;margin:0 0 .8rem">
+   Der Vorrat steht fest — das ist der Schutz gegen Wildwuchs. Was Sie
+   hier tun, ist auswählen: abschalten, was Ihre Bücher nicht führen,
+   Ziele umhängen, im Notfall ein eigenes Feld ergänzen. Ein Feld
+   abzuschalten löscht nichts; bereits erfasste Werte bleiben stehen.</p>
+
+  <div class=reihe style="margin-bottom:.7rem;font-size:.85rem">
+   <b>Beim Weitergeben des Bestands:</b>
+   ${[['offiziell','Ziele in GEDCOM 5.5.1'],
+      ['verbreitet','eigene Tags, gebräuchlich'],
+      ['hauseigen','eigene Tags, nur hier']].map(([k,t])=>
+    `<span><i class=pkt style="background:${AMTFARBE[k]}"></i>
+      ${z[k]||0} ${t}</span>`).join(' · ')}
+   ${z.ohne?`<span class=dim>· ${z.ohne} ohne Ziel</span>`:''}
+  </div>
+
+  <table>
+   <tr><th></th><th>Feld</th><th>Rolle</th><th>Ziel kanonisch</th>
+       <th>Ziel Kirchenbuchform</th><th></th></tr>
+   ${felder.map(f=>`<tr style="${f.aktiv?'':'opacity:.45'}">
+     <td><input type=checkbox ${f.aktiv?'checked':''}
+       onchange="feldSchalten('${esc(f.name)}',this.checked)"></td>
+     <td><code>${esc(f.name)}</code>
+       <div class=dim style="font-size:.78rem">${esc(f.titel||'')}${
+        f.eigen?' <b style=color:#e0a06c>eigenes Feld</b>':''}</div></td>
+     <td class=dim>${esc(f.rolle||'—')}</td>
+     <td>${tagMarke(f.ziel,f.ziel_amt)}</td>
+     <td>${f.kb?tagMarke(f.ziel_kb,f.ziel_kb_amt)
+        :'<span class=dim>keine</span>'}</td>
+     <td class=z><button onclick="feldAendern('${esc(f.name)}')"
+       title="Ziel ändern">ändern</button></td>
+    </tr>`).join('')}
+  </table>
+ </div>
+
+ <div class=karte>
+  <div style="font-weight:600;margin-bottom:.3rem">Eigenes Feld ergänzen</div>
+  <p class=dim style="font-size:.86rem;margin:0 0 .7rem">
+   Nur wenn Ihre Bücher etwas führen, das der Vorrat nicht kennt. Der Name
+   wird zum Schlüssel — Kleinbuchstaben, Ziffern, Unterstrich.</p>
+  <div class=reihe>
+   <input id=fname placeholder="z. B. hausnummer" style=width:12rem>
+   <input id=ftitel placeholder="Beschriftung in der Maske" style="flex:1;min-width:12rem">
+   <input id=fziel placeholder="GEDCOM-Ziel, z. B. ADDR" style=width:11rem>
+   <button class=ja onclick=feldDazu(this)>anlegen</button>
+  </div>
+  <div id=fhinweis class=dim style="margin-top:.5rem;font-size:.86rem"></div>
+ </div>
+
+ <p class=dim style="font-size:.86rem">
+  <b>Warum die Farben zählen.</b> GEDCOM gibt den Unterstrich für eigene
+  Erweiterungen frei und sagt nichts darüber, was sie bedeuten. Ein Tag wie
+  <code>_TODURSACHE</code> versteht nur, wer dieselbe Erweiterung kennt —
+  beim Wechsel zu einem anderen Programm geht er still verloren.
+  Deshalb steht der Wortlaut zusätzlich im <code>volltext</code>: was kein
+  Programm versteht, ist wenigstens lesbar geblieben.</p>`;
+}
+
+async function feldSchalten(name,an){
+ await fetch('/api/feld',{method:'POST',
+  body:JSON.stringify({art:karteArt, name, aktiv:an?1:0})});
+ await einstellungenHolen();
+}
+
+async function feldAendern(name){
+ const f=((E.aktkarten||{})[karteArt]||[]).find(x=>x.name===name);
+ const ziel=prompt(`Ziel für „${name}“ (kanonisch)\n\n`
+  +'Leer = kein Ziel. Punkt trennt Ebenen: BIRT.DATE',  f&&f.ziel||'');
+ if(ziel===null) return;
+ const d={art:karteArt, name, ziel:ziel.trim()};
+ if(f&&f.kb){
+  const kb=prompt(`Ziel für die Kirchenbuchform von „${name}“`, f.ziel_kb||'');
+  if(kb!==null) d.ziel_kb=kb.trim();
+ }
+ await fetch('/api/feld',{method:'POST',body:JSON.stringify(d)});
+ await einstellungenHolen();
+}
+
+async function feldDazu(btn){
+ const h=document.getElementById('fhinweis');
+ const name=document.getElementById('fname').value.trim();
+ if(!name){h.textContent='Erst einen Namen angeben.';return;}
+ btn.disabled=true;
+ const a=await (await fetch('/api/feld',{method:'POST',body:JSON.stringify({
+   art:karteArt, name, titel:document.getElementById('ftitel').value.trim(),
+   ziel:document.getElementById('fziel').value.trim()||null,
+   feldart:'text', aktiv:1, eigen:1})})).json();
+ btn.disabled=false;
+ if(a.fehler){h.textContent=a.fehler;return;}
+ document.getElementById('fname').value='';
+ document.getElementById('ftitel').value='';
+ document.getElementById('fziel').value='';
+ await einstellungenHolen();
+}
+
+function neuZeichnen(){
+ document.getElementById('app').innerHTML=ansichtEinstellungen();
+ quelleArt();
+}
+
 function ansichtEinstellungen(){
  const r=E.register;
  return `
  ${quellenKarte()}
+ ${aktkarten()}
  <h2>Reihenfolge der Register</h2>
  <div class=karte>
   <div class=reihe id=reihe>

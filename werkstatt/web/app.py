@@ -22,6 +22,7 @@ Beenden mit Strg-C.
 """
 import argparse
 import json
+import re
 import sqlite3
 import urllib.parse
 from http.server import BaseHTTPRequestHandler, HTTPServer
@@ -30,7 +31,7 @@ from pathlib import Path
 from .seite import SEITE
 from .start import STARTSEITE
 from .. import (abgleich, ausgabe, db, einrichtung, einstellungen,
-                gespraech,
+                gespraech, katalog,
                 import_gedcom,
                 import_wortschatz, konfig, lesen,
                 runde as _runde,
@@ -126,6 +127,9 @@ class Handler(BaseHTTPRequestHandler):
                         for k, v, e, q, b, x in pruefung.GRENZWERTE],
                     regeln=[dict(schluessel=k, schwere=s, titel=t)
                             for k, s, t in pruefung.REGELN],
+                    aktkarten={a: katalog.uebersicht(a, con)
+                               for a in sorted(katalog.KATALOG)},
+                    tag_amt=katalog.AMT,
                     pdf_werkzeug=bool(seiten.pdf_werkzeug()),
                     ueber=self.ueber(),
                     ki=dict(
@@ -308,6 +312,32 @@ class Handler(BaseHTTPRequestHandler):
                     (o if o.is_absolute() else ROOT / o).mkdir(
                         parents=True, exist_ok=True)
             return self._json(dict(ok=True))
+        if pfad == "/api/feld":
+            d = self._rumpf()
+            con = db.verbinde()
+            try:
+                art, name = d.get("art"), (d.get("name") or "").strip()
+                if art not in katalog.KATALOG or not name:
+                    return self._json({"fehler": "Aktart und Name nötig"}, 400)
+                if not re.fullmatch(r"[a-z0-9_]{2,40}", name):
+                    return self._json({"fehler": (
+                        "Feldname: nur Kleinbuchstaben, Ziffern und "
+                        "Unterstrich — er wird zum Schlüssel in der "
+                        "Datenbank und im Leseauftrag.")}, 400)
+                katalog.setze(con, art, name,
+                              **{k: v for k, v in d.items()
+                                 if k not in ("art", "name")})
+                return self._json(dict(ok=True))
+            finally:
+                con.close()
+        if pfad == "/api/feld-weg":
+            d = self._rumpf()
+            con = db.verbinde()
+            try:
+                katalog.zuruecksetzen(con, d.get("art"), d.get("name"))
+                return self._json(dict(ok=True))
+            finally:
+                con.close()
         if pfad == "/api/frage":
             d = self._rumpf()
             con = db.verbinde()

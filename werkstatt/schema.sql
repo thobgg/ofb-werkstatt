@@ -318,6 +318,32 @@ CREATE TABLE IF NOT EXISTS wortschatz (
 CREATE INDEX IF NOT EXISTS ix_wortschatz_gef ON wortschatz(gefaltet);
 CREATE INDEX IF NOT EXISTS ix_wortschatz_klasse ON wortschatz(klasse);
 
+-- ----------------------------------------------------------- Aktkarten
+-- Der Feldkatalog in katalog.py gibt den Vorrat vor. Hier steht, was der
+-- Bearbeiter daran geaendert hat: Felder abgeschaltet, Ziele umgehaengt,
+-- eigene Felder ergaenzt.
+--
+-- Warum nicht alles hier: Ein leerer Vorrat waere kein Schutz vor
+-- Wildwuchs. Der Katalog ist der gemeinsame Nenner aller Bestaende; was
+-- hier steht, ist die Abweichung dieses einen Projekts — und die ist
+-- damit auch benennbar, wenn der Bestand einmal weitergegeben wird.
+CREATE TABLE IF NOT EXISTS feldwahl (
+  art      TEXT NOT NULL,          -- taufe | ehe | tod
+  name     TEXT NOT NULL,
+  aktiv    INTEGER NOT NULL DEFAULT 1,
+  ziel     TEXT,                   -- ueberschreibt das Ziel des Katalogs
+  ziel_kb  TEXT,
+  titel    TEXT,
+  hinweis  TEXT,
+  rolle    TEXT,
+  feldart  TEXT,                   -- text | datum | ort | name
+  kb       INTEGER,
+  eigen    INTEGER NOT NULL DEFAULT 0,   -- 1 = nicht im Katalog
+  nach     TEXT,                   -- Einordnung: hinter welchem Feld
+  angelegt TEXT,
+  PRIMARY KEY (art, name)
+);
+
 -- Bequemer Zugriff auf den geltenden Wert
 CREATE VIEW IF NOT EXISTS wert AS
   SELECT e.register, e.bild, e.nr, e.jahr, f.name, f.rolle,
