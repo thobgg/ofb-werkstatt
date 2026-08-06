@@ -46,7 +46,19 @@ def register(art=None):
 
 
 def felder(art):
-    return register(art).get("felder", [])
+    """Alle Felder dieser Aktart.
+
+    Der Feldkatalog gibt den Umfang vor, nicht konfig.toml. Grund: Eine
+    von Hand gepflegte Liste kennt nur, was jemand nachgetragen hat — der
+    Tod des Täuflings im Randvermerk fiel auf, weil ein Mensch ihn
+    vermisste. `[register.x] felder` kann den Katalog noch erweitern, für
+    Register, die er nicht kennt.
+    """
+    from . import katalog
+    aus_katalog = katalog.namen(art)
+    eigen = [x for x in register(art).get("felder", [])
+             if x not in aus_katalog]
+    return aus_katalog + eigen if aus_katalog else eigen
 
 
 def personen_rollen(art):
@@ -54,7 +66,9 @@ def personen_rollen(art):
 
 
 def datumsfelder(art):
-    return register(art).get("datum", [])
+    from . import katalog
+    aus_katalog = katalog.datumsfelder(art)
+    return aus_katalog or register(art).get("datum", [])
 
 
 def bilderordner(art):

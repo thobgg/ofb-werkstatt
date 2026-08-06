@@ -128,7 +128,17 @@ def plane(con, register, anzahl=None, quelle="api"):
 
 # ------------------------------------------------------------------ Lesen
 def _rolle(art, feldname):
-    """Welches Feld trägt den Namen welcher Person."""
+    """Welches Feld trägt den Namen welcher Person.
+
+    Rolle heißt hier: *dieses Feld ist die Person*, nicht bloß eine
+    Angabe über sie. `vater_name` trägt den Vater, `vater_beruf` nicht —
+    sonst stünde jedes Berufsfeld in der Maske als Personenentscheidung.
+    """
+    from . import katalog
+    x = katalog.feld(art, feldname)
+    if x and x.rolle and feldname in (f"{x.rolle}_name",
+                                      f"{x.rolle}_vorname", x.rolle):
+        return x.rolle
     for r in konfig.personen_rollen(art):
         if feldname in (f"{r}_name", f"{r}_vorname", r):
             return r
