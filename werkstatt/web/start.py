@@ -495,6 +495,7 @@ let E=null;
 async function einstellungenHolen(){
  E=await (await fetch('/api/einstellungen')).json();
  document.getElementById('app').innerHTML=ansichtEinstellungen();
+ quelleArt();
 }
 
 function anmeldeblock(c){
@@ -551,9 +552,103 @@ async function anmeldenStarten(btn){
  },2000);
 }
 
+function quellenKarte(){
+ const q=(S&&S.quellen)||[];
+ return `
+ <h2>Kontextquellen — was darf bestätigen</h2>
+ <div class=karte>
+  <table>
+   <tr><th>Quelle</th><th>Art</th><th>Rang</th><th class=z>Personen</th>
+       <th class=z>Wörter</th><th></th></tr>
+   ${q.length?q.map(x=>`<tr>
+     <td>${esc(x.name||x.datei||x.art)}<div class=dim
+       style="font-size:.78rem">${esc(x.datei||'')}</div></td>
+     <td class=dim>${esc(x.art)}</td>
+     <td><span class="marke ${x.gilt}">${x.gilt==='beleg'
+        ?'darf bestätigen':'rankt nur'}</span></td>
+     <td class="z ${x.n?'':'dim'}">${x.n||0}</td>
+     <td class="z ${x.woerter?'':'dim'}">${x.woerter||0}</td>
+     <td class=z>${x.art==='erfassung'?'<span class=dim>bleibt</span>'
+       :`<button onclick="quelleWeg(${x.id},this)">entfernen</button>`}</td>
+    </tr>`).join('')
+    :'<tr><td colspan=6 class=dim>Noch keine Quelle — Nullstart.</td></tr>'}
+  </table>
+ </div>
+
+ <div class=karte>
+  <div class=was style="font-weight:600;margin-bottom:.15rem">Quelle hinzufügen</div>
+  <p class=dim style="font-size:.86rem;margin:0 0 .7rem">
+   Pfad zu einer Datei oder einem Ordner auf diesem Rechner. Nichts wird
+   kopiert oder verschoben; gelesen wird einmal, danach liegt der Inhalt in
+   der Datenbank.</p>
+  <div class=reihe>
+   <input id=qdatei placeholder="~/bestaende/ofb.ged" style="flex:1;min-width:16rem">
+   <select id=qart onchange=quelleArt()>
+    <option value=gedcom>GEDCOM — Bestand mit Personen</option>
+    <option value=wortschatz>Wortschatz — Liste, Tabelle, Text</option>
+   </select>
+  </div>
+  <div class=reihe style="margin-top:.6rem">
+   <input id=qname placeholder="Name, wie er angezeigt werden soll"
+     style="flex:1;min-width:14rem">
+   <span id=qrang><label class=dim><input type=radio name=qgilt value=beleg
+     checked> darf bestätigen</label>
+    <label class=dim style="margin-left:.6rem"><input type=radio name=qgilt
+     value=vokabular> rankt nur</label></span>
+   <button class=ja onclick=quelleDazu(this)>Einlesen</button>
+  </div>
+  <div id=qhinweis class=dim style="margin-top:.6rem;font-size:.86rem"></div>
+ </div>
+
+ <p class=dim style="font-size:.86rem">
+  <b>GEDCOM</b> bringt Personen mit Daten — das Einzige, was <i>bestätigen</i>
+  darf, weil ein Treffer sich an Datum und Ort prüfen lässt.
+  <b>Wortschatz</b> nimmt alles, was Schreibweisen kennt, aber keine
+  Lebensdaten hat: Namenslisten, Ortsverzeichnisse, abgetippte Register, in
+  <code>.csv .tsv .txt .xlsx .ods .docx</code> oder als ganzer Ordner. Die
+  Spalten erkennt der Einleser an der Kopfzeile. Solche Quellen bleiben
+  immer <code>vokabular</code> — <code>Roth</code> kommt 59-mal im Bestand
+  vor und stand doch für <code>Koch</code>.</p>`;
+}
+
+function quelleArt(){
+ // Wortschatz kann nicht bestaetigen — die Wahl waere eine Luege.
+ document.getElementById('qrang').style.visibility =
+   document.getElementById('qart').value==='gedcom' ? 'visible' : 'hidden';
+}
+
+async function quelleDazu(btn){
+ const h=document.getElementById('qhinweis');
+ const datei=document.getElementById('qdatei').value.trim();
+ if(!datei){h.textContent='Erst einen Pfad angeben.';return;}
+ btn.disabled=true; h.textContent='liest …';
+ const gilt=(document.querySelector('input[name=qgilt]:checked')||{}).value;
+ const a=await (await fetch('/api/quelle',{method:'POST',
+   body:JSON.stringify({datei, art:document.getElementById('qart').value,
+    name:document.getElementById('qname').value, gilt})})).json();
+ btn.disabled=false;
+ if(a.fehler){h.textContent=a.fehler;return;}
+ document.getElementById('qdatei').value='';
+ document.getElementById('qname').value='';
+ h.textContent='eingelesen.';
+ S=await (await fetch('/api/stand')).json();
+ document.getElementById('app').innerHTML=ansichtEinstellungen();
+}
+
+async function quelleWeg(id,btn){
+ const h=document.getElementById('qhinweis');
+ btn.disabled=true;
+ const a=await (await fetch('/api/quelle-weg',{method:'POST',
+   body:JSON.stringify({herkunft:id})})).json();
+ if(a.fehler){btn.disabled=false; h.textContent=a.fehler; return;}
+ S=await (await fetch('/api/stand')).json();
+ document.getElementById('app').innerHTML=ansichtEinstellungen();
+}
+
 function ansichtEinstellungen(){
  const r=E.register;
  return `
+ ${quellenKarte()}
  <h2>Reihenfolge der Register</h2>
  <div class=karte>
   <div class=reihe id=reihe>

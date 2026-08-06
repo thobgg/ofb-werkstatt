@@ -29,7 +29,8 @@ from pathlib import Path
 
 from .seite import SEITE
 from .start import STARTSEITE
-from .. import (abgleich, ausgabe, db, einstellungen, konfig, lesen,
+from .. import (abgleich, ausgabe, db, einstellungen, import_gedcom,
+                import_wortschatz, konfig, lesen,
                 runde as _runde,
                 pruefung, seiten, suche, testdaten, vorlage)
 
@@ -280,6 +281,71 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json({"ok": True})
             finally:
                 con.close()
+        if pfad == "/api/quelle":
+            d = self._rumpf()
+            con = db.verbinde()
+            try:
+                p = Path((d.get("datei") or "").strip()).expanduser()
+                if not p.exists():
+                    return self._json({"fehler": f"{p} gibt es nicht"}, 400)
+                if d.get("art") == "gedcom":
+                    hid = import_gedcom.importiere(str(p), con, still=True)
+                    con.execute(
+                        "UPDATE herkunft SET gilt=?, name=?, parochien=? "
+                        "WHERE id=?",
+                        (d.get("gilt") if d.get("gilt") in ("beleg",
+                                                            "vokabular")
+                         else "vokabular",
+                         (d.get("name") or "").strip() or p.name,
+                         (d.get("parochien") or "").strip() or None, hid))
+                else:
+                    hid = import_wortschatz.importiere(
+                        str(p), con, name=(d.get("name") or "").strip() or None,
+                        still=True)
+                con.commit()
+                return self._json(dict(ok=True, herkunft=hid))
+            except SystemExit as e:
+                return self._json({"fehler": str(e)}, 400)
+            except Exception as e:
+                return self._json({"fehler": f"{type(e).__name__}: {e}"}, 400)
+            finally:
+                con.close()
+        if pfad == "/api/quelle-weg":
+            d = self._rumpf()
+            con = db.verbinde()
+            try:
+                hid = int(d["herkunft"])
+                r = con.execute("SELECT art, datei FROM herkunft WHERE id=?",
+                                (hid,)).fetchone()
+                if not r:
+                    return self._json({"fehler": "gibt es nicht"}, 400)
+                # Die eigene Erfassung ist kein Import, sondern das Ergebnis
+                # der Arbeit. Sie zu loeschen wuerde bestaetigte Eintraege
+                # mitnehmen.
+                if r["art"] == "erfassung":
+                    return self._json(
+                        {"fehler": "Die eigene Erfassung bleibt"}, 400)
+                # Eine Quelle, an der schon Entscheidungen haengen, darf
+                # nicht verschwinden — sonst zeigen bestaetigte Felder ins
+                # Leere und die Uebergabe faende die Person nicht mehr.
+                haengt = con.execute(
+                    "SELECT count(*) FROM feld f JOIN person p ON p.id=f.person "
+                    "WHERE p.herkunft=?", (hid,)).fetchone()[0]
+                if haengt:
+                    return self._json({"fehler": (
+                        f"{haengt} bestätigte Felder zeigen auf diese Quelle. "
+                        "Erst die betroffenen Runden verwerfen.")}, 400)
+                con.execute("DELETE FROM ereignis WHERE person IN "
+                            "(SELECT id FROM person WHERE herkunft=?)", (hid,))
+                con.execute("DELETE FROM kind WHERE person IN "
+                            "(SELECT id FROM person WHERE herkunft=?)", (hid,))
+                con.execute("DELETE FROM familie WHERE herkunft=?", (hid,))
+                con.execute("DELETE FROM person WHERE herkunft=?", (hid,))
+                con.execute("DELETE FROM herkunft WHERE id=?", (hid,))
+                con.commit()
+                return self._json(dict(ok=True, datei=r["datei"]))
+            finally:
+                con.close()
         if pfad == "/api/entpacken":
             d = self._rumpf()
             con = db.verbinde()
@@ -374,7 +440,9 @@ class Handler(BaseHTTPRequestHandler):
             quellen = []
             for h in con.execute(
                     "SELECT h.id, h.art, h.datei, h.gilt, h.parochien, h.name, "
-                    "(SELECT count(*) FROM person p WHERE p.herkunft=h.id) n "
+                    "(SELECT count(*) FROM person p WHERE p.herkunft=h.id) n, "
+                    "(SELECT count(*) FROM wortschatz w WHERE w.herkunft=h.id) "
+                    "woerter "
                     "FROM herkunft h ORDER BY h.gilt, h.id"):
                 quellen.append(dict(h))
             # Eingetragen heisst nicht eingelesen. Eine Quelle, die in
