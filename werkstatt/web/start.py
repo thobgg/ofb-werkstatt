@@ -97,7 +97,9 @@ label input[type=radio]{margin-right:.4rem}
  <a href="/uebergabe" data-p="/uebergabe">Übergeben</a>
  <a href="/ausgabe" data-p="/ausgabe">Ausgeben</a>
  <span style=flex:1></span><span class=dim id=gem></span>
- <a href="/einstellungen" data-p="/einstellungen" title="Einstellungen">⚙</a></header>
+ <a href="/einstellungen" data-p="/einstellungen" title="Einstellungen">⚙</a>
+ <a href="#" onclick="beenden();return false" title="Werkstatt beenden"
+    style="font-size:1.05rem">⏻</a></header>
 <main id=app class=leer>lade…</main>
 <script>
 const esc=s=>(s??'').toString().replace(/[&<>"]/g,c=>
@@ -107,6 +109,17 @@ let S=null, ticker=null;
 
 document.querySelectorAll('header a').forEach(a=>
  a.classList.toggle('an', a.dataset.p===P));
+
+async function beenden(){
+ if(!confirm('Werkstatt beenden?\n\nDer Server hört auf zu laufen; '
+  +'nichts geht verloren. Zum Weiterarbeiten das Startskript erneut '
+  +'aufrufen.')) return;
+ try{ await fetch('/api/beenden',{method:'POST'}); }catch(e){}
+ document.body.innerHTML='<main class=leer style="padding:4rem">'
+  +'<div style="font-size:1.2rem;margin-bottom:.6rem">Werkstatt beendet.</div>'
+  +'<div class=dim>Dieses Fenster kann zu. Zum Weiterarbeiten das '
+  +'Startskript erneut aufrufen.</div></main>';
+}
 
 async function laden(){
  S=await (await fetch('/api/stand')).json();
