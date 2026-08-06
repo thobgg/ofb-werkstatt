@@ -693,7 +693,11 @@ async function quelleDazu(btn){
  if(a.fehler){h.textContent=a.fehler;return;}
  document.getElementById('qdatei').value='';
  document.getElementById('qname').value='';
- h.textContent='eingelesen.';
+ const z=a.neu_geprueft||{};
+ const n=(z.gruen||0)+(z.gelb||0)+(z.rot||0);
+ h.textContent = n
+  ? `eingelesen. ${n} noch offene Einträge neu abgeglichen — ${z.gruen||0} grün.`
+  : 'eingelesen.';
  S=await (await fetch('/api/stand')).json();
  document.getElementById('app').innerHTML=ansichtEinstellungen();
 }

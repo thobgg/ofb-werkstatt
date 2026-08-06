@@ -323,7 +323,16 @@ class Handler(BaseHTTPRequestHandler):
                         str(p), con, name=(d.get("name") or "").strip() or None,
                         still=True)
                 con.commit()
-                return self._json(dict(ok=True, herkunft=hid))
+                # Ohne das rankt der laufende Server bis zum Neustart nach
+                # dem alten Stand, und die frisch eingelesene Quelle wirkt
+                # scheinbar nicht.
+                suche.frisch()
+                # Was schon gelesen und noch nicht bestätigt ist, bekommt
+                # die neue Quelle nachträglich zu sehen. Bestätigte
+                # Einträge bleiben unberührt — eine Entscheidung des
+                # Bearbeiters darf ein Import nicht überschreiben.
+                z = abgleich.runde_pruefen(con, nur_offen=True)
+                return self._json(dict(ok=True, herkunft=hid, neu_geprueft=z))
             except SystemExit as e:
                 return self._json({"fehler": str(e)}, 400)
             except Exception as e:
@@ -363,7 +372,10 @@ class Handler(BaseHTTPRequestHandler):
                 con.execute("DELETE FROM person WHERE herkunft=?", (hid,))
                 con.execute("DELETE FROM herkunft WHERE id=?", (hid,))
                 con.commit()
-                return self._json(dict(ok=True, datei=r["datei"]))
+                suche.frisch()
+                z = abgleich.runde_pruefen(con, nur_offen=True)
+                return self._json(dict(ok=True, datei=r["datei"],
+                                       neu_geprueft=z))
             finally:
                 con.close()
         if pfad == "/api/entpacken":
