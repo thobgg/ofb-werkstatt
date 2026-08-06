@@ -178,6 +178,30 @@ Das Modell stand außerdem auf `claude-opus-4-5`. Jetzt `claude-opus-5`.
 **Der Schlüssel wird nie angezeigt**, nur ob `ANTHROPIC_API_KEY` gesetzt ist.
 Der Verbrauch kommt aus der Auftragstabelle — gemessen, nicht geschätzt.
 
+### Zweiter Weg: über das eigene Abonnement
+
+Quelle `datei` legt die Seiten ab und lässt sie von `claude -p` lesen. Das
+läuft über den Zugang des Bearbeiters, kostet also keine zweite Rechnung.
+**Es gibt dabei keinen Chat, an den sich die Werkstatt hängt** — jeder Aufruf
+ist eine eigene, kurze Sitzung ohne Verlauf. Wer angemeldet ist, entscheidet
+allein `claude auth login`; die Werkstatt hält keine Anmeldedaten und fragt
+über `vorlage.bereitschaft()` nur `claude auth status` ab.
+
+Im Zahnrad steht das Konto samt Abo, und wenn keines da ist, ein Knopf
+„Jetzt anmelden" (`vorlage.anmelden()`). Er öffnet ein Terminalfenster mit
+`claude auth login` — die Anmeldung schickt in den Browser und wartet auf
+Rückmeldung, blind im Hintergrund geht sie nicht. Die Seite pollt danach
+`/api/anmeldestand` und schaltet von selbst auf grün.
+
+○ **Ungetestet: Windows und macOS.** Die Fensterzweige in `_FENSTER` bzw. für
+`cmd` und Terminal.app sind geschrieben, aber nur der Linux-Weg
+(xfce4-terminal) ist laufen gesehen worden. Zum Prüfen der Anmeldung muss man
+sich abmelden — was die begleitende Claude-Code-Sitzung mit beendet. Deshalb
+allein testen, nicht nebenher.
+
+Für den Start ohne Kommandozeile liegt `OFB-Werkstatt starten.bat` bereit:
+prüft Python, holt notfalls Pillow, öffnet den Browser.
+
 ○ **Batch fehlt.** Halbiert die Kosten und ist bei seitenweiser Verarbeitung
 der natürliche Modus. Der Rundenautomat ist bereits die Struktur, die Batch
 braucht: eine Liste eingereichter Einheiten mit Zustand.
