@@ -126,6 +126,32 @@ misst hinterher nur, dass er sie mitgeliefert hat.
 ⚠️ Ihre `gelesen`-Werte sind bereits die *korrigierten* Lesungen des
 Pilotlaufs. Sie prüfen den Durchlauf, nicht die Lesequalität.
 
+## Einstellungen: Struktur gegen Betrieb
+
+    konfig.toml   Registerarten, Felder, Rollen, Kontextquellen
+                  -> Struktur. Einmal beim Einrichten.
+    einstellung   Seitenzahl je Register, Reihenfolge, Bildordner,
+                  Autopilot, Lebensgrenzen
+                  -> Betrieb. Beim Arbeiten, über /einstellungen.
+
+Betriebswerte in die TOML-Datei zurückzuschreiben hieße, sie bei jedem Klick
+neu zu erzeugen und dabei ihre Kommentare zu verlieren. Was in `einstellung`
+fehlt, kommt weiterhin aus `konfig.toml`.
+
+```sh
+python3 -m werkstatt.einstellungen
+python3 -m werkstatt.einstellungen --setze seiten.ehe 10
+python3 -m werkstatt.einstellungen --setze reihenfolge ehe,taufe,tod
+```
+
+**Seitenzahlen ungleich mit Absicht:** Ehe 10, Taufe 20, Tod 20. Ein
+Eheeintrag nennt sechs Personen, ein Taufeintrag drei.
+
+**PDFs sind Behälter, keine Bilder.** Ein Archion-Download enthält oft den
+halben Band. `seiten.entpacken()` zerlegt sie einmal mit `pdftoppm` (300 dpi)
+nach `entpackt/`; danach zählen sie wie gewöhnliche Bilder. Ohne
+poppler-utils meldet die Einstellungsseite das.
+
 ## Kontextquellen: was darf bestätigen
 
 `[[kontext]]` in `konfig.toml`, eigene Pfade in `konfig.local.toml` (in

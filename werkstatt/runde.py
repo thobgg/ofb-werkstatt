@@ -26,7 +26,7 @@ import traceback
 from datetime import datetime, timezone
 from pathlib import Path
 
-from . import db, konfig, seiten, testdaten
+from . import db, einstellungen, konfig, seiten, testdaten
 
 STAENDE = ("geplant", "liest", "korrigieren", "uebergeben", "fertig")
 
@@ -36,9 +36,11 @@ def jetzt():
 
 
 # ----------------------------------------------------------------- Planung
-def register_reihe():
-    """Registerreihenfolge — wie in konfig.toml notiert."""
-    return list(konfig.register())
+def register_reihe(con=None):
+    """Registerreihenfolge — aus den Einstellungen, sonst wie in konfig.toml."""
+    if con is None:
+        return list(konfig.register())
+    return einstellungen.reihenfolge(con)
 
 
 def gelesene_bilder(con, register):
@@ -56,7 +58,7 @@ def offene_bilder(con, register, quelle="api"):
     if quelle == "testdaten":
         alle = testdaten.seiten(register)
     else:
-        alle = [f.stem for f in seiten.bilder(konfig.bilderordner(register))]
+        alle = [f.stem for f in seiten.bilder(einstellungen.ordner(con, register))]
     return [b for b in alle if b not in schon]
 
 
@@ -78,7 +80,7 @@ def vorschlag(con, quelle="api"):
     if offen:
         return dict(register=offen["register"], runde=offen,
                     grund="läuft bereits")
-    reihe = register_reihe()
+    reihe = register_reihe(con)
     letzte = con.execute("SELECT register FROM runde WHERE stand='fertig' "
                          "ORDER BY id DESC LIMIT 1").fetchone()
     start = (reihe.index(letzte["register"]) + 1) % len(reihe) if letzte else 0
@@ -95,7 +97,8 @@ def vorschlag(con, quelle="api"):
     return dict(register=None, runde=None, grund="alle Seiten gelesen")
 
 
-def plane(con, register, anzahl=20, quelle="api"):
+def plane(con, register, anzahl=None, quelle="api"):
+    anzahl = anzahl or einstellungen.seitenzahl(con, register)
     offen = offene_runde(con)
     if offen:
         raise SystemExit(
@@ -163,6 +166,14 @@ def speichere(con, art, bild, ergebnis, runde_id=None, hid=None):
     return n_e, n_f
 
 
+def _bildpfad(con, art, bild):
+    """Die Datei zu einem Bildnamen — Endung offen, entpackte PDFs eingeschlossen."""
+    for f in seiten.bilder(einstellungen.ordner(con, art)):
+        if f.stem == bild:
+            return f
+    return einstellungen.ordner(con, art) / f"{bild}.jpg"
+
+
 def lauf(runde_id):
     """Der Läufer. Eigene Verbindung — er arbeitet in einem eigenen Thread."""
     con = db.verbinde()
@@ -208,7 +219,7 @@ def lauf(runde_id):
                 nutzung = {}
             else:
                 from . import lesen
-                pfad = konfig.bilderordner(art) / f"{bild}.jpg"
+                pfad = _bildpfad(con, art, bild)
                 erg, nutzung = lesen.lies_seite(pfad, art, schluessel, con)
             n_e, n_f = speichere(con, art, bild, erg, runde_id, hid)
             con.execute(
@@ -300,11 +311,24 @@ def verwerfen(con, runde_id):
     z = dict(eintraege=0, personen=0, familien=0)
     z["eintraege"] = con.execute(
         "SELECT count(*) FROM eintrag WHERE runde=?", (runde_id,)).fetchone()[0]
+    # Reihenfolge ist hier nicht Geschmack, sondern Bedingung: `feld.person`
+    # zeigt auf Personen. Wer die Personen zuerst löscht, läuft in einen
+    # Fremdschlüsselfehler — und zwar erst dann, wenn der Abgleich nach der
+    # Übergabe noch einmal lief und auf die eigenen Neuanlagen zeigte.
+    con.execute("DELETE FROM eintrag WHERE runde=?", (runde_id,))
+    con.execute("DELETE FROM auftrag WHERE runde=?", (runde_id,))
     if h:
         z["personen"] = con.execute(
             "SELECT count(*) FROM person WHERE herkunft=?", (h["id"],)).fetchone()[0]
         z["familien"] = con.execute(
             "SELECT count(*) FROM familie WHERE herkunft=?", (h["id"],)).fetchone()[0]
+        # Verweise aus anderen Runden lösen, sonst hält der Fremdschlüssel
+        con.execute("UPDATE feld SET person=NULL, entscheidung='offen' "
+                    "WHERE person IN (SELECT id FROM person WHERE herkunft=?)",
+                    (h["id"],))
+        con.execute("DELETE FROM vorgang WHERE ziel IN "
+                    "(SELECT CAST(id AS TEXT) FROM person WHERE herkunft=?) "
+                    "AND art='neu_person'", (h["id"],))
         con.execute("DELETE FROM ereignis WHERE person IN "
                     "(SELECT id FROM person WHERE herkunft=?)", (h["id"],))
         con.execute("DELETE FROM ereignis WHERE familie IN "
@@ -314,8 +338,6 @@ def verwerfen(con, runde_id):
         con.execute("DELETE FROM familie WHERE herkunft=?", (h["id"],))
         con.execute("DELETE FROM person WHERE herkunft=?", (h["id"],))
         con.execute("DELETE FROM herkunft WHERE id=?", (h["id"],))
-    con.execute("DELETE FROM eintrag WHERE runde=?", (runde_id,))
-    con.execute("DELETE FROM auftrag WHERE runde=?", (runde_id,))
     con.execute("DELETE FROM runde WHERE id=?", (runde_id,))
     con.commit()
     return z
@@ -351,8 +373,8 @@ def fortschritt(con, runde_id):
 def stand(con):
     """Was der Startbildschirm zeigt — echte Zahlen, keine Vermutungen."""
     raus = []
-    for art in register_reihe():
-        ordner = konfig.bilderordner(art)
+    for art in register_reihe(con):
+        ordner = einstellungen.ordner(con, art)
         bilder = seiten.bilder(ordner)
         gelesen = gelesene_bilder(con, art)
         e = con.execute(
@@ -364,6 +386,8 @@ def stand(con):
             ordner=str(ordner.relative_to(konfig.WURZEL)),
             bilder=len(bilder), gelesen=len(gelesen),
             eintraege=e["n"] or 0, bestaetigt=e["fix"] or 0,
+            seiten_je_runde=einstellungen.seitenzahl(con, art),
+            pdfs=len(seiten.pdfs(ordner)),
             offen_api=len(offene_bilder(con, art, "api")),
             offen_test=len(offene_bilder(con, art, "testdaten"))))
     return raus
@@ -373,7 +397,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--stand", action="store_true")
     ap.add_argument("--plane")
-    ap.add_argument("--seiten", type=int, default=20)
+    ap.add_argument("--seiten", type=int, default=0)
     ap.add_argument("--quelle", default="api", choices=("api", "testdaten"))
     ap.add_argument("--lies", type=int)
     ap.add_argument("--uebergib", type=int)
@@ -396,7 +420,7 @@ def main():
         return
 
     if a.plane:
-        rid = plane(con, a.plane, a.seiten, a.quelle)
+        rid = plane(con, a.plane, a.seiten or None, a.quelle)
         r = con.execute("SELECT * FROM runde WHERE id=?", (rid,)).fetchone()
         print(f"Runde {r['nr']}: {r['register']}, {r['seiten']} Seiten "
               f"({r['von_bild']} – {r['bis_bild']}), Quelle {r['quelle']}")

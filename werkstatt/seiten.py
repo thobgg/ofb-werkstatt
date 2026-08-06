@@ -12,7 +12,9 @@ Ohne Fremdbibliotheken ausser Pillow; ImageMagick wird nicht gebraucht.
 """
 import argparse
 import re
+import shutil
 import statistics
+import subprocess
 from pathlib import Path
 
 from . import konfig
@@ -23,6 +25,12 @@ except ImportError:
     Image = None
 
 BILD = (".jpg", ".jpeg", ".png", ".tif", ".tiff")
+
+# PDFs sind Behälter, keine Bilder: Ein Archion-Download enthält oft den
+# halben Band. Sie werden einmal in Einzelseiten zerlegt und danach wie
+# gewöhnliche Bilder behandelt.
+AUFLOESUNG = 300          # dpi; darunter leidet die Lesbarkeit der Hand
+ENTPACKT = "entpackt"     # Unterordner neben den PDFs
 
 # Dublettenschwelle als Anteil des MEDIANS dieses Registers, nicht absolut.
 # Begruendung: Der uebliche Abstand zweier Nachbarseiten haengt vom Layout ab.
@@ -35,11 +43,73 @@ VERDACHT = 0.70
 
 
 def bilder(ordner):
+    """Alle Seitenbilder eines Registers, entpackte PDF-Seiten eingeschlossen."""
+    p = Path(ordner)
+    if not p.exists():
+        return []
+    raus = [f for f in p.iterdir()
+            if f.is_file() and f.suffix.lower() in BILD]
+    e = p / ENTPACKT
+    if e.is_dir():
+        raus += [f for f in e.iterdir()
+                 if f.is_file() and f.suffix.lower() in BILD]
+    return sorted(raus, key=lambda f: (nummer(f) or 0, f.name))
+
+
+def pdfs(ordner):
     p = Path(ordner)
     if not p.exists():
         return []
     return sorted(f for f in p.iterdir()
-                  if f.is_file() and f.suffix.lower() in BILD)
+                  if f.is_file() and f.suffix.lower() == ".pdf")
+
+
+def pdf_werkzeug():
+    return shutil.which("pdftoppm")
+
+
+def pdf_seitenzahl(pdf):
+    werkzeug = shutil.which("pdfinfo")
+    if not werkzeug:
+        return None
+    try:
+        aus = subprocess.run([werkzeug, str(pdf)], capture_output=True,
+                             text=True, timeout=60).stdout
+    except Exception:
+        return None
+    m = re.search(r"^Pages:\s+(\d+)", aus, re.M)
+    return int(m.group(1)) if m else None
+
+
+def entpacken(ordner, still=False):
+    """PDFs in Einzelseiten zerlegen — einmal, danach wie Bilder behandelt.
+
+    Bereits entpackte PDFs werden übersprungen; der Aufruf ist damit
+    beliebig oft wiederholbar und kostet dann nichts.
+    """
+    werkzeug = pdf_werkzeug()
+    if not werkzeug:
+        return dict(fehler="pdftoppm nicht gefunden — Paket poppler-utils")
+    ziel = Path(ordner) / ENTPACKT
+    z = dict(pdfs=0, seiten_neu=0, uebersprungen=0)
+    for pdf in pdfs(ordner):
+        z["pdfs"] += 1
+        marke = f"{pdf.stem}-"
+        da = [f for f in ziel.iterdir()] if ziel.is_dir() else []
+        if any(f.name.startswith(marke) for f in da):
+            z["uebersprungen"] += 1
+            continue
+        ziel.mkdir(parents=True, exist_ok=True)
+        if not still:
+            n = pdf_seitenzahl(pdf)
+            print(f"  entpacke {pdf.name}"
+                  + (f" ({n} Seiten)" if n else "") + " …", flush=True)
+        subprocess.run([werkzeug, "-r", str(AUFLOESUNG), "-jpeg",
+                        "-jpegopt", "quality=92", str(pdf),
+                        str(ziel / pdf.stem)], check=False, timeout=3600)
+        z["seiten_neu"] += sum(1 for f in ziel.iterdir()
+                               if f.name.startswith(marke))
+    return z
 
 
 def nummer(pfad):
@@ -82,8 +152,10 @@ def dubletten(dateien):
     return raus, med
 
 
-def sichte(art, uebersicht=False):
-    ordner = konfig.bilderordner(art)
+def sichte(art, uebersicht=False, ordner=None):
+    ordner = ordner or konfig.bilderordner(art)
+    if pdfs(ordner):
+        entpacken(ordner)
     fs = bilder(ordner)
     titel = konfig.register(art).get("titel", art)
     print(f"=== {titel} ===  {ordner}")
@@ -133,6 +205,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("register", nargs="*", help="leer = alle aus konfig.toml")
     ap.add_argument("--uebersicht", action="store_true")
+    ap.add_argument("--entpacken", action="store_true",
+                    help="nur PDFs in Einzelseiten zerlegen")
     a = ap.parse_args()
     arten = a.register or list(konfig.register())
     for i, art in enumerate(arten):
@@ -140,6 +214,12 @@ def main():
             print()
         if art not in konfig.register():
             print(f"unbekanntes Register: {art}")
+            continue
+        if a.entpacken:
+            o = konfig.bilderordner(art)
+            print(f"=== {art} ===  {o}")
+            z = entpacken(o)
+            print("  " + " · ".join(f"{k} {v}" for k, v in z.items()))
             continue
         sichte(art, a.uebersicht)
 

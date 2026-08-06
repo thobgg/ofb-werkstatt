@@ -23,7 +23,7 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-from . import db, konfig, seiten
+from . import db, einstellungen, konfig, seiten
 
 API = "https://api.anthropic.com/v1/messages"
 MODELL = "claude-opus-4-5"
@@ -214,7 +214,7 @@ def main():
 
     fs = [Path(b) for b in a.bild]
     if a.alle:
-        fs = seiten.bilder(konfig.bilderordner(a.register))
+        fs = seiten.bilder(einstellungen.ordner(con, a.register))
     if a.grenze:
         fs = fs[:a.grenze]
     if not fs:

@@ -235,6 +235,25 @@ CREATE TABLE IF NOT EXISTS auftrag_seite (
 );
 CREATE INDEX IF NOT EXISTS ix_auftrag_runde ON auftrag(runde);
 
+-- ------------------------------------------------------------ Einstellungen
+-- Was sich im Betrieb ändert, steht hier; was die Struktur ausmacht, in
+-- konfig.toml. Die Trennlinie ist nicht willkürlich:
+--
+--     konfig.toml   Registerarten, Felder, Rollen, Kontextquellen
+--                   -> Struktur. Ändert man einmal beim Einrichten.
+--     einstellung   Seitenzahl je Runde, Reihenfolge, Bildordner, Autopilot
+--                   -> Betrieb. Ändert man beim Arbeiten.
+--
+-- Betriebswerte in die TOML-Datei zurückzuschreiben hieße, sie bei jedem
+-- Klick neu zu erzeugen — und dabei ihre Kommentare zu verlieren, die den
+-- halben Erklärwert der Datei ausmachen. Was hier fehlt, kommt weiterhin
+-- aus konfig.toml; die Einstellung überschreibt nur.
+CREATE TABLE IF NOT EXISTS einstellung (
+  schluessel TEXT PRIMARY KEY,
+  wert       TEXT,
+  geaendert  TEXT
+);
+
 -- ------------------------------------------------------------------ Journal
 -- Jede Ergänzung und jede Korrektur als Vorgang. `werkstatt.ausgabe` wendet
 -- sie beim Fortschreiben auf die unveränderten Records an.
