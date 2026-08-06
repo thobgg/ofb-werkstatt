@@ -20,6 +20,8 @@ wie alles andere — Abgleich, Ampel und Übergabe merken keinen Unterschied.
 """
 import argparse
 import json
+import os
+import sys
 from pathlib import Path
 
 from . import db, einstellungen, konfig, lesen, seiten
@@ -243,6 +245,70 @@ def bereitschaft(neu=False):
         d["meldung"] = f"Status nicht lesbar: {e}"
     _BEREIT.clear(), _BEREIT.update(d)
     return d
+
+
+# Für jedes Fenster: wie es einen Befehl mitbekommt. Getestet wird der
+# Reihe nach, das erste vorhandene gewinnt.
+_FENSTER = [
+    ("gnome-terminal", lambda b: ["--title=Claude-Anmeldung", "--"] + b),
+    ("konsole", lambda b: ["-e"] + b),
+    ("xfce4-terminal", lambda b: ["--title=Claude-Anmeldung", "-x"] + b),
+    ("alacritty", lambda b: ["-e"] + b),
+    ("kitty", lambda b: b),
+    ("xterm", lambda b: ["-title", "Claude-Anmeldung", "-e"] + b),
+    ("x-terminal-emulator", lambda b: ["-e"] + b),
+]
+
+
+def anmelden():
+    """Ein Fenster mit `claude auth login` öffnen.
+
+    Die Anmeldung ist ein Gespräch: sie schickt in den Browser und wartet
+    auf die Rückmeldung. Das braucht ein richtiges Fenster — deshalb wird
+    eines geöffnet, statt den Befehl blind im Hintergrund zu starten.
+    Die Werkstatt sieht dabei nichts von dem, was dort eingegeben wird;
+    sie fragt hinterher nur `claude auth status` ab.
+    """
+    import shutil
+    import subprocess
+    w = werkzeug()
+    if not w:
+        return dict(ok=False, meldung="Claude Code ist nicht installiert.",
+                    befehl="claude auth login")
+    if os.name == "nt":
+        try:
+            subprocess.Popen(
+                ["cmd", "/c", "start", "Claude-Anmeldung", "cmd", "/k",
+                 w, "auth", "login", "--claudeai"],
+                close_fds=True)
+            return dict(ok=True, meldung="Ein Fenster ist aufgegangen.")
+        except Exception as e:
+            return dict(ok=False, meldung=str(e), befehl="claude auth login")
+    if sys.platform == "darwin":
+        skript = konfig.WURZEL / "daten" / "anmelden.command"
+        skript.parent.mkdir(parents=True, exist_ok=True)
+        skript.write_text(f'#!/bin/sh\n"{w}" auth login --claudeai\n')
+        skript.chmod(0o755)
+        subprocess.Popen(["open", "-a", "Terminal", str(skript)])
+        return dict(ok=True, meldung="Ein Fenster ist aufgegangen.")
+    # Nach der Anmeldung stehen bleiben, sonst ist die Meldung schneller
+    # weg als lesbar.
+    innen = ["sh", "-c", f'"{w}" auth login --claudeai; echo; '
+             'echo "Fertig — dieses Fenster kann zu."; read x']
+    for name, bau in _FENSTER:
+        p = shutil.which(name)
+        if not p:
+            continue
+        try:
+            subprocess.Popen([p] + bau(innen), close_fds=True,
+                             stdout=subprocess.DEVNULL,
+                             stderr=subprocess.DEVNULL)
+            return dict(ok=True, meldung="Ein Fenster ist aufgegangen.")
+        except Exception:
+            continue
+    return dict(ok=False, befehl="claude auth login", meldung=(
+        "Kein Terminalfenster gefunden. Bitte eines von Hand öffnen und "
+        "den Befehl eingeben."))
 
 
 def lesen_lassen(con, runde_id, still=False, zeitlimit=3600):

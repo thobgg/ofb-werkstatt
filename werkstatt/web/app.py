@@ -79,6 +79,10 @@ class Handler(BaseHTTPRequestHandler):
         if pfad in ("/", "/index.html", "/lesen", "/uebergabe", "/ausgabe",
                     "/einstellungen"):
             return self._send(200, "text/html; charset=utf-8", STARTSEITE)
+        if pfad == "/api/anmeldestand":
+            # neu=True: die Antwort wird gemerkt, hier will der Browser aber
+            # gerade wissen, ob sich im Anmeldefenster etwas getan hat.
+            return self._json(vorlage.bereitschaft(neu=True))
         if pfad == "/api/einstellungen":
             con = db.verbinde()
             try:
@@ -210,6 +214,8 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json({"fehler": str(e)}, 400)
             finally:
                 con.close()
+        if pfad == "/api/anmelden":
+            return self._json(vorlage.anmelden())
         if pfad == "/api/lesen-lassen":
             d = self._rumpf()
             rid = int(d["runde"])

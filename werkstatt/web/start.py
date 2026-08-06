@@ -455,6 +455,55 @@ async function einstellungenHolen(){
  document.getElementById('app').innerHTML=ansichtEinstellungen();
 }
 
+function anmeldeblock(c){
+ if(c.angemeldet) return `<div class=reihe style="margin-bottom:.6rem">
+   <span class=ampel><i class="pkt gruen"></i>
+   <b>Angemeldet${c.abo?' — '+esc(c.abo)+'-Abonnement':''}</b></span>
+   <span class=dim>${esc(c.konto||'')} · ${esc(c.weg||'')}
+    · Claude Code ${esc(c.version||'')}</span></div>`;
+ if(!c.da) return `<div class=warn>${esc(c.meldung||'')}
+   <div style="margin-top:.5rem">Claude Code zuerst installieren —
+   <code>claude.com/download</code>, unter Windows das
+   Installationsprogramm. Danach diese Seite neu laden; der Knopf zum
+   Anmelden erscheint dann hier.</div></div>`;
+ return `<div class=warn>${esc(c.meldung||'')}
+   <div style="margin-top:.5rem">Einmal anmelden, dann nie wieder.</div>
+   <div class=reihe style="margin-top:.6rem">
+    <button class=ja onclick=anmeldenStarten(this)>Jetzt anmelden</button>
+    <span class=dim id=anmeldetext>Es geht ein Fenster auf und schickt Sie
+     in den Browser. Diese Seite merkt von selbst, wenn es geklappt hat.</span>
+   </div></div>`;
+}
+
+let anmeldeTakt=null;
+
+async function anmeldenStarten(btn){
+ btn.disabled=true;
+ const t=document.getElementById('anmeldetext');
+ const a=await (await fetch('/api/anmelden',{method:'POST'})).json();
+ if(!a.ok){
+  btn.disabled=false;
+  t.innerHTML=`${esc(a.meldung||'')} Bitte ein Terminal öffnen und
+   <code>${esc(a.befehl||'claude auth login')}</code> eingeben.`;
+  return;
+ }
+ t.textContent='Warte auf die Anmeldung im anderen Fenster …';
+ let versuche=0;
+ clearInterval(anmeldeTakt);
+ anmeldeTakt=setInterval(async()=>{
+  const c=await (await fetch('/api/anmeldestand')).json();
+  if(c.angemeldet){
+   clearInterval(anmeldeTakt);
+   document.getElementById('anmeldung').innerHTML=anmeldeblock(c);
+   E.ki.cli=c;
+  }else if(++versuche>150){         // fünf Minuten
+   clearInterval(anmeldeTakt);
+   btn.disabled=false;
+   t.textContent='Nichts angekommen. Noch einmal versuchen?';
+  }
+ },2000);
+}
+
 function ansichtEinstellungen(){
  const r=E.register;
  return `
@@ -507,26 +556,7 @@ function ansichtEinstellungen(){
  <h2>KI-Anbindung</h2>
  <div class=karte>
   <h3 style="margin:0 0 .5rem">Über Claude Code — das eigene Abonnement</h3>
-  ${!E.ki.cli.da
-   ? `<div class=warn>${esc(E.ki.cli.meldung||'')}
-       <div style="margin-top:.5rem">Einrichten in drei Schritten:</div>
-       <ol style="margin:.3rem 0 0 1.1rem;padding:0">
-        <li>Claude Code installieren — <code>claude.com/download</code>,
-            unter Windows das Installationsprogramm.</li>
-        <li>Ein Terminal öffnen (Windows: <b>Eingabeaufforderung</b>) und
-            <code>claude auth login</code> eingeben. Es öffnet sich der
-            Browser, dort wie gewohnt anmelden. Das ist einmalig.</li>
-        <li>Diese Seite neu laden — hier muss dann das Konto stehen.</li>
-       </ol></div>`
-   : E.ki.cli.angemeldet
-   ? `<div class=reihe style="margin-bottom:.6rem">
-       <span class=ampel><i class="pkt gruen"></i>
-       <b>Angemeldet${E.ki.cli.abo?' — '+esc(E.ki.cli.abo)+'-Abonnement':''}</b></span>
-       <span class=dim>${esc(E.ki.cli.konto||'')} · ${esc(E.ki.cli.weg||'')}
-        · Claude Code ${esc(E.ki.cli.version||'')}</span></div>`
-   : `<div class=warn>${esc(E.ki.cli.meldung||'')}
-       Ein Terminal öffnen und <code>claude auth login</code> eingeben,
-       dann diese Seite neu laden.</div>`}
+  <div id=anmeldung>${anmeldeblock(E.ki.cli)}</div>
   <p class=dim style="font-size:.86rem;margin:.2rem 0 0">
    Die Werkstatt speichert <b>keine Anmeldedaten</b> und hängt sich an
    <b>keinen laufenden Chat</b>. Sie ruft für jede Runde einmal
