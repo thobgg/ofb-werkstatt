@@ -31,7 +31,7 @@ from .seite import SEITE
 from .start import STARTSEITE
 from .. import (abgleich, ausgabe, db, einstellungen, konfig, lesen,
                 runde as _runde,
-                pruefung, seiten, suche, testdaten)
+                pruefung, seiten, suche, testdaten, vorlage)
 
 ROOT = konfig.WURZEL
 DB = ROOT / "daten" / "erfassung.sqlite"
@@ -209,6 +209,30 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json({"fehler": str(e)}, 400)
             finally:
                 con.close()
+        if pfad == "/api/lesen-lassen":
+            d = self._rumpf()
+            rid = int(d["runde"])
+            # Im Hintergrund, sonst haengt der Browser an einer Sitzung, die
+            # Minuten dauern kann.
+            import threading
+
+            def arbeite():
+                c = db.verbinde()
+                try:
+                    vorlage.lesen_lassen(c, rid, still=True, zeitlimit=7200)
+                    _runde.lauf(rid)
+                finally:
+                    c.close()
+            threading.Thread(target=arbeite, daemon=True,
+                             name=f"lesen-{rid}").start()
+            return self._json({"ok": True, "gestartet": True})
+        if pfad == "/api/einlesen":
+            d = self._rumpf()
+            rid = int(d["runde"])
+            import threading
+            threading.Thread(target=_runde.lauf, args=(rid,), daemon=True,
+                             name=f"einlesen-{rid}").start()
+            return self._json({"ok": True, "gestartet": True})
         if pfad == "/api/runde/uebergib":
             d = self._rumpf()
             con = db.verbinde()
@@ -354,6 +378,9 @@ class Handler(BaseHTTPRequestHandler):
                 runde=r,
                 vorschlag=v,
                 fortschritt=_runde.fortschritt(con, r["id"]) if r else None,
+                vorlage=(vorlage.stand(con, r["id"])
+                         if r and r["quelle"] == "datei" else None),
+                claude_code=bool(vorlage.werkzeug()),
                 offen=_runde.offen_in_runde(con, r["id"]) if r else None,
                 bestand=db.stand(con),
             )

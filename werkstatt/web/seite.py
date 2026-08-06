@@ -81,51 +81,99 @@ details summary{cursor:pointer;color:#8b93a3;font-size:.84rem;padding:.3rem 0}
 .anbind.warn .fid{background:#4a3a13;color:#f0d089}
 .anbind .hinw{color:#9aa3b2}
 .leer{padding:3rem;text-align:center;color:#9aa3b2}
+.fortschritt{height:.3rem;background:#262b33;position:sticky;top:2.6rem;z-index:8}
+.fortschritt i{display:block;height:100%;background:#2f6fdd;transition:width .25s}
+.tasten{display:flex;gap:.5rem;align-items:center;padding:.6rem .9rem;
+ background:#191d24;border-top:1px solid #23272f;flex-wrap:wrap}
+.tasten kbd{background:#2b313b;border:1px solid #3a424f;border-bottom-width:2px;
+ border-radius:4px;padding:.05rem .35rem;font:inherit;font-size:.8rem;color:#c3c9d4}
+.still{padding:.35rem .9rem;font-size:.88rem;color:#9aa3b2;
+ border-bottom:1px solid #23272f;display:flex;gap:.5rem;flex-wrap:wrap}
+.still b{color:#c3c9d4;font-weight:600}
+.frage{background:#1a2130;border-left:3px solid #4b7bec}
+.vorschlag2{padding:.4rem .9rem .6rem;font-size:.9rem}
+.vorschlag2 .kand{display:flex;gap:.6rem;align-items:baseline;padding:.25rem 0}
+.vorschlag2 .id{font-family:ui-monospace,monospace;font-size:.78rem;
+ background:#1d4231;color:#8fe3b4;padding:.05rem .35rem;border-radius:4px}
 </style></head><body>
 <header><a href="/" style="color:#9aa3b2;text-decoration:none">&larr;</a>
 <b>OFB-Werkstatt</b><span class=zaehler id=runde></span>
 <span class=zaehler id=z></span>
 <span style=flex:1></span>
-<span class=zaehler><kbd>Enter</kbd> nächstes Feld · <kbd>Strg</kbd>+<kbd>Enter</kbd> Eintrag fertig
- · <kbd>Alt</kbd>+<kbd>N</kbd> neu anlegen</span></header>
+<span class=zaehler id=tasten></span>
+<button id=alle onclick=umschalten() title="alle Einträge auf einer Seite">Liste</button>
+</header>
+<div class=fortschritt><i id=bal style=width:0></i></div>
 <main id=app class=leer>lade…</main>
 <script>
 let daten=[],fokus=0;
 const esc=s=>(s??'').toString().replace(/[&<>"]/g,c=>
  ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
-let runde=null;
+let runde=null, i=0, liste=false;
+
 async function laden(){
  const stand=await (await fetch('/api/stand')).json();
  runde=stand.runde;
  // Die Maske zeigt die gerade gelesene Tranche, nicht den ganzen Bestand.
- // Ohne diese Einschraenkung waechst sie mit jeder Runde weiter, und der
- // Bearbeiter sucht das Neue zwischen dem laengst Erledigten.
  const q=runde?('?runde='+runde.id):'';
  daten=await (await fetch('/api/eintraege'+q)).json();
  const r=document.getElementById('runde');
- if(runde) r.textContent=`Runde ${runde.nr} · ${runde.register} · `
-   +`${runde.von_bild} – ${runde.bis_bild}`;
- const app=document.getElementById('app');
- if(!daten.length){app.className='leer';
-  app.innerHTML='Nichts zu korrigieren. <a href="/lesen" style=color:#7fb0ff>Runde lesen</a>';
+ if(runde) r.textContent=`Runde ${runde.nr} · ${runde.register}`;
+ if(!daten.length){document.getElementById('app').className='leer';
+  document.getElementById('app').innerHTML=
+   'Nichts zu korrigieren. <a href="/lesen" style=color:#7fb0ff>Runde lesen</a>';
   return}
- app.className='';
- app.innerHTML=daten.map((e,i)=>karte(e,i)).join('');
- zaehler(); markiere();
- document.querySelectorAll('.eintrag').forEach(el=>anbindung(el));
+ document.getElementById('app').className='';
+ // Beim Öffnen dort weitermachen, wo noch etwas offen ist.
+ const offen=daten.findIndex(e=>e.status!=='bestaetigt');
+ i = offen>=0 ? offen : 0;
+ zeichne();
 }
-function feld(e,n){return e.felder.find(f=>f.name===n)||{}}
-function karte(e,i){
+
+function zeichne(){
+ const app=document.getElementById('app');
+ if(liste){
+  app.innerHTML=daten.map((e,k)=>karte(e,k)).join('');
+  document.querySelectorAll('.eintrag').forEach(el=>anbindung(el));
+ } else {
+  app.innerHTML=karte(daten[i], i);
+  const el=app.querySelector('.eintrag'); if(el) anbindung(el);
+  const erste=app.querySelector('.person.frage input');
+  if(erste) setTimeout(()=>erste.focus(), 60);
+ }
+ zaehler();
+ document.getElementById('alle').textContent = liste ? 'Einzeln' : 'Liste';
+ document.getElementById('tasten').innerHTML = liste ? '' :
+  '<kbd>Enter</kbd> übernehmen · <kbd>N</kbd> neu · <kbd>↓</kbd><kbd>↑</kbd> blättern'
+  +' · <kbd>Strg</kbd>+<kbd>Enter</kbd> fertig';
+}
+
+function umschalten(){ liste=!liste; zeichne();
+ if(!liste) window.scrollTo(0,0); }
+
+function karte(e,k){
+ // Was der Abgleich getragen hat, steht still da. Was er nicht trägt,
+ // bekommt den Platz — und den Fokus.
  const pers=e.felder.filter(f=>f.rolle);
- return `<div class=eintrag data-i=${i} data-id=${e.id}>
+ const still=pers.filter(f=>f.ampel==='gruen');
+ const frage=pers.filter(f=>f.ampel!=='gruen');
+ const rest=e.felder.filter(f=>!f.rolle&&f.wert);
+ return `<div class="eintrag${liste?'':' fokus'}" data-i=${k} data-id=${e.id}>
   <div class=kopf><span class=q>Nr. ${esc(e.nr)}</span>
    <span>${e.jahr||''}</span><span style=color:#6f7787>${esc(e.bild||'')}</span>
-   <span style=flex:1></span><span class=zaehler>${esc(e.status)}</span></div>
+   <span style=flex:1></span>
+   <span class=zaehler>${liste?esc(e.status):`Eintrag ${k+1} von ${daten.length}`}</span></div>
   ${e.ausschnitt?`<div class=bildbox onclick="this.classList.toggle('gross')">
     <img src="/bild/${encodeURI(e.ausschnitt)}" loading=lazy alt="">
     <span class=zh>klicken zum Vergrößern</span></div>`:''}
-  ${pers.map(f=>zeilePerson(e,f)).join('')}
+  ${still.length?`<div class=still><span class=dim>gesichert:</span>
+    ${still.map(f=>`<span><i class="pkt gruen"></i> ${esc(f.rolle)}
+      <b>${esc(f.wert||'')}</b></span>`).join('')}</div>`:''}
+  ${rest.length?`<div class=still><span class=dim>gelesen:</span>
+    ${rest.map(f=>`<span>${esc(f.name.replace(/_/g,' '))}
+      <b>${esc(String(f.wert).slice(0,40))}</b></span>`).join('')}</div>`:''}
+  ${frage.map(f=>zeilePerson(e,f)).join('')}
   <div class=anbind data-anbind><span class=lbl>Familie</span>
    <span class=hinw>wird ermittelt…</span></div>
   <div class=daten>
@@ -134,7 +182,7 @@ function karte(e,i){
    ${datumsfeld(e,'trauung_datum','kop.')}
    ${datumsfeld(e,'sterbe_datum','gest.')}
   </div>
-  <div class=mehr><details><summary>weitere Felder</summary>
+  <div class=mehr><details><summary>alle Felder</summary>
    ${e.felder.filter(f=>!f.rolle&&!/_datum$/.test(f.name)).map(f=>`
     <div class=zeile><label>${esc(f.name.replace(/_/g,' '))}</label>
      <input data-feld="${esc(f.name)}" value="${esc(f.wert||'')}"
@@ -143,13 +191,29 @@ function karte(e,i){
       placeholder="Kirchenbuchform" oninput="this.classList.add('geaendert')">
     </div>`).join('')}
   </details></div>
-  <div class=fuss><button class=ja onclick="fertig(${i})">Fertig · weiter</button>
-   <span class=zaehler>Strg+Enter</span></div>
+  <div class=fuss><button class=ja onclick="fertig(${k})">Fertig · weiter</button>
+   <span class=zaehler>Strg+Enter</span>
+   ${liste?'':`<span style=flex:1></span>
+     <button onclick="blaettern(-1)">zurück</button>
+     <button onclick="blaettern(1)">überspringen</button>`}</div>
  </div>`;
 }
+
+function blaettern(d){
+ const n=i+d;
+ if(n<0||n>=daten.length) return;
+ i=n; zeichne(); window.scrollTo(0,0);
+}
+
+function feld(e,n){return e.felder.find(f=>f.name===n)||{}}
+
 function zeilePerson(e,f){
  const v=f.entscheidung;
- return `<div class="person" data-feld="${esc(f.name)}"
+ const treffer = f.person
+   ? `<span class=treffer><span class=id>${esc(f.person)}</span>
+       <span class=warum>${esc(f.beleg||'')}</span></span>`
+   : `<span class=neu>○ ${esc(f.beleg||'kein Treffer')}</span>`;
+ return `<div class="person frage" data-feld="${esc(f.name)}"
   ${f.person?`data-person="${esc(f.person)}"`:''}>
   <span class=rolle><i class="pkt ${esc(f.ampel||'grau')}"></i> ${esc(f.rolle)}</span>
   <span class=feldbox><input data-feld="${esc(f.name)}" value="${esc(f.wert||'')}"
@@ -157,19 +221,15 @@ function zeilePerson(e,f){
    oninput="this.classList.add('geaendert');vorschlagen(this)"
    onkeydown="navVorschlag(event,this)"
    onblur="setTimeout(()=>schliesse(this),180)"></span>
-  <span>${v==='neu'
-    ?`<span class=neu>● wird neu angelegt</span>`
-    :f.person
-      ?`<span class=treffer><span class=id>${esc(f.person)}</span>
-         <span class=warum>${esc(f.beleg||'')}</span></span>`
-      :`<span class=neu>○ kein Treffer${f.beleg?' — '+esc(f.beleg):''}</span>`}</span>
+  <span>${v==='neu'?`<span class=neu>● wird neu angelegt</span>`:treffer}</span>
   <span class=knopf>
-   <button class="${v==='verknuepft'?'ja an':''}" title="find and use"
+   <button class="${v==='verknuepft'?'ja an':''}" title="übernehmen (Enter)"
     onclick="setze(this,'verknuepft')" ${f.person?'':'disabled'}>übernehmen</button>
-   <button class="${v==='neu'?'ja an':''}" title="create (Alt+N)"
+   <button class="${v==='neu'?'ja an':''}" title="neu anlegen (N)"
     onclick="setze(this,'neu')">neu</button>
   </span></div>`;
 }
+
 function datumsfeld(e,n,lbl){
  const f=feld(e,n); if(!f.name) return '';
  return `<label>${lbl}</label><input data-feld="${esc(n)}" value="${esc(f.wert||'')}"
@@ -215,13 +275,16 @@ function markiere(){
 }
 function zaehler(){
  const fix=daten.filter(e=>e.status==='bestaetigt').length;
+ const b=document.getElementById('bal');
+ if(b) b.style.width = daten.length ? (100*fix/daten.length)+'%' : '0';
  document.getElementById('z').textContent=`${fix} von ${daten.length} bestätigt`;
  if(fix===daten.length&&daten.length)
   document.getElementById('z').innerHTML+=
    ' · <a href="/uebergabe" style=color:#8fe3b4>übergeben</a>';
 }
-async function fertig(i){
- const el=document.querySelector(`.eintrag[data-i="${i}"]`);
+async function fertig(k){
+ const el=document.querySelector(`.eintrag[data-i="${k}"]`);
+ if(!el) return;
  const felder={};
  el.querySelectorAll('input[data-feld]').forEach(inp=>{
   const n=inp.dataset.feld;
@@ -233,17 +296,28 @@ async function fertig(i){
  });
  const r=await fetch('/api/speichern',{method:'POST',
   headers:{'content-type':'application/json'},
-  body:JSON.stringify({id:daten[i].id,felder,bestaetigt:true})});
+  body:JSON.stringify({id:daten[k].id,felder,bestaetigt:true})});
  if(!r.ok){alert('Speichern fehlgeschlagen');return}
- el.classList.add('fertig');
- daten[i].status='bestaetigt'; zaehler();
- const naechst=daten.findIndex((e,k)=>k>i&&e.status!=='bestaetigt');
- if(naechst>=0){fokus=naechst;markiere();
-  document.querySelector(`.eintrag[data-i="${naechst}"]`)
-   .scrollIntoView({behavior:'smooth',block:'start'});
-  setTimeout(()=>{const f=document.querySelector(
-    `.eintrag[data-i="${naechst}"] input`); if(f)f.focus();},350);}
+ daten[k].status='bestaetigt';
+ daten[k].felder.forEach(f=>{ if(f.rolle) f.ampel='gruen'; });
+ const naechst=daten.findIndex((e,x)=>x>k&&e.status!=='bestaetigt');
+ if(liste){
+  el.classList.add('fertig'); zaehler();
+  if(naechst>=0) document.querySelector(`.eintrag[data-i="${naechst}"]`)
+    ?.scrollIntoView({behavior:'smooth',block:'start'});
+  return;
+ }
+ if(naechst>=0){ i=naechst; zeichne(); window.scrollTo(0,0); return; }
+ const rest=daten.findIndex(e=>e.status!=='bestaetigt');
+ if(rest>=0){ i=rest; zeichne(); window.scrollTo(0,0); return; }
+ // Alles bestätigt — weiter zur Übergabe.
+ document.getElementById('app').className='leer';
+ document.getElementById('app').innerHTML=
+  `<p><b>${daten.length} Einträge bestätigt.</b></p>
+   <p><a href="/uebergabe" style=color:#7fb0ff>Weiter zur Übergabe →</a></p>`;
+ zaehler();
 }
+
 // ---- Autovervollständigung: Vokabular + find-and-use ----
 let sucheTimer=null;
 function schliesse(inp){const b=inp.closest('.feldbox');
@@ -317,17 +391,49 @@ function navVorschlag(ev,inp){
 }
 
 document.addEventListener('keydown',ev=>{
- const el=ev.target.closest?.('.eintrag');
- if(ev.key==='Enter'&&ev.ctrlKey&&el){ev.preventDefault();fertig(+el.dataset.i);return}
- if(ev.key==='Enter'&&el&&ev.target.tagName==='INPUT'){
-  ev.preventDefault();
-  const alle=[...el.querySelectorAll('input')];
-  const k=alle.indexOf(ev.target);
-  if(k>=0&&k+1<alle.length) alle[k+1].focus(); else fertig(+el.dataset.i);
-  return}
- if(ev.altKey&&(ev.key==='n'||ev.key==='N')){
-  const p=ev.target.closest?.('.person');
-  if(p){ev.preventDefault();setze(p.querySelector('.knopf button:last-child'),'neu')}}
+ const inp = ev.target.tagName==='INPUT';
+ const vorschlagOffen = inp && ev.target.closest('.feldbox')?.querySelector('.vorschlag');
+ const el = ev.target.closest?.('.eintrag') || document.querySelector('.eintrag');
+
+ // Strg+Enter: Eintrag fertig — gilt immer.
+ if(ev.key==='Enter' && ev.ctrlKey && el){
+  ev.preventDefault(); fertig(+el.dataset.i); return; }
+
+ // Solange eine Vorschlagsliste offen ist, gehört die Tastatur ihr.
+ if(vorschlagOffen) return;
+
+ if(inp){
+  // Enter im Feld: den grün vorgeschlagenen Treffer übernehmen, sonst
+  // ins nächste Feld. Ein Tastendruck je Entscheidung.
+  if(ev.key==='Enter'){
+   ev.preventDefault();
+   const p=ev.target.closest('.person');
+   const b=p?.querySelector('.knopf button:not([disabled])');
+   if(p && b && !p.dataset.entscheidung){ setze(b,'verknuepft'); }
+   const alle=[...el.querySelectorAll('.person.frage input, .daten input')];
+   const k=alle.indexOf(ev.target);
+   if(k>=0 && k+1<alle.length) alle[k+1].focus(); else fertig(+el.dataset.i);
+   return;
+  }
+  if(ev.altKey && (ev.key==='n'||ev.key==='N')){
+   const p=ev.target.closest('.person');
+   if(p){ev.preventDefault();
+    setze(p.querySelector('.knopf button:last-child'),'neu');}
+   return;
+  }
+  return;   // sonst tippt der Mensch, und das lassen wir ihn
+ }
+
+ // Außerhalb eines Feldes: blättern und entscheiden mit einer Taste.
+ if(liste) return;
+ if(ev.key==='ArrowDown'||ev.key==='j'){ ev.preventDefault(); blaettern(1); }
+ else if(ev.key==='ArrowUp'||ev.key==='k'){ ev.preventDefault(); blaettern(-1); }
+ else if(ev.key==='Enter'){ ev.preventDefault(); if(el) fertig(+el.dataset.i); }
+ else if(ev.key==='n'||ev.key==='N'){
+  const p=document.querySelector('.person.frage');
+  if(p){ev.preventDefault(); setze(p.querySelector('.knopf button:last-child'),'neu');}
+ }
 });
+
 laden();
 </script></body></html>"""
