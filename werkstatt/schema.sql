@@ -297,6 +297,27 @@ CREATE VIEW IF NOT EXISTS chronologie AS
   FROM eintrag e JOIN feld f ON f.eintrag_id = e.id
   WHERE f.name LIKE '%datum%';
 
+-- ------------------------------------------------------------- Wortschatz
+-- Wörter ohne Person. Eine Namensliste, ein Ortsverzeichnis, eine
+-- Berufstabelle — alles, was Schreibweisen kennt, aber keine Lebensdaten
+-- hat und deshalb nie bestätigen kann.
+--
+-- Getrennt von `person`, weil sonst jede Zeile einer Tabelle eine erfundene
+-- Person würde. Der Abgleich zählt sie mit, die Ampel nicht: die Herkunft
+-- solcher Quellen ist `vokabular`, und ein Vokabulartreffer bleibt gelb.
+CREATE TABLE IF NOT EXISTS wortschatz (
+  id       INTEGER PRIMARY KEY,
+  herkunft INTEGER NOT NULL REFERENCES herkunft(id) ON DELETE CASCADE,
+  klasse   TEXT NOT NULL,     -- nachname | vorname | ort | beruf | offen
+  wort     TEXT NOT NULL,     -- Schreibweise wie in der Quelle
+  gefaltet TEXT NOT NULL,     -- Vergleichsform, siehe suche.falte()
+  anzahl   INTEGER NOT NULL DEFAULT 1,
+  woher    TEXT,              -- Datei und Spalte, für den Beleg im Zweifel
+  UNIQUE(herkunft, klasse, wort)
+);
+CREATE INDEX IF NOT EXISTS ix_wortschatz_gef ON wortschatz(gefaltet);
+CREATE INDEX IF NOT EXISTS ix_wortschatz_klasse ON wortschatz(klasse);
+
 -- Bequemer Zugriff auf den geltenden Wert
 CREATE VIEW IF NOT EXISTS wert AS
   SELECT e.register, e.bild, e.nr, e.jahr, f.name, f.rolle,

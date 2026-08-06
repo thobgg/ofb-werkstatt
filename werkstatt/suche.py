@@ -48,6 +48,14 @@ def inventar():
         "SELECT surn AS a, surn_kanon AS b FROM person WHERE surn IS NOT NULL"))
     quellen += list(con.execute(
         "SELECT wert AS a, NULL AS b FROM namensform WHERE art='surn'"))
+    # Wörter ohne Person — eingelesene Namenslisten, Ortsverzeichnisse,
+    # abgetippte Register. Sie ranken mit, bestätigen aber nie: ihre
+    # Herkunft ist immer `vokabular`, und die Ampel liest den Rang, nicht
+    # diese Liste. `offen` zählt dazu, weil eine Spalte ohne erkennbare
+    # Überschrift meist doch Namen enthält.
+    quellen += list(con.execute(
+        "SELECT wort AS a, NULL AS b FROM wortschatz "
+        "WHERE klasse IN ('nachname','offen')"))
     for surn, norm in ((r["a"], r["b"]) for r in quellen):
         for v in (surn, norm):
             v = (v or "").strip()

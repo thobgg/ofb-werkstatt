@@ -107,5 +107,9 @@ def kontext():
             parochien=[p.strip() for p in (q.get("parochien") or []) if p.strip()],
             sonst=(q.get("sonst") or "").lower() or None,
             bis_jahr=q.get("bis_jahr"),
+            # Freiwillige Zuordnung Spaltenüberschrift -> Klasse, für
+            # Wortschatzquellen, deren Kopfzeile nicht von selbst spricht.
+            spalten={str(k): str(v).lower()
+                     for k, v in (q.get("spalten") or {}).items()},
         ))
     return raus

@@ -38,19 +38,28 @@ gedcom = ""
 # parochien = ["Musterhausen"]
 # bis_jahr  = 1807                 # danach traegt es nicht mehr
 #
-# [[kontext]]
-# name      = "Kirchenbuchdatenbank der Nachbarschaft"
-# art       = "sqlite"
-# datei     = "~/kirchenbuch.db"
-# gilt      = "beleg"
-# parochien = ["Musterhausen", "Nachbarort"]   # nur hier belastbar
-# sonst     = "vokabular"                      # ueberall sonst nur Wortschatz
+# Wortschatz: alles, was Schreibweisen kennt, aber keine Lebensdaten hat —
+# Namenslisten, Ortsverzeichnisse, abgetippte Register, Vorarbeiten anderer
+# Forscher. Gelesen werden .csv .tsv .txt .xlsx .ods .docx und ganze Ordner.
+# Der Rang ist immer "vokabular", auch wenn hier etwas anderes stuende: ohne
+# Daten laesst sich ein Treffer nicht pruefen, also darf er nur ranken.
+#
+# Einlesen:  python3 -m werkstatt.import_wortschatz --aus-konfig
 #
 # [[kontext]]
-# name  = "Namensatlas der Region"
-# art   = "csv"
-# datei = "~/atlas_export/"
-# gilt  = "vokabular"
+# name  = "Namensliste der Nachbarpfarrei"
+# art   = "wortschatz"
+# datei = "~/listen/nachbarn.xlsx"
+#
+# Die Klasse je Spalte kommt aus der Kopfzeile — Nachname, Vorname, Ort,
+# Beruf und ihre ueblichen Varianten werden erkannt, auch englische. Nur
+# wenn das nicht reicht, braucht es eine Zuordnung:
+#
+# [[kontext]]
+# name    = "Ortsverzeichnis"
+# art     = "wortschatz"
+# datei   = "~/listen/orte.csv"
+# spalten = { "Sp. 3" = "ort", "Sp. 4" = "beruf" }
 
 [register.ehe]
 titel   = "Eheregister"
