@@ -45,7 +45,7 @@ def register(art=None):
     return r.get(art) if art else r
 
 
-def felder(art):
+def felder(art, con=None):
     """Alle Felder dieser Aktart.
 
     Der Feldkatalog gibt den Umfang vor, nicht konfig.toml. Grund: Eine
@@ -55,7 +55,9 @@ def felder(art):
     Register, die er nicht kennt.
     """
     from . import katalog
-    aus_katalog = katalog.namen(art)
+    # Mit `con` gilt die Aktkarte aus dem Zahnrad — abgeschaltete Felder
+    # fehlen dann, eigene kommen hinzu. Ohne `con` der reine Vorrat.
+    aus_katalog = [x.name for x in katalog.felder(art, con)]
     eigen = [x for x in register(art).get("felder", [])
              if x not in aus_katalog]
     return aus_katalog + eigen if aus_katalog else eigen
@@ -65,9 +67,10 @@ def personen_rollen(art):
     return register(art).get("personen", [])
 
 
-def datumsfelder(art):
+def datumsfelder(art, con=None):
     from . import katalog
-    aus_katalog = katalog.datumsfelder(art)
+    aus_katalog = [x.name for x in katalog.felder(art, con)
+                   if x.art == "datum"]
     return aus_katalog or register(art).get("datum", [])
 
 

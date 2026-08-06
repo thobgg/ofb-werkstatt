@@ -366,7 +366,7 @@ def datumsfelder(art):
     return [x.name for x in felder(art) if x.art == "datum"]
 
 
-def als_prompt(art):
+def als_prompt(art, con=None):
     """Der Katalog als Anweisung für das Lesen.
 
     Damit steht im Prompt, was vorkommen *kann* — nicht, was der letzte
@@ -376,7 +376,7 @@ def als_prompt(art):
     z = [f"Felder der Aktart „{art}“. Gib jedes Feld an, das im Eintrag "
          "vorkommt, und lass die übrigen leer — leer ist eine Aussage, "
          "Raten ist keine.", ""]
-    for x in felder(art):
+    for x in felder(art, con):
         zeile = f"  {x.name:24} {x.titel}"
         if x.kb:
             zeile += "  [auch Kirchenbuchform angeben]"

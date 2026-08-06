@@ -116,7 +116,7 @@ def fehlerkatalog(con, schreiber=None, grenze=12):
 
 
 def prompt(art, con=None, schreiber=None):
-    felder = konfig.felder(art)
+    felder = konfig.felder(art, con)
     text = BASIS
     if con is not None:
         kat = fehlerkatalog(con, schreiber)
@@ -127,7 +127,7 @@ def prompt(art, con=None, schreiber=None):
     # „geborene“, „weiland“, Zwillinge, Nottaufe, Zählmonate. Eine bloße
     # Namensliste lässt das Modell raten, was `mutter_herkunft` sein soll.
     from . import katalog
-    text += AUSGABE.format(felder=katalog.als_prompt(art),
+    text += AUSGABE.format(felder=katalog.als_prompt(art, con),
                            beispiel=felder[1] if len(felder) > 1 else felder[0])
     return text
 
@@ -221,7 +221,7 @@ def kosten(modell, ein, aus, batch=False):
 
 def speichere(con, art, pfad, ergebnis):
     """Einträge und Felder in die Erfassungsdatenbank schreiben."""
-    reihen = {n: i for i, n in enumerate(konfig.felder(art))}
+    reihen = {n: i for i, n in enumerate(konfig.felder(art, con))}
     hid = db.herkunft_id(con, "modell", MODELL, f"gelesen aus {Path(pfad).name}")
     n_e = n_f = 0
     for e in ergebnis.get("eintraege", []):

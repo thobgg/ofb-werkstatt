@@ -217,7 +217,7 @@ def _randvermerk_auswerten(con, e):
         # Das Feld entsteht nur, wenn das Modell es liefert — beim
         # Taufeintrag tut es das nie, dort steht der Tod am Rand. Also hier
         # anlegen, sonst hätte der Vermerk keinen Ort.
-        reihen = {n: i for i, n in enumerate(konfig.felder(e["register"]))}
+        reihen = {n: i for i, n in enumerate(konfig.felder(e["register"], con))}
         con.execute(
             "INSERT INTO feld (eintrag_id, name, rolle, gelesen, beleg, "
             "ampel, reihe) VALUES (?,?,?,?,?, 'grau', ?)",

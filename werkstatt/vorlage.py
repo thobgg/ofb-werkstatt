@@ -135,14 +135,14 @@ def lege_vor(con, runde_id, still=False):
         ensure_ascii=False, indent=2), encoding="utf-8")
     (ziel / "prompt.txt").write_text(lesen.prompt(art, con), encoding="utf-8")
 
-    felder = konfig.felder(art)
+    felder = konfig.felder(art, con)
     (ziel / "ANLEITUNG.md").write_text(ANLEITUNG.format(
         nr=r["nr"], runde=runde_id,
         titel=konfig.register(art).get("titel", art),
         anzahl=len(bilder), bilder=quelle,
         jahr=r["jahr"] if "jahr" in r.keys() and r["jahr"] else 1808,
         beispielfeld=felder[1] if len(felder) > 1 else felder[0],
-        felder=katalog.als_prompt(art)), encoding="utf-8")
+        felder=katalog.als_prompt(art, con)), encoding="utf-8")
 
     if not still:
         print(f"  {ziel.relative_to(konfig.WURZEL)}")
