@@ -23,10 +23,11 @@ import json
 import sqlite3
 import urllib.parse
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from pathlib import Path
 
 from .seite import SEITE
 from .start import STARTSEITE
-from .. import abgleich, db, konfig, runde as _runde, suche, testdaten
+from .. import abgleich, ausgabe, db, konfig, runde as _runde, suche, testdaten
 
 ROOT = konfig.WURZEL
 DB = ROOT / "daten" / "erfassung.sqlite"
@@ -71,8 +72,23 @@ class Handler(BaseHTTPRequestHandler):
     # -------------------------------------------------------------- GET
     def do_GET(self):
         pfad = urllib.parse.urlparse(self.path).path
-        if pfad in ("/", "/index.html", "/lesen", "/uebergabe"):
+        if pfad in ("/", "/index.html", "/lesen", "/uebergabe", "/ausgabe"):
             return self._send(200, "text/html; charset=utf-8", STARTSEITE)
+        if pfad == "/api/ausgabe":
+            con = db.verbinde()
+            try:
+                ok, meldung, _ = ausgabe.leerlauf(con)
+                hid, datei = ausgabe.quelle_id(con)
+                d = dict(vorlage=datei, leerlauf=ok, leerlauf_text=meldung)
+                if hid:
+                    daten, z = ausgabe.fortschreiben(con, schreib=False)
+                    d.update(art="fort", zahlen=z, bytes=len(daten))
+                else:
+                    daten, z = ausgabe.neuausgabe(con, schreib=False)
+                    d.update(art="neu", zahlen=z, bytes=len(daten))
+                return self._json(d)
+            finally:
+                con.close()
         if pfad == "/korrektur":
             return self._send(200, "text/html; charset=utf-8", SEITE)
         if pfad == "/api/stand":
@@ -144,6 +160,24 @@ class Handler(BaseHTTPRequestHandler):
             try:
                 z = _runde.uebergib(con, int(d["runde"]), True)
                 return self._json({"ok": True, "zahlen": z})
+            finally:
+                con.close()
+        if pfad == "/api/ausgabe":
+            d = self._rumpf()
+            con = db.verbinde()
+            try:
+                hid, _ = ausgabe.quelle_id(con)
+                neu = d.get("art") == "neu" or hid is None
+                daten, z = (ausgabe.neuausgabe if neu
+                            else ausgabe.fortschreiben)(con, schreib=True)
+                name = d.get("datei") or (
+                    f"{konfig.konfig().get('gemeinde', {}).get('name', 'OFB')}"
+                    + ("_neuausgabe" if neu else "_fortgeschrieben") + ".ged")
+                ziel = (ROOT / "ausgabe" / Path(name).name)
+                ziel.parent.mkdir(parents=True, exist_ok=True)
+                ziel.write_bytes(daten)
+                return self._json(dict(ok=True, datei=str(
+                    ziel.relative_to(ROOT)), bytes=len(daten), zahlen=z))
             finally:
                 con.close()
         if pfad == "/api/abgleich":

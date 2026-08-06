@@ -19,7 +19,7 @@ verfestigen sich Lesefehler stillschweigend.
 import argparse
 import re
 
-from . import db, konfig
+from . import db, journal, konfig
 
 # Welche Rolle wird zu welcher Person, und was verbindet sie
 BAUPLAN = {
@@ -52,11 +52,12 @@ def werte(con, eintrag_id):
     """Felder eines Eintrags: name -> (wert, kb, person_id, rolle)."""
     raus = {}
     for f in con.execute(
-            "SELECT name, rolle, gelesen, korrigiert, kb_form, person, status "
+            "SELECT name, rolle, gelesen, korrigiert, kb_form, person, beleg, status "
             "FROM feld WHERE eintrag_id=?", (eintrag_id,)):
         wert = f["korrigiert"] if f["korrigiert"] is not None else f["gelesen"]
         raus[f["name"]] = dict(wert=(wert or "").strip() or None,
                                kb=f["kb_form"], person=f["person"],
+                               beleg=f["beleg"],
                                rolle=f["rolle"], status=f["status"])
     return raus
 
@@ -72,11 +73,17 @@ def rollenfeld(felder, rolle):
     return None, None
 
 
-def person_anlegen(con, hid, vorname, nachname, kb=None):
+GESCHLECHT = {"m": "M", "männlich": "M", "maennlich": "M", "knabe": "M",
+              "sohn": "M", "w": "F", "weiblich": "F", "f": "F",
+              "mädchen": "F", "maedchen": "F", "tochter": "F"}
+
+
+def person_anlegen(con, hid, vorname, nachname, kb=None, sex=None):
     name = " ".join(x for x in (vorname, nachname) if x)
+    sex = GESCHLECHT.get((sex or "").strip().lower())
     cur = con.execute(
-        "INSERT INTO person (name, givn, surn, herkunft) VALUES (?,?,?,?)",
-        (name, vorname, nachname, hid))
+        "INSERT INTO person (name, givn, surn, sex, herkunft) VALUES (?,?,?,?,?)",
+        (name, vorname, nachname, sex, hid))
     pid = cur.lastrowid
     if kb:
         con.execute("INSERT OR IGNORE INTO namensform (person,art,wert) "
@@ -92,6 +99,20 @@ def teile_namen(wert):
     return (" ".join(t[:-1]) or None, t[-1]) if len(t) > 1 else (None, t[0])
 
 
+def namensteile(felder, rolle):
+    """Vor- und Nachname einer Rolle. Der Nachname darf fehlen.
+
+    Im Taufregister steht beim Kind **nur der Vorname** — sein Nachname
+    ergibt sich aus dem Vater. Die Vorgängerfassung nahm dasselbe Feld für
+    beides und schrieb `Georg Christian /Georg Christian/` in die Ausgabe.
+    """
+    vn = felder.get(f"{rolle}_vorname", {}).get("wert")
+    nn = felder.get(f"{rolle}_name", {}).get("wert")
+    if nn and not vn:
+        vn, nn = teile_namen(nn)
+    return vn, nn
+
+
 def uebernimm(con, art, schreib=False, runde_id=None, marke=None):
     plan = BAUPLAN.get(art)
     if not plan:
@@ -102,7 +123,8 @@ def uebernimm(con, art, schreib=False, runde_id=None, marke=None):
     hid = db.herkunft_id(con, "erfassung", marke or art,
                          "aus bestätigter Erfassung", gilt="beleg")
     z = dict(eintraege=0, personen_neu=0, personen_verknuepft=0,
-             familien=0, ereignisse=0, kinder=0)
+             familien=0, familien_gefunden=0, nachname_geerbt=0,
+             ereignisse=0, kinder=0)
 
     wo = "register=? AND status='bestaetigt'"
     par = [art]
@@ -116,6 +138,13 @@ def uebernimm(con, art, schreib=False, runde_id=None, marke=None):
         z["eintraege"] += 1
         pid = {}
 
+        # Der Nachname des Haushaltsvorstands vererbt sich auf die Rollen,
+        # für die das Register keinen eigenen führt — beim Täufling steht
+        # nur der Vorname.
+        erbe = None
+        if plan.get("familie"):
+            erbe = namensteile(felder, plan["familie"][0])[1]
+
         for rolle in plan["personen"]:
             name, f = rollenfeld(felder, rolle)
             if not f or not f["wert"]:
@@ -124,30 +153,59 @@ def uebernimm(con, art, schreib=False, runde_id=None, marke=None):
                 pid[rolle] = f["person"]
                 z["personen_verknuepft"] += 1
                 continue
-            vn = felder.get(f"{rolle}_vorname", {}).get("wert")
-            if vn is None:
-                vn, nn = teile_namen(f["wert"])
+            vn, nn = namensteile(felder, rolle)
+            if not nn:
+                nn = erbe
+                if nn:
+                    z["nachname_geerbt"] += 1
+            sex = felder.get(f"{rolle}_geschlecht", {}).get("wert")
+            if schreib:
+                pid[rolle] = person_anlegen(con, hid, vn, nn, f["kb"], sex)
+                journal.notiere(
+                    con, "neu_person", ziel=str(pid[rolle]),
+                    daten=dict(givn=vn, surn=nn, rolle=rolle),
+                    quelle=f"{art} {e['bild']} Nr. {e['nr']}",
+                    beleg=f["beleg"] or "kein Treffer im Bestand — neu angelegt")
             else:
-                nn = f["wert"]
-            pid[rolle] = (person_anlegen(con, hid, vn, nn, f["kb"])
-                          if schreib else -1)   # -1 = Platzhalter im Probelauf
+                pid[rolle] = -1                 # Platzhalter im Probelauf
             z["personen_neu"] += 1
 
         fam = None
         if plan.get("familie"):
             a, b = plan["familie"]
             if pid.get(a) or pid.get(b):
-                if schreib:
+                # Erst suchen, dann anlegen. Der Elternehe-Anker findet die
+                # Familie ja gerade — sie danach ein zweites Mal anzulegen
+                # macht den Treffer wieder zunichte.
+                #
+                # Gemessen vor dieser Prüfung: von 22 übergebenen Familien
+                # gab es 10 mit denselben Eltern bereits im Bestand. Sie
+                # wären so in die GEDCOM-Datei gewandert.
+                da = None
+                if pid.get(a) and pid.get(b):
+                    da = con.execute(
+                        "SELECT id FROM familie WHERE mann=? AND frau=?",
+                        (pid[a], pid[b])).fetchone()
+                if da:
+                    fam = da["id"]
+                    z["familien_gefunden"] += 1
+                elif schreib:
                     cur = con.execute(
                         "INSERT INTO familie (mann, frau, herkunft) VALUES (?,?,?)",
                         (pid.get(a), pid.get(b), hid))
                     fam = cur.lastrowid
+                    journal.notiere(
+                        con, "neu_familie", ziel=str(fam),
+                        daten=dict(mann=pid.get(a), frau=pid.get(b)),
+                        quelle=f"{art} {e['bild']} Nr. {e['nr']}",
+                        beleg="keine gemeinsame Familie im Bestand")
+                    z["familien"] += 1
                 else:
                     fam = -1
-                z["familien"] += 1
+                    z["familien"] += 1
 
         if plan.get("kind") and fam and pid.get(plan["kind"]):
-            if schreib and fam > 0:
+            if schreib and fam > 0 and pid[plan["kind"]] > 0:
                 con.execute("INSERT OR IGNORE INTO kind (familie, person) VALUES (?,?)",
                             (fam, pid[plan["kind"]]))
             z["kinder"] += 1

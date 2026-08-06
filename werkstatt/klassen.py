@@ -10,10 +10,10 @@ Genau deshalb ist der Abschluss ein Fehlerdetektor — verdaechtig sind
 Klassen, die nur an einer schwachen Kante (wenige Belege) haengen.
 
 Aufruf:
-  python3 skripte/klassen.py                 # alle Klassen ab Groesse 2
-  python3 skripte/klassen.py --min-kante 2   # Kanten mit 1 Beleg ignorieren
-  python3 skripte/klassen.py --name Bierle   # nur die Klasse von Bierle
-  python3 skripte/klassen.py --brueckenn     # nur die verdaechtigen Bruecken
+  python3 -m werkstatt.klassen                 # alle Klassen ab Groesse 2
+  python3 -m werkstatt.klassen --min-kante 2   # Kanten mit 1 Beleg ignorieren
+  python3 -m werkstatt.klassen --name Bierle   # nur die Klasse von Bierle
+  python3 -m werkstatt.klassen --brueckenn     # nur die verdaechtigen Bruecken
 """
 import argparse
 import collections
