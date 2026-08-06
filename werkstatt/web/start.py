@@ -450,6 +450,66 @@ function ansichtEinstellungen(){
    : '<span style=color:#e06c5f>pdftoppm fehlt — Paket poppler-utils.</span>'}</p>
  </div>
 
+ <h2>KI-Anbindung</h2>
+ <div class=karte>
+  ${E.ki.schluessel
+    ? `<div class=reihe style="margin-bottom:.7rem">
+        <span class=ampel><i class="pkt gruen"></i>
+        <b>ANTHROPIC_API_KEY ist gesetzt</b></span>
+        <span class=dim>der Schlüssel selbst wird nirgends angezeigt</span></div>`
+    : `<div class=warn>Kein <code>ANTHROPIC_API_KEY</code> in der Umgebung.
+        Lesen läuft nur mit der Testquelle. Zum Setzen:
+        <code>export ANTHROPIC_API_KEY=…</code> vor <code>python3 start.py</code>.</div>`}
+  <table>
+   <tr><th>Modell</th><th class=z>ein $/Mio</th><th class=z>aus $/Mio</th>
+       <th class=z>Bildkante</th><th class=z>je Seite*</th></tr>
+   ${Object.entries(E.ki.modelle).map(([id,m])=>`<tr>
+     <td><label style=cursor:pointer><input type=radio name=modell value="${esc(id)}"
+       ${E.ki.modell===id?'checked':''} onchange="merken('ki.modell',this.value)">
+      ${esc(m.name)} <code>${esc(id)}</code></label></td>
+     <td class=z>${m.ein.toFixed(2)}</td><td class=z>${m.aus.toFixed(2)}</td>
+     <td class=z>${m.kante} px</td>
+     <td class=z>${(5000/1e6*m.ein + 3000/1e6*m.aus).toFixed(3)}</td>
+   </tr>`).join('')}
+  </table>
+  <p class=dim style="font-size:.84rem;margin:.5rem 0 0">
+   * grobe Schätzung bei 5.000 Token hinein und 3.000 heraus. Mit Batch halbiert
+   sich beides — das ist bei seitenweiser Verarbeitung der natürliche Modus und
+   noch nicht gebaut.</p>
+
+  <div class=reihe style="margin-top:.9rem">
+   <label class=dim>Bildkante</label>
+   <input type=number value="${E.ki.max_kante}" min=512 max=2576 step=8
+    style=width:6rem onchange="merken('ki.max_kante',this.value)">
+   <span class=dim>px auf der langen Seite</span>
+   <label class=dim style=margin-left:1rem>Antwort höchstens</label>
+   <input type=number value="${E.ki.max_tokens}" min=1000 max=64000 step=1000
+    style=width:6.5rem onchange="merken('ki.max_tokens',this.value)">
+   <span class=dim>Token</span>
+  </div>
+  <p class=dim style="font-size:.84rem;margin:.5rem 0 0">
+   <b>Die Bildkante ist der Hebel für die Lesequalität.</b> Sie stand auf
+   1568 px mit dem Vermerk „größer bringt nichts" — das galt für ältere
+   Modelle; Opus 5 und Sonnet 5 nehmen 2576 px. Bei Kurrentschrift zählt das:
+   Ancestry-JPG mit 24 MP löste einen Eheeintrag auf, den das Archion-PDF mit
+   14 MP unlesbar ließ. Der Preis dafür ist klein — 1.600 statt 4.784 Bildtoken
+   sind bei Opus 5 rund zwei Cent je Seite.</p>
+
+  ${E.ki.verbrauch.tokens_ein
+    ? `<div class=reihe style="margin-top:.9rem">
+        <div><div class=gross>${E.ki.verbrauch.dollar.toFixed(2)} $</div>
+         <div class=dim style=font-size:.82rem>bisher verbraucht</div></div>
+        <div><div class=gross>${E.ki.verbrauch.seiten}</div>
+         <div class=dim style=font-size:.82rem>Seiten gelesen</div></div>
+        ${E.ki.verbrauch.je_seite!=null
+          ? `<div><div class=gross>${E.ki.verbrauch.je_seite.toFixed(3)} $</div>
+             <div class=dim style=font-size:.82rem>je Seite, gemessen</div></div>`:''}
+       </div>`
+    : `<p class=dim style="font-size:.86rem;margin:.9rem 0 0">
+        Noch nichts über die API gelesen — sobald ein Lauf durch ist, steht
+        hier der <b>gemessene</b> Verbrauch statt einer Schätzung.</p>`}
+ </div>
+
  <h2>Wie viel läuft ohne Rückfrage durch</h2>
  <div class=karte>
   ${Object.entries(E.autopilot_text).map(([k,v])=>`

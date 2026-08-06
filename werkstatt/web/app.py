@@ -29,7 +29,8 @@ from pathlib import Path
 
 from .seite import SEITE
 from .start import STARTSEITE
-from .. import (abgleich, ausgabe, db, einstellungen, konfig, runde as _runde,
+from .. import (abgleich, ausgabe, db, einstellungen, konfig, lesen,
+                runde as _runde,
                 seiten, suche, testdaten)
 
 ROOT = konfig.WURZEL
@@ -95,6 +96,8 @@ class Handler(BaseHTTPRequestHandler):
                         pdfs=len(seiten.pdfs(o)),
                         entpackt=(o / seiten.ENTPACKT).is_dir(),
                         seiten=einstellungen.seitenzahl(con, art)))
+                import os
+                modell = einstellungen.wert(con, "ki.modell", lesen.MODELL)
                 return self._json(dict(
                     reihenfolge=reihe,
                     alle_register=list(konfig.register()),
@@ -103,6 +106,17 @@ class Handler(BaseHTTPRequestHandler):
                     autopilot_text=einstellungen.AUTOPILOT,
                     grenzen=einstellungen.grenzen(con),
                     pdf_werkzeug=bool(seiten.pdf_werkzeug()),
+                    ki=dict(
+                        modell=modell,
+                        modelle=lesen.MODELLE,
+                        max_kante=int(einstellungen.wert(
+                            con, "ki.max_kante", lesen.MAX_KANTE)),
+                        max_tokens=int(einstellungen.wert(
+                            con, "ki.max_tokens", 8000)),
+                        batch=einstellungen.wert(con, "ki.batch", "0") == "1",
+                        # Nie den Schlüssel selbst ausliefern — nur ob einer da ist.
+                        schluessel=bool(os.environ.get("ANTHROPIC_API_KEY")),
+                        verbrauch=self._verbrauch(con, modell)),
                     eigen=einstellungen.alle(con)))
             finally:
                 con.close()
@@ -245,6 +259,22 @@ class Handler(BaseHTTPRequestHandler):
         self._send(404, "text/plain", "nicht gefunden")
 
     # ------------------------------------------------------------- Daten
+    def _verbrauch(self, con, modell):
+        """Was bisher tatsächlich verbraucht wurde — aus den Aufträgen.
+
+        Geschätzte Kosten stehen in jeder Doku; gemessene nirgends. Die
+        Auftragstabelle zählt die Token ohnehin mit, also wird hier
+        gerechnet statt vermutet.
+        """
+        r = con.execute(
+            "SELECT COALESCE(SUM(tokens_ein),0) e, COALESCE(SUM(tokens_aus),0) a, "
+            "COALESCE(SUM(seiten_fertig),0) s FROM auftrag "
+            "WHERE tokens_ein > 0").fetchone()
+        d = lesen.kosten(modell, r["e"], r["a"]) if r["e"] else 0.0
+        return dict(tokens_ein=r["e"], tokens_aus=r["a"], seiten=r["s"],
+                    dollar=round(d or 0.0, 4),
+                    je_seite=round((d or 0.0) / r["s"], 4) if r["s"] else None)
+
     def stand(self):
         con = db.verbinde()
         try:
