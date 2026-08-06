@@ -1,5 +1,5 @@
 @echo off
-rem OFB-Werkstatt unter Windows starten — diese Datei doppelt anklicken.
+rem OFB-Werkstatt unter Windows starten - diese Datei doppelt anklicken.
 rem Sie prueft der Reihe nach, was fehlt, und sagt es im Klartext,
 rem statt sich mit einer Fehlermeldung zu schliessen.
 setlocal
@@ -11,7 +11,7 @@ where py >nul 2>&1 && (set PY=py) || (set PY=python)
 if errorlevel 1 (
   echo.
   echo   Python ist nicht installiert oder nicht im Suchpfad.
-  echo   Holen unter python.org/downloads — beim Installieren bitte
+  echo   Holen unter python.org/downloads - beim Installieren bitte
   echo   "Add python.exe to PATH" ankreuzen, dann diese Datei erneut starten.
   echo.
   pause
@@ -20,7 +20,7 @@ if errorlevel 1 (
 
 %PY% -c "import PIL" >nul 2>&1
 if errorlevel 1 (
-  echo   Bildbibliothek Pillow fehlt — wird jetzt geholt ...
+  echo   Bildbibliothek Pillow fehlt - wird jetzt geholt ...
   %PY% -m pip install --quiet Pillow
 )
 

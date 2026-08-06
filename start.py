@@ -30,8 +30,9 @@ def main():
     # Laeuft schon eine Werkstatt, waere der Port belegt und der Start
     # bliebe mit einer Fehlermeldung stehen. Dann nur das Fenster oeffnen.
     if belegt(a.port):
-        print(f"Die Werkstatt läuft schon — öffne {url}")
-        webbrowser.open(url)
+        print(f"Die Werkstatt läuft schon unter {url}")
+        if a.browser:
+            webbrowser.open(url)
         return
 
     k = konfig.konfig()
