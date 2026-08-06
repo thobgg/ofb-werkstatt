@@ -393,3 +393,38 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+# ------------------------------------------------------------ Arbeitskopie
+def arbeitskopie(con, ordner=None):
+    """Den vollständigen Bestand nach jeder Übergabe neu schreiben.
+
+    **Warum sofort und nicht am Ende.** Wer ein Ortsfamilienbuch für eine
+    frühere oder spätere Zeit hat, arbeitet nicht neben ihm her, sondern in
+    einer Kopie davon. Zwei getrennt gewachsene Bestände am Schluss
+    zusammenzuführen ist die Arbeit, die niemand mehr sauber hinbekommt:
+    Dieselbe Person steht dann zweimal da, mit anderer Kennung, anderer
+    Schreibweise, anderen Kindern — und keine Maschine kann entscheiden,
+    welche der beiden die richtige ist.
+
+    Deshalb entsteht die Kopie schrittweise: Jede übergebene Runde schreibt
+    sie neu, mit allem, was bis dahin da ist. Wer nach der dritten Runde
+    aufhört, hat einen vollständigen Bestand, keinen halben.
+
+    **Die Vorlage wird nie angefasst.** Geschrieben wird ausschließlich nach
+    `ausgabe/`; die Quelldatei bleibt Byte für Byte, wie sie war. Die
+    vorige Kopie bleibt als `.vorher.ged` liegen — ein Schritt zurück ist
+    damit immer möglich.
+    """
+    hid, _ = quelle_id(con)
+    daten, z = (fortschreiben(con, schreib=True) if hid is not None
+                else neuausgabe(con, schreib=True))
+    name = (konfig.konfig().get("gemeinde", {}).get("name") or "OFB").replace(
+        "/", "-")
+    ziel = Path(ordner or (konfig.WURZEL / "ausgabe")) / f"{name}_arbeitskopie.ged"
+    ziel.parent.mkdir(parents=True, exist_ok=True)
+    if ziel.exists():
+        ziel.replace(ziel.with_suffix(".vorher.ged"))
+    ziel.write_bytes(daten)
+    return dict(datei=konfig.kurz(ziel), bytes=len(daten),
+                art="fort" if hid is not None else "neu", zahlen=z)
