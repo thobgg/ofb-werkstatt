@@ -38,6 +38,5 @@ echo.
 echo   Die Werkstatt laeuft gleich unter http://127.0.0.1:8765
 echo   Zum Beenden dieses Fenster schliessen.
 echo.
-start "" http://127.0.0.1:8765
-%PY% start.py --port 8765
+%PY% start.py
 pause
