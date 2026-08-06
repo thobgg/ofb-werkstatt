@@ -163,8 +163,26 @@ wurde ein Paar zugeordnet, das 1699 und 1703 geboren wurde und dessen Frau
 und damit **grün**. Seither prüft `abgleich._plausibel()` Lebensgrenzen, und
 ohne ein Datum, das die Familie zeitlich einordnet, wird nichts mehr grün.
 
-**Was noch fehlt:** GEDCOM-Ausgabe aus den eigenen Tabellen (siehe unten),
-Kaskaden für Ehe und Tod, Bildausschnitte je Feld.
+## Ausgabe — der Weg nach draußen
+
+```sh
+python3 -m werkstatt.ausgabe --leerlauf        Verlustfreiheit belegen
+python3 -m werkstatt.ausgabe --fort -o x.ged   Fortschreibung
+python3 -m werkstatt.ausgabe --neu  -o x.ged   Neuausgabe
+```
+
+`rec` bewahrt die Quelldatei vollständig und in Reihenfolge — **nicht nur
+INDI und FAM.** Der Import verwarf vorher 158 Records: HEAD, SUBM, 35 SOUR,
+120 `_LOC` und TRLR. Auf die `_LOC` zeigt jede Person mit `3 _LOC @L1@`.
+Nachtragen für alte Bestände: `import_gedcom --nur-rec datei.ged`.
+
+Der **Leerlauftest** ist der Beleg, nicht die Behauptung: Ohne Änderungen muss
+die Ausgabe Byte für Byte der Vorlage entsprechen. Bei Abweichung nennt er die
+Bytestelle.
+
+**Was noch fehlt:** Kaskaden für Ehe und Tod, Bildausschnitte je Feld, und
+die Auswertung des Journals beim Fortschreiben (nötig erst, wenn Records
+nicht nur ergänzt, sondern geändert werden).
 
 ## Nächste Schritte
 
@@ -172,12 +190,13 @@ Kaskaden für Ehe und Tod, Bildausschnitte je Feld.
    (die Unterlage ist so hell wie das Papier), sondern über die gedruckten
    Linien. 22/22 Zeilenlinien bei ±40 px, 0 überzählige Vorschläge.
    Messung: `python3 -m werkstatt.messung`, Sollwerte in `daten/soll_zeilen.json`.
-2. **GEDCOM-Ausgabe** — `gedcom_export.py` ist das falsche Werkzeug: Es liest
-   `rec`/`vorgang`/`meta` aus dem Haberschlacht-Index, die es hier nicht gibt,
-   und bricht mit `TypeError` ab. Zwei Arten sind nötig: **Fortschreibung**
-   (unberührte Records zeichengleich aus `person.raw` — bei 4.111 von 4.111
-   vorhanden; Leerlauftest byte-identisch) und **Neuausgabe** aus
-   `person`/`familie`/`ereignis` mit `_KB_NAME`, `_BERUF_KB`, `_NOTE_TAUFE`.
+2. ~~**GEDCOM-Ausgabe**~~ — **erledigt.** `werkstatt/ausgabe.py`, zwei Arten:
+   **Fortschreibung** reicht die Vorlage Record für Record durch (5.605
+   zeichengleich, 9 ergänzt, 57 neu, 0 verloren, 0 tote Verweise) und belegt
+   das mit dem **Leerlauftest**: `3444327 Byte, zeichengleich`. **Neuausgabe**
+   schreibt alles aus den eigenen Tabellen — aber nur 31 % der Dateigröße,
+   weil Quellen, Notizen, Paten und Ortsdefinitionen dabei wegfallen. Deshalb
+   ist Durchreichen die Voreinstellung.
 3. **Kaskaden für Ehe und Tod** — nach dem Muster von Taufe. `kaskade_tod.py`
    liegt fertig vor und ist noch nicht angeschlossen.
 4. **Bildausschnitte je Feld.** Arbeitsteilung statt Entweder-Oder: Das Modell

@@ -363,20 +363,38 @@ Ohne die Übergabe dazwischen bringt die Tranchenordnung nichts.
 
 ---
 
-## 7. Ausgeben  ○ — noch gar nicht da
+## 7. Ausgeben  ✓
 
-Die auffälligste Lücke: **Die Werkstatt gibt derzeit nichts heraus.**
+Zwei Arten, beide gebaut und gemessen:
 
-Zwei Arten sind nötig, und beide werden gebraucht:
-
-| | für wen | wie |
+| | für wen | Ergebnis am Bestand Haberschlacht |
 |---|---|---|
-| **Fortschreibung** | wer ein OFB hat | unberührte Records zeichengleich aus `person.raw` durchreichen, nur berührte neu schreiben. Leerlauftest: leeres Journal → byte-identisch |
-| **Neuausgabe** | Nullstart | alles aus `person`/`familie`/`ereignis`, mit `_KB_NAME`, `_BERUF_KB`, `_NOTE_TAUFE` |
+| **Fortschreibung** | wer ein OFB hat | 5.605 Records zeichengleich durchgereicht, 9 ergänzt, 57 neu, **0 verloren, 0 tote Verweise** |
+| **Neuausgabe** | Nullstart | 4.156 Personen, 1.358 Familien — aber nur **31 % der Dateigröße** |
 
-**? Wann wird ausgegeben?** Ich schlage vor: nach jeder Tranche, nicht am
-Ende. Dann ist der Zwischenstand jederzeit in einem Format, das jedes andere
-Programm liest — und ein Fehler fällt nach einer Tranche auf, nicht nach
+**Der Leerlauftest ist der Beleg.** Ohne Änderungen muss die Ausgabe Byte für
+Byte der Vorlage entsprechen:
+
+    ✓ Leerlauftest: 3444327 Byte, zeichengleich
+
+Er misst nicht, ob die Ausgabe plausibel aussieht, sondern ob überhaupt etwas
+verloren ging — und zeigt bei Abweichung die Bytestelle.
+
+**Warum Durchreichen die Voreinstellung ist**, sieht man an den 31 %: Ein
+gewachsenes Ortsfamilienbuch enthält Jahrzehnte Handarbeit in Feldern, die
+diese Werkstatt gar nicht kennt — Quellenangaben, Notizen, Paten, Bilder,
+Ortsdefinitionen. Wer aus den eigenen Tabellen neu schreibt, wirft zwei
+Drittel davon weg. Die Oberfläche fragt vor der Neuausgabe deshalb nach.
+
+○ **Noch nicht ausgewertet: das Journal.** Es füllt sich (57 Vorgänge je
+Runde, jeder mit seinem Beleg), aber die Fortschreibung leitet ihre
+Ergänzungen bisher aus den Daten ab, nicht aus den Vorgängen. Nötig wird das
+erst, wenn Records nicht nur ergänzt, sondern **geändert** werden — bei
+Korrekturen an vorhandenen Personen und beim Zusammenlegen von Dubletten.
+
+**? Wann wird ausgegeben?** Vorschlag: nach jeder Tranche, nicht am Ende.
+Dann liegt der Zwischenstand jederzeit in einem Format, das jedes andere
+Programm liest, und ein Fehler fällt nach einer Tranche auf, nicht nach
 dreißig.
 
 ---
@@ -431,7 +449,7 @@ Ehrlich aufgeschrieben, was zwischen dem Gebauten und dem Beschriebenen liegt:
 | Anbindung | nur Taufe | **alle drei Register** |
 | Bedienung | klicken, tippen | **eine Taste je Entscheidung** |
 | Autopilot | fest verdrahtet | **Einstellung, drei Stufen** |
-| Ausgabe | keine | **GEDCOM nach jeder Tranche** |
+| ~~Ausgabe~~ | ~~keine~~ | **erledigt am 6. August** |
 
 Das ist mehr Arbeit als das, was bisher steht — aber es ist kein Umbau. Die
 Datenbank trägt es bereits: Die Schlange ist `SELECT … WHERE runde=? AND
@@ -479,14 +497,31 @@ ohne Schlüssel. Was fehlt, ist nur das Urteil über die Rohlesung.
 
 ## Festgezurrte Reihenfolge
 
-    1  Ausgabe            GEDCOM, beide Arten          ← macht es benutzbar
-    2  Bedienschleife     ein Eintrag, eine Taste
+    1  Ausgabe            ✓ erledigt 6. August
+    2  Bedienschleife     ein Eintrag, eine Taste     ← als Nächstes
     3  Familienbuch-Anker billiger und stärker als die Kaskaden
     4  Kaskaden Ehe/Tod
     …  Qualitätstest      wenn Sie so weit sind
 
-Punkt 1 zuerst, weil ein Werkzeug, das nichts herausgibt, nicht benutzbar ist,
-auch wenn es innen fertig ist. Punkt 2 danach, weil die Bedienschleife gegen
-die Testquelle gebaut und geprüft werden kann.
+Punkt 2 lässt sich gegen die Testquelle bauen und prüfen, braucht also
+weiterhin keinen Schlüssel.
+
+### Was die Ausgabe nebenbei aufgedeckt hat
+
+Drei Fehler, die still in die GEDCOM-Datei gewandert wären:
+
+1. **Der Import verwarf 158 Records.** HEAD, SUBM, 35 SOUR, 120 `_LOC` und
+   TRLR wurden nie gespeichert, obwohl der Docstring „verlustfrei" behauptete.
+   Die `_LOC`-Records sind die Ortsdefinitionen, auf die jede Person mit
+   `3 _LOC @L1@` zeigt. Jetzt liegt die ganze Datei in `rec`.
+2. **Die Übergabe legte Familien doppelt an.** Von 22 übergebenen Familien
+   gab es 10 mit denselben Eltern bereits im Bestand — der Elternehe-Anker
+   fand sie, und die Übergabe legte sie daneben noch einmal neu an.
+3. **Der Täufling bekam seinen Vornamen als Nachnamen.**
+   `Georg Christian /Georg Christian/`. Im Taufregister hat das Kind keinen
+   Nachnamen; er kommt vom Vater. 21 Kinder erben ihn jetzt.
+
+Alle drei wären ohne die Ausgabe unentdeckt geblieben — sie werden erst
+sichtbar, wenn etwas das Haus verlässt.
 
 Was noch anders soll, sagen Sie mir — sonst arbeite ich das der Reihe nach ab.

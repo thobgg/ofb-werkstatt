@@ -71,6 +71,7 @@ code{font-family:ui-monospace,monospace;font-size:.86em;background:#12141a;
  <a href="/lesen" data-p="/lesen">Lesen</a>
  <a href="/korrektur" data-p="/korrektur">Korrigieren</a>
  <a href="/uebergabe" data-p="/uebergabe">Übergeben</a>
+ <a href="/ausgabe" data-p="/ausgabe">Ausgeben</a>
  <span style=flex:1></span><span class=dim id=gem></span></header>
 <main id=app class=leer>lade…</main>
 <script>
@@ -89,6 +90,7 @@ async function laden(){
  app.className='';
  app.innerHTML = P==='/lesen' ? ansichtLesen()
                : P==='/uebergabe' ? ansichtUebergabe()
+               : P==='/ausgabe' ? ansichtAusgabe()
                : ansichtStand();
  if(P==='/lesen' && S.runde && S.runde.stand==='liest') takt();
  if(P==='/lesen' && !S.runde && document.getElementById('reg')){
@@ -317,5 +319,75 @@ async function uebergeben(){
  location.href='/';
 }
 
-laden().then(()=>{ if(P==='/uebergabe') probeHolen(); });
+// -------------------------------------------------------------- Ausgabe
+function ansichtAusgabe(){
+ return `<div class=schritt>
+  <div class=was>GEDCOM ausgeben</div>
+  <div class=warum>Der Weg nach draußen. Wird geladen…</div>
+  <div id=aus></div>
+ </div>`;
+}
+
+async function ausgabeHolen(){
+ const d=await (await fetch('/api/ausgabe')).json();
+ const el=document.getElementById('aus'); if(!el) return;
+ const z=d.zahlen||{};
+ const fort = d.art==='fort';
+ const ampel = d.leerlauf===true ? ['gruen','✓']
+             : d.leerlauf===false ? ['rot','✗'] : ['gelb','·'];
+ el.innerHTML = `
+  <div class=karte style="margin-bottom:.9rem">
+   <b>${fort?'Fortschreibung':'Neuausgabe'}</b>
+   <div class=dim style="font-size:.88rem;margin:.3rem 0 .6rem">
+    ${fort
+      ? `Die Vorlage <code>${esc(d.vorlage)}</code> läuft Record für Record
+         durch. Unberührte Records gehen <b>zeichengleich</b> hindurch —
+         Quellenangaben, Notizen, Ortsdefinitionen und Paten bleiben, wie sie
+         sind. Nur was ein Vorgang anfasst, wird neu geschrieben.`
+      : `Keine Vorlage vorhanden — alles wird aus den eigenen Tabellen
+         geschrieben.`}
+   </div>
+   ${fort?`<div class=reihe style="margin-bottom:.6rem">
+     <span class=ampel><i class="pkt ${ampel[0]}"></i>
+      <b>Leerlauftest ${ampel[1]}</b></span>
+     <span class=dim>${esc(d.leerlauf_text||'')}</span></div>
+    <div class=dim style="font-size:.84rem;margin-bottom:.6rem">
+     Der Test schreibt die Vorlage aus der Datenbank zurück und vergleicht
+     Byte für Byte. Schlägt er fehl, ist beim Einlesen etwas verloren
+     gegangen — und man sieht, an welcher Stelle.</div>`:''}
+   <table>
+    ${Object.entries(z).map(([k,v])=>
+      `<tr><td>${esc(k.replace(/_/g,' '))}</td><td class=z>${v}</td></tr>`).join('')}
+    <tr><td class=dim>Dateigröße</td>
+        <td class="z dim">${(d.bytes/1024).toFixed(0)} kB</td></tr>
+   </table>
+  </div>
+  <div class=reihe>
+   <button class=ja onclick="schreiben('${fort?'fort':'neu'}')">
+    ${fort?'Fortschreibung':'Neuausgabe'} schreiben</button>
+   ${fort?`<button onclick="schreiben('neu')">stattdessen neu aufbauen</button>`:''}
+   <span class=dim>nach <code>ausgabe/</code></span>
+  </div>
+  <div id=ergebnis style="margin-top:.7rem"></div>`;
+}
+
+async function schreiben(art){
+ if(art==='neu' && !confirm(
+   'Die Neuausgabe schreibt alles aus den eigenen Tabellen neu.\n\n'
+  +'Was die Werkstatt nicht kennt, geht dabei verloren: Quellenangaben, '
+  +'Notizen, Paten, Ortsdefinitionen, Bilder.\n\nTrotzdem fortfahren?')) return;
+ const r=await fetch('/api/ausgabe',{method:'POST',
+  headers:{'content-type':'application/json'},body:JSON.stringify({art})});
+ const j=await r.json();
+ const el=document.getElementById('ergebnis');
+ el.innerHTML = j.ok
+  ? `<span style=color:#8fe3b4>✓ geschrieben:</span>
+     <code>${esc(j.datei)}</code> <span class=dim>${(j.bytes/1024).toFixed(0)} kB</span>`
+  : `<span style=color:#e06c5f>✗ fehlgeschlagen</span>`;
+}
+
+laden().then(()=>{
+ if(P==='/uebergabe') probeHolen();
+ if(P==='/ausgabe') ausgabeHolen();
+});
 </script></body></html>"""

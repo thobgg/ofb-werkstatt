@@ -8,7 +8,7 @@ Zwei Ebenen, beide beim Tippen:
                    Auswahl davon ist 'find and use'.
 
 Getrennt von der Maske, damit es auch auf der Kommandozeile nutzbar ist:
-  python3 skripte/suche.py Kröneck
+  python3 -m werkstatt.suche Kröneck
 """
 import json
 import re

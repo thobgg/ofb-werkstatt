@@ -1,12 +1,21 @@
 #!/usr/bin/env python3
 """GEDCOM in die Datenbasis einlesen.
 
-Verlustfrei: der vollständige Quellrecord bleibt in `raw` erhalten, die
-Spalten sind ein Index darauf. Damit ist ein zeichengleicher Export möglich
-und nichts geht unterwegs verloren.
+Verlustfrei in zwei Stufen:
+
+  `rec`                die ganze Datei, Record für Record, in Reihenfolge
+  `person`/`familie`   Index darauf, plus Ereignisse und Namensformen
+
+Die erste Stufe fehlte lange, und die Lücke war unsichtbar: `person.raw`
+bewahrt jeden INDI-Record, aber eine GEDCOM-Datei besteht nicht nur daraus.
+Gemessen am Bestand Haberschlacht — 5.615 Records, davon 4.111 INDI und
+1.346 FAM, und 158 weitere, die niemand aufhob: HEAD, SUBM, 35 SOUR,
+**120 _LOC** und TRLR. Auf die _LOC-Records zeigt jede Person mit
+`3 _LOC @L1@`; ohne sie hätte die Ausgabe tote Verweise.
 
     python3 -m werkstatt.import_gedcom pfad/zur/datei.ged
     python3 -m werkstatt.import_gedcom --aus-konfig
+    python3 -m werkstatt.import_gedcom --nur-rec datei.ged   nur nachtragen
 """
 import argparse
 import re
@@ -141,15 +150,77 @@ def lies_ereignisse(raw):
     return raus
 
 
+def lies_datei(pfad):
+    """Text plus die drei Eigenschaften, die eine Ausgabe wiederherstellen muss.
+
+    BOM, Zeilenende und Schlussumbruch entscheiden über das erste und das
+    letzte Byte. Ohne sie unterscheidet sich eine Ausgabe von der Vorlage,
+    ohne dass ein einziges Feld anders wäre — und der Leerlauftest, der die
+    Verlustfreiheit belegen soll, schlägt aus einem belanglosen Grund fehl.
+    """
+    roh = Path(pfad).read_bytes()
+    bom = roh.startswith(b"\xef\xbb\xbf")
+    if bom:
+        roh = roh[3:]
+    text = roh.decode("utf-8", errors="replace")
+    crlf = "\r\n" in text
+    if crlf:
+        text = text.replace("\r\n", "\n")
+    schluss = text.endswith("\n")
+    return text.rstrip("\n"), dict(bom=int(bom),
+                                   zeilenende="crlf" if crlf else "lf",
+                                   schluss=int(schluss))
+
+
+def merke_rec(con, hid, records, eigenschaften):
+    """Die ganze Datei ablegen, Record für Record, in Reihenfolge."""
+    con.execute("UPDATE herkunft SET bom=?, zeilenende=?, schluss=? WHERE id=?",
+                (eigenschaften["bom"], eigenschaften["zeilenende"],
+                 eigenschaften["schluss"], hid))
+    con.execute("DELETE FROM rec WHERE herkunft=?", (hid,))
+    con.executemany(
+        "INSERT INTO rec (herkunft, seq, xref, typ, raw) VALUES (?,?,?,?,?)",
+        [(hid, i, x, t, r) for i, (x, t, r) in enumerate(records)])
+    con.commit()
+    return len(records)
+
+
+def nur_rec(pfad, con=None, still=False):
+    """Nur die Recordtabelle nachtragen, sonst nichts anfassen.
+
+    Für Bestände, die vor der Einführung von `rec` eingelesen wurden. Ein
+    voller Neuimport wäre hier falsch: `ereignis` kennt kein OR IGNORE und
+    würde sich verdoppeln.
+    """
+    pfad = Path(pfad)
+    eigen = con is None
+    con = con or db.verbinde()
+    text, eig = lies_datei(pfad)
+    row = con.execute("SELECT id FROM herkunft WHERE art='gedcom' AND datei=?",
+                      (pfad.name,)).fetchone()
+    if not row:
+        raise SystemExit(f"{pfad.name} ist nicht als Herkunft eingetragen — "
+                         "erst importieren")
+    n = merke_rec(con, row["id"], zerlege(text), eig)
+    if not still:
+        print(f"{pfad.name}: {n} Records nachgetragen "
+              f"(BOM {eig['bom']}, {eig['zeilenende']}, "
+              f"Schlussumbruch {eig['schluss']})")
+    if eigen:
+        con.close()
+    return n
+
+
 def importiere(pfad, con=None, still=False):
     pfad = Path(pfad)
-    text = pfad.read_text(encoding="utf-8-sig", errors="replace")
+    text, eig = lies_datei(pfad)
     eigen = con is None
     con = con or db.verbinde()
     hid = db.herkunft_id(con, "gedcom", pfad.name,
                          f"{pfad}, {len(text)} Zeichen")
 
     records = zerlege(text)
+    merke_rec(con, hid, records, eig)
     idx_person, idx_familie = {}, {}
 
     # 1. Durchgang: Personen und Familien anlegen
@@ -234,6 +305,8 @@ def main():
     ap.add_argument("datei", nargs="*")
     ap.add_argument("--aus-konfig", action="store_true",
                     help="die in konfig.toml eingetragene Bestandsdatei lesen")
+    ap.add_argument("--nur-rec", action="store_true",
+                    help="nur die Recordtabelle nachtragen, sonst nichts")
     a = ap.parse_args()
     ziele = list(a.datei)
     if a.aus_konfig:
@@ -245,7 +318,7 @@ def main():
         sys.exit(__doc__)
     con = db.verbinde()
     for z in ziele:
-        importiere(z, con)
+        (nur_rec if a.nur_rec else importiere)(z, con)
     con.close()
 
 

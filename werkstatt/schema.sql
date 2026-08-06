@@ -31,8 +31,36 @@ CREATE TABLE IF NOT EXISTS herkunft (
   gilt      TEXT NOT NULL DEFAULT 'vokabular',  -- beleg | vokabular
   parochien TEXT,                   -- kommagetrennt; leer = überall gültig
   name      TEXT,                   -- Anzeigename aus konfig.toml
+  -- Beschaffenheit der Quelldatei, damit die Ausgabe sie zeichengleich
+  -- wiederherstellen kann. Ohne diese drei Angaben unterscheidet sich das
+  -- Ergebnis im ersten und im letzten Byte, ohne dass ein Feld anders wäre.
+  bom       INTEGER NOT NULL DEFAULT 0,
+  zeilenende TEXT NOT NULL DEFAULT 'lf',  -- lf | crlf
+  schluss   INTEGER NOT NULL DEFAULT 1,   -- endet die Datei mit einem Umbruch
   UNIQUE(art, datei)
 );
+
+-- Die Quelldatei, vollständig und in Reihenfolge.
+--
+-- `person.raw` und `familie.raw` bewahren zwar jeden INDI- und FAM-Record,
+-- aber eine GEDCOM-Datei besteht nicht nur daraus. Gemessen am Bestand
+-- Haberschlacht: 5.615 Records, davon 4.111 INDI und 1.346 FAM — und 158
+-- weitere, die niemand aufhob: HEAD, SUBM, 35 SOUR, **120 _LOC** und TRLR.
+-- Die _LOC-Records sind die Ortsdefinitionen, auf die jede Person mit
+-- `3 _LOC @L1@` zeigt; ohne sie hat die Ausgabe tote Verweise.
+--
+-- Deshalb hier die ganze Datei, Record für Record, unverändert. Die
+-- Fortschreibung läuft darüber und ersetzt nur, was ein Vorgang berührt.
+CREATE TABLE IF NOT EXISTS rec (
+  id       INTEGER PRIMARY KEY,
+  herkunft INTEGER NOT NULL REFERENCES herkunft(id) ON DELETE CASCADE,
+  seq      INTEGER NOT NULL,
+  xref     TEXT,
+  typ      TEXT NOT NULL,
+  raw      TEXT NOT NULL,
+  UNIQUE(herkunft, seq)
+);
+CREATE INDEX IF NOT EXISTS ix_rec_xref ON rec(herkunft, xref);
 
 -- ---------------------------------------------------------------- Personen
 CREATE TABLE IF NOT EXISTS person (
@@ -206,6 +234,33 @@ CREATE TABLE IF NOT EXISTS auftrag_seite (
   UNIQUE(auftrag, bild)
 );
 CREATE INDEX IF NOT EXISTS ix_auftrag_runde ON auftrag(runde);
+
+-- ------------------------------------------------------------------ Journal
+-- Jede Ergänzung und jede Korrektur als Vorgang. `werkstatt.ausgabe` wendet
+-- sie beim Fortschreiben auf die unveränderten Records an.
+--
+-- Steht bewusst in DERSELBEN Datei wie alles andere. Die Vorgängerfassung
+-- schrieb nach `daten/aenderung.sqlite`; über zwei Dateien hinweg kann ein
+-- Bestätigen aber nicht das Feld UND den Vorgang in einer Transaktion
+-- schreiben — bei einem Abbruch dazwischen stimmen sie nicht mehr überein.
+--
+-- Rücknahme heißt `aktiv=0`, nicht löschen. Der Ausgangszustand bleibt
+-- jederzeit rekonstruierbar, und jeder Vorgang trägt seinen Beleg statt
+-- bloß ein Urteil.
+CREATE TABLE IF NOT EXISTS vorgang (
+  id        INTEGER PRIMARY KEY,
+  art       TEXT NOT NULL,   -- neu_person | neu_familie | merge | feld | kind
+  ziel      TEXT,            -- betroffene Record-Kennung
+  ziel2     TEXT,            -- zweite Kennung (merge: der aufgehende Record)
+  daten     TEXT,            -- JSON: Feldwerte bzw. Parameter
+  quelle    TEXT,            -- z.B. 'Taufreg. Bd. 4 Bild 00361 Nr. 11'
+  beleg     TEXT,            -- woran es hängt, im Klartext
+  bemerkung TEXT,
+  aktiv     INTEGER NOT NULL DEFAULT 1,
+  angelegt  TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS ix_vorgang_ziel ON vorgang(ziel);
+CREATE INDEX IF NOT EXISTS ix_vorgang_art  ON vorgang(art);
 
 -- Chronologie-Anker: Datum jedes Eintrags gegen seine Nachbarn.
 -- Register sind chronologisch geführt — ein Datum außerhalb des
