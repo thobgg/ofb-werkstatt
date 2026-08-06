@@ -26,7 +26,7 @@ ist der Nullstart, und er ist langsam, aber nicht falsch.
 import argparse
 import re
 
-from . import db, einstellungen, konfig
+from . import db, einstellungen, konfig, randvermerk
 from .suche import falte
 
 
@@ -196,6 +196,39 @@ def _setze(con, fid, person=None, ampel="gelb", beleg=None, entscheidung=None):
         (person, ampel, beleg, entscheidung, fid))
 
 
+def _randvermerk_auswerten(con, e):
+    """Steht am Rand ein Tod, wird er als Sterbedatum vorgeschlagen.
+
+    Nur wenn das Feld leer ist — eine eigene Eingabe wird nie überschrieben,
+    auch nicht bei einem erneuten Abgleich. Das Feld bleibt grau: Es ist
+    eine Lesung, kein Treffer, und ob der Vermerk dem Täufling gilt oder
+    einem anderen, sagt allein das Bild.
+    """
+    fid_r, text = _feld(con, e["id"], "randvermerk")
+    fid_s, schon = _feld(con, e["id"], "sterbe_datum")
+    if schon or not text:
+        return
+    d = randvermerk.sterbedatum(text, e["jahr"])
+    if not d:
+        return
+    bel = randvermerk.beleg(
+        text, geraten_jahr=not re.search(r"\b1[5-9]\d\d\b", text))
+    if fid_s is None:
+        # Das Feld entsteht nur, wenn das Modell es liefert — beim
+        # Taufeintrag tut es das nie, dort steht der Tod am Rand. Also hier
+        # anlegen, sonst hätte der Vermerk keinen Ort.
+        reihen = {n: i for i, n in enumerate(konfig.felder(e["register"]))}
+        con.execute(
+            "INSERT INTO feld (eintrag_id, name, rolle, gelesen, beleg, "
+            "ampel, reihe) VALUES (?,?,?,?,?, 'grau', ?)",
+            (e["id"], "sterbe_datum", None, d, bel,
+             reihen.get("sterbe_datum", 99)))
+    else:
+        con.execute(
+            "UPDATE feld SET gelesen=?, beleg=?, ampel='grau' WHERE id=?",
+            (d, bel, fid_s))
+
+
 def taufe_pruefen(con, e, bestand):
     """Elternehe-Anker: die Mutter wird abgeleitet, nicht gesucht.
 
@@ -207,6 +240,7 @@ def taufe_pruefen(con, e, bestand):
     fid_m, m = _feld(con, e["id"], "mutter_name")
     fid_k, _ = _feld(con, e["id"], "kind_vorname")
     _setze(con, fid_k, None, "grau", None, "neu")      # Kind ist immer neu
+    _randvermerk_auswerten(con, e)
 
     jahr = e["jahr"]
     moeglich = []
