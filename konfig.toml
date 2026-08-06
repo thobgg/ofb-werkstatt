@@ -84,8 +84,13 @@ felder  = ["lfd_nr", "kind_vorname", "kind_geschlecht",
            "geburt_datum", "geburt_ort", "tauf_datum", "tauf_ort",
            "vater_name", "vater_beruf", "vater_ort",
            "mutter_name", "mutter_herkunft",
-           "taufender", "paten", "randvermerk"]
-datum   = ["geburt_datum", "tauf_datum"]
+           "taufender", "paten", "randvermerk",
+           # Nicht gelesen, sondern aus dem Randvermerk vorgeschlagen:
+           # "gest. 11. Februar 1808" am Rand ist eine Quellenangabe wie
+           # jede andere und soll nicht im Sterberegister neu gesucht
+           # werden muessen. Siehe randvermerk.py.
+           "sterbe_datum"]
+datum   = ["geburt_datum", "tauf_datum", "sterbe_datum"]
 
 [register.tod]
 titel   = "Sterberegister"

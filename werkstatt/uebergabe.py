@@ -32,8 +32,13 @@ BAUPLAN = {
         "personen": ["kind", "vater", "mutter"],
         "familie": ("vater", "mutter"),
         "kind": "kind",
+        # DEAT beim Taufeintrag: der Randvermerk am Seitenrand nennt oft
+        # den Tod des Täuflings. Diese Angabe steht im Buch — sie hier
+        # liegen zu lassen hieße, sie später im Sterberegister erneut
+        # suchen zu müssen. Gefüllt wird das Feld von randvermerk.py.
         "ereignis": [("BIRT", "geburt_datum", "geburt_ort", "kind"),
-                     ("CHR", "tauf_datum", "tauf_ort", "kind")],
+                     ("CHR", "tauf_datum", "tauf_ort", "kind"),
+                     ("DEAT", "sterbe_datum", None, "kind")],
     },
     "tod": {
         "personen": ["verstorbener"],
