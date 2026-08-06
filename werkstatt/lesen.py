@@ -95,7 +95,7 @@ Antworte NUR mit JSON, ohne Vorspann:
   }}
 ]}}
 
-Felder dieses Registers: {felder}
+{felder}
 
 "kb" nur setzen, wenn die Schreibung im Buch von der normalisierten Form
 abweicht. "notiz" nur bei Unsicherheit oder Besonderheit."""
@@ -122,7 +122,12 @@ def prompt(art, con=None, schreiber=None):
         kat = fehlerkatalog(con, schreiber)
         if kat:
             text += WARNUNG.format(katalog=kat)
-    text += AUSGABE.format(felder=", ".join(felder),
+    # Der Katalog statt einer Aufzählung: Er nennt zu jedem Feld, was
+    # gemeint ist, und bei den heiklen auch, woran man es erkennt —
+    # „geborene“, „weiland“, Zwillinge, Nottaufe, Zählmonate. Eine bloße
+    # Namensliste lässt das Modell raten, was `mutter_herkunft` sein soll.
+    from . import katalog
+    text += AUSGABE.format(felder=katalog.als_prompt(art),
                            beispiel=felder[1] if len(felder) > 1 else felder[0])
     return text
 
