@@ -193,14 +193,22 @@ Im Zahnrad steht das Konto samt Abo, und wenn keines da ist, ein Knopf
 Rückmeldung, blind im Hintergrund geht sie nicht. Die Seite pollt danach
 `/api/anmeldestand` und schaltet von selbst auf grün.
 
-○ **Ungetestet: Windows und macOS.** Die Fensterzweige in `_FENSTER` bzw. für
-`cmd` und Terminal.app sind geschrieben, aber nur der Linux-Weg
-(xfce4-terminal) ist laufen gesehen worden. Zum Prüfen der Anmeldung muss man
-sich abmelden — was die begleitende Claude-Code-Sitzung mit beendet. Deshalb
-allein testen, nicht nebenher.
+**Am 6. August 2026 unter Linux/XFCE ganz durchgelaufen**: abgemeldet, Server
+neu gestartet, Knopf gedrückt, Fenster ging auf, Anmeldung im Browser, Seite
+schaltete von selbst auf grün.
 
-Für den Start ohne Kommandozeile liegt `OFB-Werkstatt starten.bat` bereit:
-prüft Python, holt notfalls Pillow, öffnet den Browser.
+○ **Ungetestet bleiben Windows und macOS** — die Zweige für `cmd` und
+Terminal.app. Zum Prüfen muss man sich abmelden, was die begleitende
+Claude-Code-Sitzung mit beendet; also allein testen, nicht nebenher. Greift
+`claude auth logout` nicht, hilft
+`mv ~/.claude/.credentials.json ~/.claude/.credentials.json.aus`.
+
+**Starten:** `python3 start.py` genügt — wartet auf den Server und öffnet den
+Browser (`--kein-browser` schaltet das ab), und bei belegtem Port wird nur
+das Fenster geöffnet. Die beiden Dateien zum Doppelklick reichen bloß durch.
+Ein laufender Server merkt Codeänderungen nicht: nach dem Bearbeiten
+`pkill -f "python3 start.py"`, sonst misst man den alten Stand — genau daran
+ist der erste Anmeldetest gescheitert.
 
 ○ **Batch fehlt.** Halbiert die Kosten und ist bei seitenweiser Verarbeitung
 der natürliche Modus. Der Rundenautomat ist bereits die Struktur, die Batch
