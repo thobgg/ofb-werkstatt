@@ -100,7 +100,10 @@ async function laden(){
                : P==='/ausgabe' ? ansichtAusgabe()
                : P==='/einstellungen' ? '<div class=leer>lade…</div>'
                : ansichtStand();
- if(P==='/lesen' && S.runde && S.runde.stand==='liest') takt();
+ if(P==='/lesen' && S.runde &&
+    (S.runde.stand==='liest' ||
+     (S.runde.quelle==='datei' && S.vorlage && S.vorlage.fertig<S.vorlage.gesamt)))
+  takt();
  if(P==='/lesen' && !S.runde && document.getElementById('reg')){
   document.getElementById('reg').onchange=quelleGewaehlt; quelleGewaehlt();}
 }
@@ -183,6 +186,7 @@ function ampelReihe(a){
 // ---------------------------------------------------------------- Lesen
 function ansichtLesen(){
  const r=S.runde;
+ if(r && r.quelle==='datei' && S.vorlage) return vorlageKarte();
  if(r && r.stand!=='geplant' && r.stand!=='liest')
   return `<div class=schritt><div class=was>Runde ${r.nr} ist gelesen</div>
    <div class=warum>Stand <b>${esc(r.stand)}</b> — weiter in der Korrekturmaske.</div>
@@ -204,9 +208,11 @@ function ansichtLesen(){
    <input type=number id=anz value="${S.testdaten?4:20}" min=1 max=200 style=width:5rem>
    <label class=dim>Quelle</label>
    <select id=q onchange=quelleGewaehlt()>
-    ${S.register.some(x=>x.offen_test)
-      ?`<option value=testdaten>Testdaten — ohne Schlüssel, kostet nichts</option>`:''}
+    ${S.claude_code
+      ?`<option value=datei>Claude Code — über Ihr Abo, kein API-Schlüssel</option>`:''}
     <option value=api>API — braucht ANTHROPIC_API_KEY</option>
+    ${S.register.some(x=>x.offen_test)
+      ?`<option value=testdaten>Testdaten — zum Ausprobieren, kostet nichts</option>`:''}
    </select>
    <button class=ja onclick=starten()>Lesen starten</button>
   </div>
@@ -220,6 +226,7 @@ function ansichtLesen(){
 
 function fortschrittKarte(){
  const f=S.fortschritt||{}, r=S.runde;
+ if(r.quelle==='datei' && S.vorlage) return vorlageKarte();
  const p=f.seiten_gesamt?Math.round(100*f.seiten_fertig/f.seiten_gesamt):0;
  return `<div class=schritt>
   <div class=was>Runde ${r.nr} · ${esc(r.register)} wird gelesen</div>
@@ -253,6 +260,51 @@ function quelleGewaehlt(){
  document.querySelector('#app button.ja').disabled = !rest;
 }
 
+function vorlageKarte(){
+ const r=S.runde, v=S.vorlage, f=S.fortschritt||{};
+ const p=v.gesamt?Math.round(100*v.fertig/v.gesamt):0;
+ return `<div class=schritt>
+  <div class=was>Runde ${r.nr} · ${esc(r.register)} · über Claude Code</div>
+  <div class=warum>${v.fertig} von ${v.gesamt} Seiten beantwortet.
+   Das Lesen läuft über Ihr Abonnement — kein API-Schlüssel, keine zweite
+   Rechnung. Die Werkstatt hält dabei keine Anmeldedaten.</div>
+  <div class=balken><i style="width:${p}%"></i></div>
+  <div class=seiten>${v.seiten.map(s=>`<div class="${s.da?'fertig':''}">
+    <span class=st>${s.da?'gelesen':'offen'}</span><span>${esc(s.bild)}</span>
+    <span class=dim>${s.eintraege>0?s.eintraege+' Einträge'
+      :s.eintraege<0?'⚠ Antwort unlesbar':''}</span></div>`).join('')}</div>
+  <div class=reihe style="margin-top:.9rem">
+   ${v.fertig<v.gesamt
+     ?`<button class=ja onclick=lesenLassen()>Lesen lassen</button>
+       <button onclick=einlesen()>Antworten einlesen</button>`
+     :`<a href="/korrektur"><button class=ja>Weiter zum Korrigieren</button></a>`}
+   <span class=dim>Ordner <code>${esc(v.ordner)}</code></span>
+  </div>
+  <p class=dim style="font-size:.86rem;margin:.7rem 0 0">
+   <b>Lesen lassen</b> startet eine Claude-Code-Sitzung im Rundenordner, die
+   die Seiten liest und die Antworten schreibt. Das kann je Seite eine Minute
+   dauern; das Fenster darf zugehen. <b>Antworten einlesen</b> nimmt auf, was
+   schon dasteht — auch wenn Sie selbst in einer eigenen Sitzung gelesen
+   haben.</p>
+  <div id=meldung class=dim style="margin-top:.6rem"></div>
+ </div>`;
+}
+
+async function lesenLassen(){
+ document.getElementById('meldung').textContent='Sitzung läuft — das dauert.';
+ await fetch('/api/lesen-lassen',{method:'POST',
+  headers:{'content-type':'application/json'},
+  body:JSON.stringify({runde:S.runde.id})});
+ takt();
+}
+async function einlesen(){
+ document.getElementById('meldung').textContent='wird eingelesen…';
+ await fetch('/api/einlesen',{method:'POST',
+  headers:{'content-type':'application/json'},
+  body:JSON.stringify({runde:S.runde.id})});
+ setTimeout(laden, 1500);
+}
+
 async function starten(){
  const d={register:document.getElementById('reg').value,
           seiten:+document.getElementById('anz').value,
@@ -269,7 +321,9 @@ function takt(){
   S=await (await fetch('/api/stand')).json();
   const el=document.getElementById('app');
   el.innerHTML=ansichtLesen();
-  if(!S.runde||S.runde.stand!=='liest') clearInterval(ticker);
+  const weiter = S.runde && (S.runde.stand==='liest' ||
+    (S.runde.quelle==='datei' && S.vorlage && S.vorlage.fertig<S.vorlage.gesamt));
+  if(!weiter) clearInterval(ticker);
  },1000);
 }
 
