@@ -26,7 +26,7 @@ ist der Nullstart, und er ist langsam, aber nicht falsch.
 import argparse
 import re
 
-from . import db, konfig
+from . import db, einstellungen, konfig
 from .suche import falte
 
 
@@ -67,16 +67,17 @@ def _bestand(con):
         fam.append(dict(id=r["id"], mann=r["mann"], frau=r["frau"],
                         herkunft=r["herkunft"], marr=marr.get(r["id"]),
                         jahr=jahr_aus(marr.get(r["id"]))))
-    return pers, nach, fam, beleg
+    return pers, nach, fam, beleg, einstellungen.grenzen(con)
 
 
 # Lebensgrenzen. Bewusst weit — sie sollen Unmögliches ausschließen, nicht
-# Ungewöhnliches. Alles dazwischen entscheidet der Mensch.
+# Ungewöhnliches. Alles dazwischen entscheidet der Mensch. Änderbar in den
+# Einstellungen; die Werte hier sind nur der Rückfall.
 MUTTER_MIN, MUTTER_MAX = 14, 50
 VATER_MIN, VATER_MAX = 16, 70
 
 
-def _plausibel(pers, f, jahr):
+def _plausibel(pers, f, jahr, gr=None):
     """Kann dieses Paar im Jahr `jahr` ein Kind bekommen haben?
 
     Rückgabe (möglich, datiert). `datiert` sagt, ob überhaupt ein Datum die
@@ -94,8 +95,8 @@ def _plausibel(pers, f, jahr):
     datiert = bool(f["jahr"])
     if f["jahr"] and f["jahr"] > jahr:
         return False, datiert
-    for p, (jung, alt) in ((m, (VATER_MIN, VATER_MAX)),
-                           (w, (MUTTER_MIN, MUTTER_MAX))):
+    gr = gr or dict(vater=(VATER_MIN, VATER_MAX), mutter=(MUTTER_MIN, MUTTER_MAX))
+    for p, (jung, alt) in ((m, gr["vater"]), (w, gr["mutter"])):
         if not p:
             continue
         if p["geb"]:
@@ -150,7 +151,7 @@ def taufe_pruefen(con, e, bestand):
     Deshalb trägt er auch, wenn ihr Name falsch gelesen wurde — im Pilotlauf
     fand er vier Fälle, in denen der *Vater*name falsch war.
     """
-    pers, nach, fam, beleg = bestand
+    pers, nach, fam, beleg, gr = bestand
     fid_v, v = _feld(con, e["id"], "vater_name")
     fid_m, m = _feld(con, e["id"], "mutter_name")
     fid_k, _ = _feld(con, e["id"], "kind_vorname")
@@ -159,7 +160,7 @@ def taufe_pruefen(con, e, bestand):
     jahr = e["jahr"]
     moeglich = []
     for f in _paare(pers, fam, v, m):
-        ok, datiert = _plausibel(pers, f, jahr)
+        ok, datiert = _plausibel(pers, f, jahr, gr)
         if ok:
             moeglich.append((f, datiert))
     treffer = [f for f, _ in moeglich]
@@ -218,7 +219,7 @@ def allgemein_pruefen(con, e, bestand, art):
     Ein Nachname allein genügt nie — `Johannes Bierle` hätte sonst auf
     `Carl Heinrich Bierle` gezeigt. Deshalb gibt es hier kein Grün.
     """
-    pers, nach, fam, beleg = bestand
+    pers, nach, fam, beleg, gr = bestand
     farbe = "rot"
     for rolle in konfig.personen_rollen(art):
         fid, w = _feld(con, e["id"], f"{rolle}_name")

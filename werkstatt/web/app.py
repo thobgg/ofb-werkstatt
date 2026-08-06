@@ -4,12 +4,14 @@
     python3 start.py            -> http://127.0.0.1:8765
     python3 start.py --port 9000
 
-Vier Seiten statt einer, weil der Durchlauf vier Kopfhaltungen hat:
+Eine Seite je Kopfhaltung des Durchlaufs:
 
-    /            Stand und der nächste Schritt als EIN Knopf
-    /lesen       Tranche planen und lesen lassen, mit Fortschritt
-    /korrektur   die Maske, eingeschränkt auf die gerade gelesene Runde
-    /uebergabe   Probelauf zeigen, auf zweiten Klick schreiben
+    /               Stand und der nächste Schritt als EIN Knopf
+    /lesen          Tranche planen und lesen lassen, mit Fortschritt
+    /korrektur      die Maske, eingeschränkt auf die gerade gelesene Runde
+    /uebergabe      Probelauf zeigen, auf zweiten Klick schreiben
+    /ausgabe        GEDCOM — Fortschreibung oder Neuausgabe
+    /einstellungen  Reihenfolge, Seitenzahl, Bildordner, Autopilot
 
 Der Zustand liegt in der Datenbank, nicht im Prozess: Der Läufer arbeitet
 im Hintergrund weiter, wenn das Browserfenster zugeht, und ein Abbruch
@@ -27,7 +29,8 @@ from pathlib import Path
 
 from .seite import SEITE
 from .start import STARTSEITE
-from .. import abgleich, ausgabe, db, konfig, runde as _runde, suche, testdaten
+from .. import (abgleich, ausgabe, db, einstellungen, konfig, runde as _runde,
+                seiten, suche, testdaten)
 
 ROOT = konfig.WURZEL
 DB = ROOT / "daten" / "erfassung.sqlite"
@@ -72,8 +75,37 @@ class Handler(BaseHTTPRequestHandler):
     # -------------------------------------------------------------- GET
     def do_GET(self):
         pfad = urllib.parse.urlparse(self.path).path
-        if pfad in ("/", "/index.html", "/lesen", "/uebergabe", "/ausgabe"):
+        if pfad in ("/", "/index.html", "/lesen", "/uebergabe", "/ausgabe",
+                    "/einstellungen"):
             return self._send(200, "text/html; charset=utf-8", STARTSEITE)
+        if pfad == "/api/einstellungen":
+            con = db.verbinde()
+            try:
+                reihe = einstellungen.reihenfolge(con)
+                register = []
+                for art in reihe:
+                    o = einstellungen.ordner(con, art)
+                    register.append(dict(
+                        register=art,
+                        titel=konfig.register(art).get("titel", art),
+                        ordner=str(o),
+                        vorgabe_ordner=str(konfig.bilderordner(art)),
+                        da=o.exists(),
+                        bilder=len(seiten.bilder(o)),
+                        pdfs=len(seiten.pdfs(o)),
+                        entpackt=(o / seiten.ENTPACKT).is_dir(),
+                        seiten=einstellungen.seitenzahl(con, art)))
+                return self._json(dict(
+                    reihenfolge=reihe,
+                    alle_register=list(konfig.register()),
+                    register=register,
+                    autopilot=einstellungen.wert(con, "autopilot"),
+                    autopilot_text=einstellungen.AUTOPILOT,
+                    grenzen=einstellungen.grenzen(con),
+                    pdf_werkzeug=bool(seiten.pdf_werkzeug()),
+                    eigen=einstellungen.alle(con)))
+            finally:
+                con.close()
         if pfad == "/api/ausgabe":
             con = db.verbinde()
             try:
@@ -178,6 +210,29 @@ class Handler(BaseHTTPRequestHandler):
                 ziel.write_bytes(daten)
                 return self._json(dict(ok=True, datei=str(
                     ziel.relative_to(ROOT)), bytes=len(daten), zahlen=z))
+            finally:
+                con.close()
+        if pfad == "/api/einstellungen":
+            d = self._rumpf()
+            con = db.verbinde()
+            try:
+                for k, v in (d.get("werte") or {}).items():
+                    if v in (None, ""):
+                        con.execute("DELETE FROM einstellung WHERE schluessel=?",
+                                    (k,))
+                        con.commit()
+                    else:
+                        einstellungen.setze(con, k, v)
+                return self._json({"ok": True})
+            finally:
+                con.close()
+        if pfad == "/api/entpacken":
+            d = self._rumpf()
+            con = db.verbinde()
+            try:
+                art = d.get("register")
+                z = seiten.entpacken(einstellungen.ordner(con, art), still=True)
+                return self._json(dict(ok="fehler" not in z, zahlen=z))
             finally:
                 con.close()
         if pfad == "/api/abgleich":

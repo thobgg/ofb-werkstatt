@@ -65,6 +65,12 @@ select,input[type=number]{background:#12141a;border:1px solid #333a45;color:#e6e
 .leer{padding:2.5rem;text-align:center;color:#9aa3b2}
 code{font-family:ui-monospace,monospace;font-size:.86em;background:#12141a;
  padding:.08rem .35rem;border-radius:4px}
+.chip{display:inline-flex;gap:.3rem;align-items:center;background:#262b33;
+ border:1px solid #333a45;border-radius:99px;padding:.15rem .5rem;font-size:.9rem}
+.chip button{padding:0 .25rem;background:transparent;font-size:.9rem;line-height:1}
+input{background:#12141a;border:1px solid #333a45;color:#e6e8ec;border-radius:6px;
+ padding:.35rem .5rem;font:inherit}
+label input[type=radio]{margin-right:.4rem}
 </style></head><body>
 <header><b>OFB-Werkstatt</b>
  <a href="/" data-p="/">Stand</a>
@@ -72,7 +78,8 @@ code{font-family:ui-monospace,monospace;font-size:.86em;background:#12141a;
  <a href="/korrektur" data-p="/korrektur">Korrigieren</a>
  <a href="/uebergabe" data-p="/uebergabe">Übergeben</a>
  <a href="/ausgabe" data-p="/ausgabe">Ausgeben</a>
- <span style=flex:1></span><span class=dim id=gem></span></header>
+ <span style=flex:1></span><span class=dim id=gem></span>
+ <a href="/einstellungen" data-p="/einstellungen" title="Einstellungen">⚙</a></header>
 <main id=app class=leer>lade…</main>
 <script>
 const esc=s=>(s??'').toString().replace(/[&<>"]/g,c=>
@@ -91,6 +98,7 @@ async function laden(){
  app.innerHTML = P==='/lesen' ? ansichtLesen()
                : P==='/uebergabe' ? ansichtUebergabe()
                : P==='/ausgabe' ? ansichtAusgabe()
+               : P==='/einstellungen' ? '<div class=leer>lade…</div>'
                : ansichtStand();
  if(P==='/lesen' && S.runde && S.runde.stand==='liest') takt();
  if(P==='/lesen' && !S.runde && document.getElementById('reg')){
@@ -386,8 +394,153 @@ async function schreiben(art){
   : `<span style=color:#e06c5f>✗ fehlgeschlagen</span>`;
 }
 
+// --------------------------------------------------------- Einstellungen
+let E=null;
+async function einstellungenHolen(){
+ E=await (await fetch('/api/einstellungen')).json();
+ document.getElementById('app').innerHTML=ansichtEinstellungen();
+}
+
+function ansichtEinstellungen(){
+ const r=E.register;
+ return `
+ <h2>Reihenfolge der Register</h2>
+ <div class=karte>
+  <div class=reihe id=reihe>
+   ${E.reihenfolge.map((x,i)=>`<span class=chip data-r="${esc(x)}">
+     ${i?`<button title="nach vorn" onclick="schieben(${i},-1)">↑</button>`:''}
+     ${esc(x)}
+     ${i<E.reihenfolge.length-1?`<button title="nach hinten"
+        onclick="schieben(${i},1)">↓</button>`:''}
+    </span>${i<E.reihenfolge.length-1?'<span class=dim>→</span>':''}`).join('')}
+   <span class=dim style="margin-left:.6rem">→ wieder von vorn</span>
+  </div>
+  <p class=dim style="font-size:.86rem;margin:.7rem 0 0">
+   <b>Ehen zuerst ist keine Geschmacksfrage.</b> Der Elternehe-Anker trägt im
+   Taufjahr 1808 noch 94 %, 1813 noch 53 %, 1820 nur 18 % — es sei denn, die
+   Ehen ab 1808 sind vorher übergeben, dann wächst er mit. Tode zuletzt, weil
+   sie beide vorigen Register als Anker nutzen.</p>
+ </div>
+
+ <h2>Seiten je Runde und Bildordner</h2>
+ <div class=karte><table>
+  <tr><th>Register</th><th>Seiten je Runde</th><th>Ordner</th>
+      <th class=z>Bilder</th><th class=z>PDFs</th><th></th></tr>
+  ${r.map(x=>`<tr>
+   <td>${esc(x.titel)}</td>
+   <td><input type=number min=1 max=200 value="${x.seiten}" style=width:4.5rem
+        onchange="merken('seiten.${esc(x.register)}',this.value)"></td>
+   <td><input value="${esc(x.ordner)}" style="width:100%;min-width:18rem"
+        onchange="merken('ordner.${esc(x.register)}',this.value)">
+       ${x.da?'':'<span style=color:#e06c5f>⚠ Ordner fehlt</span>'}</td>
+   <td class="z ${x.bilder?'':'dim'}">${x.bilder}</td>
+   <td class="z ${x.pdfs?'':'dim'}">${x.pdfs}</td>
+   <td>${x.pdfs?`<button onclick="entpacken('${esc(x.register)}',this)"
+     ${E.pdf_werkzeug?'':'disabled'}>PDFs zerlegen</button>`:''}</td>
+  </tr>`).join('')}
+ </table>
+ <p class=dim style="font-size:.86rem;margin:.7rem 0 0">
+  Ungleiche Seitenzahlen mit Absicht: Ein Eheeintrag nennt <b>sechs</b>
+  Personen, ein Taufeintrag drei. Zehn Ehe-Seiten sind ungefähr so viel
+  Arbeit wie zwanzig Taufseiten.<br>
+  <b>PDFs</b> sind Behälter, keine Bilder — sie werden einmal in Einzelseiten
+  zerlegt (300 dpi, nach <code>entpackt/</code>) und danach wie gewöhnliche
+  Bilder behandelt. ${E.pdf_werkzeug
+   ? '<span style=color:#8fe3b4>pdftoppm gefunden.</span>'
+   : '<span style=color:#e06c5f>pdftoppm fehlt — Paket poppler-utils.</span>'}</p>
+ </div>
+
+ <h2>Wie viel läuft ohne Rückfrage durch</h2>
+ <div class=karte>
+  ${Object.entries(E.autopilot_text).map(([k,v])=>`
+   <label style="display:block;padding:.3rem 0;cursor:pointer">
+    <input type=radio name=ap value="${esc(k)}" ${E.autopilot===k?'checked':''}
+     onchange="merken('autopilot',this.value)">
+    <b>${esc(k)}</b> <span class=dim>— ${esc(v)}</span></label>`).join('')}
+  <p class=dim style="font-size:.86rem;margin:.7rem 0 0">
+   Jede Stufe höher tauscht Tempo gegen stille Fehler. Eine Grenze bleibt auf
+   jeder Stufe fest: <b>Die Selbsteinschätzung des Modells macht nie grün.</b>
+   Sie darf bestimmen, was zuerst gezeigt wird — nicht, was als bestätigt
+   gilt. Bei <code>Koch</code>/<code>Roth</code> war das Modell viermal sicher
+   und viermal falsch.</p>
+ </div>
+
+ <h2>Lebensgrenzen für den Abgleich</h2>
+ <div class=karte>
+  <div class=reihe>
+   <label class=dim>Mutter</label>
+   <input type=number value="${E.grenzen.mutter[0]}" style=width:4rem
+    onchange="merken('mutter_alter_min',this.value)">
+   <span class=dim>bis</span>
+   <input type=number value="${E.grenzen.mutter[1]}" style=width:4rem
+    onchange="merken('mutter_alter_max',this.value)">
+   <span class=dim style=margin-left:1rem>Vater</span>
+   <input type=number value="${E.grenzen.vater[0]}" style=width:4rem
+    onchange="merken('vater_alter_min',this.value)">
+   <span class=dim>bis</span>
+   <input type=number value="${E.grenzen.vater[1]}" style=width:4rem
+    onchange="merken('vater_alter_max',this.value)">
+   <span class=dim>Jahre bei der Geburt eines Kindes</span>
+  </div>
+  <p class=dim style="font-size:.86rem;margin:.7rem 0 0">
+   Bewusst weit — sie sollen Unmögliches ausschließen, nicht Ungewöhnliches.
+   Ohne sie ordnete der Abgleich einer Taufe von <b>1809</b> ein Paar zu, das
+   1699 und 1703 geboren wurde und dessen Frau 1767 starb — und machte es
+   grün.</p>
+ </div>
+
+ <div class=reihe style="margin:1.2rem 0">
+  <button class=ja id=speichern onclick=einstellungenSpeichern() disabled>
+   Speichern</button>
+  <span class=dim id=espeichert></span>
+ </div>
+
+ <h2>Struktur — steht in der Datei, nicht hier</h2>
+ <div class=karte><p class=dim style="font-size:.88rem;margin:0">
+  Registerarten, Felder, Rollen und Kontextquellen stehen in
+  <code>konfig.toml</code>, eigene Pfade in <code>konfig.local.toml</code>
+  (in <code>.gitignore</code>). Das ist Struktur — sie ändert man beim
+  Einrichten, nicht beim Arbeiten. Sie hier bearbeitbar zu machen hieße, die
+  Datei bei jedem Klick neu zu schreiben und dabei ihre Kommentare zu
+  verlieren; die machen den halben Erklärwert aus.</p></div>`;
+}
+
+let geaendert={};
+function merken(k,v){
+ geaendert[k]=v;
+ const b=document.getElementById('speichern');
+ if(b){b.disabled=false; b.textContent=`Speichern (${Object.keys(geaendert).length})`}
+ document.getElementById('espeichert').textContent='';
+}
+function schieben(i,d){
+ const r=[...E.reihenfolge]; const [x]=r.splice(i,1); r.splice(i+d,0,x);
+ E.reihenfolge=r; merken('reihenfolge',r.join(','));
+ document.getElementById('app').innerHTML=ansichtEinstellungen();
+ const b=document.getElementById('speichern');
+ b.disabled=false; b.textContent=`Speichern (${Object.keys(geaendert).length})`;
+}
+async function einstellungenSpeichern(){
+ await fetch('/api/einstellungen',{method:'POST',
+  headers:{'content-type':'application/json'},
+  body:JSON.stringify({werte:geaendert})});
+ geaendert={};
+ await einstellungenHolen();
+ const s=document.getElementById('espeichert');
+ if(s) s.textContent='gespeichert';
+}
+async function entpacken(reg,btn){
+ btn.disabled=true; btn.textContent='zerlege…';
+ const r=await fetch('/api/entpacken',{method:'POST',
+  headers:{'content-type':'application/json'},
+  body:JSON.stringify({register:reg})});
+ const j=await r.json();
+ await einstellungenHolen();
+ alert(j.ok?`fertig: ${JSON.stringify(j.zahlen)}`:`Fehler: ${j.zahlen.fehler}`);
+}
+
 laden().then(()=>{
  if(P==='/uebergabe') probeHolen();
  if(P==='/ausgabe') ausgabeHolen();
+ if(P==='/einstellungen') einstellungenHolen();
 });
 </script></body></html>"""

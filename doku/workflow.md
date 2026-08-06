@@ -275,13 +275,13 @@ Runde", nicht „Eintrag 7 von 118".
 
 ---
 
-## Wie viel darf die Maschine allein entscheiden?  ○
+## Wie viel darf die Maschine allein entscheiden?  ◑
 
-Das ist die Stellschraube, an der alles hängt, und sie gehört in die
-Einstellungen — nicht in den Code und nicht in mein Urteil.
+Die Stellschraube, an der alles hängt. Sie steht seit dem 6. August unter
+**/einstellungen** — die Stufen sind wählbar, ihre Wirkung im Abgleich ist
+noch nicht angeschlossen.
 
-    [gang]
-    autopilot = "normal"
+    Autopilot: streng | normal | zuegig
 
 | Stufe | läuft ohne Frage durch | wird vorgelegt |
 |---|---|---|
@@ -302,19 +302,22 @@ Deshalb bleibt eine Grenze fest, unabhängig von der Stufe:
 > bestimmen, was zuerst gezeigt wird — nicht, was als bestätigt gilt.
 > Bei `Koch`/`Roth` war das Modell viermal sicher und viermal falsch.
 
-Weitere Einstellungen, die ich vorsehen würde:
+Weitere Einstellungen — ✓ gebaut, unter **/einstellungen** oder über
+`python3 -m werkstatt.einstellungen`:
 
-    [gang]
-    autopilot        = "normal"
-    tranche_ehe      = 10        # Seiten je Runde
-    tranche_taufe    = 20
-    tranche_tod      = 20
-    vorauslesen      = 3         # Seiten Vorlauf vor dem Bearbeiter
-    ausgabe_je_tranche = true    # GEDCOM nach jeder Tranche
+    reihenfolge        ehe → taufe → tod, per Pfeiltasten umstellbar
+    seiten.ehe         10    ungleich mit Absicht: sechs Personen je
+    seiten.taufe       20    Eheeintrag gegen drei je Taufeintrag
+    seiten.tod         20
+    ordner.<register>  Bildordner, überschreibt konfig.toml
+    autopilot          streng | normal | zuegig
+    mutter_alter_min/max, vater_alter_min/max
+    vorauslesen        ○ noch ohne Wirkung
+    ausgabe_je_tranche ○ noch ohne Wirkung
 
-    [grenzen]
-    mutter_alter = [14, 50]      # für die Plausibilitätsprüfung
-    vater_alter  = [16, 70]
+Dazu die **PDF-Aufbereitung**: Ein Archion-Download ist ein Behälter mit dem
+halben Band, kein Bild. Ein Klick zerlegt ihn mit `pdftoppm` (300 dpi) nach
+`entpackt/`; danach zählen die Seiten wie gewöhnliche Bilder.
 
 **? Sollen bestätigte Entscheidungen zurückwirken?** Wenn Sie einmal sagen,
 `Bührlin` ist `Bierle`, gilt das fortan — jede Bestätigung ist eine neue Kante
@@ -448,7 +451,8 @@ Ehrlich aufgeschrieben, was zwischen dem Gebauten und dem Beschriebenen liegt:
 | Bild | ganzer Zeilenstreifen | **Lupe am Feld** |
 | Anbindung | nur Taufe | **alle drei Register** |
 | Bedienung | klicken, tippen | **eine Taste je Entscheidung** |
-| Autopilot | fest verdrahtet | **Einstellung, drei Stufen** |
+| ~~Autopilot~~ | ~~fest verdrahtet~~ | **wählbar seit 6. August, Wirkung offen** |
+| ~~Seitenzahl, Ordner, Reihenfolge~~ | ~~nur in der Datei~~ | **erledigt am 6. August** |
 | ~~Ausgabe~~ | ~~keine~~ | **erledigt am 6. August** |
 
 Das ist mehr Arbeit als das, was bisher steht — aber es ist kein Umbau. Die
