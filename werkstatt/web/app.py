@@ -125,6 +125,7 @@ class Handler(BaseHTTPRequestHandler):
                         batch=einstellungen.wert(con, "ki.batch", "0") == "1",
                         # Nie den Schlüssel selbst ausliefern — nur ob einer da ist.
                         schluessel=bool(os.environ.get("ANTHROPIC_API_KEY")),
+                        cli=vorlage.bereitschaft(),
                         verbrauch=self._verbrauch(con, modell)),
                     eigen=einstellungen.alle(con)))
             finally:
@@ -380,7 +381,9 @@ class Handler(BaseHTTPRequestHandler):
                 fortschritt=_runde.fortschritt(con, r["id"]) if r else None,
                 vorlage=(vorlage.stand(con, r["id"])
                          if r and r["quelle"] == "datei" else None),
-                claude_code=bool(vorlage.werkzeug()),
+                # Nur anbieten, wenn auch angemeldet — ein installiertes,
+                # aber unangemeldetes Claude Code liest keine Seite.
+                claude_code=vorlage.bereitschaft()["angemeldet"],
                 offen=_runde.offen_in_runde(con, r["id"]) if r else None,
                 bestand=db.stand(con),
             )
