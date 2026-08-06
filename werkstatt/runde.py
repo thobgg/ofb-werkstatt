@@ -147,7 +147,7 @@ def _rolle(art, feldname):
 
 def speichere(con, art, bild, ergebnis, runde_id=None, hid=None):
     """Gelesene Einträge festhalten — für beide Quellen derselbe Weg."""
-    reihen = {n: i for i, n in enumerate(konfig.felder(art))}
+    reihen = {n: i for i, n in enumerate(konfig.felder(art, con))}
     n_e = n_f = 0
     for e in ergebnis.get("eintraege", []):
         nr = str(e.get("lfd_nr") or "")
