@@ -26,7 +26,7 @@ import traceback
 from datetime import datetime, timezone
 from pathlib import Path
 
-from . import db, einstellungen, konfig, seiten, testdaten
+from . import db, einstellungen, konfig, seiten, testdaten, vorlage
 
 STAENDE = ("geplant", "liest", "korrigieren", "uebergeben", "fertig")
 
@@ -58,6 +58,8 @@ def offene_bilder(con, register, quelle="api"):
     if quelle == "testdaten":
         alle = testdaten.seiten(register)
     else:
+        # 'api' und 'datei' lesen beide aus dem Bilderordner — der Unterschied
+        # ist nur, wer die Seite anschaut.
         alle = [f.stem for f in seiten.bilder(einstellungen.ordner(con, register))]
     return [b for b in alle if b not in schon]
 
@@ -188,6 +190,10 @@ def lauf(runde_id):
                 (jetzt(), aid))
     con.commit()
 
+    if quelle == "datei":
+        # Seiten und Prompt ablegen, falls das noch nicht geschehen ist.
+        vorlage.lege_vor(con, runde_id, still=True)
+
     schluessel = None
     if quelle == "api":
         import os
@@ -206,6 +212,8 @@ def lauf(runde_id):
         notiz=f"gelesen aus {quelle}")
 
     fertig = 0
+    con.execute("UPDATE auftrag_seite SET meldung=NULL "
+                "WHERE auftrag=? AND stand='fertig'", (aid,))
     for s in list(con.execute(
             "SELECT * FROM auftrag_seite WHERE auftrag=? AND stand<>'fertig' "
             "ORDER BY bild", (aid,))):
@@ -217,24 +225,34 @@ def lauf(runde_id):
             if quelle == "testdaten":
                 erg = testdaten.lies_seite(bild)
                 nutzung = {}
+            elif quelle == "datei":
+                erg = vorlage.lies_seite(r["nr"], bild)
+                nutzung = {}
             else:
                 from . import lesen
                 pfad = _bildpfad(con, art, bild)
                 erg, nutzung = lesen.lies_seite(pfad, art, schluessel, con)
             n_e, n_f = speichere(con, art, bild, erg, runde_id, hid)
             con.execute(
-                "UPDATE auftrag_seite SET stand='fertig', eintraege=?, felder=? "
-                "WHERE id=?", (n_e, n_f, s["id"]))
+                "UPDATE auftrag_seite SET stand='fertig', eintraege=?, felder=?, "
+                "meldung=NULL WHERE id=?", (n_e, n_f, s["id"]))
             con.execute(
                 "UPDATE auftrag SET tokens_ein=tokens_ein+?, "
                 "tokens_aus=tokens_aus+? WHERE id=?",
                 (nutzung.get("input_tokens", 0),
                  nutzung.get("output_tokens", 0), aid))
+        except FileNotFoundError as e:
+            # Bei der Quelle 'datei' heisst eine fehlende Antwort nur: noch
+            # nicht gelesen. Das ist kein Fehler, sondern der Normalzustand,
+            # bis die Sitzung durch ist — die Seite bleibt wartend und der
+            # Lauf laesst sich beliebig oft wiederholen.
+            con.execute("UPDATE auftrag_seite SET stand='wartet', meldung=? "
+                        "WHERE id=?", (str(e)[:400], s["id"]))
         except Exception as e:
-            # Fehler gelten je Seite, nicht je Lauf. Ein SystemExit mitten
-            # in zwanzig Seiten wäre in einem Hintergrund-Thread ein stiller
-            # Tod: Die ersten Seiten wären gespeichert, und niemand wüsste,
-            # warum es aufgehört hat.
+            # Sonstige Fehler gelten je Seite, nicht je Lauf. Ein SystemExit
+            # mitten in zwanzig Seiten waere in einem Hintergrund-Thread ein
+            # stiller Tod: Die ersten Seiten waeren gespeichert, und niemand
+            # wuesste, warum es aufgehoert hat.
             con.execute("UPDATE auftrag_seite SET stand='fehler', meldung=? "
                         "WHERE id=?", (f"{type(e).__name__}: {e}"[:400], s["id"]))
             traceback.print_exc()
@@ -250,11 +268,26 @@ def lauf(runde_id):
                 ("fehler" if schlecht == a["seiten_gesamt"] else "fertig",
                  jetzt(), f"{schlecht} Seite(n) mit Fehler" if schlecht else None,
                  aid))
-    con.execute("UPDATE runde SET stand='korrigieren' WHERE id=?", (runde_id,))
-    con.commit()
-
+    offen = con.execute(
+        "SELECT count(*) FROM auftrag_seite WHERE auftrag=? AND stand='wartet'",
+        (aid,)).fetchone()[0]
+    # Abgleichen, was da ist — auch wenn noch Seiten fehlen. Bei der Quelle
+    # 'datei' kann das Lesen über mehrere Sitzungen gehen; solange dürfen die
+    # schon gelesenen Einträge nicht grau liegen bleiben.
     from . import abgleich
     abgleich.runde_pruefen(con, runde_id)
+
+    if offen:
+        # Die Runde bleibt beim Lesen stehen, damit ein zweiter Lauf die
+        # fehlenden Seiten nachholt.
+        con.execute("UPDATE runde SET stand='geplant' WHERE id=?", (runde_id,))
+        con.execute("UPDATE auftrag SET stand='wartet', meldung=? WHERE id=?",
+                    (f"{offen} Seite(n) noch ohne Antwort", aid))
+        con.commit()
+        return
+
+    con.execute("UPDATE runde SET stand='korrigieren' WHERE id=?", (runde_id,))
+    con.commit()
     con.close()
 
 
@@ -398,7 +431,8 @@ def main():
     ap.add_argument("--stand", action="store_true")
     ap.add_argument("--plane")
     ap.add_argument("--seiten", type=int, default=0)
-    ap.add_argument("--quelle", default="api", choices=("api", "testdaten"))
+    ap.add_argument("--quelle", default="api",
+                    choices=("api", "testdaten", "datei"))
     ap.add_argument("--lies", type=int)
     ap.add_argument("--uebergib", type=int)
     ap.add_argument("--verwirf", type=int)
