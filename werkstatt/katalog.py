@@ -37,13 +37,20 @@ eine Randbedingung —, steht wenigstens dort und ist wiederfindbar.
 """
 from collections import namedtuple
 
-Feld = namedtuple("Feld", "name rolle art kb ziel ziel_kb titel hinweis")
+Feld = namedtuple(
+    "Feld", "name rolle art kb ziel ziel_kb titel hinweis traeger")
 
 
 def f(name, rolle=None, art="text", kb=False, ziel=None, ziel_kb=None,
-      titel=None, hinweis=None):
+      titel=None, hinweis=None, traeger=None):
+    """Ein Feld der Aktkarte.
+
+    `traeger` sagt, an wem ein Ereignis haengt, wenn das nicht die Rolle
+    des Feldes ist: Das Taufdatum gehoert dem Kind, obwohl das Feld
+    keiner Rolle zugeordnet ist, und das Traudatum der Familie.
+    """
     return Feld(name, rolle, art, kb, ziel, ziel_kb,
-                titel or name.replace("_", " "), hinweis)
+                titel or name.replace("_", " "), hinweis, traeger or rolle)
 
 
 # --------------------------------------------------------------- Bausteine
@@ -132,8 +139,10 @@ ABSCHLUSS = [
 # ------------------------------------------------------------------ Taufe
 TAUFE = [
     f("lfd_nr", None, "text", titel="laufende Nummer"),
-    f("tauf_datum", None, "datum", ziel="CHR.DATE", titel="Taufdatum"),
-    f("tauf_ort", None, "ort", ziel="CHR.PLAC", titel="Taufort"),
+    f("tauf_datum", None, "datum", ziel="CHR.DATE", titel="Taufdatum",
+      traeger="kind"),
+    f("tauf_ort", None, "ort", ziel="CHR.PLAC", titel="Taufort",
+      traeger="kind"),
     f("geburt_datum", "kind", "datum", ziel="BIRT.DATE", titel="Geburtsdatum"),
     f("geburt_zeit", "kind", "text", kb=True, ziel=None, ziel_kb="_NOTE_TAUFE",
       titel="Geburtsstunde",
@@ -185,8 +194,10 @@ EHE = [
     f("proklamation", None, "text", kb=True, ziel=None,
       ziel_kb="_NOTE_HEIRAT", titel="Aufgebote",
       hinweis="Die drei Proklamationen mit Daten, oder der Dispens davon."),
-    f("trauung_datum", None, "datum", ziel="MARR.DATE", titel="Traudatum"),
+    f("trauung_datum", None, "datum", ziel="MARR.DATE",
+      titel="Traudatum", traeger="familie"),
     f("trauung_ort", None, "ort", ziel="MARR.PLAC", titel="Trauort",
+      traeger="familie",
       hinweis="Getraut wird oft in der Gemeinde der Braut."),
     *person("braeutigam", "Bräutigam", geburt=True, eltern=True),
     *person("braut", "Braut", geburt=True, eltern=True),
@@ -488,3 +499,73 @@ def bilanz(art):
         if not x.ziel and not x.ziel_kb:
             z["ohne"] += 1
     return z
+
+
+# ------------------------------------------------------------- Bauplan
+# Welche zwei Rollen ein Paar bilden und welche das Kind ist, steht nicht
+# im Feld, sondern in der Aktart. Das ist die einzige Angabe, die sich
+# nicht aus den Feldern ableiten laesst.
+# Diese Ziele traegt der Personendatensatz schon in eigenen Spalten. Sie
+# zusaetzlich als Merkmal zu fuehren hiesse, sie in der Ausgabe zweimal zu
+# schreiben — einmal aus `person`, einmal aus `merkmal`.
+IN_PERSON = {"NAME", "GIVN", "SURN", "SEX"}
+
+PAAR = {"ehe": ("braeutigam", "braut"), "taufe": ("vater", "mutter")}
+KIND = {"taufe": "kind"}
+
+
+def rollen(art, con=None):
+    """Alle Personenrollen dieser Aktart, in der Reihenfolge des Katalogs."""
+    z = []
+    for x in felder(art, con):
+        if x.rolle and x.rolle not in z and x.name in (
+                f"{x.rolle}_name", f"{x.rolle}_vorname"):
+            z.append(x.rolle)
+    kind = KIND.get(art)
+    if kind and kind not in z:
+        z.insert(0, kind)
+    return z
+
+
+def bauplan(art, con=None):
+    """Was die Uebergabe aus einem Eintrag macht — abgeleitet, nicht gepflegt.
+
+    Ereignisse entstehen aus jedem Datumsfeld, dessen Ziel auf `.DATE`
+    endet; der Ort kommt aus dem Feld mit demselben Tag und `.PLAC`. Damit
+    zieht jede Aenderung an der Aktkarte sofort durch bis in die Ausgabe —
+    vorher stand hier eine zweite, von Hand gepflegte Liste, und sie kannte
+    das Sterbedatum aus dem Randvermerk nicht.
+
+    `merkmale` sind die Angaben, die kein Ereignis sind: Beruf, Wohnort,
+    Religion, Rufname und die Kirchenbuchformen. Sie haengen an der Person
+    oder am Ereignis und landen als eigene Zeile im GEDCOM.
+    """
+    fs = felder(art, con)
+    # Nach Ziel UND Traeger, nicht nur nach Ziel: In der Ehe haben
+    # `braeutigam_geburt_ort` und `braut_geburt_ort` beide BIRT.PLAC, und
+    # wer nur das Ziel nachschlaegt, gibt dem Braeutigam den Geburtsort
+    # der Braut.
+    nach_ziel = {(x.ziel, x.traeger): x for x in fs if x.ziel}
+    ereignis, merkmal = [], []
+    for x in fs:
+        if not x.ziel:
+            if x.kb and x.ziel_kb:
+                merkmal.append(dict(feld=x.name, tag=x.ziel_kb, kb=True,
+                                    traeger=x.traeger))
+            continue
+        tag, _, unter = x.ziel.partition(".")
+        if x.art == "datum" and unter == "DATE":
+            ort = nach_ziel.get((f"{tag}.PLAC", x.traeger))
+            ereignis.append(dict(tag=tag, datum=x.name,
+                                 ort=ort.name if ort else None,
+                                 traeger=x.traeger or "kind"))
+        elif unter in ("PLAC",):
+            continue                      # gehoert schon zum Ereignis
+        elif x.ziel not in IN_PERSON:
+            merkmal.append(dict(feld=x.name, tag=x.ziel, kb=False,
+                                traeger=x.traeger))
+        if x.kb and x.ziel_kb:
+            merkmal.append(dict(feld=x.name, tag=x.ziel_kb, kb=True,
+                                traeger=x.traeger))
+    return dict(personen=rollen(art, con), paar=PAAR.get(art),
+                kind=KIND.get(art), ereignis=ereignis, merkmal=merkmal)
