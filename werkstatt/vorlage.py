@@ -249,7 +249,14 @@ def bereitschaft(neu=False):
         if not d["angemeldet"]:
             d["meldung"] = "Claude Code ist installiert, aber nicht angemeldet."
     except Exception as e:
-        d["meldung"] = f"Status nicht lesbar: {e}"
+        # Die Werkstatt haengt hier an einer fremden Ausgabe. Aendert eine
+        # kuenftige Version von Claude Code deren Form, darf das die Quelle
+        # nicht verschwinden lassen — dann waere ein funktionierender Weg aus
+        # der Oberflaeche heraus nicht mehr erreichbar. Also im Zweifel
+        # anbieten und den Zweifel danebenschreiben.
+        d["angemeldet"] = None
+        d["meldung"] = (f"Anmeldestand nicht lesbar ({e}). Lesen wird trotzdem "
+                        "angeboten — ob es klappt, zeigt der erste Versuch.")
     _BEREIT.clear(), _BEREIT.update(d)
     return d
 

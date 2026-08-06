@@ -388,8 +388,9 @@ class Handler(BaseHTTPRequestHandler):
                 vorlage=(vorlage.stand(con, r["id"])
                          if r and r["quelle"] == "datei" else None),
                 # Nur anbieten, wenn auch angemeldet — ein installiertes,
-                # aber unangemeldetes Claude Code liest keine Seite.
-                claude_code=vorlage.bereitschaft()["angemeldet"],
+                # aber unangemeldetes Claude Code liest keine Seite. None
+                # heisst "nicht feststellbar" und zaehlt als anbieten.
+                claude_code=vorlage.bereitschaft()["angemeldet"] is not False,
                 offen=_runde.offen_in_runde(con, r["id"]) if r else None,
                 bestand=db.stand(con),
             )
