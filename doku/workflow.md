@@ -459,20 +459,34 @@ Neun Punkte, bei denen ich eine Meinung habe, aber Sie entscheiden:
    gesetzt, gültig über alle drei Register.
 7. **Erst die Ausgabe, dann alles andere.** Ein Werkzeug, das nichts
    herausgibt, ist nicht benutzbar, auch wenn es innen fertig ist.
-8. **Der Qualitätstest vor dem weiteren Ausbau.** Eine Eheseite mit bekannter
-   Wahrheit, gegen das Modell. Bisher ist ungeprüft, wie gut es liest — alle
-   Zahlen messen die Verknüpfung.
-9. **Bestätigte Namensgleichungen sammeln, nicht sofort übernehmen.** Eine
+8. **Bestätigte Namensgleichungen sammeln, nicht sofort übernehmen.** Eine
    falsche Kante verschmolz im Pilotbestand 231 Personen zu einer Klasse.
 
-**Meine Reihenfolge, wenn Sie mich lassen:** erst 7 (Ausgabe), dann 8
-(Qualitätstest), dann 1–3 (die Bedienschleife), dann 6 (Familienbuch-Anker),
-dann der Rest.
+**Zurückgestellt: der Qualitätstest.** Eine Eheseite mit bekannter Wahrheit
+gegen das Modell — die einzige Messung, die etwas über die *Lesequalität*
+sagen würde. Braucht `ANTHROPIC_API_KEY` und kostet Geld. Auf Entscheidung
+vom 5. August vertagt.
 
-Der Grund für diese und keine andere: Punkt 7 macht das Werkzeug benutzbar,
-Punkt 8 sagt uns, ob es überhaupt taugt. Die Bedienschleife danach zu bauen
-kostet nichts extra — sie davor zu bauen hieße, eine Oberfläche zu polieren,
-von der wir noch nicht wissen, ob sie das Richtige zeigt.
+Folge, damit sie später nicht überrascht: **Alle Zahlen der Werkstatt messen
+bis dahin die Verknüpfung, nicht das Lesen.** Die 46 % Wiederfindungsquote
+stammen aus bereits korrigierten Lesungen. Solange das so bleibt, gehört in
+kein README eine Aussage darüber, wie gut das Werkzeug liest.
 
-Was davon anders soll, sagen Sie mir. Danach zurren wir es fest und ich
-arbeite es der Reihe nach ab.
+Für den Bau ist das kein Hindernis: Die Testquelle trägt den ganzen Ablauf
+ohne Schlüssel. Was fehlt, ist nur das Urteil über die Rohlesung.
+
+---
+
+## Festgezurrte Reihenfolge
+
+    1  Ausgabe            GEDCOM, beide Arten          ← macht es benutzbar
+    2  Bedienschleife     ein Eintrag, eine Taste
+    3  Familienbuch-Anker billiger und stärker als die Kaskaden
+    4  Kaskaden Ehe/Tod
+    …  Qualitätstest      wenn Sie so weit sind
+
+Punkt 1 zuerst, weil ein Werkzeug, das nichts herausgibt, nicht benutzbar ist,
+auch wenn es innen fertig ist. Punkt 2 danach, weil die Bedienschleife gegen
+die Testquelle gebaut und geprüft werden kann.
+
+Was noch anders soll, sagen Sie mir — sonst arbeite ich das der Reihe nach ab.
