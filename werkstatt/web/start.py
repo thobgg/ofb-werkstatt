@@ -456,6 +456,11 @@ async function einstellungenHolen(){
 }
 
 function anmeldeblock(c){
+ if(c.angemeldet===null) return `<div class=warn>${esc(c.meldung||'')}
+   <div class=reihe style="margin-top:.6rem">
+    <button onclick=anmeldenStarten(this)>Trotzdem anmelden</button>
+    <span class=dim id=anmeldetext>Falls das Lesen scheitert, ist die
+     Anmeldung der erste Verdacht.</span></div></div>`;
  if(c.angemeldet) return `<div class=reihe style="margin-bottom:.6rem">
    <span class=ampel><i class="pkt gruen"></i>
    <b>Angemeldet${c.abo?' — '+esc(c.abo)+'-Abonnement':''}</b></span>
