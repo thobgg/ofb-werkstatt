@@ -377,10 +377,22 @@ class Handler(BaseHTTPRequestHandler):
                     "(SELECT count(*) FROM person p WHERE p.herkunft=h.id) n "
                     "FROM herkunft h ORDER BY h.gilt, h.id"):
                 quellen.append(dict(h))
+            # Eingetragen heisst nicht eingelesen. Eine Quelle, die in
+            # konfig.toml steht und nie importiert wurde, wirkt nicht — und
+            # das sah man bisher nirgends, weil die Tabelle nur zeigt, was
+            # schon in der Datenbank liegt.
+            drin = {Path(q["datei"] or "").name for q in quellen}
+            fehlend = [dict(name=q["name"], art=q["art"], datei=q["datei"],
+                            gilt=q["gilt"],
+                            liest_wer=("import_gedcom" if q["art"] == "gedcom"
+                                       else None))
+                       for q in konfig.kontext()
+                       if q["datei"] and Path(q["datei"]).name not in drin]
             return dict(
                 gemeinde=k.get("name", "—"),
                 register=_runde.stand(con),
                 quellen=quellen,
+                quellen_fehlend=fehlend,
                 testdaten=len(testdaten.seiten()),
                 runde=r,
                 vorschlag=v,
