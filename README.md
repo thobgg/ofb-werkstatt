@@ -90,6 +90,29 @@ entsprechen. Das ist eine Eigenschaft des Codes, keine der Handschrift.
 Alle Messwerte aus der Entwicklung — samt dem, was daran ungeprüft ist —
 stehen in `doku/`, wo auch dabeisteht, woran sie gemessen wurden.
 
+## Für welche Bücher
+
+Der Lese-Teil setzt **tabellarisch geführte Register** voraus. Ob ein Bestand
+geeignet ist, entscheidet nicht die Jahreszahl, sondern die Vorlage:
+
+| Bedingung | warum |
+|---|---|
+| Formular mit festen, gedruckten Spalten | sonst kein Spaltenraster, kein gezielter Bildausschnitt, keine Familienbuch-Nummer |
+| ein Eintrag = ein abgrenzbarer Block | sonst fehlt schon die Zerlegung der Seite in Einträge |
+| lesbare Datums- und Nummernspalte | die Chronologie ist der billigste Anker — sie prüft, ohne den Bestand zu brauchen |
+| Scan und Handschrift geben Datum, Vornamen, Beruf her | auf diesen Feldern ruht der Abgleich |
+
+In Württemberg sind diese Bedingungen ab **1808** erfüllt: Das Generalreskript
+vom 15. November 1807 verordnete beiden Konfessionen feste Spalten und führte
+zugleich die Familienregister ein. Andere Territorien haben ihre eigenen
+Zeitpunkte — und auch ein spätes, aber schlampig geführtes oder schlecht
+gescanntes Buch kann ungeeignet sein.
+
+Ältere Fließtext-Register liest die Werkstatt **nicht**. Sie kommen als
+vorhandene Transkription in den Bestand und werden beim Abgleich gefunden —
+Verknüpfen braucht kein Lesen; gemessen an Sterbeeinträgen 1750–1807
+(`doku/verknuepfung.md`).
+
 ## Stand
 
 | | |
@@ -207,6 +230,9 @@ named person is matched against your existing dataset — or against your own
 earlier entries, if you start from scratch. Output is GEDCOM.
 
 It is **a matching tool with a reader attached**, not a transcription tool.
+The reading step presupposes tabular, pre-printed registers (in Württemberg
+the rule from 1808 onward); older free-text entries are not read by the tool,
+but existing transcriptions of them can be imported and matched against.
 How well the machine reads depends on the hand, the state of the book and the
 scan — not on the tool. What the tool contributes is the step afterwards:
 deciding which of the six people named in a marriage entry already exist in
