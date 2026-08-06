@@ -272,6 +272,79 @@ Bytestelle.
 die Auswertung des Journals beim Fortschreiben (nötig erst, wenn Records
 nicht nur ergänzt, sondern geändert werden).
 
+## Stand 6. August 2026 — was an diesem Tag entstand
+
+Die App ist bedienbar geworden. Der Reihe nach:
+
+**Anmeldung ohne Terminal.** Zahnrad zeigt Konto und Abo; ist niemand
+angemeldet, steht dort ein Knopf, der ein Fenster mit `claude auth login`
+öffnet und danach von selbst auf grün schaltet. Unter Linux/XFCE einmal
+ganz durchgelaufen; Windows und macOS sind geschrieben und ungetestet
+(`doku/windows-test.md` führt durch die Prüfung).
+
+**Einrichtung.** Ein frisch ausgepacktes Projekt zeigt beim ersten Start
+drei Fragen statt „Musterhausen" und schreibt `konfig.local.toml` selbst.
+Ein Projekt bleibt ein Ordner.
+
+**Quellen im Zahnrad.** Hinzufügen und Entfernen per Pfadfeld, kein
+TOML-Bearbeiten mehr. Neu ist `import_wortschatz.py`: `.csv .tsv .txt
+.xlsx .ods .docx` und ganze Ordner, Spalten aus der Kopfzeile erkannt,
+Rang immer `vokabular`. Nach jedem Import werden die gemerkten Listen
+verworfen und alles noch nicht Bestätigte neu abgeglichen.
+
+**Arbeitskopie nach jeder Übergabe.** `ausgabe/<Gemeinde>_arbeitskopie.ged`,
+vorige Fassung als `.vorher.ged`. Nicht erst am Ende — zwei getrennt
+gewachsene Bestände hinterher zu verschmelzen bekommt niemand mehr sauber
+hin.
+
+**Gesprächsfenster unter jedem Eintrag.** Der Bearbeiter fragt, das Modell
+antwortet mit Eintrag, Bildausschnitt und Bestandstreffern vor Augen —
+und ändert nichts. Der Verlauf bleibt stehen.
+
+**Randvermerk wird zum Sterbeereignis** (`randvermerk.py`), samt der
+Zählmonate 7ber/8ber/9ber/Xber. Zwei von sechs Einträgen der Runde 1
+tragen einen Tod am Rand.
+
+**Feldkatalog** (`katalog.py`) — der eigentliche Umbau. Je Aktart steht
+jetzt fest, was vorkommen *kann*, nicht was jemand nachgetragen hat:
+
+    Taufe 16 -> 34 Felder · Ehe 22 -> 36 · Tod 10 -> 29
+
+Jedes Feld weiß, ob es eine Kirchenbuchform hat und wohin beide Formen
+gehören. Jedes Ziel ist eingestuft — GEDCOM 5.5.1, gebräuchlicher eigener
+Tag, hauseigener Tag. Etwa ein Drittel ist hauseigen und übersteht einen
+Programmwechsel nicht; dagegen steht `volltext`. Die Aktkarten sind im
+Zahnrad bedienbar: abschalten, Ziele umhängen, eigene Felder ergänzen
+(`feldwahl`).
+
+**Bauplan aus dem Katalog.** `uebergabe` hatte eine zweite, von Hand
+gepflegte Feldliste — und kannte das Sterbedatum nicht. Ereignisse werden
+jetzt abgeleitet, alles Übrige landet in der neuen Tabelle `merkmal` und
+von dort unverändert ins GEDCOM.
+
+### Drei Fehler, die dabei herauskamen
+
+- **Die zweite Ausgabe verlor die erste.** `fortschreiben` hängte nur an,
+  was gerade eine Kennung bekommen hatte. Die Arbeitskopie der zweiten
+  Runde hätte die erste stillschweigend weggeworfen. „Neu" heißt jetzt
+  „steht nicht in der Vorlage".
+- In der Ehe bekam der Bräutigam den Geburtsort der Braut — beide Felder
+  zielen auf `BIRT.PLAC`.
+- Ein Bildordner außerhalb des Projekts riss die Startseite ab
+  (`relative_to` wirft dort). Dafür jetzt `konfig.kurz()`.
+
+### Wo die Arbeit morgen ansetzt
+
+**Runde 1 steht offen** (Seite 00359, sechs Einträge, Stand
+`korrigieren`). Sie wurde vor dem Katalog gelesen und hat nur die alten
+16 Felder — *geborene*, *Personenstand*, *Paten*, *Volltext* fehlen dort,
+weil beim Lesen niemand danach gefragt hat.
+
+Vorschlag: **Runde 1 verwerfen und 00359–00365 mit dem neuen Katalog neu
+lesen.** Das ist zugleich der erste echte Durchlauf und bringt die
+Stichprobe von 24 auf rund 68 Namensfelder — damit wird der Grenzfall von
+29 % markiert entscheidbar. Kostet Abo-Zeit, keine Rechnung.
+
 ## Nächste Schritte
 
 1. ~~Papierabgrenzung in `raster.py`~~ — **erledigt.** Nicht über Helligkeit
@@ -293,10 +366,16 @@ nicht nur ergänzt, sondern geändert werden).
    liefert die Pixel. Koordinaten schätzen zu lassen ist zweimal gescheitert.
    `feld.bild_x/y/w/h` stehen im Schema und werden nie gefüllt.
 5. **Registernamen aus dem Code lösen.** `ansatz.md` verspricht, ein
-   englischsprachiger Nutzer könne sein Register frei benennen. Gemessen
-   stimmt das nicht: `uebergabe.BAUPLAN` ist auf `ehe`/`taufe`/`tod` und
-   deutsche Feldnamen verdrahtet, die Maske auf `vater`/`mutter`/`braeutigam`.
-   `[register.marriage]` liefert „kein Bauplan für marriage".
+   englischsprachiger Nutzer könne sein Register frei benennen. Teilweise
+   gelöst: `uebergabe` leitet den Bauplan jetzt aus dem Katalog ab. Verdrahtet
+   bleiben `katalog.KATALOG`, `PAAR`, `KIND` und die Maske
+   (`vater`/`mutter`/`braeutigam`).
+6. **Katalogfelder in die Maske.** Die Aktkarte kennt 34 Felder, die
+   Korrekturmaske zeigt Personenrollen, Datumsfelder und „alle Felder" —
+   für Paten, Volltext und Unleserliches gibt es noch keine eigene Stelle.
+7. **Kirchenbuchform beim Eintragen.** `feld.kb_form` wird gelesen und
+   ausgegeben, aber in der Maske gibt es nur unter „alle Felder" ein
+   Eingabefeld dafür.
 
 **Spaltenraster bleibt Handarbeit.** Die Zeilen sitzen jetzt, die Spalten
 nicht: die äußerste Randlinie fehlt teils (00365 beginnt bei x=1264 statt
