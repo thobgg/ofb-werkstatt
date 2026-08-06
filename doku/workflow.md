@@ -11,17 +11,44 @@ Zwei Zeichen trennen, was schon geht, von dem, was ich vorschlage:
 
 ---
 
-## Die Grundfigur
+## Die Grundfigur: zwei Taktgeber, nicht einer
 
-Nicht „Seite lesen, Seite prüfen, nächste Seite", sondern **Tranchen**. Eine
-Runde ist ein Block Seiten EINES Registers, der zusammen durch alle Schritte
-geht:
+Der erste Entwurf hatte hier einen Fehler: Er steckte **Lesen** und
+**Vorlegen** in dieselbe Portionsgröße. Zwanzig Seiten lesen, dann zwanzig
+Seiten vorlegen. Das ist falsch, weil beide Schritte aus entgegengesetzten
+Gründen ihre Größe haben.
 
-    ┌─ Runde ──────────────────────────────────────────────┐
-    │  planen → lesen → abgleichen → korrigieren → übergeben │
-    └──────────────────────────────────────────────────────┘
-              ↓
-       nächstes Register
+    Lesen legt zu    ganze Seite, im Voraus, im Hintergrund
+                     · das Modell braucht die Nachbarzeilen als Eichung
+                     · Batch ist seitenweise und halb so teuer
+                     · niemand sieht dabei zu
+
+    Vorlegen nimmt   EIN Eintrag, jetzt, im Vordergrund
+                     · ein Mensch entscheidet immer nur eines
+                     · was vorbei ist, soll vom Bildschirm
+
+Dazwischen liegt eine **Schlange**: Der Läufer füllt sie seitenweise, der
+Bearbeiter leert sie eintragsweise. Beide arbeiten gleichzeitig. Während Sie
+Eintrag 7 entscheiden, wird Seite 4 gelesen.
+
+    Läufer ──► [ Eintrag · Eintrag · Eintrag · … ] ──► Bearbeiter
+      Seiten            die Schlange                 ein Eintrag
+      im Voraus                                       zur Zeit
+
+Damit stimmt beides: der Zusammenhang beim Lesen und die Ruhe beim Entscheiden.
+
+## Die Tranche bleibt — aber als Reihenfolge, nicht als Wartezeit
+
+Die Tranche ordnet, **in welcher Reihenfolge** die Register drankommen, nicht
+wann Sie etwas zu sehen bekommen.
+
+    ┌─ Tranche 1808–1820 ────────────────────────────┐
+    │  Ehen  ──►  Taufen  ──►  Tode                  │
+    │    ↓          ↓           ↓                    │
+    │  übergeben  übergeben   übergeben              │
+    └────────────────────────────────────────────────┘
+                      ↓
+              Tranche 1821–1832
 
 Der Grund ist kein Geschmack, sondern eine Messung. Der Elternehe-Anker trägt
 im Taufjahr 1808 noch 94 %, 1813 noch 53 %, 1820 nur 18 % — **es sei denn,
@@ -63,31 +90,43 @@ Die Zeilen sitzen automatisch (22/22 bei ±40 px), die Spalten nicht.
 
 ---
 
-## 1. Runde planen  ✓
+## 1. Weitermachen, wo man war  ◑ teilweise gebaut
 
-Der Startbildschirm zeigt den Stand und **einen** Knopf. Er sagt auch, warum:
+Beim Start soll **ein** Knopf dastehen, und er soll wissen, wo es weitergeht:
 
-    Als Nächstes: ehe — erste Runde, Ehen zuerst, sie bauen den Anker
+    ▸ Weiter — Taufregister, Eintrag 7 von 118
 
-Zu wählen sind Register, Seitenzahl und Quelle. Vorbelegt ist, was der
-Vorschlag nennt.
+✓ Der Startbildschirm zeigt Stand und Vorschlag samt Begründung:
+„erste Runde — Ehen zuerst, sie bauen den Anker".
 
-**? Tranchengröße.** Ich habe 20 Seiten vorbelegt, weil `ROADMAP.md` von
-~12 Jahren je Tranche und 35–40 Buchöffnungen über alle drei Register
-spricht. Ob 20 die richtige Portion ist, weiß ich nicht — das hängt daran,
-wie lange Sie am Stück korrigieren wollen. Bei 20 Ehe-Seiten kommen grob
-100 Einträge und 600 Personenfelder zusammen.
+○ **Der Merkpunkt ist zu grob.** Gemerkt wird die Runde, nicht der Eintrag.
+Für „weiter, wo ich aufgehört habe" fehlt eine Zeile in der Datenbank.
+
+○ **Beim neuen Projekt** sollte statt des Knopfes eine kurze Einrichtung
+stehen: Wo liegen die Bilder, wie heißen die Register, welche Bestände gibt
+es und **was davon darf bestätigen**. Heute ist das Handarbeit in
+`konfig.toml`.
 
 **Die Reihenfolge wird erzwungen, nicht empfohlen.** Solange eine Runde offen
-ist, lässt sich keine zweite beginnen. Nach „fertig" schaltet der Vorschlag
-auf das nächste Register.
+ist, lässt sich keine zweite beginnen.
+
+**? Tranchengröße.** Vorbelegt sind 20 Seiten. Bei Ehen sind das grob 100
+Einträge und 600 Personenfelder — vermutlich zu viel. Vorschlag: **10 bei
+Ehen, 20 bei Taufen und Toden**, weil ein Eheeintrag sechs Personen nennt und
+ein Taufeintrag drei. Die Zahl steht ohnehin in den Einstellungen; sie
+bestimmt nur, wie oft übergeben wird, nicht wie lange Sie warten.
 
 ---
 
-## 2. Lesen  ✓
+## 2. Lesen — im Voraus, im Hintergrund  ✓
 
-Der Läufer arbeitet die Seiten im Hintergrund ab. Das Browserfenster darf
-zugehen; der Zustand liegt in der Datenbank.
+Der Läufer arbeitet die Seiten ab, während Sie an den vorigen Einträgen
+sitzen. Das Browserfenster darf zugehen; der Zustand liegt in der Datenbank.
+
+○ **Vorlauf statt Wartezeit.** Heute wird erst die ganze Runde gelesen und
+dann vorgelegt. Richtig wäre: Sobald die erste Seite fertig ist, geht es los,
+und der Läufer bleibt drei Seiten voraus. Bei 20 Seiten spart das die
+Anfangswartezeit fast vollständig.
 
     Runde 3 · ehe wird gelesen
     ████████████░░░░░░░  12 von 20 Seiten · gerade 1184798-00929
@@ -147,35 +186,77 @@ aber weder gelesen noch ausgewertet.
 
 ---
 
-## 4. Korrigieren  ✓ — hier arbeitet der Mensch
+## 4. Vorlegen — die Bedienschleife  ◑ teilweise gebaut
 
-Die Maske zeigt **genau diese Runde**, nicht den ganzen Bestand.
+Hier arbeitet der Mensch, und hier entscheidet sich, ob das Werkzeug taugt.
 
-    ┌────────────────────────────────────────────────────┐
-    │ Nr. 11   1808   1184798-00361                      │
-    ├────────────────────────────────────────────────────┤
-    │ [ Zeilenstreifen des Eintrags, volle Breite ]      │
-    ├────────────────────────────────────────────────────┤
-    │ ● VATER    [Faller        ]  I2799  Elternehe F1149│
-    │ ● MUTTER   [Maier         ]  I2800  Elternehe F1149│
-    │ ○ KIND     [Johannes      ]  wird neu angelegt     │
-    ├────────────────────────────────────────────────────┤
-    │ Familie  F1149  Faller ⚭ Maier · 1798 · 3 Kinder   │
-    │          → Kind hier einhängen                     │
-    └────────────────────────────────────────────────────┘
+**Ein Eintrag füllt den Bildschirm.** Nicht zwanzig Seiten, nicht eine Seite —
+ein Eintrag. Was entschieden ist, verschwindet; der nächste rückt nach. Die
+Schlange dahinter ist unsichtbar.
 
-**Der Zeilenstreifen bleibt immer sichtbar**, auch bei grünen Feldern. Wer
-mitliest, will hinsehen können — und dieselbe Hand schreibt in jedem Eintrag
-`B. u. Weingärtner in Haberschlacht`, woran man die Buchstaben eicht.
-Bestätigtes wird eingeklappt, nicht versteckt.
+    ┌──────────────────────────────────────────────────────────┐
+    │  Taufe · Nr. 11 · 1808        Eintrag 7 von 118    ▓▓░░░░ │
+    ├──────────────────────────────────────────────────────────┤
+    │  [ Zeilenstreifen, volle Breite, Nachbarzeilen gedimmt ]  │
+    │                        ▲                                  │
+    │                   die fragliche Stelle markiert           │
+    │              ┌─────────────┐                              │
+    │              │  Ausschnitt │  ← Lupe daneben              │
+    │              └─────────────┘                              │
+    ├──────────────────────────────────────────────────────────┤
+    │  gelesen und stimmig — nichts zu tun                      │
+    │  ● Kind      Johannes          ● geb. 3. Febr.            │
+    │  ● Vater     Bürger u. Weingärtner in Haberschlacht       │
+    │                                                           │
+    │  BITTE PRÜFEN                                             │
+    │  ◐ Vatername   [Faller         ]                          │
+    │      Vorschlag  Johann Georg Faller ⚭ Rosina Maier        │
+    │                 oo 1798 · 3 Kinder · F1149                │
+    │                                                           │
+    │      [ Ja, dieser ]   [ anderer… ]   [ neu anlegen ]      │
+    └──────────────────────────────────────────────────────────┘
+                              ↓  Enter
+                          nächster Eintrag
 
-Je Feld gibt es drei Wege: **übernehmen** (find and use), **neu anlegen**,
-oder den Wert ändern. Beim Tippen schlägt die Suche Namen und Personen vor.
+**Was sicher ist, wird nicht gefragt.** Datum, Vorname, Beruf und Ort waren im
+Pilotlauf praktisch fehlerfrei — sie stehen da, sichtbar, aber ohne Frage.
+Gefragt wird bei Familiennamen und bei allem, was der Abgleich nicht trägt.
 
-**? Wie viel Vorlage ist richtig?** Gemessen an den Testdaten brauchten
-24 von 102 Feldern eine Entscheidung. Ich schlage vor: Die Maske springt von
-Rot zu Rot, dann zu Gelb, Grün wird nur durchgeblättert. Ob Sie lieber alles
-der Reihe nach sehen wollen, ist Ihre Entscheidung — Sie lesen die Hand.
+**Der Zeilenstreifen bleibt immer sichtbar**, auch bei den stillen Feldern.
+Wer mitliest, will hinsehen können — und dieselbe Hand schreibt in jedem
+Eintrag `B. u. Weingärtner in Haberschlacht`, woran man die Buchstaben eicht.
+
+**Ein Tastendruck je Entscheidung.** `Enter` nimmt den Vorschlag und geht
+weiter, `N` legt neu an, `Pfeil` blättert durch Alternativen. Tippen nur,
+wenn wirklich etwas anderes dasteht.
+
+### Was angeboten wird — je Registerart verschieden
+
+Das ist die eigentliche OFB-Arbeit. Zu jeder genannten Person muss entschieden
+werden: gibt es sie schon, oder ist sie neu?
+
+| Register | wer wird angebunden | woran |
+|---|---|---|
+| **Ehe** | Bräutigam, Braut | Geburtsdatum + Ort stehen im Eintrag → Taufe tagesgenau. Der stärkste Anker, und er trifft **beide** Hauptpersonen |
+| | deren Eltern | über die gefundene Taufe — und die Vaterangabe des Eheeintrags prüft sie gegen |
+| | die neue Familie | wird angelegt, beide als Kind ihrer Herkunftsfamilie verknüpft |
+| **Taufe** | Vater, Mutter | Elternehe im Bestand. Die Mutter wird *abgeleitet*, nicht gesucht — deshalb trägt der Anker auch, wenn ihr Name falsch gelesen wurde |
+| | Kind | immer neu, in die Elternfamilie eingehängt |
+| **Begräbnis** | Verstorbener | Alter → Geburtsdatum, bei Monats- und Tagesangabe oft tagesgenau → Taufe |
+| | bei „weyl.", Witwe, Witwer | erst die Ehe, daraus der Partner — und bei verheirateten Frauen der Mädchenname, ohne den die Taufe nicht zu finden ist |
+| | genannte Eltern | gegen die Eltern der gefundenen Taufe geprüft |
+
+✓ gebaut: Taufe.  ○ offen: Ehe und Begräbnis. Für die rankt der Abgleich
+derzeit nur Nachnamen und macht nie grün.
+
+**Zwei Regeln, die dabei nie fallen dürfen:**
+
+> Ein Match braucht **mindestens zwei übereinstimmende Merkmale, von denen
+> eines nicht der Nachname ist.** Nachname + Jahr genügt nie — sonst wird aus
+> „Johannes Bierle" die Taufe von *Carl Heinrich* Bierle.
+
+> **Nichtfinden ist ein Ergebnis, kein Fehler.** Zuzug, andere Parochie, Lücke
+> im Buch. Das gehört vermerkt, nicht weggedrückt.
 
 ○ **Die Lupe fehlt.** Heute gibt es den ganzen Zeilenstreifen, nicht den
 Ausschnitt am Feld. Vereinbart ist die Arbeitsteilung: Das Modell sagt,
@@ -187,6 +268,61 @@ Pixel. Nachbarzeilen werden abgedunkelt, nicht weggeschnitten.
 geführt; ein Datum außerhalb des Nachbarintervalls ist widerlegt, ohne dass
 etwas nachgeschlagen wird. Die Sicht `chronologie` existiert, die Maske
 zeigt sie nicht.
+
+○ **Eintragsweise Wiederaufnahme.** Heute merkt sich die Werkstatt die Runde,
+nicht den Eintrag. „Weiter, wo ich aufgehört habe" heißt derzeit „diese
+Runde", nicht „Eintrag 7 von 118".
+
+---
+
+## Wie viel darf die Maschine allein entscheiden?  ○
+
+Das ist die Stellschraube, an der alles hängt, und sie gehört in die
+Einstellungen — nicht in den Code und nicht in mein Urteil.
+
+    [gang]
+    autopilot = "normal"
+
+| Stufe | läuft ohne Frage durch | wird vorgelegt |
+|---|---|---|
+| `streng` | nichts | jedes Feld |
+| `normal` | grün | gelb und rot |
+| `zuegig` | grün + gelb mit genau einem Kandidaten | rot und Mehrdeutiges |
+
+**Jede Stufe höher tauscht Tempo gegen stille Fehler.** Das ist keine
+Vermutung: Beim ersten Lauf ordnete der Abgleich einer Taufe von **1809** ein
+Paar zu, das 1699 und 1703 geboren wurde und dessen Frau 1767 starb —
+einziger gemeinsamer Nachname, kein Trauungsdatum, und damit grün. Gefunden
+hat ihn nur die Messung gegen die geprüfte Wahrheit. Von innen sah er wie ein
+Erfolg aus.
+
+Deshalb bleibt eine Grenze fest, unabhängig von der Stufe:
+
+> **Die Selbsteinschätzung des Modells darf nie grün machen.** Sie darf
+> bestimmen, was zuerst gezeigt wird — nicht, was als bestätigt gilt.
+> Bei `Koch`/`Roth` war das Modell viermal sicher und viermal falsch.
+
+Weitere Einstellungen, die ich vorsehen würde:
+
+    [gang]
+    autopilot        = "normal"
+    tranche_ehe      = 10        # Seiten je Runde
+    tranche_taufe    = 20
+    tranche_tod      = 20
+    vorauslesen      = 3         # Seiten Vorlauf vor dem Bearbeiter
+    ausgabe_je_tranche = true    # GEDCOM nach jeder Tranche
+
+    [grenzen]
+    mutter_alter = [14, 50]      # für die Plausibilitätsprüfung
+    vater_alter  = [16, 70]
+
+**? Sollen bestätigte Entscheidungen zurückwirken?** Wenn Sie einmal sagen,
+`Bührlin` ist `Bierle`, gilt das fortan — jede Bestätigung ist eine neue Kante
+im Klassengraphen. Vorsicht dabei: Die Relation ist **nicht transitiv**. Eine
+einzige falsche Kante (`Bührle → Müller`, ein einziger Beleg) verschmolz im
+Pilotbestand zwei fremde Familien zu einer Klasse von 231 Personen. Ich würde
+solche Kanten sammeln und erst nach Schreibnähe plus Belegzahl übernehmen,
+nicht sofort.
 
 ---
 
@@ -282,25 +418,61 @@ Lernen ohne Modelltraining.
 
 ---
 
+## Der Abstand zwischen heute und diesem Bild
+
+Ehrlich aufgeschrieben, was zwischen dem Gebauten und dem Beschriebenen liegt:
+
+| | heute | beschrieben |
+|---|---|---|
+| Vorlegen | ganze Runde auf einer langen Seite | **ein Eintrag zur Zeit** |
+| Wiederaufnahme | „diese Runde" | **„Eintrag 7 von 118"** |
+| Lesen | erst alles, dann vorlegen | **Vorlauf, drei Seiten voraus** |
+| Bild | ganzer Zeilenstreifen | **Lupe am Feld** |
+| Anbindung | nur Taufe | **alle drei Register** |
+| Bedienung | klicken, tippen | **eine Taste je Entscheidung** |
+| Autopilot | fest verdrahtet | **Einstellung, drei Stufen** |
+| Ausgabe | keine | **GEDCOM nach jeder Tranche** |
+
+Das ist mehr Arbeit als das, was bisher steht — aber es ist kein Umbau. Die
+Datenbank trägt es bereits: Die Schlange ist `SELECT … WHERE runde=? AND
+status<>'bestaetigt' ORDER BY …  LIMIT 1`, der Merkpunkt eine Spalte, der
+Vorlauf ein Startsignal an den Läufer nach der ersten Seite statt nach der
+letzten.
+
+---
+
 ## Was ich zum Festzurren vorlege
 
-Sieben Punkte, bei denen ich eine Meinung habe, aber Sie entscheiden:
+Neun Punkte, bei denen ich eine Meinung habe, aber Sie entscheiden:
 
-1. **Tranchengröße 20 Seiten.** Bei Ehen sind das ~100 Einträge und ~600
-   Personenfelder — vermutlich zu viel für eine Sitzung. Vorschlag: 10 für
-   Ehen, 20 für Taufen und Tode, weil ein Eheeintrag sechs Personen hat und
-   ein Taufeintrag drei.
-2. **Korrekturreihenfolge Rot → Gelb → Grün** statt der Reihe nach.
-3. **GEDCOM nach jeder Tranche**, nicht am Ende.
-4. **Der Familienbuch-Anker zuerst**, vor den Kaskaden für Ehe und Tod. Er
+1. **Ein Eintrag zur Zeit**, nicht die ganze Runde auf einer Seite. Der
+   Läufer bleibt drei Seiten voraus, die Schlange ist unsichtbar.
+2. **Eine Taste je Entscheidung.** `Enter` nimmt den Vorschlag, `N` legt neu
+   an, Pfeile blättern Alternativen. Tippen nur im Ausnahmefall.
+3. **Autopilot als Einstellung**, drei Stufen, Vorgabe `normal`. Aber die
+   Selbsteinschätzung des Modells macht auf keiner Stufe grün.
+4. **Tranchengröße 10 bei Ehen, 20 bei Taufen und Toden** — sechs Personen
+   je Eheeintrag gegen drei je Taufeintrag.
+5. **GEDCOM nach jeder Tranche**, nicht am Ende.
+6. **Der Familienbuch-Anker zuerst**, vor den Kaskaden für Ehe und Tod. Er
    ist billiger und stärker: eine Zahl aus der letzten Spalte, vom Pfarrer
    gesetzt, gültig über alle drei Register.
-5. **Erst die Ausgabe, dann alles andere.** Ein Werkzeug, das nichts
+7. **Erst die Ausgabe, dann alles andere.** Ein Werkzeug, das nichts
    herausgibt, ist nicht benutzbar, auch wenn es innen fertig ist.
-6. **Der Qualitätstest vor dem weiteren Ausbau.** Eine Eheseite mit bekannter
+8. **Der Qualitätstest vor dem weiteren Ausbau.** Eine Eheseite mit bekannter
    Wahrheit, gegen das Modell. Bisher ist ungeprüft, wie gut es liest — alle
    Zahlen messen die Verknüpfung.
-7. **Kein Ausbau der Oberfläche**, bis 5 und 6 stehen.
+9. **Bestätigte Namensgleichungen sammeln, nicht sofort übernehmen.** Eine
+   falsche Kante verschmolz im Pilotbestand 231 Personen zu einer Klasse.
+
+**Meine Reihenfolge, wenn Sie mich lassen:** erst 7 (Ausgabe), dann 8
+(Qualitätstest), dann 1–3 (die Bedienschleife), dann 6 (Familienbuch-Anker),
+dann der Rest.
+
+Der Grund für diese und keine andere: Punkt 7 macht das Werkzeug benutzbar,
+Punkt 8 sagt uns, ob es überhaupt taugt. Die Bedienschleife danach zu bauen
+kostet nichts extra — sie davor zu bauen hieße, eine Oberfläche zu polieren,
+von der wir noch nicht wissen, ob sie das Richtige zeigt.
 
 Was davon anders soll, sagen Sie mir. Danach zurren wir es fest und ich
 arbeite es der Reihe nach ab.
