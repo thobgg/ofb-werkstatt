@@ -63,6 +63,14 @@ GRUNDREGELN
    Familiennamen sind erfahrungsgemäß die unsicherste Angabe, Daten und
    Vornamen die sicherste.
 3. Rate nicht. Ist etwas unlesbar, schreibe null und begründe kurz.
+3a. **Teillesungen gehören ins Feld, nicht in die Notiz.** Ist bei einer
+   Person der Vorname klar und der Nachname nicht, schreibe die Vornamen in
+   "wert" und erkläre in "notiz", dass der Nachname fehlt — nicht umgekehrt.
+   Der Abgleich trägt über die Vornamen: Er sucht die Elternehe im Bestand
+   und leitet den Nachnamen daraus ab. Ein Feld mit null verschenkt genau
+   die Angabe, die den Treffer bringen würde.
+   Beispiel: Steht da "Rosina Margaretha, geb. ⟨unleserlich⟩", dann
+   wert = "Rosina Margaretha", notiz = "Nachname nach 'geb.' nicht lesbar".
 4. Nutze die Nachbarzeilen: Dieselbe Hand schreibt wiederkehrende Formeln
    ("B. u. Weingärtner in ...") — daran eichst du die Buchstabenformen.
    Register sind chronologisch: Das Datum eines Eintrags liegt zwischen dem

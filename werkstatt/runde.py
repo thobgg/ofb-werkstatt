@@ -26,7 +26,7 @@ import traceback
 from datetime import datetime, timezone
 from pathlib import Path
 
-from . import db, einstellungen, konfig, seiten, testdaten, vorlage
+from . import db, einstellungen, konfig, seiten, streifen, testdaten, vorlage
 
 STAENDE = ("geplant", "liest", "korrigieren", "uebergeben", "fertig")
 
@@ -233,9 +233,21 @@ def lauf(runde_id):
                 pfad = _bildpfad(con, art, bild)
                 erg, nutzung = lesen.lies_seite(pfad, art, schluessel, con)
             n_e, n_f = speichere(con, art, bild, erg, runde_id, hid)
+            # Streifen gleich mitschneiden — der Bearbeiter braucht sie beim
+            # Korrigieren, und sie kosten nichts als eine halbe Sekunde CPU.
+            # Das Modell hat die Zuordnung schon geliefert: wie viele Einträge
+            # und in welcher Reihenfolge. Mehr braucht das Abzählen nicht.
+            guete = ""
+            try:
+                _, guete = streifen.fuer_bild(con, art, bild)
+            except Exception as x:
+                guete = f"Streifen nicht geschnitten: {type(x).__name__}"
             con.execute(
                 "UPDATE auftrag_seite SET stand='fertig', eintraege=?, felder=?, "
-                "meldung=NULL WHERE id=?", (n_e, n_f, s["id"]))
+                "meldung=? WHERE id=?",
+                (n_e, n_f,
+                 None if guete in ("passt", "letzte Linie ergänzt") else guete,
+                 s["id"]))
             con.execute(
                 "UPDATE auftrag SET tokens_ein=tokens_ein+?, "
                 "tokens_aus=tokens_aus+? WHERE id=?",

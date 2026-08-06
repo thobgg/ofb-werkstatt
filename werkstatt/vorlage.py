@@ -64,8 +64,29 @@ Felder dieses Registers:
 {felder}
 
 `kb` nur setzen, wenn die Schreibung im Buch von der normalisierten Form
-abweicht. `notiz` nur bei Unsicherheit oder Besonderheit. Unlesbares bekommt
-`null` und eine Notiz — **nicht raten**.
+abweicht. `notiz` nur bei Unsicherheit oder Besonderheit.
+
+## Die eine Regel, auf die es ankommt
+
+**Was lesbar ist, gehört ins Feld — auch wenn der Rest es nicht ist.**
+
+Bei den Eltern steht im Register regelmäßig „Rosina Margaretha, geb.
+⟨Gekritzel⟩". Die Vornamen sind klar, der Mädchenname nicht. Dann:
+
+    richtig   "wert": "Rosina Margaretha",
+              "notiz": "Nachname nach 'geb.' nicht lesbar"
+
+    falsch    "wert": null,
+              "notiz": "Vornamen Rosina Margaretha klar, Nachname nicht"
+
+Der Grund: Der Abgleich sucht die **Elternehe** im Bestand und leitet den
+Nachnamen daraus ab. Er trägt über die Vornamen von Vater *und* Mutter —
+gerade weil die Nachnamen das unzuverlässigste Feld sind. Ein `null`
+verschenkt genau die Angabe, die den Treffer bringt.
+
+`null` ist richtig, wenn **gar nichts** zu lesen ist. Geraten wird nie:
+Unsicheres kommt mit niedriger `zuversicht` und einer Notiz ins Feld,
+nicht als Erfindung.
 
 ## Zurück in die Werkstatt
 
@@ -166,13 +187,84 @@ def stand(con, runde_id):
                 seiten=da)
 
 
+# ------------------------------------------------- Claude Code anstoßen
+AUFTRAG = """Lies die Kirchenbuchseiten nach ANLEITUNG.md in diesem Ordner.
+
+Die Regeln stehen in prompt.txt, die Seiten in seiten.json. Schreibe für
+jede Seite eine Datei antwort/<bild>.json in der dort beschriebenen Form.
+
+Arbeite die Seiten der Reihe nach ab und schreibe jede Antwort sofort, bevor
+du die nächste Seite ansiehst — dann geht bei einem Abbruch nichts verloren.
+Seiten, für die schon eine Antwort liegt, überspringst du."""
+
+
+def werkzeug():
+    """Pfad zur Claude-Code-Kommandozeile, falls vorhanden."""
+    import shutil
+    return shutil.which("claude")
+
+
+def lesen_lassen(con, runde_id, still=False, zeitlimit=3600):
+    """Die abgelegten Seiten von Claude Code lesen lassen.
+
+    Die Werkstatt hält dabei **keine Anmeldedaten**. Sie ruft nur das
+    Programm auf, das der Bearbeiter ohnehin auf seinem Rechner hat und das
+    unter seinem eigenen Zugang läuft — mit Pro- oder Max-Abonnement also
+    ohne API-Schlüssel und ohne zweite Rechnung.
+
+    Ein Benutzername-und-Passwort-Feld in der Werkstatt gäbe es dafür nicht:
+    Kontodaten gehören nicht in eine fremde Anwendung, und einen solchen
+    Zugang für Programme gibt es auch gar nicht.
+    """
+    import subprocess
+    w = werkzeug()
+    if not w:
+        return dict(ok=False, meldung=(
+            "claude nicht gefunden — entweder Claude Code installieren "
+            "oder die Seiten von Hand in einer Sitzung lesen lassen"))
+    ziel, _ = lege_vor(con, runde_id, still=True)
+    if not still:
+        print(f"  {w} im Ordner {ziel.relative_to(konfig.WURZEL)}")
+        print("  Das läuft über das Abonnement des Bearbeiters, nicht über "
+              "einen API-Schlüssel.")
+    # Die Sitzung laeuft im Rundenordner, die Scans liegen aber im
+    # Bilderverzeichnis. Ohne --add-dir sieht sie die Seiten nicht und
+    # meldet trotzdem Erfolg — sie hat ja nichts falsch gemacht, nur nichts
+    # zu tun gehabt. Deshalb beide Verzeichnisse freigeben.
+    bilder = str(einstellungen.ordner(
+        con, con.execute("SELECT register FROM runde WHERE id=?",
+                         (runde_id,)).fetchone()["register"]))
+    try:
+        p = subprocess.run(
+            [w, "-p", AUFTRAG, "--permission-mode", "acceptEdits",
+             "--add-dir", bilder, "--add-dir", str(konfig.WURZEL)],
+            cwd=ziel, capture_output=True, text=True, timeout=zeitlimit)
+    except subprocess.TimeoutExpired:
+        return dict(ok=False, meldung=f"Zeitlimit von {zeitlimit}s erreicht")
+    s = stand(con, runde_id)
+    # `ok` misst das Ergebnis, nicht den Rueckgabewert: Eine Sitzung, die
+    # sauber erklaert, warum sie nichts lesen konnte, beendet sich mit 0.
+    return dict(ok=p.returncode == 0 and s["fertig"] > 0, rc=p.returncode,
+                ausgabe=(p.stdout or "")[-2000:],
+                fehler=(p.stderr or "")[-1000:],
+                fertig=s["fertig"], gesamt=s["gesamt"])
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--lege-vor", type=int, metavar="RUNDE")
     ap.add_argument("--stand", type=int, metavar="RUNDE")
+    ap.add_argument("--lesen-lassen", type=int, metavar="RUNDE",
+                    help="Claude Code die abgelegten Seiten lesen lassen")
     a = ap.parse_args()
     con = db.verbinde()
-    if a.lege_vor:
+    if a.lesen_lassen:
+        d = lesen_lassen(con, a.lesen_lassen)
+        print(f"  {'fertig' if d['ok'] else 'abgebrochen'} — "
+              f"{d.get('fertig', 0)}/{d.get('gesamt', 0)} Seiten beantwortet")
+        if not d["ok"]:
+            print("  " + str(d.get("meldung") or d.get("fehler", ""))[:300])
+    elif a.lege_vor:
         lege_vor(con, a.lege_vor)
     elif a.stand:
         s = stand(con, a.stand)
