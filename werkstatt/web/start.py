@@ -12,6 +12,11 @@ body{margin:0;font:15px/1.5 system-ui,sans-serif;background:#14161a;color:#e6e8e
 header{position:sticky;top:0;background:#1b1e24;border-bottom:1px solid #2c313a;
  padding:.55rem 1rem;display:flex;gap:1rem;align-items:center;z-index:9}
 header b{font-size:1rem}
+.logo{display:flex;align-items:center;gap:.45rem;color:#e6e8ec}
+.logo svg{flex:none;color:#9aa3b2}
+.spruch{font-style:normal;font-size:.76rem;color:#6f7887;letter-spacing:.02em;
+ border-left:1px solid #2c313a;padding-left:.5rem;margin-left:.15rem}
+@media(max-width:820px){.spruch{display:none}}
 header a{color:#9aa3b2;text-decoration:none;font-size:.88rem;padding:.2rem .5rem;
  border-radius:6px}
 header a:hover{background:#262b33;color:#e6e8ec}
@@ -72,7 +77,20 @@ input{background:#12141a;border:1px solid #333a45;color:#e6e8ec;border-radius:6p
  padding:.35rem .5rem;font:inherit}
 label input[type=radio]{margin-right:.4rem}
 </style></head><body>
-<header><b>OFB-Werkstatt</b>
+<header><span class=logo title="Was grün ist, ist belegt.">
+ <svg viewBox="0 0 24 24" width=22 height=22 aria-hidden=true>
+  <!-- Die aufgeschlagene Doppelseite: links das Kirchenbuch mit seinen
+       Zeilen, rechts der Bestand. Der grüne Punkt sitzt auf der Naht —
+       da entsteht der Beleg. -->
+  <path d="M2 5.4c3.1-1.1 6-1.1 9 .3v13c-3-1.4-5.9-1.4-9-.3z"
+        fill=none stroke=currentColor stroke-width=1.4 stroke-linejoin=round/>
+  <path d="M22 5.4c-3.1-1.1-6-1.1-9 .3v13c3-1.4 5.9-1.4 9-.3z"
+        fill=none stroke=currentColor stroke-width=1.4 stroke-linejoin=round/>
+  <path d="M4.4 8.6h4.2M4.4 11.2h4.2M4.4 13.8h2.8" stroke=currentColor
+        stroke-width=1.1 stroke-linecap=round opacity=.55/>
+  <circle cx=12 cy=12 r=2.5 fill=#3ecf8e/>
+ </svg>
+ <b>OFB-Werkstatt</b><i class=spruch>Was grün ist, ist belegt.</i></span>
  <a href="/" data-p="/">Stand</a>
  <a href="/lesen" data-p="/lesen">Lesen</a>
  <a href="/korrektur" data-p="/korrektur">Korrigieren</a>
@@ -146,6 +164,25 @@ function ansichtStand(){
   <b>beleg</b> ist. Vokabular rankt die Vorschlagsliste und bestätigt nie —
   <code>Roth</code> kommt 59-mal im Bestand vor und stand doch für
   <code>Koch</code>.</p>
+
+ ${(S.quellen_fehlend||[]).length?`<div class=warn>
+   <b>Eingetragen, aber nicht eingelesen.</b> Diese Quellen stehen in
+   <code>konfig.toml</code> und liegen nicht in der Datenbank — sie wirken
+   also nicht:
+   <ul style="margin:.4rem 0 0 1.1rem;padding:0">
+    ${S.quellen_fehlend.map(q=>`<li>${esc(q.name)}
+      <code>${esc(q.datei)}</code> — ${q.liest_wer
+       ? 'einlesen mit <code>python3 -m werkstatt.import_gedcom --aus-konfig</code>'
+       : `Format <b>${esc(q.art)}</b>: dafür gibt es noch keinen Einleser`}</li>`).join('')}
+   </ul></div>`:''}
+
+ <p class=dim style="font-size:.86rem">
+  <b>Was sich einlesen lässt.</b> Zurzeit nur <b>GEDCOM</b>
+  (<code>art = "gedcom"</code>) — ein ganzer Bestand mit Personen, Familien
+  und Daten, also alles, was <i>bestätigen</i> darf. Für Wortschatz aus
+  Tabellen und Texten (CSV, XLSX, DOCX) fehlt der Einleser noch; solche
+  Quellen könnten ohnehin nur <code>vokabular</code> sein, weil ihnen die
+  Daten fehlen, an denen ein Treffer sich prüfen ließe.</p>
 
  <h2>Bestand</h2>
  <div class=karte><div class=reihe>
