@@ -207,6 +207,11 @@ def werkzeug():
 
 
 _BEREIT = {}
+_BEREIT_ZEIT = [0.0]
+# Kurz genug, dass eine Anmeldung oder Abmeldung nebenan auffaellt, lang
+# genug, dass ein Seitenaufbau nicht zweimal `claude` startet (~0,35 s je
+# Aufruf). Ohne Verfall log man sich ab und die Werkstatt zeigt weiter gruen.
+_BEREIT_GILT = 15.0
 
 
 def bereitschaft(neu=False):
@@ -219,9 +224,11 @@ def bereitschaft(neu=False):
     im Benutzerprofil. Die Werkstatt fragt sie hier nur ab und speichert
     nichts davon.
     """
-    if _BEREIT and not neu:
-        return _BEREIT
     import subprocess
+    import time
+    if _BEREIT and not neu and time.monotonic() - _BEREIT_ZEIT[0] < _BEREIT_GILT:
+        return _BEREIT
+    _BEREIT_ZEIT[0] = time.monotonic()
     w = werkzeug()
     d = dict(pfad=w, da=bool(w), version=None, angemeldet=False,
              konto=None, weg=None, abo=None, meldung=None)
