@@ -152,6 +152,36 @@ halben Band. `seiten.entpacken()` zerlegt sie einmal mit `pdftoppm` (300 dpi)
 nach `entpackt/`; danach zählen sie wie gewöhnliche Bilder. Ohne
 poppler-utils meldet die Einstellungsseite das.
 
+## KI-Anbindung
+
+Modell, Bildkante und Tokengrenze stehen unter `/einstellungen`, nicht mehr
+im Code. Preise je Million Token, Stand August 2026 — die Batch-API halbiert
+beide:
+
+| Modell | ein | aus | Bildkante |
+|---|---|---|---|
+| Opus 5 `claude-opus-5` | 5,00 $ | 25,00 $ | 2576 px |
+| Sonnet 5 `claude-sonnet-5` | 3,00 $ | 15,00 $ | 2576 px |
+| Haiku 4.5 `claude-haiku-4-5` | 1,00 $ | 5,00 $ | 1568 px |
+| Fable 5 `claude-fable-5` | 10,00 $ | 50,00 $ | 2576 px |
+
+**Die Bildkante ist der Hebel für die Lesequalität.** Sie stand auf 1568 px
+mit dem Vermerk „größer bringt nichts, kostet nur Tokens" — das galt für die
+damaligen Modelle. Opus 5 und Sonnet 5 nehmen **2576 px**. Bei Kurrentschrift
+zählt genau das, und die eigene Messung sagt es: „Ancestry-JPG (24 MP) gegen
+Archion-PDF (14 MP) löste Eheeintrag Nr. 4 auf, der vorher unlesbar war."
+Der Preis ist klein — 1.600 auf 4.784 Bildtoken, bei Opus 5 rund zwei Cent
+je Seite gegen gemessene 0,13 $.
+
+Das Modell stand außerdem auf `claude-opus-4-5`. Jetzt `claude-opus-5`.
+
+**Der Schlüssel wird nie angezeigt**, nur ob `ANTHROPIC_API_KEY` gesetzt ist.
+Der Verbrauch kommt aus der Auftragstabelle — gemessen, nicht geschätzt.
+
+○ **Batch fehlt.** Halbiert die Kosten und ist bei seitenweiser Verarbeitung
+der natürliche Modus. Der Rundenautomat ist bereits die Struktur, die Batch
+braucht: eine Liste eingereichter Einheiten mit Zustand.
+
 ## Kontextquellen: was darf bestätigen
 
 `[[kontext]]` in `konfig.toml`, eigene Pfade in `konfig.local.toml` (in

@@ -26,8 +26,29 @@ from pathlib import Path
 from . import db, einstellungen, konfig, seiten
 
 API = "https://api.anthropic.com/v1/messages"
-MODELL = "claude-opus-4-5"
-MAX_KANTE = 1568          # groesser bringt nichts, kostet nur Tokens
+
+# Vorgaben; änderbar unter /einstellungen. Preise je Million Token
+# (Stand August 2026), Batch-API halbiert sie.
+MODELLE = {
+    "claude-opus-5":   dict(name="Opus 5",   ein=5.0,  aus=25.0, kante=2576),
+    "claude-sonnet-5": dict(name="Sonnet 5", ein=3.0,  aus=15.0, kante=2576),
+    "claude-haiku-4-5": dict(name="Haiku 4.5", ein=1.0, aus=5.0,  kante=1568),
+    "claude-fable-5":  dict(name="Fable 5",  ein=10.0, aus=50.0, kante=2576),
+}
+MODELL = "claude-opus-5"
+
+# Die Vorgängerfassung stand auf 1568 px mit dem Kommentar "groesser bringt
+# nichts, kostet nur Tokens". Das galt für die damaligen Modelle; Opus 5 und
+# Sonnet 5 nehmen 2576 px auf der langen Kante.
+#
+# Für Kurrentschrift ist das kein Detail. `CLAUDE.md` hält selbst fest:
+# "Auflösung zählt. Ancestry-JPG (24 MP) gegen Archion-PDF (14 MP) löste
+# Eheeintrag Nr. 4 auf, der vorher unlesbar war."
+#
+# Der Preis dafür ist klein: 1600 -> 4784 Bildtoken, bei Opus 5 also
+# 0,008 -> 0,024 $ je Seite, mit Batch die Hälfte. Gegen die gemessenen
+# 0,13 $/Seite fällt das kaum ins Gewicht.
+MAX_KANTE = 2576
 
 
 # --------------------------------------------------------------- Prompt
@@ -99,13 +120,14 @@ def prompt(art, con=None, schreiber=None):
 
 
 # --------------------------------------------------------------- Bild
-def bild_teil(pfad):
+def bild_teil(pfad, kante=None):
     """Bild verkleinern und als base64 einbetten."""
     from PIL import Image
     import io
+    kante = kante or MAX_KANTE
     im = Image.open(pfad)
-    if max(im.size) > MAX_KANTE:
-        im.thumbnail((MAX_KANTE, MAX_KANTE))
+    if max(im.size) > kante:
+        im.thumbnail((kante, kante))
     if im.mode != "RGB":
         im = im.convert("RGB")
     puffer = io.BytesIO()
@@ -146,20 +168,42 @@ def json_aus(text):
 
 
 # --------------------------------------------------------------- Ablauf
+def einstellung(con, name, vorgabe):
+    """Wert aus den Einstellungen, sonst die Vorgabe hier."""
+    if con is None:
+        return vorgabe
+    try:
+        return einstellungen.wert(con, f"ki.{name}", vorgabe)
+    except Exception:
+        return vorgabe
+
+
 def lies_seite(pfad, art, schluessel, con=None, kontext=None, trocken=False):
     sys_prompt = prompt(art, con)
     if trocken:
         print(sys_prompt)
         return None, {}
+    modell = einstellung(con, "modell", MODELL)
+    kante = int(einstellung(con, "max_kante", MAX_KANTE))
+    marken = int(einstellung(con, "max_tokens", 8000))
     inhalt = []
     if kontext:
         inhalt.append({"type": "text", "text":
                        "Vorige Seite endet mit: " + kontext})
-    inhalt.append(bild_teil(pfad))
+    inhalt.append(bild_teil(pfad, kante))
     inhalt.append({"type": "text", "text":
                    f"Transkribiere alle Einträge dieser Seite ({art})."})
-    text, nutzung = frage(inhalt, sys_prompt, schluessel)
+    text, nutzung = frage(inhalt, sys_prompt, schluessel, modell, marken)
     return json_aus(text), nutzung
+
+
+def kosten(modell, ein, aus, batch=False):
+    """Was ein Lauf gekostet hat — in Dollar."""
+    m = MODELLE.get(modell)
+    if not m:
+        return None
+    d = ein / 1e6 * m["ein"] + aus / 1e6 * m["aus"]
+    return d / 2 if batch else d
 
 
 def speichere(con, art, pfad, ergebnis):
