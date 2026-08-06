@@ -70,6 +70,21 @@ details summary{cursor:pointer;color:#8b93a3;font-size:.84rem;padding:.3rem 0}
 .zeile{display:grid;grid-template-columns:10rem 1fr 1fr;gap:.4rem;padding:.15rem 0}
 .zeile label{color:#8b93a3;font-size:.8rem;align-self:center}
 .fuss{padding:.5rem .9rem;background:#191d24;display:flex;gap:.5rem;align-items:center}
+.gespraech{padding:.6rem .9rem .7rem;border-top:1px solid #23272f}
+.gespraech .reihe{display:flex;gap:.5rem;align-items:center}
+.gespraech .frage{flex:1;background:#12141a;border:1px solid #333a45;
+ color:#e6e8ec;border-radius:6px;padding:.4rem .6rem;font:inherit}
+.verlauf{max-height:22rem;overflow-y:auto}
+.verlauf:not(:empty){margin-bottom:.55rem}
+.sagt{display:flex;gap:.5rem;margin-bottom:.5rem;font-size:.89rem;
+ line-height:1.5}
+.sagt .wer{flex:none;width:1.4rem;height:1.4rem;border-radius:50%;
+ display:grid;place-items:center;font-size:.72rem;background:#333a45;
+ color:#c3c9d4}
+.sagt.modell .wer{background:#1d4231;color:#8fe3b4}
+.sagt .txt{white-space:pre-wrap;color:#c3c9d4}
+.sagt.mensch .txt{color:#e6e8ec}
+.sagt.wartet .txt{color:#8b93a3;font-style:italic}
 .anbind{padding:.45rem .9rem;font-size:.86rem;border-bottom:1px solid #23272f;
  display:flex;gap:.6rem;align-items:center;flex-wrap:wrap}
 .anbind .lbl{color:#8b93a3;font-size:.78rem;text-transform:uppercase;
@@ -142,6 +157,7 @@ function zeichne(){
   const erste=app.querySelector('.person.frage input');
   if(erste) setTimeout(()=>erste.focus(), 60);
  }
+ document.querySelectorAll('.gespraech').forEach(el=>verlaufHolen(el));
  zaehler();
  document.getElementById('alle').textContent = liste ? 'Einzeln' : 'Liste';
  document.getElementById('tasten').innerHTML = liste ? '' :
@@ -191,6 +207,16 @@ function karte(e,k){
       placeholder="Kirchenbuchform" oninput="this.classList.add('geaendert')">
     </div>`).join('')}
   </details></div>
+  <div class=gespraech data-eintrag=${e.id}>
+   <div class=verlauf></div>
+   <div class=reihe>
+    <input class=frage placeholder="Nachfragen — z. B. „steht da Möß oder Wöß?“"
+      onkeydown="if(event.key==='Enter'){event.stopPropagation();fragen(this)}">
+    <button onclick="fragen(this)">fragen</button>
+   </div>
+   <div class=zh>Antwortet mit Eintrag, Bildausschnitt und Bestandstreffern
+    vor Augen. Ändert nichts — eintragen tust du selbst.</div>
+  </div>
   <div class=fuss><button class=ja onclick="fertig(${k})">Fertig · weiter</button>
    <span class=zaehler>Strg+Enter</span>
    ${liste?'':`<span style=flex:1></span>
@@ -203,6 +229,45 @@ function blaettern(d){
  const n=i+d;
  if(n<0||n>=daten.length) return;
  i=n; zeichne(); window.scrollTo(0,0);
+}
+
+// ------------------------------------------------------------- Gespräch
+function zeigeVerlauf(box,g){
+ box.querySelector('.verlauf').innerHTML = g.map(x=>
+  `<div class="sagt ${x.wer}"><span class=wer>${x.wer==='mensch'?'du':'?'}</span>
+    <div class=txt>${esc(x.text)}</div></div>`).join('');
+}
+
+async function verlaufHolen(box){
+ const id=box.dataset.eintrag;
+ const g=await (await fetch('/api/gespraech?eintrag='+id)).json();
+ zeigeVerlauf(box,g);
+}
+
+async function fragen(el){
+ const box=el.closest('.gespraech');
+ const inp=box.querySelector('.frage');
+ const text=inp.value.trim();
+ if(!text) return;
+ const knopf=box.querySelector('button');
+ inp.disabled=knopf.disabled=true;
+ // Sofort anzeigen, was gefragt wurde — sonst sieht es aus, als sei nichts
+ // passiert, und die Antwort kann eine halbe Minute brauchen.
+ const v=box.querySelector('.verlauf');
+ v.insertAdjacentHTML('beforeend',
+  `<div class="sagt mensch"><span class=wer>du</span>
+    <div class=txt>${esc(text)}</div></div>
+   <div class="sagt modell wartet"><span class=wer>?</span>
+    <div class=txt>denkt nach …</div></div>`);
+ inp.value='';
+ const a=await (await fetch('/api/frage',{method:'POST',
+   body:JSON.stringify({eintrag:box.dataset.eintrag, frage:text})})).json();
+ v.querySelector('.wartet').remove();
+ v.insertAdjacentHTML('beforeend',
+  `<div class="sagt modell"><span class=wer>?</span>
+    <div class=txt>${esc(a.antwort||'')}</div></div>`);
+ inp.disabled=knopf.disabled=false; inp.focus();
+ v.scrollTop=v.scrollHeight;
 }
 
 function feld(e,n){return e.felder.find(f=>f.name===n)||{}}

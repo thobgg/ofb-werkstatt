@@ -30,6 +30,7 @@ from pathlib import Path
 from .seite import SEITE
 from .start import STARTSEITE
 from .. import (abgleich, ausgabe, db, einrichtung, einstellungen,
+                gespraech,
                 import_gedcom,
                 import_wortschatz, konfig, lesen,
                 runde as _runde,
@@ -81,6 +82,12 @@ class Handler(BaseHTTPRequestHandler):
         if pfad in ("/", "/index.html", "/lesen", "/uebergabe", "/ausgabe",
                     "/einstellungen"):
             return self._send(200, "text/html; charset=utf-8", STARTSEITE)
+        if pfad == "/api/gespraech":
+            con = db.verbinde()
+            try:
+                return self._json(gespraech.verlauf(con, self._zahl("eintrag")))
+            finally:
+                con.close()
         if pfad == "/api/anmeldestand":
             # neu=True: die Antwort wird gemerkt, hier will der Browser aber
             # gerade wissen, ob sich im Anmeldefenster etwas getan hat.
@@ -301,6 +308,17 @@ class Handler(BaseHTTPRequestHandler):
                     (o if o.is_absolute() else ROOT / o).mkdir(
                         parents=True, exist_ok=True)
             return self._json(dict(ok=True))
+        if pfad == "/api/frage":
+            d = self._rumpf()
+            con = db.verbinde()
+            try:
+                return self._json(gespraech.frage(
+                    con, int(d["eintrag"]), (d.get("frage") or "").strip()))
+            except Exception as e:
+                return self._json({"ok": False,
+                                   "antwort": f"{type(e).__name__}: {e}"}, 400)
+            finally:
+                con.close()
         if pfad == "/api/quelle":
             d = self._rumpf()
             con = db.verbinde()
