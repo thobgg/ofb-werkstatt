@@ -251,3 +251,16 @@ def herkunft(person):
             raus.append(dict(id=fid, vater=f["husb_name"], mutter=f["wife_name"],
                              vater_id=f["husb"], mutter_id=f["wife"]))
     return raus
+
+
+def frisch():
+    """Alle gemerkten Listen wegwerfen.
+
+    Inventar, Klassen, Personen und Familien werden einmal gelesen und
+    behalten — das ist im Betrieb richtig, denn sie ändern sich nur beim
+    Import. Genau dann muss aber jemand Bescheid sagen, sonst rankt der
+    laufende Server bis zum Neustart nach dem alten Stand und die frisch
+    eingelesene Quelle wirkt scheinbar nicht.
+    """
+    for f in (klassen, inventar, personen, familien):
+        f.cache_clear()

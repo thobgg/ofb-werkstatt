@@ -291,11 +291,20 @@ def allgemein_pruefen(con, e, bestand, art):
     return farbe
 
 
-def runde_pruefen(con, runde_id=None):
-    """Abgleich für eine Runde — oder für alles, was noch grau ist."""
+def runde_pruefen(con, runde_id=None, nur_offen=False):
+    """Abgleich für eine Runde — oder für alles, was noch grau ist.
+
+    `nur_offen` lässt bestätigte Einträge in Ruhe. Das braucht es, wenn
+    nachträglich eine Quelle dazukommt: Der Abgleich soll die neuen
+    Möglichkeiten nutzen, aber keine Entscheidung überschreiben, die ein
+    Mensch schon getroffen hat.
+    """
     bestand = _bestand(con)
     if runde_id:
         rows = list(con.execute("SELECT * FROM eintrag WHERE runde=?", (runde_id,)))
+    elif nur_offen:
+        rows = list(con.execute(
+            "SELECT * FROM eintrag WHERE status <> 'bestaetigt'"))
     else:
         rows = list(con.execute("SELECT * FROM eintrag"))
     z = dict(gruen=0, gelb=0, rot=0)
