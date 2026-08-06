@@ -93,7 +93,7 @@ def schneide(con, art, bild, nummern, still=True):
             p = ziel / f"{bild}_{nr}.jpg"
             im.crop((block["x0"], max(0, a - RAND),
                      block["x1"], min(im.size[1], e + RAND))).save(p, quality=88)
-            raus[nr] = str(p.relative_to(konfig.WURZEL))
+            raus[nr] = konfig.kurz(p)
     if not still:
         print(f"  {bild}: {len(raus)} Streifen — {guete}")
     return raus, guete

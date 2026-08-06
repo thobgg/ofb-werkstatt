@@ -29,7 +29,8 @@ from pathlib import Path
 
 from .seite import SEITE
 from .start import STARTSEITE
-from .. import (abgleich, ausgabe, db, einstellungen, import_gedcom,
+from .. import (abgleich, ausgabe, db, einrichtung, einstellungen,
+                import_gedcom,
                 import_wortschatz, konfig, lesen,
                 runde as _runde,
                 pruefung, seiten, suche, testdaten, vorlage)
@@ -281,6 +282,25 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json({"ok": True})
             finally:
                 con.close()
+        if pfad == "/api/einrichten":
+            d = self._rumpf()
+            try:
+                einrichtung.schreibe(
+                    (d.get("gemeinde") or "").strip(),
+                    d.get("register") or [], (d.get("ort") or "").strip() or None,
+                    (d.get("religion") or "").strip() or None)
+            except SystemExit as e:
+                return self._json({"fehler": str(e)}, 400)
+            except Exception as e:
+                return self._json({"fehler": f"{type(e).__name__}: {e}"}, 400)
+            # Die Bildordner anlegen, damit der erste Blick nicht auf
+            # "Ordner fehlt" faellt — leer ist kein Fehler, fehlend schon.
+            for r in d.get("register") or []:
+                o = Path((r.get("ordner") or "").strip()).expanduser()
+                if r.get("ordner"):
+                    (o if o.is_absolute() else ROOT / o).mkdir(
+                        parents=True, exist_ok=True)
+            return self._json(dict(ok=True))
         if pfad == "/api/quelle":
             d = self._rumpf()
             con = db.verbinde()
@@ -407,6 +427,8 @@ class Handler(BaseHTTPRequestHandler):
                 doku=doku,
                 wurzel=str(ROOT),
                 datenbank=str(DB.relative_to(ROOT)),
+                eingerichtet=einrichtung.eingerichtet(),
+                einrichtung=einrichtung.vorschlag(),
                 testdaten=len(testdaten.seiten()),
                 pdf_werkzeug=bool(seiten.pdf_werkzeug()),
             )
@@ -464,6 +486,8 @@ class Handler(BaseHTTPRequestHandler):
                 register=_runde.stand(con),
                 quellen=quellen,
                 quellen_fehlend=fehlend,
+                eingerichtet=einrichtung.eingerichtet(),
+                einrichtung=einrichtung.vorschlag(),
                 testdaten=len(testdaten.seiten()),
                 runde=r,
                 vorschlag=v,

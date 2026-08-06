@@ -428,7 +428,7 @@ def stand(con):
             (art,)).fetchone()
         raus.append(dict(
             register=art, titel=konfig.register(art).get("titel", art),
-            ordner=str(ordner.relative_to(konfig.WURZEL)),
+            ordner=konfig.kurz(ordner),
             bilder=len(bilder), gelesen=len(gelesen),
             eintraege=e["n"] or 0, bestaetigt=e["fix"] or 0,
             seiten_je_runde=einstellungen.seitenzahl(con, art),

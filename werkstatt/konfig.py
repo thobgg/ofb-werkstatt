@@ -58,7 +58,11 @@ def datumsfelder(art):
 
 
 def bilderordner(art):
-    return WURZEL / register(art).get("ordner", f"bilder/{art}")
+    # expanduser, weil die Einrichtung Pfade entgegennimmt, wie Menschen sie
+    # schreiben. Ohne das wird aus `~/scans` ein Ordner namens `~` unterhalb
+    # des Projekts, der Bilderzähler steht auf 0 und niemand sieht, warum.
+    p = Path(register(art).get("ordner", f"bilder/{art}")).expanduser()
+    return p if p.is_absolute() else WURZEL / p
 
 
 def vorbelegung():
@@ -113,3 +117,20 @@ def kontext():
                      for k, v in (q.get("spalten") or {}).items()},
         ))
     return raus
+
+
+def kurz(pfad):
+    """Pfad zum Anzeigen: kurz, wenn er im Projekt liegt, sonst vollständig.
+
+    `relative_to` wirft, sobald ein Pfad ausserhalb liegt — und Scans liegen
+    oft ausserhalb, auf einer zweiten Platte oder im Netz. Vorher riss das
+    die ganze Startseite ab, weil sie den Bildordner nur anzeigen wollte.
+    """
+    p = Path(pfad)
+    try:
+        return str(p.relative_to(WURZEL))
+    except ValueError:
+        try:
+            return "~/" + str(p.relative_to(Path.home()))
+        except ValueError:
+            return str(p)
