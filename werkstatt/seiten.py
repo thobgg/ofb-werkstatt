@@ -198,7 +198,7 @@ def sichte(art, uebersicht=False, ordner=None):
             with Image.open(f) as im:
                 im.thumbnail((1250, 1250))
                 im.convert("L").save(ziel / f"{f.stem}.jpg", quality=85)
-        print(f"  Übersichten: {ziel.relative_to(konfig.WURZEL)}")
+        print(f"  Übersichten: {konfig.kurz(ziel)}")
 
 
 def main():

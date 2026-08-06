@@ -126,8 +126,71 @@ async function laden(){
   document.getElementById('reg').onchange=quelleGewaehlt; quelleGewaehlt();}
 }
 
+// ----------------------------------------------------------- Einrichtung
+function ansichtEinrichtung(){
+ return `
+ <div class=schritt>
+  <div class=was>Willkommen in der Werkstatt</div>
+  <div class=warum>Drei Angaben, dann kann es losgehen. Alles davon lässt
+   sich später im Zahnrad ändern.</div>
+
+  <div style="margin:.9rem 0 .3rem"><b>Wie heißt die Gemeinde?</b></div>
+  <div class=dim style="font-size:.86rem;margin-bottom:.4rem">
+   Der Name der Pfarrei, deren Kirchenbücher Sie bearbeiten. Er steht später
+   als Ortsangabe in jedem Eintrag.</div>
+  <input id=egem placeholder="z. B. Musterhausen" style="width:22rem"
+    onkeydown="if(event.key==='Enter')einrichten(this)">
+
+  <div style="margin:1.2rem 0 .3rem"><b>Welche Register, und wo liegen die
+   Scans?</b></div>
+  <div class=dim style="font-size:.86rem;margin-bottom:.5rem">
+   Ankreuzen, was Sie bearbeiten wollen; die Ordner werden angelegt. Ein
+   Register ohne Bilder wird nie vorgeschlagen, also stört es auch nicht,
+   wenn Sie eines zu viel ankreuzen. Ein Pfad ohne <code>/</code> am Anfang
+   gilt vom Projektordner aus, <code>~</code> ist Ihr Benutzerordner.</div>
+  ${S.einrichtung.map((r,i)=>`<div class=reihe style="margin-bottom:.4rem">
+    <label style="width:11rem;cursor:pointer">
+     <input type=checkbox class=ereg data-art="${esc(r.art)}"
+       ${i<3?'checked':''}> ${esc(r.titel)}</label>
+    <input class=eord data-art="${esc(r.art)}" value="${esc(r.ordner)}"
+      style="flex:1;min-width:14rem">
+   </div>`).join('')}
+
+  <div class=reihe style="margin-top:1.1rem">
+   <button class=ja onclick=einrichten(this)>Projekt anlegen</button>
+   <span class=dim id=ehinweis>Geschrieben wird eine Datei
+    <code>konfig.local.toml</code> im Projektordner. Sonst nichts.</span>
+  </div>
+ </div>
+
+ <div class=karte>
+  <div style="font-weight:600;margin-bottom:.3rem">Eine zweite Pfarrei?</div>
+  <p class=dim style="font-size:.88rem;margin:0">
+   Ein Projekt ist ein Ordner. Für eine weitere Pfarrei packen Sie die
+   Werkstatt ein zweites Mal aus — eigene Datenbank, eigene Bilder, eigene
+   Einstellungen. Das hält zwei Bestände sauber getrennt: nichts kann
+   versehentlich vom einen in den anderen wandern.</p>
+ </div>`;
+}
+
+async function einrichten(btn){
+ const h=document.getElementById('ehinweis');
+ const gem=document.getElementById('egem').value.trim();
+ if(!gem){h.textContent='Erst den Namen der Gemeinde eintragen.';return;}
+ const reg=[...document.querySelectorAll('.ereg')].filter(c=>c.checked)
+   .map(c=>({art:c.dataset.art,
+     ordner:(document.querySelector(`.eord[data-art="${c.dataset.art}"]`)||{}).value}));
+ if(!reg.length){h.textContent='Mindestens ein Register ankreuzen.';return;}
+ btn.disabled=true; h.textContent='lege an …';
+ const a=await (await fetch('/api/einrichten',{method:'POST',
+   body:JSON.stringify({gemeinde:gem, register:reg})})).json();
+ if(a.fehler){btn.disabled=false; h.textContent=a.fehler; return;}
+ location.href='/';
+}
+
 // ---------------------------------------------------------------- Stand
 function ansichtStand(){
+ if(!S.eingerichtet) return ansichtEinrichtung();
  const b=S.bestand;
  return `
  ${schrittKarte()}
