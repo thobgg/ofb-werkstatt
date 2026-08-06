@@ -29,9 +29,12 @@ zusammen gelesen, korrigiert und übergeben werden.
 
     geplant ──lesen──► korrigieren ──übergeben──► fertig
 
-Die Reihenfolge **Ehen → Taufen → Tode** ist Bedingung, nicht Empfehlung:
-Der Elternehe-Anker trägt im Taufjahr 1808 noch 94 %, 1813 noch 53 %, 1820
-nur 18 % — es sei denn, die Ehen sind vorher übergeben. Dann wächst er mit.
+Die Reihenfolge **Ehen → Taufen → Tode** ist Bedingung, nicht Empfehlung.
+Ein Bestand endet irgendwann; die Eltern einer Taufe von 1808 haben meist
+vorher geheiratet und stehen noch drin, die von 1825 nicht mehr. Der
+Elternehe-Anker versiegt also mit jedem Jahrgang — es sei denn, die Ehen
+werden mit erfasst und vorher übergeben. Dann wächst er mit, statt zu
+verfallen. Wer die Taufen vorzieht, prüft sie später ein zweites Mal.
 
 Der Zustand liegt in der Datenbank, nicht im Prozess. Der Läufer arbeitet im
 Hintergrund weiter, wenn das Browserfenster zugeht, und ein Abbruch
@@ -57,33 +60,35 @@ Beleg, nicht umgekehrt.
 gegen die eigenen früheren Einträge ab: Die ersten hundert tragen die
 nächsten tausend.
 
-## Was gemessen ist
+## Ein Abgleichsverfahren, kein Leseverfahren
 
-Kein Wert hier ist geschätzt. Wo etwas ungeprüft ist, steht das dabei.
+Wie gut die Maschine liest, hängt an der Handschrift, am Erhaltungszustand
+und an der Auflösung des Scans — nicht am Werkzeug. Eine Trefferquote
+anzugeben wäre deshalb irreführend: Sie gälte für ein Buch, eine Hand, einen
+Bestand.
 
-| | |
-|---|---|
-| GEDCOM-Fortschreibung einer übergebenen Runde | 5.605 Records zeichengleich durchgereicht, 9 ergänzt, 57 neu — **0 verloren, 0 tote Verweise** |
-| Leerlauftest | `3444327 Byte, zeichengleich` — die Vorlage kommt Byte für Byte aus der Datenbank zurück |
-| Abgleich gegen geprüfte Wahrheit | 18 von 39 Verweisen wiedergefunden (46 %), **0 Falschzuordnungen** |
-| Bestandsprüfung, 4.111 Personen | 29 Fehler, 630 Warnungen |
-| Zeilenerkennung im Seitenraster | 22 von 22 bei ±40 px, 0 überzählige Vorschläge |
-| Rohlesung des Modells (Pilotlauf) | **42 % der Familiennamen falsch** |
+Worauf es stattdessen ankommt:
 
-Der letzte Wert ist der wichtigste: **Das ist ein Abgleichsverfahren, kein
-Leseverfahren.** Auf 13,4 % markierte Felder kam der Pilotlauf erst durch den
-Abgleich gegen den vorhandenen Bestand. Was gut lesbar ist — Datum, Vornamen,
-Beruf, Ort — trägt den Abgleich; die Nachnamen werden *durch* ihn bestimmt.
+**Was gut lesbar ist, trägt den Abgleich — was schlecht lesbar ist, wird
+durch ihn bestimmt.** Datum, Vornamen, Beruf und Ort sind auch in schwieriger
+Kurrentschrift meist eindeutig; die Familiennamen sind es selten. Genau
+deshalb wird der ganze Eintrag als Suchschlüssel benutzt und nicht Feld für
+Feld geraten.
 
 **Grün wird nur, was ein Anker bestätigt.** Weder die Selbsteinschätzung des
-Modells noch die Häufigkeit im Bestand machen grün: Bei `Koch`/`Roth` war das
-Modell viermal sicher und viermal falsch, und `Roth` kommt 59-mal vor.
+Modells noch die Häufigkeit eines Namens im Bestand machen grün. Ein Name,
+der hundertmal vorkommt, ist deshalb noch lange nicht der, der dasteht.
 
-⚠️ **Ungeprüft ist die Lesequalität selbst.** Alle Zahlen oben messen die
-Verknüpfung, nicht das Lesen — die Testdaten enthalten bereits korrigierte
-Lesungen. Dafür braucht es einen Lauf über die API gegen eine Seite mit
-bekannter Wahrheit. Ebenso ungeprüft: der Nullstart ohne vorhandenen Bestand,
-und eine zweite Handschrift.
+**Nichtfinden ist ein Ergebnis, kein Fehler.** Zuzug, andere Parochie, Lücke
+im Buch — das gehört vermerkt, nicht weggedrückt.
+
+**Die Ausgabe ist verlustfrei.** Die Vorlage läuft Record für Record durch;
+unberührte Records gehen zeichengleich hindurch. Belegt durch einen
+Leerlauftest: ohne Änderungen muss die Ausgabe Byte für Byte der Vorlage
+entsprechen. Das ist eine Eigenschaft des Codes, keine der Handschrift.
+
+Alle Messwerte aus der Entwicklung — samt dem, was daran ungeprüft ist —
+stehen in `doku/`, wo auch dabeisteht, woran sie gemessen wurden.
 
 ## Stand
 
@@ -202,10 +207,11 @@ named person is matched against your existing dataset — or against your own
 earlier entries, if you start from scratch. Output is GEDCOM.
 
 It is **a matching tool with a reader attached**, not a transcription tool.
-In the pilot run 42 % of surnames were read wrong; the usable result came
-entirely from matching against an existing dataset. Existing tools (Transkribus
-and others) do the reading well — what they do not do is decide which of the
-six people in a marriage entry already exist in your data, and record why.
+How well the machine reads depends on the hand, the state of the book and the
+scan — not on the tool. What the tool contributes is the step afterwards:
+deciding which of the six people named in a marriage entry already exist in
+your dataset, and recording the evidence for each decision. Dedicated HTR
+tools do the reading well; that decision is not what they are for.
 
 Built for a single researcher working on their own parish. Local, SQLite, no
 service, no accounts. Requires an Anthropic API key for the reading step —
