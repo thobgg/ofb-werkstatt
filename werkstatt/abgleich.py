@@ -113,16 +113,67 @@ def _plausibel(pers, f, jahr, gr=None):
     return True, datiert
 
 
-def _paare(pers, fam, nachname_m, nachname_f):
-    """Familien, deren Mann und Frau beide zu den Nachnamen passen."""
-    a, b = falte(nachname_m), falte(nachname_f)
-    if not a or not b:
+def _teile(text):
+    """Namensbestandteile einer gelesenen Angabe, gefaltet."""
+    return {t for t in (falte(x) for x in str(text or "").replace(",", " ").split())
+            if len(t) > 2}
+
+
+# Wie viele Vornamen übereinstimmen müssen, wenn der Nachname nicht trägt.
+# Einer genügt nicht: `Johann` und `Maria` sind hier fast Allgemeingut.
+# Zwei sind spezifisch — `Agnes Dorothea`, `Rosina Margaretha`.
+VORNAMEN_MINDESTENS = 2
+
+
+def _passt(person, gelesen):
+    """Wie eine Bestandsperson zu einer gelesenen Angabe passt.
+
+    Rückgabe: (trifft, über_nachnamen). Der zweite Wert sagt, ob der
+    Nachname beteiligt war — er entscheidet später über die Beweiskraft.
+    """
+    if not person:
+        return False, False
+    t = _teile(gelesen)
+    if not t:
+        return False, False
+    nach = falte(person["surn"])
+    if nach and nach in t:
+        return True, True
+    vor = {x for x in _teile(person["givn"])}
+    return len(vor & t) >= VORNAMEN_MINDESTENS, False
+
+
+def _paare(pers, fam, vater_gelesen, mutter_gelesen):
+    """Familien, die zu den gelesenen Elternangaben passen.
+
+    **Der Anker trägt über die Vornamen, nicht über die Nachnamen.**
+    `doku/ansatz.md` sagt es so:
+
+        Prüfregel: 1. Vorname(n) des Vaters passen, 2. Vornamen der Mutter
+        passen **unabhängig** zum Registereintrag. … Punkt 2 trägt die
+        Beweislast. In vier von 22 Fällen war der Vatername falsch gelesen
+        und der Treffer kam allein über die Vornamen der Mutter.
+
+    Die Vorgängerfassung verlangte **beide Nachnamen** — also ausgerechnet
+    die zwei Felder, die im Register am schwersten zu lesen sind. Bei den
+    Testdaten fiel das nie auf, weil dort schon die korrigierten Nachnamen
+    standen. An einer frisch gelesenen Seite fand sie null Elternehen: kein
+    einziger Mädchenname der Mütter war zu entziffern.
+
+    Die Regel „zwei übereinstimmende Merkmale, eines nicht der Nachname"
+    ist damit besser erfüllt als vorher, nicht schlechter: Vater **und**
+    Mutter müssen unabhängig passen, und die Vornamen sind das verlässlich
+    lesbare Feld.
+    """
+    if not _teile(vater_gelesen) or not _teile(mutter_gelesen):
         return []
     raus = []
     for f in fam:
         m, w = pers.get(f["mann"]), pers.get(f["frau"])
-        if m and w and falte(m["surn"]) == a and falte(w["surn"]) == b:
-            raus.append(f)
+        tm, nm = _passt(m, vater_gelesen)
+        tw, nw = _passt(w, mutter_gelesen)
+        if tm and tw:
+            raus.append(dict(f, ueber_nachnamen=nm and nw))
     return raus
 
 
@@ -168,7 +219,8 @@ def taufe_pruefen(con, e, bestand):
     if len(treffer) == 1:
         f, datiert = moeglich[0]
         darf = f["herkunft"] in beleg
-        grund = (f"Elternehe F{f['id']}"
+        weg = "Nachnamen" if f.get("ueber_nachnamen") else "Vornamen beider Eltern"
+        grund = (f"Elternehe F{f['id']} über {weg}"
                  + (f", oo {f['marr']}" if f["marr"] else ""))
         if not darf:
             farbe = "gelb"
@@ -194,8 +246,8 @@ def taufe_pruefen(con, e, bestand):
 
     # Keine gemeinsame Familie. Einseitige Treffer sind ein Hinweis, kein
     # Beleg — genau hier stand im Pilotlauf der falsch gelesene Nachname.
-    kv = nach.get(falte(v), [])
-    km = nach.get(falte(m), [])
+    kv = [i for x in _teile(v) for i in nach.get(x, [])]
+    km = [i for x in _teile(m) for i in nach.get(x, [])]
     if kv and km:
         grund = ("beide Namen im Bestand, aber KEINE gemeinsame Familie — "
                  "Zweitehe oder Fehllesung")
