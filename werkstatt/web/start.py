@@ -506,6 +506,37 @@ function ansichtEinstellungen(){
 
  <h2>KI-Anbindung</h2>
  <div class=karte>
+  <h3 style="margin:0 0 .5rem">Über Claude Code — das eigene Abonnement</h3>
+  ${!E.ki.cli.da
+   ? `<div class=warn>${esc(E.ki.cli.meldung||'')}
+       <div style="margin-top:.5rem">Einrichten in drei Schritten:</div>
+       <ol style="margin:.3rem 0 0 1.1rem;padding:0">
+        <li>Claude Code installieren — <code>claude.com/download</code>,
+            unter Windows das Installationsprogramm.</li>
+        <li>Ein Terminal öffnen (Windows: <b>Eingabeaufforderung</b>) und
+            <code>claude auth login</code> eingeben. Es öffnet sich der
+            Browser, dort wie gewohnt anmelden. Das ist einmalig.</li>
+        <li>Diese Seite neu laden — hier muss dann das Konto stehen.</li>
+       </ol></div>`
+   : E.ki.cli.angemeldet
+   ? `<div class=reihe style="margin-bottom:.6rem">
+       <span class=ampel><i class="pkt gruen"></i>
+       <b>Angemeldet${E.ki.cli.abo?' — '+esc(E.ki.cli.abo)+'-Abonnement':''}</b></span>
+       <span class=dim>${esc(E.ki.cli.konto||'')} · ${esc(E.ki.cli.weg||'')}
+        · Claude Code ${esc(E.ki.cli.version||'')}</span></div>`
+   : `<div class=warn>${esc(E.ki.cli.meldung||'')}
+       Ein Terminal öffnen und <code>claude auth login</code> eingeben,
+       dann diese Seite neu laden.</div>`}
+  <p class=dim style="font-size:.86rem;margin:.2rem 0 0">
+   Die Werkstatt speichert <b>keine Anmeldedaten</b> und hängt sich an
+   <b>keinen laufenden Chat</b>. Sie ruft für jede Runde einmal
+   <code>claude&nbsp;-p</code> auf; das ist eine eigene, kurze Sitzung ohne
+   Verlauf. Wer angemeldet ist, entscheidet allein die Anmeldung im
+   Benutzerprofil — dieselbe, mit der Sie Claude Code sonst auch bedienen.
+   Über diesen Weg zählt das Lesen auf das Abonnement, nicht auf eine
+   zweite Rechnung.</p>
+
+  <h3 style="margin:1.2rem 0 .5rem">Über die API — mit Schlüssel</h3>
   ${E.ki.schluessel
     ? `<div class=reihe style="margin-bottom:.7rem">
         <span class=ampel><i class="pkt gruen"></i>

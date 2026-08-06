@@ -204,6 +204,47 @@ def werkzeug():
     return shutil.which("claude")
 
 
+_BEREIT = {}
+
+
+def bereitschaft(neu=False):
+    """Was die Sitzungsquelle auf diesem Rechner vorfindet.
+
+    Es gibt **keinen laufenden Chat**, an den sich die Werkstatt hängt.
+    `claude -p` startet jedes Mal eine eigene, kurze Sitzung ohne Verlauf.
+    Die Zuordnung zum richtigen Konto macht das Programm selbst: Wer sich
+    einmal mit `claude auth login` angemeldet hat, dessen Anmeldung liegt
+    im Benutzerprofil. Die Werkstatt fragt sie hier nur ab und speichert
+    nichts davon.
+    """
+    if _BEREIT and not neu:
+        return _BEREIT
+    import subprocess
+    w = werkzeug()
+    d = dict(pfad=w, da=bool(w), version=None, angemeldet=False,
+             konto=None, weg=None, abo=None, meldung=None)
+    if not w:
+        d["meldung"] = ("Claude Code ist auf diesem Rechner nicht installiert "
+                        "(oder nicht im Suchpfad).")
+        _BEREIT.clear(), _BEREIT.update(d)
+        return d
+    try:
+        d["version"] = subprocess.run(
+            [w, "--version"], capture_output=True, text=True,
+            timeout=30).stdout.strip() or None
+        p = subprocess.run([w, "auth", "status"], capture_output=True,
+                           text=True, timeout=30)
+        s = json.loads(p.stdout)
+        d.update(angemeldet=bool(s.get("loggedIn")), konto=s.get("email"),
+                 weg=s.get("authMethod"), abo=s.get("subscriptionType"))
+        if not d["angemeldet"]:
+            d["meldung"] = "Claude Code ist installiert, aber nicht angemeldet."
+    except Exception as e:
+        d["meldung"] = f"Status nicht lesbar: {e}"
+    _BEREIT.clear(), _BEREIT.update(d)
+    return d
+
+
 def lesen_lassen(con, runde_id, still=False, zeitlimit=3600):
     """Die abgelegten Seiten von Claude Code lesen lassen.
 
