@@ -384,8 +384,11 @@ class Handler(BaseHTTPRequestHandler):
             drin = {Path(q["datei"] or "").name for q in quellen}
             fehlend = [dict(name=q["name"], art=q["art"], datei=q["datei"],
                             gilt=q["gilt"],
-                            liest_wer=("import_gedcom" if q["art"] == "gedcom"
-                                       else None))
+                            liest_wer=(
+                                "import_gedcom" if q["art"] == "gedcom" else
+                                "import_wortschatz" if q["art"] in (
+                                    "wortschatz", "csv", "tsv", "txt",
+                                    "xlsx", "ods", "docx") else None))
                        for q in konfig.kontext()
                        if q["datei"] and Path(q["datei"]).name not in drin]
             return dict(

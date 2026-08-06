@@ -172,17 +172,22 @@ function ansichtStand(){
    <ul style="margin:.4rem 0 0 1.1rem;padding:0">
     ${S.quellen_fehlend.map(q=>`<li>${esc(q.name)}
       <code>${esc(q.datei)}</code> — ${q.liest_wer
-       ? 'einlesen mit <code>python3 -m werkstatt.import_gedcom --aus-konfig</code>'
-       : `Format <b>${esc(q.art)}</b>: dafür gibt es noch keinen Einleser`}</li>`).join('')}
+       ? `einlesen mit <code>python3 -m werkstatt.${esc(q.liest_wer)} --aus-konfig</code>`
+       : `Format <b>${esc(q.art)}</b> kennt kein Einleser. Für Wortlisten
+          <code>art = "wortschatz"</code> setzen`}</li>`).join('')}
    </ul></div>`:''}
 
  <p class=dim style="font-size:.86rem">
-  <b>Was sich einlesen lässt.</b> Zurzeit nur <b>GEDCOM</b>
-  (<code>art = "gedcom"</code>) — ein ganzer Bestand mit Personen, Familien
-  und Daten, also alles, was <i>bestätigen</i> darf. Für Wortschatz aus
-  Tabellen und Texten (CSV, XLSX, DOCX) fehlt der Einleser noch; solche
-  Quellen könnten ohnehin nur <code>vokabular</code> sein, weil ihnen die
-  Daten fehlen, an denen ein Treffer sich prüfen ließe.</p>
+  <b>Zwei Arten, fremde Arbeit einzubinden.</b>
+  <code>art = "gedcom"</code> bringt einen ganzen Bestand mit Personen,
+  Familien und Daten — das Einzige, was <i>bestätigen</i> darf.
+  <code>art = "wortschatz"</code> nimmt alles, was Schreibweisen kennt, aber
+  keine Lebensdaten hat: Namenslisten, Ortsverzeichnisse, abgetippte
+  Register, in <code>.csv .tsv .txt .xlsx .ods .docx</code> oder als ganzer
+  Ordner. Die Spalten erkennt der Einleser an der Kopfzeile; wo das nicht
+  reicht, ordnet man sie in <code>konfig.toml</code> zu. Solche Quellen
+  bleiben immer <code>vokabular</code> — ohne Daten lässt sich ein Treffer
+  nicht prüfen.</p>
 
  <h2>Bestand</h2>
  <div class=karte><div class=reihe>
