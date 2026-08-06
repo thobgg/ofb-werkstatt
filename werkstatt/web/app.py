@@ -31,7 +31,7 @@ from .seite import SEITE
 from .start import STARTSEITE
 from .. import (abgleich, ausgabe, db, einstellungen, konfig, lesen,
                 runde as _runde,
-                seiten, suche, testdaten)
+                pruefung, seiten, suche, testdaten)
 
 ROOT = konfig.WURZEL
 DB = ROOT / "daten" / "erfassung.sqlite"
@@ -105,7 +105,16 @@ class Handler(BaseHTTPRequestHandler):
                     autopilot=einstellungen.wert(con, "autopilot"),
                     autopilot_text=einstellungen.AUTOPILOT,
                     grenzen=einstellungen.grenzen(con),
+                    pruefgrenzen=[
+                        dict(schluessel=k, wert=einstellungen.zahl(
+                                 con, f"pruef.{k}", v),
+                             vorgabe=v, einheit=e, quelle=q,
+                             beschriftung=b, erlaeuterung=x)
+                        for k, v, e, q, b, x in pruefung.GRENZWERTE],
+                    regeln=[dict(schluessel=k, schwere=s, titel=t)
+                            for k, s, t in pruefung.REGELN],
                     pdf_werkzeug=bool(seiten.pdf_werkzeug()),
+                    ueber=self.ueber(),
                     ki=dict(
                         modell=modell,
                         modelle=lesen.MODELLE,
@@ -259,6 +268,54 @@ class Handler(BaseHTTPRequestHandler):
         self._send(404, "text/plain", "nicht gefunden")
 
     # ------------------------------------------------------------- Daten
+    def ueber(self):
+        """Was die Über-Seite zeigt — Stand aus der Datenbank, nicht aus Text.
+
+        Zahlenstände gehören in die Datenbank, nicht in Markdown, sonst
+        veralten sie unbemerkt (Regel aus doku/landkarte.md). Das gilt für
+        eine Über-Seite genauso.
+        """
+        import subprocess
+        con = db.verbinde()
+        try:
+            stand = db.stand(con)
+            fassung = {}
+            try:
+                g = subprocess.run(
+                    ["git", "log", "-1", "--format=%h|%ad|%s", "--date=short"],
+                    cwd=ROOT, capture_output=True, text=True, timeout=5)
+                if g.returncode == 0 and "|" in g.stdout:
+                    h, d, s = g.stdout.strip().split("|", 2)
+                    n = subprocess.run(["git", "rev-list", "--count", "HEAD"],
+                                       cwd=ROOT, capture_output=True,
+                                       text=True, timeout=5).stdout.strip()
+                    fassung = dict(commit=h, datum=d, betreff=s, anzahl=n)
+            except Exception:
+                pass
+            quellen = [dict(r) for r in con.execute(
+                "SELECT COALESCE(name, datei) AS name, art, gilt, parochien, "
+                "(SELECT count(*) FROM person p WHERE p.herkunft=herkunft.id) n "
+                "FROM herkunft ORDER BY gilt, id")]
+            doku = sorted(p.name for p in (ROOT / "doku").glob("*.md"))
+            return dict(
+                name="OFB-Werkstatt",
+                zweck="Ortsfamilienbuch aus Kirchenbüchern: Seite lesen "
+                      "lassen, gegen den Bestand abgleichen, anbinden oder "
+                      "neu anlegen, als GEDCOM ausgeben.",
+                lizenz="MIT", autor="Thomas Bugge",
+                fassung=fassung,
+                gemeinde=konfig.konfig().get("gemeinde", {}).get("name", "—"),
+                bestand=stand,
+                quellen=quellen,
+                doku=doku,
+                wurzel=str(ROOT),
+                datenbank=str(DB.relative_to(ROOT)),
+                testdaten=len(testdaten.seiten()),
+                pdf_werkzeug=bool(seiten.pdf_werkzeug()),
+            )
+        finally:
+            con.close()
+
     def _verbrauch(self, con, modell):
         """Was bisher tatsächlich verbraucht wurde — aus den Aufträgen.
 

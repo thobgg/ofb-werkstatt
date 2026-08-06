@@ -55,26 +55,53 @@ from . import db, einstellungen
 MONAT = {m: i for i, m in enumerate(
     "JAN FEB MAR APR MAY JUN JUL AUG SEP OCT NOV DEC".split(), 1)}
 
-# Grenzwerte. Die Zahlen stammen aus Gramps bzw. Ahnenblatt; abweichende
-# sind unten einzeln begründet.
-GRENZEN = {
-    "hoechstalter": 90,           # Gramps oldage
-    "ehe_altersabstand": 30,      # Gramps hwdif
-    "kinder_abstand": 8,          # Gramps cspace, Jahre zwischen Kindern
-    "kinder_spanne": 25,          # Gramps cbspan
-    "heirat_min": 17,             # Gramps yngmar
-    "heirat_max": 50,             # Gramps oldmar
-    "mutter_alter_min": 17,       # Gramps yngmom
-    "mutter_alter_max": 48,       # Gramps oldmom
-    "vater_alter_min": 18,        # Gramps yngdad
-    "vater_alter_max": 65,        # Gramps olddad
-    # Gramps sagt 3. Bei der Sterblichkeit des 19. Jahrhunderts ist die
-    # dritte Ehe häufig und die vierte kein Fehler — nur bemerkenswert.
-    "ehen_max": 4,
-    "kinder_mutter_max": 12,      # Gramps mxchildmom
-    "kinder_vater_max": 15,       # Gramps mxchilddad
-    "geschwister_abstand_min_monate": 9,   # Ahnenblatt
-}
+# Grenzwerte, mit Herkunft und Einheit. Die Zahlen stammen aus Gramps bzw.
+# Ahnenblatt; wo sie abweichen, steht die Begründung dabei.
+#
+#   Gramps `Verify the Data` führt 15 Grenzwerte:
+#     oldage 90 · hwdif 30 · cspace 8 · cbspan 25 · yngmar 17 · oldmar 50
+#     oldmom 48 · yngmom 17 · yngdad 18 · olddad 65 · wedder 3
+#     mxchildmom 12 · mxchilddad 15 · lngwdw 30 · oldunm 99
+#
+#   Ahnenblatt führt sieben Altersgrenzen: Mindestalter bei Geburt eines
+#   Kindes, Höchstalter der Mutter, Höchstalter des Vaters, Mindestalter bei
+#   Eheschließung, Altersdifferenz Ehepartner, Altersdifferenz Geschwister,
+#   maximales Alter einer Person.
+GRENZWERTE = [
+    # (schlüssel, vorgabe, einheit, quelle, beschriftung, erläuterung)
+    ("hoechstalter", 90, "Jahre", "Gramps oldage",
+     "Höchstalter einer Person", ""),
+    ("ehe_altersabstand", 30, "Jahre", "Gramps hwdif · Ahnenblatt",
+     "Altersabstand der Eheleute", ""),
+    ("heirat_min", 17, "Jahre", "Gramps yngmar · Ahnenblatt",
+     "Mindestalter bei der Heirat", ""),
+    ("heirat_max", 50, "Jahre", "Gramps oldmar",
+     "Höchstalter bei der Heirat", ""),
+    ("mutter_alter_min", 17, "Jahre", "Gramps yngmom · Ahnenblatt",
+     "Mutter mindestens", ""),
+    ("mutter_alter_max", 48, "Jahre", "Gramps oldmom · Ahnenblatt",
+     "Mutter höchstens", ""),
+    ("vater_alter_min", 18, "Jahre", "Gramps yngdad · Ahnenblatt",
+     "Vater mindestens", ""),
+    ("vater_alter_max", 65, "Jahre", "Gramps olddad · Ahnenblatt",
+     "Vater höchstens", ""),
+    ("kinder_abstand", 8, "Jahre", "Gramps cspace",
+     "Lücke zwischen zwei Kindern", ""),
+    ("geschwister_abstand_min_monate", 9, "Monate", "Ahnenblatt",
+     "Kinder dichter als", "Zwillinge sind ausgenommen — gleiches Datum "
+     "gilt nicht als Befund."),
+    ("kinder_spanne", 25, "Jahre", "Gramps cbspan · Ahnenblatt",
+     "Spanne aller Kinder einer Familie", ""),
+    ("kinder_mutter_max", 12, "Kinder", "Gramps mxchildmom",
+     "Kinder je Mutter", ""),
+    ("kinder_vater_max", 15, "Kinder", "Gramps mxchilddad",
+     "Kinder je Vater", ""),
+    ("ehen_max", 4, "Ehen", "Gramps wedder (3), hier 4",
+     "Ehen je Person",
+     "Gramps sagt 3. Bei der Sterblichkeit des 19. Jahrhunderts ist die "
+     "dritte Ehe häufig und die vierte kein Fehler, nur bemerkenswert."),
+]
+GRENZEN = {k: v for k, v, *_ in GRENZWERTE}
 
 
 # ------------------------------------------------------------------ Datum

@@ -525,8 +525,17 @@ function ansichtEinstellungen(){
    und viermal falsch.</p>
  </div>
 
- <h2>Lebensgrenzen für den Abgleich</h2>
+ <h2>Plausibilität</h2>
  <div class=karte>
+  <p class=dim style="margin:0 0 .8rem;font-size:.88rem">
+   Zwei Sätze, und das ist Absicht: Der <b>Abgleich</b> entscheidet, ob ein
+   Zuordnungsvorschlag überhaupt möglich ist — er darf nur Unmögliches
+   ausschließen, sonst verwirft er richtige Treffer. Die
+   <b>Bestandsprüfung</b> sucht Widersprüche in dem, was schon dasteht — sie
+   darf enger sein, weil sie nur meldet.</p>
+
+  <h3 style="font-size:.95rem;margin:.4rem 0 .5rem">Was der Abgleich
+   ausschließt <span class=dim style=font-weight:400>— weit gefasst</span></h3>
   <div class=reihe>
    <label class=dim>Mutter</label>
    <input type=number value="${E.grenzen.mutter[0]}" style=width:4rem
@@ -542,11 +551,44 @@ function ansichtEinstellungen(){
     onchange="merken('vater_alter_max',this.value)">
    <span class=dim>Jahre bei der Geburt eines Kindes</span>
   </div>
-  <p class=dim style="font-size:.86rem;margin:.7rem 0 0">
-   Bewusst weit — sie sollen Unmögliches ausschließen, nicht Ungewöhnliches.
-   Ohne sie ordnete der Abgleich einer Taufe von <b>1809</b> ein Paar zu, das
-   1699 und 1703 geboren wurde und dessen Frau 1767 starb — und machte es
-   grün.</p>
+  <p class=dim style="font-size:.86rem;margin:.5rem 0 1.2rem">
+   Ohne diese Prüfung ordnete der Abgleich einer Taufe von <b>1809</b> ein
+   Paar zu, das 1699 und 1703 geboren wurde und dessen Frau 1767 starb — und
+   machte es grün.</p>
+
+  <h3 style="font-size:.95rem;margin:1rem 0 .3rem">Was die Bestandsprüfung
+   meldet <span class=dim style=font-weight:400>— nach Gramps und
+   Ahnenblatt</span></h3>
+  <p class=dim style="font-size:.86rem;margin:0 0 .6rem">
+   Übernommen aus <b>Gramps</b> („Verify the Data", 43 Regeln, 15 Grenzwerte)
+   und <b>Ahnenblatt</b> (Plausibilitätsprüfung, sieben Altersgrenzen), damit
+   hier nichts neu erfunden wird, was seit Jahren funktioniert. Aufruf:
+   <code>python3 -m werkstatt.pruefung</code></p>
+  <table>
+   <tr><th>Grenze</th><th class=z>Wert</th><th></th><th>Herkunft</th></tr>
+   ${E.pruefgrenzen.map(g=>`<tr>
+    <td>${esc(g.beschriftung)}
+     ${g.erlaeuterung?`<div class=dim style="font-size:.82rem">${esc(g.erlaeuterung)}</div>`:''}</td>
+    <td class=z><input type=number value="${g.wert}" style=width:4.5rem
+      onchange="merken('pruef.${esc(g.schluessel)}',this.value)"></td>
+    <td class=dim>${esc(g.einheit)}</td>
+    <td class=dim style=font-size:.82rem>${esc(g.quelle)}
+     ${g.wert!==g.vorgabe?`<br><span style=color:#e0b341>Vorgabe ${g.vorgabe}</span>`:''}</td>
+   </tr>`).join('')}
+  </table>
+  <details style=margin-top:.8rem>
+   <summary class=dim style="cursor:pointer;font-size:.88rem">
+    ${E.regeln.length} Regeln, die daraus folgen</summary>
+   <table style=margin-top:.5rem>
+    ${E.regeln.map(r=>`<tr>
+     <td><span class="marke ${r.schwere==='fehler'?'vokabular':'beleg'}"
+       style="${r.schwere==='fehler'?'background:#4a2318;color:#f0a89a':''}">
+       ${r.schwere}</span></td>
+     <td>${esc(r.titel)}</td>
+     <td class=dim style=font-size:.8rem><code>${esc(r.schluessel)}</code></td>
+    </tr>`).join('')}
+   </table>
+  </details>
  </div>
 
  <div class=reihe style="margin:1.2rem 0">
@@ -562,7 +604,9 @@ function ansichtEinstellungen(){
   (in <code>.gitignore</code>). Das ist Struktur — sie ändert man beim
   Einrichten, nicht beim Arbeiten. Sie hier bearbeitbar zu machen hieße, die
   Datei bei jedem Klick neu zu schreiben und dabei ihre Kommentare zu
-  verlieren; die machen den halben Erklärwert aus.</p></div>`;
+  verlieren; die machen den halben Erklärwert aus.</p></div>
+
+ ${ansichtUeber(E.ueber)}`;
 }
 
 let geaendert={};
@@ -596,6 +640,76 @@ async function entpacken(reg,btn){
  const j=await r.json();
  await einstellungenHolen();
  alert(j.ok?`fertig: ${JSON.stringify(j.zahlen)}`:`Fehler: ${j.zahlen.fehler}`);
+}
+
+// ---------------------------------------------------------------- Über
+function ansichtUeber(U){
+ const b=U.bestand, f=U.fassung||{};
+ return `
+ <h2 style=margin-top:2.2rem>Über die Werkstatt</h2>
+ <div class=schritt>
+  <div class=was>${esc(U.name)}</div>
+  <div class=warum>${esc(U.zweck)}</div>
+  <div class=reihe>
+   ${f.commit?`<span class=dim>Fassung <code>${esc(f.commit)}</code>
+     vom ${esc(f.datum)} · ${esc(f.anzahl)} Commits</span>`:''}
+   <span class=dim>${esc(U.lizenz)}-Lizenz · ${esc(U.autor)}</span>
+  </div>
+  ${f.betreff?`<div class=dim style="font-size:.86rem;margin-top:.3rem">
+    zuletzt: ${esc(f.betreff)}</div>`:''}
+ </div>
+
+ <h2>Wohin Daten gehen — bitte lesen</h2>
+ <div class=warn style="line-height:1.5">
+  <b>Beim Lesen verlassen Ihre Kirchenbuchbilder diesen Rechner.</b>
+  Sie werden an die Anthropic-API geschickt. Scans von Archion, Ancestry
+  oder einem Archiv unterliegen deren Nutzungsbedingungen — ob die eine
+  Übermittlung an einen Dienstleister decken, muss jeder für seine eigenen
+  Quellen klären. Die Werkstatt kann das nicht für Sie entscheiden.
+  <br><br>
+  Alles Übrige bleibt hier: Der Bestand, die Erfassung und die Ausgabe
+  liegen ausschließlich in <code>${esc(U.datenbank)}</code> und
+  <code>ausgabe/</code>. Kein Login, kein Hosting, kein Upload. Der Server
+  hört nur auf <code>127.0.0.1</code>.
+  <br><br>
+  Mit der Quelle <b>Testdaten</b> (${U.testdaten} Seiten) läuft der ganze
+  Ablauf ohne Netz und ohne Kosten.
+ </div>
+
+ <h2>Was das Werkzeug kann — und was nicht</h2>
+ <div class=karte style="line-height:1.55">
+  <p style=margin-top:0><b>Es ist ein Abgleichsverfahren, kein
+  Leseverfahren.</b> Im Pilotlauf waren 42 % der gelesenen Familiennamen
+  falsch; auf 13,4 % markierte Felder kam das Verfahren erst durch den
+  Abgleich gegen den vorhandenen Bestand. Was gut lesbar ist — Datum,
+  Vornamen, Beruf, Ort — trägt den Abgleich; die Nachnamen werden
+  <i>durch</i> ihn bestimmt.</p>
+  <p><b>Grün wird nur, was ein Anker bestätigt.</b> Weder die
+  Selbsteinschätzung des Modells noch die Häufigkeit im Bestand machen
+  grün: Bei <code>Koch</code>/<code>Roth</code> war das Modell viermal
+  sicher und viermal falsch, und <code>Roth</code> kommt 59-mal vor.</p>
+  <p style=margin-bottom:0><b>Ungeprüft geblieben ist die Lesequalität
+  selbst.</b> Alle bisherigen Zahlen messen die Verknüpfung, nicht das
+  Lesen — die Testdaten enthalten bereits korrigierte Lesungen. Dafür
+  braucht es einen Lauf über die API gegen eine Seite mit bekannter
+  Wahrheit.</p>
+ </div>
+
+ <h2>Nachlesen</h2>
+ <div class=karte>
+  <p class=dim style="margin:0 0 .5rem">Alle Entwurfsentscheidungen stehen
+   mit ihren Messwerten in <code>doku/</code> — nichts davon ist behauptet,
+   ohne dass daneben steht, woran es gemessen wurde.</p>
+  <table>${U.doku.map(d=>`<tr><td><code>doku/${esc(d)}</code></td></tr>`).join('')}
+   <tr><td><code>CLAUDE.md</code></td></tr>
+   <tr><td><code>ROADMAP.md</code></td></tr>
+  </table>
+  <p class=dim style="font-size:.86rem;margin:.6rem 0 0">
+   Projektwurzel: <code>${esc(U.wurzel)}</code><br>
+   PDF-Aufbereitung: ${U.pdf_werkzeug
+     ? '<span style=color:#8fe3b4>pdftoppm gefunden</span>'
+     : '<span style=color:#e06c5f>pdftoppm fehlt (Paket poppler-utils)</span>'}</p>
+ </div>`;
 }
 
 laden().then(()=>{
