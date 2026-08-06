@@ -117,6 +117,7 @@ details summary{cursor:pointer;color:#8b93a3;font-size:.84rem;padding:.3rem 0}
 <span style=flex:1></span>
 <span class=zaehler id=tasten></span>
 <button id=alle onclick=umschalten() title="alle Einträge auf einer Seite">Liste</button>
+<button onclick=beenden() title="Werkstatt beenden">⏻</button>
 </header>
 <div class=fortschritt><i id=bal style=width:0></i></div>
 <main id=app class=leer>lade…</main>
@@ -268,6 +269,15 @@ async function fragen(el){
     <div class=txt>${esc(a.antwort||'')}</div></div>`);
  inp.disabled=knopf.disabled=false; inp.focus();
  v.scrollTop=v.scrollHeight;
+}
+
+async function beenden(){
+ if(!confirm('Werkstatt beenden?\n\nDer Server hört auf zu laufen; nichts '
+  +'geht verloren. Zum Weiterarbeiten das Startskript erneut aufrufen.')) return;
+ try{ await fetch('/api/beenden',{method:'POST'}); }catch(e){}
+ document.body.innerHTML='<main class=leer style="padding:4rem">'
+  +'<div style="font-size:1.2rem;margin-bottom:.6rem">Werkstatt beendet.</div>'
+  +'<div class=dim>Dieses Fenster kann zu.</div></main>';
 }
 
 function feld(e,n){return e.felder.find(f=>f.name===n)||{}}

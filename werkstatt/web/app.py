@@ -227,6 +227,16 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json({"fehler": str(e)}, 400)
             finally:
                 con.close()
+        if pfad == "/api/beenden":
+            # Erst antworten, dann abschalten — sonst bekommt der Browser
+            # keine Bestaetigung mehr und zeigt einen Verbindungsfehler,
+            # wo alles richtig gelaufen ist. `shutdown()` muss aus einem
+            # anderen Faden kommen: Es wartet auf das Ende der Schleife,
+            # in der dieser Aufruf gerade steckt.
+            import threading
+            self._json({"ok": True})
+            threading.Thread(target=self.server.shutdown, daemon=True).start()
+            return
         if pfad == "/api/anmelden":
             return self._json(vorlage.anmelden())
         if pfad == "/api/lesen-lassen":
@@ -643,6 +653,12 @@ def main():
         srv.serve_forever()
     except KeyboardInterrupt:
         print("\nbeendet")
+    else:
+        # serve_forever kehrt nur zurueck, wenn shutdown() gerufen wurde —
+        # also ueber den Knopf in der Oberflaeche.
+        print("beendet — über die Werkstatt geschlossen")
+    finally:
+        srv.server_close()
 
 
 if __name__ == "__main__":
