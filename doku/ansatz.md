@@ -348,10 +348,10 @@ Die Architektur bleibt damit Einzelplatz; teilbar muss nur die Einrichtung sein.
 
 **Zielgruppe, realistisch:** einige hundert aktive Ortsfamilienbuch-Projekte im
 deutschsprachigen Raum, davon ein kleiner Teil — Dutzende, nicht Tausende.
-Dazu **deutschamerikanische Genealogen**, die dieselben Quellen bearbeiten:
-gleiche Kirchenbuecher, gleiche Kurrentschrift, gleiche Ortsfamilienbuecher,
-nur andere Bediensprache. Sie beginnen meist ohne bestehenden Bestand — fuer
-sie ist der Fall "bei Null anfangen" der Normalfall.
+Denkbar darueber hinaus: Forscher im Ausland, die dieselben Quellen bearbeiten
+und meist ohne bestehenden Bestand beginnen — ein Grund mehr, warum der Fall
+"bei Null anfangen" sauber funktionieren muss, aber keine Zielgruppe, auf die
+hin gebaut wird.
 
 ### Sprache
 

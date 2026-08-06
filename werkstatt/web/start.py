@@ -982,6 +982,20 @@ function ansichtEinstellungen(){
         hier der <b>gemessene</b> Verbrauch statt einer Schätzung.</p>`}
  </div>
 
+ <h2>Beim Starten</h2>
+ <div class=karte>
+  <label style="display:block;cursor:pointer">
+   <input type=checkbox ${(E.eigen||{})['browser.oeffnen']!=='0'?'checked':''}
+    onchange="merken('browser.oeffnen', this.checked?'1':'0')">
+   <b>Browserfenster öffnen</b></label>
+  <p class=dim style="font-size:.86rem;margin:.5rem 0 0">
+   Gehen beim Start <b>zwei</b> Tabs auf, liegt das am Browser, nicht an
+   der Werkstatt: Er stellt die letzte Sitzung wieder her — die Werkstatt
+   war beim Schließen ja offen — und bekommt unseren Aufruf zusätzlich.
+   Entweder hier abschalten und das Lesezeichen benutzen, oder den
+   Werkstatt-Tab vor dem Beenden des Browsers schließen.</p>
+ </div>
+
  <h2>Wie viel läuft ohne Rückfrage durch</h2>
  <div class=karte>
   ${Object.entries(E.autopilot_text).map(([k,v])=>`

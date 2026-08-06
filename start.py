@@ -15,7 +15,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from werkstatt import db, konfig            # noqa: E402
+from werkstatt import db, einstellungen, konfig   # noqa: E402
 from werkstatt.web import app as webapp     # noqa: E402
 
 
@@ -64,7 +64,12 @@ def main():
         print(f"Runde    : {r['nr']} ({r['register']}), Stand {r['stand']}")
     print()
 
-    if a.browser:
+    # Ein zweiter Tab beim Start kommt fast immer daher, dass der Browser
+    # die letzte Sitzung wiederherstellt — die Werkstatt war beim
+    # Schliessen ja offen — und unseren Aufruf zusaetzlich bekommt. Wer das
+    # nicht mag, schaltet das Oeffnen ab: dauerhaft hier, einmalig mit
+    # --kein-browser.
+    if a.browser and einstellungen.wert(con, "browser.oeffnen", "1") == "1":
         threading.Thread(target=warte_dann_oeffne, args=(a.port, url),
                          daemon=True).start()
 
