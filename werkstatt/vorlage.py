@@ -413,18 +413,54 @@ def lesen_lassen(con, runde_id, still=False, zeitlimit=3600):
     for o in sorted(ordner):
         frei += ["--add-dir", o]
     try:
+        # --output-format json, damit der Lauf sich beziffern laesst. Fuer
+        # den Bearbeiter faellt keine Rechnung an — er zahlt sein Abo.
+        # Aber wer sich fragt, ob sich die Werkstatt lohnt, braucht eine
+        # Zahl, und geschaetzte stehen schon genug herum.
         p = subprocess.run(
-            [w, "-p", AUFTRAG, "--permission-mode", "acceptEdits", *frei],
+            [w, "-p", AUFTRAG, "--permission-mode", "acceptEdits",
+             "--output-format", "json", *frei],
             cwd=ziel, capture_output=True, text=True, timeout=zeitlimit)
     except subprocess.TimeoutExpired:
         return dict(ok=False, meldung=f"Zeitlimit von {zeitlimit}s erreicht")
+    kosten = _kosten_aus(p.stdout)
+    if kosten:
+        _merke_kosten(con, runde_id, kosten)
     s = stand(con, runde_id)
     # `ok` misst das Ergebnis, nicht den Rueckgabewert: Eine Sitzung, die
     # sauber erklaert, warum sie nichts lesen konnte, beendet sich mit 0.
     return dict(ok=p.returncode == 0 and s["fertig"] > 0, rc=p.returncode,
                 ausgabe=(p.stdout or "")[-2000:],
                 fehler=(p.stderr or "")[-1000:],
-                fertig=s["fertig"], gesamt=s["gesamt"])
+                fertig=s["fertig"], gesamt=s["gesamt"], kosten=kosten)
+
+
+def _kosten_aus(stdout):
+    """Verbrauch aus der JSON-Antwort von `claude -p` ziehen."""
+    try:
+        d = json.loads((stdout or "").strip())
+    except Exception:
+        return None
+    u = d.get("usage") or {}
+    return dict(
+        dollar=float(d.get("total_cost_usd") or 0),
+        dauer_ms=int(d.get("duration_ms") or 0),
+        ein=int(u.get("input_tokens") or 0),
+        aus=int(u.get("output_tokens") or 0),
+        # Zwischengespeicherte Eingabe getrennt: Sie ist der Grund, warum
+        # eine zweite Seite viel weniger kostet als die erste, und ohne
+        # diese Zahl sieht die Ersparnis nach Zufall aus.
+        cache=int(u.get("cache_read_input_tokens") or 0)
+        + int(u.get("cache_creation_input_tokens") or 0))
+
+
+def _merke_kosten(con, runde_id, k):
+    con.execute(
+        "UPDATE auftrag SET tokens_ein=tokens_ein+?, tokens_aus=tokens_aus+?, "
+        "tokens_cache=tokens_cache+?, dollar=dollar+?, dauer_ms=dauer_ms+?, "
+        "quelle='datei' WHERE runde=? AND art='lesen'",
+        (k["ein"], k["aus"], k["cache"], k["dollar"], k["dauer_ms"], runde_id))
+    con.commit()
 
 
 def main():

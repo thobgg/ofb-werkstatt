@@ -512,14 +512,34 @@ class Handler(BaseHTTPRequestHandler):
         Auftragstabelle zählt die Token ohnehin mit, also wird hier
         gerechnet statt vermutet.
         """
-        r = con.execute(
-            "SELECT COALESCE(SUM(tokens_ein),0) e, COALESCE(SUM(tokens_aus),0) a, "
-            "COALESCE(SUM(seiten_fertig),0) s FROM auftrag "
-            "WHERE tokens_ein > 0").fetchone()
-        d = lesen.kosten(modell, r["e"], r["a"]) if r["e"] else 0.0
-        return dict(tokens_ein=r["e"], tokens_aus=r["a"], seiten=r["s"],
-                    dollar=round(d or 0.0, 4),
-                    je_seite=round((d or 0.0) / r["s"], 4) if r["s"] else None)
+        z = []
+        for q in ("api", "datei"):
+            r = con.execute(
+                "SELECT COALESCE(SUM(tokens_ein),0) e, "
+                "COALESCE(SUM(tokens_aus),0) a, COALESCE(SUM(tokens_cache),0) c, "
+                "COALESCE(SUM(dollar),0) d, COALESCE(SUM(seiten_fertig),0) s, "
+                "COALESCE(SUM(dauer_ms),0) ms FROM auftrag "
+                "WHERE COALESCE(quelle,'api')=? AND (tokens_ein>0 OR dollar>0)",
+                (q,)).fetchone()
+            if not (r["e"] or r["d"]):
+                continue
+            # Ueber die API rechnen wir aus Token und Preisliste, ueber die
+            # Sitzung meldet `claude -p` den Betrag selbst. Beides ist
+            # gemessen, keins geschaetzt — aber nur der erste wird auch
+            # berechnet. Der zweite sagt, was derselbe Lauf gekostet haette.
+            d = r["d"] or (lesen.kosten(modell, r["e"], r["a"]) or 0.0)
+            z.append(dict(
+                quelle=q, tokens_ein=r["e"], tokens_aus=r["a"],
+                tokens_cache=r["c"], seiten=r["s"], dollar=round(d, 4),
+                minuten=round(r["ms"] / 60000, 1) if r["ms"] else None,
+                je_seite=round(d / r["s"], 4) if r["s"] else None,
+                bezahlt=q == "api"))
+        gesamt = sum(x["dollar"] for x in z)
+        seiten = sum(x["seiten"] for x in z)
+        return dict(wege=z, dollar=round(gesamt, 4), seiten=seiten,
+                    tokens_ein=sum(x["tokens_ein"] for x in z),
+                    tokens_aus=sum(x["tokens_aus"] for x in z),
+                    je_seite=round(gesamt / seiten, 4) if seiten else None)
 
     def stand(self):
         con = db.verbinde()
