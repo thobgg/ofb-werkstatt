@@ -135,6 +135,12 @@ CREATE TABLE IF NOT EXISTS eintrag (
   nr         TEXT,
   jahr       INTEGER,
   ausschnitt TEXT,                  -- Zeilenstreifen, relativ zur Wurzel
+  -- Wo der Streifen auf der Seite sitzt: "x,y,w,h". Ohne das laesst sich
+  -- die ganze Buchoeffnung nicht mit der Zeile darin zeigen — und genau
+  -- die braucht, wer einen Buchstaben an anderer Stelle nachschlagen
+  -- will. Der Streifen allein nimmt die Eichung weg.
+  kasten     TEXT,
+  seite      TEXT,                  -- die volle Aufnahme, relativ zur Wurzel
   fam_reg    TEXT,                  -- Seitenzahl des Familienregisters:
                                     -- der stärkste Anker, vom Pfarrer gesetzt.
                                     -- Gleiche Nummer = gleiche Familie,

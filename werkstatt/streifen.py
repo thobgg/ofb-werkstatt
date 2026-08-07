@@ -104,9 +104,18 @@ def schneide(con, art, bild, nummern, still=True):
     with Image.open(datei) as im:
         for nr, (a, e) in zip(nummern, b):
             p = ziel / f"{bild}_{nr}.jpg"
-            im.crop((block["x0"], max(0, a - RAND),
-                     block["x1"], min(im.size[1], e + RAND))).save(p, quality=88)
-            raus[nr] = konfig.kurz(p)
+            k = (block["x0"], max(0, a - RAND),
+                 block["x1"] - block["x0"],
+                 min(im.size[1], e + RAND) - max(0, a - RAND))
+            im.crop((k[0], k[1], k[0] + k[2], k[1] + k[3])).save(p, quality=88)
+            # Die Seitengroesse gehoert dazu: Die Maske zeigt die Seite
+            # verkleinert und muss die Marke umrechnen. Ohne sie rechnete
+            # sie gegen die Breite des verkleinerten Bildes und legte den
+            # Rahmen ueber die halbe Seite.
+            raus[nr] = (konfig.kurz(p),
+                        ",".join(str(int(v)) for v in
+                                 (*k, im.size[0], im.size[1])),
+                        konfig.kurz(datei))
     if not still:
         print(f"  {bild}: {len(raus)} Streifen — {guete}")
     return raus, guete
@@ -120,9 +129,10 @@ def fuer_bild(con, art, bild, still=True):
     if not nummern:
         return 0, "keine Einträge"
     pfade, guete = schneide(con, art, bild, nummern, still)
-    for nr, p in pfade.items():
-        con.execute("UPDATE eintrag SET ausschnitt=? WHERE register=? "
-                    "AND bild=? AND nr=?", (p, art, bild, nr))
+    for nr, (p, kasten, seite) in pfade.items():
+        con.execute("UPDATE eintrag SET ausschnitt=?, kasten=?, seite=? "
+                    "WHERE register=? AND bild=? AND nr=?",
+                    (p, kasten, seite, art, bild, nr))
     if guete.startswith("gleichmäßig"):
         con.execute("UPDATE eintrag SET bemerkung=? WHERE register=? AND bild=?",
                     (f"Zeilenraster unsicher: {guete}", art, bild))
