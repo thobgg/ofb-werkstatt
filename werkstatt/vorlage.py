@@ -24,7 +24,7 @@ import os
 import sys
 from pathlib import Path
 
-from . import db, einstellungen, katalog, konfig, lesen, seiten
+from . import bloecke, db, einstellungen, katalog, konfig, lesen, seiten
 
 ORDNER = Path("ausgabe") / "lesen"
 
@@ -36,6 +36,32 @@ ANLEITUNG = """# Lesen für Runde {nr} — {titel}
 
 Für **jede** Seite in `seiten.json` eine Datei `antwort/<bild>.json` schreiben.
 `<bild>` ist der Name ohne Endung, genau wie in `seiten.json`.
+
+## Die Blöcke, nicht die ganze Seite
+
+Zu jeder Seite steht in `seiten.json`:
+
+    kopf    die gedruckten Spaltenüberschriften, je Buchseite ein Bild
+    zeilen  je Eintragszeile die Blöcke, links und rechts vom Bund
+
+**Sieh zuerst den Kopf an.** Er sagt, welche Spalte was bedeutet — bei
+diesem Formular neun Stück, vier links und fünf rechts. Danach je Zeile
+beide Blöcke, und zwar **beide zusammen**: Sie sind derselbe Eintrag, nur
+diesseits und jenseits des Bundes. Der rechte Block trägt Geburtszeit,
+Tauftag, den taufenden Geistlichen, die Paten und den Verweis ins
+Familienregister — Angaben, die in der linken Hälfte schlicht nicht
+vorkommen.
+
+Die ganze Seite (`datei`) ist zusätzlich da, für den Überblick und für
+Zweifelsfälle. **Zum Lesen taugt sie nicht**: 5679 px breit, auf
+Anzeigegröße heruntergerechnet bleiben je Spalte gut hundert Pixel.
+
+Steht bei einer Seite `hinweis` statt `zeilen`, hat die Zeilenerkennung
+versagt — dann die ganze Seite lesen und das im Feld `unleserlich`
+vermerken.
+
+Eine Zeile ohne Eintrag (leeres Formular am Seitenende) wird
+übersprungen, nicht als leerer Eintrag geliefert.
 
 Der Systemprompt steht in `prompt.txt` — er enthält die Regeln und, falls
 schon Korrekturen vorliegen, die belegten Fehllesungen dieser Hand.
@@ -129,10 +155,30 @@ def lege_vor(con, runde_id, still=False):
     quelle = einstellungen.ordner(con, art)
     dateien = {f.stem: str(f) for f in seiten.bilder(quelle)}
 
-    (ziel / "seiten.json").write_text(json.dumps(
-        [{"bild": b, "datei": dateien.get(b, ""),
-          "antwort": f"antwort/{b}.json"} for b in bilder],
-        ensure_ascii=False, indent=2), encoding="utf-8")
+    # Blöcke statt der ganzen Seite. Eine Doppelseite dieses Bandes ist
+    # 5679 px breit; wer sie als ein Bild anschaut, bekommt sie
+    # heruntergerechnet und liest die schmalen rechten Spalten nicht mehr.
+    # Siehe bloecke.py — dort steht die Messung dazu.
+    liste = []
+    for b in bilder:
+        d = dateien.get(b, "")
+        e = {"bild": b, "datei": d, "antwort": f"antwort/{b}.json"}
+        if d:
+            try:
+                bl = bloecke.schneide(d, still=True)
+                if bl.get("bloecke"):
+                    e["kopf"] = [k["datei"] for k in bl["kopf"]]
+                    e["zeilen"] = [
+                        {"zeile": z["zeile"],
+                         "teile": [x["datei"] for x in z["teile"]]}
+                        for z in bl["bloecke"]]
+                else:
+                    e["hinweis"] = bl.get("grund", "keine Blöcke")
+            except Exception as ex:
+                e["hinweis"] = f"Blöcke nicht geschnitten: {ex}"
+        liste.append(e)
+    (ziel / "seiten.json").write_text(
+        json.dumps(liste, ensure_ascii=False, indent=2), encoding="utf-8")
     (ziel / "prompt.txt").write_text(lesen.prompt(art, con), encoding="utf-8")
 
     felder = konfig.felder(art, con)
@@ -352,13 +398,23 @@ def lesen_lassen(con, runde_id, still=False, zeitlimit=3600):
     # Bilderverzeichnis. Ohne --add-dir sieht sie die Seiten nicht und
     # meldet trotzdem Erfolg — sie hat ja nichts falsch gemacht, nur nichts
     # zu tun gehabt. Deshalb beide Verzeichnisse freigeben.
-    bilder = str(einstellungen.ordner(
-        con, con.execute("SELECT register FROM runde WHERE id=?",
-                         (runde_id,)).fetchone()["register"]))
+    art = con.execute("SELECT register FROM runde WHERE id=?",
+                      (runde_id,)).fetchone()["register"]
+    bilder = einstellungen.ordner(con, art)
+    # Die Bilder liegen oft als Symlink im Projekt und in Wirklichkeit
+    # woanders — auf einer zweiten Platte, im Archivordner. Die Sitzung
+    # sieht dann einen Verweis, den sie nicht verfolgen darf, und meldet
+    # ehrlich, dass sie nichts lesen konnte. Also auch die Ziele freigeben.
+    ordner = {str(bilder), str(konfig.WURZEL)}
+    for f in seiten.bilder(bilder)[:200]:
+        if f.is_symlink() or f.resolve() != f:
+            ordner.add(str(f.resolve().parent))
+    frei = []
+    for o in sorted(ordner):
+        frei += ["--add-dir", o]
     try:
         p = subprocess.run(
-            [w, "-p", AUFTRAG, "--permission-mode", "acceptEdits",
-             "--add-dir", bilder, "--add-dir", str(konfig.WURZEL)],
+            [w, "-p", AUFTRAG, "--permission-mode", "acceptEdits", *frei],
             cwd=ziel, capture_output=True, text=True, timeout=zeitlimit)
     except subprocess.TimeoutExpired:
         return dict(ok=False, meldung=f"Zeitlimit von {zeitlimit}s erreicht")
