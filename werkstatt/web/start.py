@@ -1021,7 +1021,7 @@ const ZAHNRAD = { "Bestand": () => `
  <div class=karte><table>
   <tr><th>Register</th><th>Seiten je Runde</th><th>Ordner</th>
       <th class=z>Bilder</th><th class=z>PDFs</th><th></th></tr>
-  ${r.map(x=>`<tr>
+  ${E.register.map(x=>`<tr>
    <td>${esc(x.titel)}</td>
    <td><input type=number min=1 max=200 value="${x.seiten}" style=width:4.5rem
         onchange="merken('seiten.${esc(x.register)}',this.value)"></td>
