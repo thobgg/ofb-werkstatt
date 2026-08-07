@@ -22,6 +22,12 @@ main{padding:1rem;max-width:1500px;margin:0 auto}
 .bildbox{overflow-x:auto;background:#fff;cursor:zoom-in;position:relative}
 .bildbox.gross{cursor:zoom-out}
 .bildbox img{width:100%;display:block}
+/* Der gedruckte Kopf ueber jedem Streifen, gleich breit geschnitten —
+   damit Ueberschrift und Zelle uebereinanderstehen. Ohne ihn sieht man ab
+   dem zweiten Eintrag nur Zellen: rechts liegen "Zeit der Geburt" und
+   "Ort und Tag der Taufe" nebeneinander, beide mit einem Datum darin. */
+.bildbox .kopfband{border-bottom:2px solid #2f6fdd;opacity:.85}
+.bildbox.gross .kopfband{position:sticky;top:0;z-index:2;background:#fff}
 .bildbox.gross img{width:auto;max-width:none}
 .zh{position:absolute;top:.3rem;right:.5rem;background:#0009;color:#fff;
  font-size:.7rem;padding:.1rem .4rem;border-radius:4px;pointer-events:none}
@@ -193,6 +199,8 @@ function karte(e,k){
      title="die ganze Buchöffnung, mit dieser Zeile markiert">ganze Seite</button>`:''}
    <span class=zaehler>${liste?esc(e.status):`Eintrag ${k+1} von ${daten.length}`}</span></div>
   ${e.ausschnitt?`<div class=bildbox onclick="this.classList.toggle('gross')">
+    ${e.kopf?`<img class=kopfband src="/bild/${encodeURI(e.kopf)}"
+      loading=lazy alt="Spaltenüberschriften">`:''}
     <img src="/bild/${encodeURI(e.ausschnitt)}" loading=lazy alt="">
     <span class=zh>klicken zum Vergrößern</span></div>`:''}
   ${still.length?`<div class=still><span class=dim>gesichert:</span>
