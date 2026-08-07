@@ -216,6 +216,15 @@ CREATE TABLE IF NOT EXISTS auftrag (
   meldung       TEXT,
   tokens_ein    INTEGER NOT NULL DEFAULT 0,
   tokens_aus    INTEGER NOT NULL DEFAULT 0,
+  -- Auch der Weg ueber das Abonnement laesst sich beziffern: `claude -p
+  -- --output-format json` meldet, was derselbe Lauf ueber die API
+  -- gekostet haette. Fuer den Bearbeiter faellt keine Rechnung an; fuer
+  -- jeden, der sich fragt, ob sich das lohnt, ist es die einzige ehrliche
+  -- Zahl. Deshalb wird sie mitgeschrieben, auch wenn niemand sie zahlt.
+  tokens_cache  INTEGER NOT NULL DEFAULT 0,
+  dollar        REAL NOT NULL DEFAULT 0,
+  quelle        TEXT,                       -- api | datei | testdaten
+  dauer_ms      INTEGER NOT NULL DEFAULT 0,
   begonnen      TEXT,
   beendet       TEXT
 );

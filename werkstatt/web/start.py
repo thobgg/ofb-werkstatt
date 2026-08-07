@@ -980,19 +980,34 @@ function ansichtEinstellungen(){
    14 MP unlesbar ließ. Der Preis dafür ist klein — 1.600 statt 4.784 Bildtoken
    sind bei Opus 5 rund zwei Cent je Seite.</p>
 
-  ${E.ki.verbrauch.tokens_ein
-    ? `<div class=reihe style="margin-top:.9rem">
-        <div><div class=gross>${E.ki.verbrauch.dollar.toFixed(2)} $</div>
-         <div class=dim style=font-size:.82rem>bisher verbraucht</div></div>
-        <div><div class=gross>${E.ki.verbrauch.seiten}</div>
-         <div class=dim style=font-size:.82rem>Seiten gelesen</div></div>
-        ${E.ki.verbrauch.je_seite!=null
-          ? `<div><div class=gross>${E.ki.verbrauch.je_seite.toFixed(3)} $</div>
-             <div class=dim style=font-size:.82rem>je Seite, gemessen</div></div>`:''}
-       </div>`
+  ${(E.ki.verbrauch.wege||[]).length
+    ? `<table style="margin-top:.9rem">
+        <tr><th>Weg</th><th class=z>Seiten</th><th class=z>Token ein</th>
+            <th class=z>davon Zwischenspeicher</th><th class=z>Token aus</th>
+            <th class=z>Dauer</th><th class=z>je Seite</th><th class=z>gesamt</th></tr>
+        ${E.ki.verbrauch.wege.map(w=>`<tr>
+          <td>${w.quelle==='api'?'API':'Abonnement'}
+            <div class=dim style=font-size:.78rem>${w.bezahlt
+              ?'wird berechnet':'kostet nichts extra — was es über die API gekostet hätte'}</div></td>
+          <td class=z>${w.seiten}</td>
+          <td class=z>${w.tokens_ein.toLocaleString('de')}</td>
+          <td class=z>${(w.tokens_cache||0).toLocaleString('de')}</td>
+          <td class=z>${w.tokens_aus.toLocaleString('de')}</td>
+          <td class=z>${w.minuten!=null?w.minuten+' min':'—'}</td>
+          <td class=z>${w.je_seite!=null?w.je_seite.toFixed(3)+' $':'—'}</td>
+          <td class=z><b>${w.dollar.toFixed(2)} $</b></td></tr>`).join('')}
+       </table>
+       <p class=dim style="font-size:.86rem;margin:.6rem 0 0">
+        Beide Zeilen sind <b>gemessen</b>, nicht geschätzt: über die API aus
+        Token und Preisliste, über das Abonnement aus dem, was
+        <code>claude -p</code> selbst meldet. Der Zwischenspeicher ist der
+        Grund, warum eine zweite Seite viel weniger kostet als die erste —
+        Prompt und Bestand werden nur einmal bezahlt.</p>`
     : `<p class=dim style="font-size:.86rem;margin:.9rem 0 0">
-        Noch nichts über die API gelesen — sobald ein Lauf durch ist, steht
-        hier der <b>gemessene</b> Verbrauch statt einer Schätzung.</p>`}
+        Noch nichts gelesen — sobald ein Lauf durch ist, steht hier der
+        <b>gemessene</b> Verbrauch statt einer Schätzung. Auch der Weg über
+        das Abonnement wird beziffert: Er kostet nichts extra, aber die Zahl
+        beantwortet die Frage, ob sich das für andere lohnt.</p>`}
  </div>
 
  <h2>Beim Starten</h2>
