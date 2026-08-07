@@ -129,6 +129,35 @@ Verknüpfen braucht kein Lesen; gemessen an Sterbeeinträgen 1750–1807
 | ⬜ | Kaskaden für Ehe und Tod (die für Taufe steht) |
 | ⬜ | Bildausschnitt je Feld statt ganzem Zeilenstreifen |
 
+## Einblick
+
+Die Stand-Seite mit der Ampel — grün ist nur, was ein Beleg bestätigt:
+
+![Stand mit Ampel](doku/screenshots/stand.jpg)
+
+Das Lesen läuft rundenweise über Claude Code; beantwortete Seiten werden
+eingelesen, offene warten:
+
+![Lesen](doku/screenshots/lesen.jpg)
+
+Übergeben macht aus bestätigten Einträgen Personen und Familien — erst danach
+kann die nächste Tranche gegen sie ankern:
+
+![Übergeben](doku/screenshots/uebergeben.jpg)
+
+Die GEDCOM-Ausgabe zeigt den Leerlauftest an: ohne Änderungen ist die Ausgabe
+Byte für Byte die Vorlage:
+
+![Ausgeben](doku/screenshots/ausgeben.jpg)
+
+Kontextquellen und Aktkarten in den Einstellungen:
+
+![Einstellungen](doku/screenshots/einstellungen.jpg)
+
+Die Korrekturmaske — Bildstreifen, Ampel je Feld, Nachfragen am Eintrag —
+fehlt hier bewusst: Ihre Screenshots zeigen Kirchenbuch-Scans, und die dürfen
+nicht ins Repo (siehe [Rechtliches](#rechtliches)).
+
 ## Ein Sprachmodell ist Voraussetzung, nicht Zubehör
 
 Der ganze Sinn ist *Maschine liest zuerst, Mensch korrigiert*. Ohne das wäre
