@@ -78,7 +78,11 @@ def wandere(con, melde=None):
 
 def verbinde():
     DB.parent.mkdir(parents=True, exist_ok=True)
-    con = sqlite3.connect(DB)
+    # `timeout`: Mit mehreren Faeden kann ein Schreibvorgang auf einen
+    # anderen treffen. SQLite wirft dann sofort "database is locked" — mit
+    # Wartezeit versucht es stattdessen bis zu zehn Sekunden lang weiter,
+    # und das genuegt fuer alles, was diese Werkstatt tut.
+    con = sqlite3.connect(DB, timeout=10)
     con.row_factory = sqlite3.Row
     con.executescript(SCHEMA.read_text(encoding="utf-8"))
     wandere(con)
