@@ -272,6 +272,12 @@ TOD = [
       hinweis="„in der Stille“, „ohne Gesang“, „mit ganzer Leichenbegleitung“ "
               "— sagt oft mehr über den Fall als die Todesursache."),
     f("religion", None, "text", ziel="BURI.RELI", titel="Konfession"),
+    f("fam_reg", None, "text", ziel="_FAMREG",
+      titel="Seitenzahl des Familienregisters",
+      hinweis="Die letzte gedruckte Spalte des Formulars, meist eine blosse "
+              "Zahl. Sie verweist auf die Seite im Familienregister, wo "
+              "dieselbe Familie mit allen Kindern steht — der stärkste "
+              "Anker, den das Buch selbst mitliefert."),
     *ABSCHLUSS,
 ]
 
