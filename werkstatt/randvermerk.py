@@ -49,8 +49,13 @@ ANDERES = re.compile(
     r"\b(copul|getraut|verheirat|ehelich|conf(irm)?|firm|ausgewandert|"
     r"emigr|legitim)", re.IGNORECASE)
 
+# Ordnungszahlen werden im Kirchenbuch ausgeschrieben angehaengt: „4.te",
+# „2.ten", „21.sten". Ohne diese Gruppe faellt das Datum auf das blosse
+# Jahr zurueck — gemessen an „† 4.te Februar 1808", das als „1808" ankam.
+_ORDNUNG = r"(?:\s*\.?\s*(?:s?te[nrms]?|ste))?"
 _TAG_MONAT_JAHR = re.compile(
-    r"(\d{1,2})\s*\.?\s*([A-Za-zÄÖÜäöü]{3,12})\.?\s*(\d{4})?")
+    r"(\d{1,2})\s*\.?" + _ORDNUNG +
+    r"\s*([A-Za-zÄÖÜäöü]{3,12})\.?\s*(\d{4})?")
 
 # 7ber, 8ber, 9ber, Xber — die alten Zählmonate. Sie stammen aus dem
 # römischen Jahr, das im März begann: September ist der siebte. In

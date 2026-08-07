@@ -237,10 +237,24 @@ def speichere(con, art, pfad, ergebnis):
         for name, f in (e.get("felder") or {}).items():
             if not isinstance(f, dict):
                 f = {"wert": f}
+            # Wie in runde.speichere(): eine zweite Lesung ersetzt die
+            # erste, aber nie eine menschliche Korrektur.
             con.execute(
-                "INSERT OR IGNORE INTO feld "
+                "INSERT INTO feld "
                 "(eintrag_id,name,gelesen,kb_form,zuversicht,beleg,reihe) "
-                "VALUES (?,?,?,?,?,?,?)",
+                "VALUES (?,?,?,?,?,?,?) "
+                "ON CONFLICT(eintrag_id, name) DO UPDATE SET "
+                " gelesen=excluded.gelesen, kb_form=excluded.kb_form, "
+                " zuversicht=excluded.zuversicht, beleg=excluded.beleg, "
+                " reihe=excluded.reihe "
+                # Nicht `entscheidung IS NULL` pruefen: Die Spalte steht per
+                # Vorgabe auf 'offen' und wird vom Abgleich gesetzt, ist
+                # also nie leer — die Bedingung blockierte jede
+                # Aktualisierung. Der ehrliche Marker fuer Menschenarbeit
+                # ist `korrigiert` und der bestaetigte Eintrag.
+                "WHERE feld.korrigiert IS NULL AND EXISTS ("
+                "  SELECT 1 FROM eintrag e WHERE e.id=feld.eintrag_id "
+                "  AND e.status <> 'bestaetigt')",
                 (eid, name, f.get("wert"), f.get("kb"), f.get("zuversicht"),
                  f.get("notiz"), reihen.get(name, 99)))
             n_f += 1

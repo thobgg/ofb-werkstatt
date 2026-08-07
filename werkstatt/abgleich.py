@@ -205,8 +205,16 @@ def _randvermerk_auswerten(con, e):
     einem anderen, sagt allein das Bild.
     """
     fid_r, text = _feld(con, e["id"], "randvermerk")
-    fid_s, schon = _feld(con, e["id"], "sterbe_datum")
-    if schon or not text:
+    if not text:
+        return
+    # Nur eine eigene Eingabe ist unantastbar. Ein frueher abgeleiteter
+    # Wert muss der Quelle folgen: Nach einer zweiten Lesung stand im
+    # Randvermerk „4. Februar" und im Sterbedatum weiter „11 FEB" — zwei
+    # Angaben im selben Eintrag, die einander widersprachen.
+    r = con.execute("SELECT id, korrigiert FROM feld WHERE eintrag_id=? "
+                    "AND name='sterbe_datum'", (e["id"],)).fetchone()
+    fid_s = r["id"] if r else None
+    if r and r["korrigiert"] is not None:
         return
     d = randvermerk.sterbedatum(text, e["jahr"])
     if not d:
