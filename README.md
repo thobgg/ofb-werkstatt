@@ -230,6 +230,9 @@ in der Datei.
 Scans von Archion, Ancestry und ähnlichen Diensten **dürfen nicht
 weiterverbreitet werden**. `bilder/` und `daten/` sind deshalb von der
 Versionsverwaltung ausgenommen und gehören in kein öffentliches Repo.
+Einzelne Ausschnitte mit Quellenangabe — wie der Bildstreifen oben im
+Einblick — sind von den Archion-Bedingungen gedeckt; die Regel gilt den
+Beständen, nicht dem einzelnen Beleg.
 
 ## Sprache
 
