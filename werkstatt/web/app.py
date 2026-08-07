@@ -25,7 +25,7 @@ import json
 import re
 import sqlite3
 import urllib.parse
-from http.server import BaseHTTPRequestHandler, HTTPServer
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 from .seite import SEITE
@@ -42,7 +42,7 @@ DB = ROOT / "daten" / "erfassung.sqlite"
 
 
 def verbinde():
-    con = sqlite3.connect(DB)
+    con = sqlite3.connect(DB, timeout=10)
     con.row_factory = sqlite3.Row
     return con
 
@@ -799,7 +799,17 @@ def main():
     if not DB.exists():
         print("daten/erfassung.sqlite fehlt — erst python3 -m werkstatt.db --init")
         return
-    srv = HTTPServer(("127.0.0.1", a.port), Handler)
+    # Threading, damit ein langsamer Aufruf nicht die ganze Oberflaeche
+    # anhaelt. Gemessen ist das Laden der Bildstreifen *nicht* das Problem
+    # — 20 Streifen brauchen ueber die Loopback-Schnittstelle 20 ms, ob
+    # nacheinander oder parallel. Es geht um die wenigen Aufrufe, die
+    # wirklich dauern: das erste Verkleinern einer 24-MP-Seite (0,4 s) und
+    # der GEDCOM-Probelauf. Waehrend die liefen, stand alles still.
+    #
+    # Jede Anfrage oeffnet ihre eigene Datenbankverbindung, deshalb
+    # vertraegt sich das; gegen gleichzeitige Schreibvorgaenge steht die
+    # Wartezeit in db.verbinde().
+    srv = ThreadingHTTPServer(("127.0.0.1", a.port), Handler)
     print(f"Werkstatt läuft:  http://127.0.0.1:{a.port}    (Strg-C beendet)")
     try:
         srv.serve_forever()
