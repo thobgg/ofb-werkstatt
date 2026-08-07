@@ -167,10 +167,31 @@ def speichere(con, art, bild, ergebnis, runde_id=None, hid=None):
         for name, f in (e.get("felder") or {}).items():
             if not isinstance(f, dict):
                 f = {"wert": f}
+            # Eine zweite Lesung derselben Seite muss die erste ersetzen.
+            # `INSERT OR IGNORE` liess sie stillschweigend fallen: Die Seite
+            # wurde neu gelesen, in der Maske stand weiter die alte Fassung,
+            # und die neu hinzugekommenen Felder — Taufdatum, Paten,
+            # Volltext — fehlten schlicht. Aufgefallen ist es erst, weil ein
+            # Mensch das Taufdatum vermisste.
+            #
+            # Was ein Mensch angefasst hat, bleibt: `korrigiert` und die
+            # Entscheidung ueberschreibt keine Lesung.
             con.execute(
-                "INSERT OR IGNORE INTO feld "
+                "INSERT INTO feld "
                 "(eintrag_id, name, rolle, gelesen, kb_form, zuversicht, "
-                " beleg, reihe) VALUES (?,?,?,?,?,?,?,?)",
+                " beleg, reihe) VALUES (?,?,?,?,?,?,?,?) "
+                "ON CONFLICT(eintrag_id, name) DO UPDATE SET "
+                " gelesen=excluded.gelesen, kb_form=excluded.kb_form, "
+                " zuversicht=excluded.zuversicht, beleg=excluded.beleg, "
+                " reihe=excluded.reihe "
+                # Nicht `entscheidung IS NULL` pruefen: Die Spalte steht per
+                # Vorgabe auf 'offen' und wird vom Abgleich gesetzt, ist
+                # also nie leer — die Bedingung blockierte jede
+                # Aktualisierung. Der ehrliche Marker fuer Menschenarbeit
+                # ist `korrigiert` und der bestaetigte Eintrag.
+                "WHERE feld.korrigiert IS NULL AND EXISTS ("
+                "  SELECT 1 FROM eintrag e WHERE e.id=feld.eintrag_id "
+                "  AND e.status <> 'bestaetigt')",
                 (eid, name, _rolle(art, name), f.get("wert"), f.get("kb"),
                  f.get("zuversicht"), f.get("notiz"), reihen.get(name, 99)))
             n_f += 1
