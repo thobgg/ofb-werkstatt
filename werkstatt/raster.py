@@ -295,3 +295,45 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+def paarung(v, tol=None):
+    """Wie viele Zeilenlinien der linken Seite haben rechts eine Entsprechung.
+
+    Gedacht war das als Entscheidung: Läuft ein Eintrag über den Bund oder
+    steht jede Buchseite für sich? Davon hängt ab, wie breit ein Streifen
+    sein muss — beim Taufregister 1808 steht links Name und Eltern, rechts
+    Tauftag, Taufender und Paten.
+
+    **Als Entscheidung taugt die Zahl nicht.** Gemessen an drei Registern:
+
+        Taufe 00359   Linien [1, 6]   Paarung 1,00
+        Taufe 00362   Linien [7, 6]   Paarung 0,83
+        Ehe   00918   Linien [8, 5]   Paarung 1,00
+        Ehe   00917   Linien [4, 5]   Paarung 0,25   ← läuft trotzdem durch
+        Tod   00018   Linien [9, 4]   Paarung 1,00
+
+    Auf 00917 findet die Linienerkennung links vier und rechts fünf Linien,
+    die einander nicht entsprechen — ungleich hohe Einträge und die
+    Buchkrümmung reichen dafür. Das Formular läuft ersichtlich durch.
+
+    Deshalb schaltet nichts automatisch um. Der Streifen geht **immer**
+    über beide Hälften, denn die beiden Fehler kosten nicht gleich viel:
+    Fälschlich getrennt heißt, die Hälfte der Felder ist nie zu sehen und
+    niemand kann prüfen, was in der Maske steht. Fälschlich verbunden heißt,
+    der Streifen ist doppelt so breit wie nötig.
+
+    Die Zahl bleibt als Auskunft — sie zeigt, wie sicher das Zeilenraster
+    einer Seite sitzt.
+    """
+    s = v.get("seiten") or []
+    if len(s) < 2:
+        return 1.0
+    sk = v.get("skala") or 1
+    tol = tol or max(4 * sk, 60)
+    links = sorted(s[0]["zeilen"])
+    rechts = sorted(s[1]["zeilen"])
+    if not links or not rechts:
+        return 0.0
+    paare = sum(1 for y in links if any(abs(y - x) <= tol for x in rechts))
+    return round(paare / min(len(links), len(rechts)), 2)
