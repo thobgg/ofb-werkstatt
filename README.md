@@ -150,7 +150,16 @@ Byte für Byte die Vorlage:
 
 ![Ausgeben](doku/screenshots/ausgeben.jpg)
 
-Kontextquellen und Aktkarten in den Einstellungen:
+Die Seite **Formular** liest, was das Buch selbst über sich sagt: Aus den
+gedruckten Spaltenköpfen jeder fünften Seite entstehen die Formularperioden,
+darunter steht die Aktkarte mit den Feldern, die diese Registerart führt. Die
+Schreiber fallen gratis aus den erfassten Einträgen — der taufende Geistliche
+steht ja als eigene Spalte im Formular:
+
+![Formular](doku/screenshots/formular.jpg)
+
+Die Einstellungen liegen hinter fünf Reitern; hier die Kontextquellen mit
+ihrem Rang — nur was *bestätigen* darf, macht grün:
 
 ![Einstellungen](doku/screenshots/einstellungen.jpg)
 
