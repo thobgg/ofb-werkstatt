@@ -218,15 +218,22 @@ function karte(e,k){
    ${datumsfeld(e,'trauung_datum','kop.')}
    ${datumsfeld(e,'sterbe_datum','gest.')}
   </div>
-  <div class=mehr><details><summary>alle Felder — auch die leeren</summary>
-   ${e.felder.filter(f=>!f.rolle&&!/_datum$/.test(f.name)).map(f=>`
-    <div class=zeile><label>${esc(f.name.replace(/_/g,' '))}</label>
-     <input data-feld="${esc(f.name)}" value="${esc(f.wert||'')}"
-      oninput="this.classList.add('geaendert')">
-     <input data-kb="${esc(f.name)}" value="${esc(f.kb_form||'')}"
-      placeholder="Kirchenbuchform" oninput="this.classList.add('geaendert')">
-    </div>`).join('')}
-  </details></div>
+  <div class=mehr>
+   <div class=nachtrag>
+    ${zeilen(e).map(f=>zeileFeld(f)).join('')}
+   </div>
+   ${leere(e).length?`<div class=reihe style="margin-top:.3rem">
+     <button onclick="feldDazu(this)" title="ein Feld nachtragen">+ Feld</button>
+     <select class=feldwahl onchange="feldDazu(this)"
+       style="display:none;background:#12141a;border:1px solid #333a45;
+              color:#e6e8ec;border-radius:6px;padding:.3rem .5rem;font:inherit">
+      <option value="">— welches Feld? —</option>
+      ${leere(e).map(f=>`<option value="${esc(f.name)}">${
+        esc(f.name.replace(/_/g,' '))}</option>`).join('')}
+     </select>
+     <span class=zaehler>${leere(e).length} Felder sind leer</span>
+    </div>`:''}
+  </div>
   <div class=gespraech data-eintrag=${e.id}>
    <div class=verlauf></div>
    <div class=reihe>
@@ -332,6 +339,40 @@ function ganzeSeite(k){
 }
 
 function feld(e,n){return e.felder.find(f=>f.name===n)||{}}
+
+// Welche Felder in den Nachtragsblock gehoeren: alles, was kein
+// Personenfeld und kein Datum ist. Gefuellte immer, leere erst wenn der
+// Bearbeiter sie ueber "+ Feld" holt — sonst stuenden 16 leere Zeilen da,
+// durch die niemand scrollen will.
+function passt(f){ return !f.rolle && !/_datum$/.test(f.name); }
+function zeilen(e){ return e.felder.filter(f=>passt(f) && (f.wert||f.kb_form||f.offen)); }
+function leere(e){ return e.felder.filter(f=>passt(f) && !f.wert && !f.kb_form && !f.offen); }
+
+function zeileFeld(f){
+ return `<div class=zeile><label>${esc(f.name.replace(/_/g,' '))}</label>
+   <input data-feld="${esc(f.name)}" value="${esc(f.wert||'')}"
+    oninput="this.classList.add('geaendert')">
+   <input data-kb="${esc(f.name)}" value="${esc(f.kb_form||'')}"
+    placeholder="Kirchenbuchform" oninput="this.classList.add('geaendert')">
+  </div>`;
+}
+
+// Der Knopf holt genau ein Feld dazu — kein Aufklappen von 35 Zeilen.
+function feldDazu(el){
+ const box=el.closest('.mehr');
+ const wahl=box.querySelector('.feldwahl');
+ if(el.tagName==='BUTTON'){ wahl.style.display=''; wahl.focus(); return; }
+ const n=wahl.value; if(!n) return;
+ const e=daten[liste?[...document.querySelectorAll('.eintrag')]
+   .indexOf(box.closest('.eintrag')):i];
+ const f=e.felder.find(x=>x.name===n); if(!f) return;
+ f.offen=true;                       // ab jetzt sichtbar, auch leer
+ box.querySelector('.nachtrag').insertAdjacentHTML('beforeend', zeileFeld(f));
+ wahl.querySelector(`option[value="${n}"]`).remove();
+ wahl.value='';
+ const neu=box.querySelector(`.nachtrag input[data-feld="${n}"]`);
+ if(neu) neu.focus();
+}
 
 function zeilePerson(e,f){
  const v=f.entscheidung;
