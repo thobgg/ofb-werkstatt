@@ -54,7 +54,13 @@ def baender(bild, anzahl):
     v = raster.vorschlag(str(bild))
     if not v["seiten"]:
         return [], None, "kein Papier erkannt"
-    block = v["seiten"][0]
+    # Über **beide** Buchseiten, nicht nur über die linke. Ein Eintrag
+    # dieses Formulars läuft über den Bund hinweg: links Name und Eltern,
+    # rechts Geburtszeit, Tauftag, Taufender und Paten. Der Streifen zeigte
+    # bisher nur die linke Hälfte — in der Maske stand ein Taufdatum, das
+    # im Bild nicht zu sehen war, und niemand konnte es prüfen.
+    block = dict(v["seiten"][0])
+    block["x1"] = max(s["x1"] for s in v["seiten"])
     z = sorted(v["zeilen"])
 
     if len(z) - 1 == anzahl:
