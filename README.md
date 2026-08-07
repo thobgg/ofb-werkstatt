@@ -41,9 +41,10 @@ wie weit er gekommen ist.
 
 ## Wie es arbeitet
 
-**Nah an der Quelle erfassen.** Eine Zeile je Registereintrag, so wie es
-dasteht; die GEDCOM-Ausgabe wird daraus abgeleitet. So lässt sich eine
-Zuordnung korrigieren, ohne die Lesung anzufassen — und umgekehrt.
+**Nah an der Quelle erfassen, nicht nah an GEDCOM.** Eine Zeile je
+Registereintrag, so wie es dasteht; die GEDCOM-Ausgabe wird daraus
+abgeleitet. So lässt sich eine Zuordnung korrigieren, ohne die Lesung
+anzufassen — und umgekehrt.
 
 **Der Ausgangsbestand bleibt unangetastet.** Jede Ergänzung und jede
 Korrektur ist ein festgehaltener Vorgang mit seinem Beleg; die Ausgabedatei
