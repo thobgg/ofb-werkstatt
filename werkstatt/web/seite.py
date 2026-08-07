@@ -218,7 +218,7 @@ function karte(e,k){
    ${datumsfeld(e,'trauung_datum','kop.')}
    ${datumsfeld(e,'sterbe_datum','gest.')}
   </div>
-  <div class=mehr><details><summary>alle Felder</summary>
+  <div class=mehr><details><summary>alle Felder — auch die leeren</summary>
    ${e.felder.filter(f=>!f.rolle&&!/_datum$/.test(f.name)).map(f=>`
     <div class=zeile><label>${esc(f.name.replace(/_/g,' '))}</label>
      <input data-feld="${esc(f.name)}" value="${esc(f.wert||'')}"
