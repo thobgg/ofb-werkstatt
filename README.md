@@ -183,12 +183,18 @@ aber nicht der Grund, warum es das Projekt gibt.
 
 ## Ausprobieren
 
-```sh
-python3 start.py          # → http://127.0.0.1:8765
-```
+Läuft unter Linux, Windows und macOS — gebraucht wird nur Python (ab 3.10),
+alles Weitere holt das Startskript selbst:
 
-Ohne Fremdbibliotheken außer Pillow; `http.server` aus der Standardbibliothek
-genügt.
+| | |
+|---|---|
+| Windows | `OFB-Werkstatt starten (Windows).bat` doppelklicken — prüft der Reihe nach, was fehlt, und sagt es im Klartext. Ersteinrichtung Schritt für Schritt: `doku/windows-test.md` |
+| Linux / macOS | `OFB-Werkstatt starten (Linux+Mac).command` anklicken, oder im Terminal `python3 start.py` |
+
+Beides endet auf `http://127.0.0.1:8765` im Browser.
+
+Ohne Fremdbibliotheken außer Pillow (wird bei Bedarf nachinstalliert);
+`http.server` aus der Standardbibliothek genügt.
 
 ⚠️ **Die mitgelieferte Testquelle läuft derzeit nur auf dem Rechner des
 Autors** — sie sucht die 22 Piloteinträge in einem Nachbarverzeichnis, das im
