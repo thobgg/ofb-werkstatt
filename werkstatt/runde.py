@@ -61,7 +61,12 @@ def offene_bilder(con, register, quelle="api"):
         # 'api' und 'datei' lesen beide aus dem Bilderordner — der Unterschied
         # ist nur, wer die Seite anschaut.
         alle = [f.stem for f in seiten.bilder(einstellungen.ordner(con, register))]
-    return [b for b in alle if b not in schon]
+    # Bestaetigte Dubletten gar nicht erst einplanen. Zwei Aufnahmen
+    # derselben Buchoeffnung kosten sonst zweimal und liefern jeden
+    # Eintrag doppelt in den Bestand — gemessen an 00359/00360.
+    from . import dubletten
+    weg = dubletten.uebersprungene(con)
+    return [b for b in alle if b not in schon and b not in weg]
 
 
 def offene_runde(con):
