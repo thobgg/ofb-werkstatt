@@ -54,11 +54,18 @@ def baender(bild, anzahl):
     v = raster.vorschlag(str(bild))
     if not v["seiten"]:
         return [], None, "kein Papier erkannt"
-    # Über **beide** Buchseiten, nicht nur über die linke. Ein Eintrag
-    # dieses Formulars läuft über den Bund hinweg: links Name und Eltern,
-    # rechts Geburtszeit, Tauftag, Taufender und Paten. Der Streifen zeigte
-    # bisher nur die linke Hälfte — in der Maske stand ein Taufdatum, das
-    # im Bild nicht zu sehen war, und niemand konnte es prüfen.
+    # Über **beide** Buchseiten, nicht nur über die linke, und zwar in
+    # jeder Aktart. Ein Eintrag dieser Formulare läuft über den Bund:
+    # Taufe links Name und Eltern, rechts Tauftag, Taufender und Paten;
+    # Ehe links Namen, Stand und Eltern, rechts Geburtsdaten,
+    # Proklamation, Dispensationen. Der Streifen zeigte bisher nur die
+    # linke Hälfte — in der Maske stand ein Taufdatum, das im Bild nicht
+    # zu sehen war, und niemand konnte es prüfen.
+    #
+    # Ob ein Formular wirklich durchläuft, wollte ich messen; die
+    # Linienpaarung trägt das Urteil nicht (siehe raster.paarung). Also
+    # immer verbinden: Fälschlich getrennt kostet die halben Felder,
+    # fälschlich verbunden einen doppelt so breiten Streifen.
     block = dict(v["seiten"][0])
     block["x1"] = max(s["x1"] for s in v["seiten"])
     z = sorted(v["zeilen"])
