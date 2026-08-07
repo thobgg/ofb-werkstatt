@@ -316,6 +316,16 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json({"fehler": f"{type(e).__name__}: {e}"}, 400)
             # Die Bildordner anlegen, damit der erste Blick nicht auf
             # "Ordner fehlt" faellt — leer ist kein Fehler, fehlend schon.
+            # Die abgewaehlten Felder gleich beim Anlegen festhalten. Wer
+            # sie erst nach der ersten Runde abschaltet, hat sie schon
+            # gelesen und muss die Werte einzeln wieder loswerden.
+            con = db.verbinde()
+            try:
+                for art, namen in (d.get("felder_aus") or {}).items():
+                    for n in namen:
+                        katalog.setze(con, art, n, aktiv=0)
+            finally:
+                con.close()
             for r in d.get("register") or []:
                 o = Path((r.get("ordner") or "").strip()).expanduser()
                 if r.get("ordner"):
@@ -372,6 +382,14 @@ class Handler(BaseHTTPRequestHandler):
                               **{k: v for k, v in d.items()
                                  if k not in ("art", "name")})
                 return self._json(dict(ok=True))
+            finally:
+                con.close()
+        if pfad == "/api/feld-leeren":
+            d = self._rumpf()
+            con = db.verbinde()
+            try:
+                n = katalog.leeren(con, d.get("art"), d.get("name"))
+                return self._json(dict(ok=True, geloescht=n))
             finally:
                 con.close()
         if pfad == "/api/feld-weg":
@@ -533,6 +551,7 @@ class Handler(BaseHTTPRequestHandler):
                 datenbank=str(DB.relative_to(ROOT)),
                 eingerichtet=einrichtung.eingerichtet(),
                 einrichtung=einrichtung.vorschlag(),
+                felder=einrichtung.feldvorschlag(),
                 dubletten=dubletten.gemeldet(con),
                 perioden=perioden.gemeldet(con),
                 haende={a: perioden.haende(con, a)
@@ -616,6 +635,7 @@ class Handler(BaseHTTPRequestHandler):
                 quellen_fehlend=fehlend,
                 eingerichtet=einrichtung.eingerichtet(),
                 einrichtung=einrichtung.vorschlag(),
+                felder=einrichtung.feldvorschlag(),
                 dubletten=dubletten.gemeldet(con),
                 perioden=perioden.gemeldet(con),
                 haende={a: perioden.haende(con, a)

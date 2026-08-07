@@ -79,6 +79,35 @@ def schreibe(gemeinde, register, ort=None, religion=None):
     return text
 
 
+# Was viele Forscher nicht erfassen wollen, ohne dass es falsch waere.
+# Bewusst nicht abgeschaltet, sondern nur vorgeschlagen: Wer Paten sammelt,
+# sammelt sie oft gerade wegen der Verwandtschaftsgeflechte.
+ENTBEHRLICH = {
+    "taufe": ["paten", "taufender", "religion", "vater_religion",
+              "mutter_religion", "geburt_zeit"],
+    "ehe": ["proklamation", "zeugen", "trauender", "textus", "religion",
+            "braeutigam_religion", "braut_religion"],
+    "tod": ["beerdigender", "leichenpredigt", "begraebnisart", "religion",
+            "verstorbener_religion", "sterbe_zeit"],
+}
+
+
+def feldvorschlag():
+    """Je Aktart die Felder mit dem Vermerk, ob sie meist gebraucht werden.
+
+    Damit die Einrichtung fragen kann, was erfasst werden soll — statt dass
+    der Bearbeiter es nach der ersten Runde in der Aktkarte nachholt und
+    die schon gelesenen Werte wieder loswerden muss.
+    """
+    from . import katalog
+    z = {}
+    for art in katalog.KATALOG:
+        z[art] = [dict(name=x.name, titel=x.titel, rolle=x.rolle,
+                       vorgeschlagen=x.name not in ENTBEHRLICH.get(art, []))
+                  for x in katalog.felder(art)]
+    return z
+
+
 def vorschlag():
     """Was die Einrichtung anbietet, wenn sie nichts weiß."""
     return [dict(art=art,
