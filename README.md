@@ -155,12 +155,13 @@ Kontextquellen und Aktkarten in den Einstellungen:
 ![Einstellungen](doku/screenshots/einstellungen.jpg)
 
 Die Korrekturmaske, ein Eintrag zur Zeit: oben der Bildstreifen des
-Originaleintrags (hier unkenntlich gemacht — der Scan darf nicht ins Repo,
-siehe [Rechtliches](#rechtliches)), darunter was der Abgleich gesichert hat,
-was gelesen wurde, und die Felder, die eine Entscheidung brauchen. Das
-Nachfragen-Feld stellt Fragen direkt am Eintrag („steht da Möß oder Wöß?"):
+Originaleintrags, darunter was der Abgleich gesichert hat, was gelesen wurde,
+und die Felder, die eine Entscheidung brauchen. Das Nachfragen-Feld stellt
+Fragen direkt am Eintrag („steht da Möß oder Wöß?"):
 
 ![Korrigieren](doku/screenshots/korrigieren.jpg)
+
+*Bildstreifen: Taufregister Haberschlacht 1808, Digitalisat via Archion.*
 
 ## Ein Sprachmodell ist Voraussetzung, nicht Zubehör
 
