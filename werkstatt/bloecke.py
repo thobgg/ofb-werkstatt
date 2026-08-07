@@ -57,7 +57,7 @@ def _speichern(im, kasten, ziel, guete=88):
     return dict(datei=str(ziel), x=x0, y=y0, w=x1 - x0, h=y1 - y0)
 
 
-def schneide(pfad, ziel_ordner=None, still=False):
+def schneide(pfad, ziel_ordner=None, still=False, nur_kopf=False):
     """Eine Seite in Blöcke schneiden. Gibt die Beschreibung zurück.
 
     Ohne erkannte Zeilenlinien wird nichts geschnitten — dann ist der
@@ -101,6 +101,14 @@ def schneide(pfad, ziel_ordner=None, still=False):
                        ziel / f"kopf_{name}.jpg")
         if b:
             z["kopf"].append(dict(b, seite=name))
+
+    # Beim Suchen der Formularperioden zaehlt nur der gedruckte Kopf. Die
+    # Eintragszeilen dann nicht zu schneiden spart bei 16 Stichproben je
+    # Register rund hundert ueberfluessige Bilddateien.
+    if nur_kopf:
+        (ziel / "raster.json").write_text(
+            json.dumps(z, ensure_ascii=False, indent=1), encoding="utf-8")
+        return z
 
     # Je Zeile eine Reihe von Blöcken.
     for i in range(len(zeilen) - 1):

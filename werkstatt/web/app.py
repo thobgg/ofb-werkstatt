@@ -31,7 +31,7 @@ from pathlib import Path
 from .seite import SEITE
 from .start import STARTSEITE
 from .. import (abgleich, ausgabe, db, einrichtung, einstellungen,
-                dubletten, gespraech, katalog,
+                dubletten, gespraech, katalog, perioden,
                 import_gedcom,
                 import_wortschatz, konfig, lesen,
                 runde as _runde,
@@ -81,7 +81,7 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         pfad = urllib.parse.urlparse(self.path).path
         if pfad in ("/", "/index.html", "/lesen", "/uebergabe", "/ausgabe",
-                    "/einstellungen"):
+                    "/formular", "/einstellungen"):
             return self._send(200, "text/html; charset=utf-8", STARTSEITE)
         if pfad == "/api/gespraech":
             con = db.verbinde()
@@ -322,6 +322,28 @@ class Handler(BaseHTTPRequestHandler):
                     (o if o.is_absolute() else ROOT / o).mkdir(
                         parents=True, exist_ok=True)
             return self._json(dict(ok=True))
+        if pfad == "/api/perioden":
+            d = self._rumpf()
+            con = db.verbinde()
+            try:
+                # Das Modell liest nur die gedruckten Koepfe, nicht die
+                # Seiten. Trotzdem im Hintergrund, weil ein Register bis zu
+                # 17 Stichproben hat und der Browser sonst wartet.
+                import threading
+                art = d.get("register")
+
+                def arbeite():
+                    c = db.verbinde()
+                    try:
+                        perioden.pruefe(c, art, still=True)
+                    except Exception:
+                        pass
+                    finally:
+                        c.close()
+                threading.Thread(target=arbeite, daemon=True).start()
+                return self._json(dict(ok=True, laeuft=art))
+            finally:
+                con.close()
         if pfad == "/api/dubletten":
             d = self._rumpf()
             con = db.verbinde()
@@ -512,6 +534,9 @@ class Handler(BaseHTTPRequestHandler):
                 eingerichtet=einrichtung.eingerichtet(),
                 einrichtung=einrichtung.vorschlag(),
                 dubletten=dubletten.gemeldet(con),
+                perioden=perioden.gemeldet(con),
+                haende={a: perioden.haende(con, a)
+                        for a in konfig.register()},
                 testdaten=len(testdaten.seiten()),
                 pdf_werkzeug=bool(seiten.pdf_werkzeug()),
             )
@@ -592,6 +617,9 @@ class Handler(BaseHTTPRequestHandler):
                 eingerichtet=einrichtung.eingerichtet(),
                 einrichtung=einrichtung.vorschlag(),
                 dubletten=dubletten.gemeldet(con),
+                perioden=perioden.gemeldet(con),
+                haende={a: perioden.haende(con, a)
+                        for a in konfig.register()},
                 testdaten=len(testdaten.seiten()),
                 runde=r,
                 vorschlag=v,

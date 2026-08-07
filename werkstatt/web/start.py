@@ -96,6 +96,7 @@ label input[type=radio]{margin-right:.4rem}
  <a href="/korrektur" data-p="/korrektur">Korrigieren</a>
  <a href="/uebergabe" data-p="/uebergabe">Übergeben</a>
  <a href="/ausgabe" data-p="/ausgabe">Ausgeben</a>
+ <a href="/formular" data-p="/formular" title="Aktkarten und Formularperioden">Formular</a>
  <span style=flex:1></span><span class=dim id=gem></span>
  <a href="/einstellungen" data-p="/einstellungen" title="Einstellungen">⚙</a>
  <a href="#" onclick="beenden();return false" title="Werkstatt beenden"
@@ -136,7 +137,8 @@ async function laden(){
  app.innerHTML = P==='/lesen' ? ansichtLesen()
                : P==='/uebergabe' ? ansichtUebergabe()
                : P==='/ausgabe' ? ansichtAusgabe()
-               : P==='/einstellungen' ? '<div class=leer>lade…</div>'
+               : P==='/einstellungen' || P==='/formular'
+                 ? '<div class=leer>lade…</div>'
                : ansichtStand();
  if(P==='/lesen' && S.runde &&
     (S.runde.stand==='liest' ||
@@ -642,8 +644,20 @@ async function schreiben(art){
 let E=null;
 async function einstellungenHolen(){
  E=await (await fetch('/api/einstellungen')).json();
- document.getElementById('app').innerHTML=ansichtEinstellungen();
+ document.getElementById('app').innerHTML =
+   P==='/formular' ? ansichtFormular() : ansichtEinstellungen();
  quelleArt();
+}
+
+// ------------------------------------------------------------- Formular
+// Aktkarten und Formularperioden sind keine Einstellungen — man schaut
+// hin, wenn ein Feld fehlt oder das Buch das Formular wechselt. Deshalb
+// eine eigene Seite statt zweier weiterer Abschnitte im Zahnrad, das
+// zuletzt zehn davon hatte.
+function ansichtFormular(){
+ return `
+ ${periodenKarte()}
+ ${aktkarten()}`;
 }
 
 function anmeldeblock(c){
@@ -799,6 +813,9 @@ async function quelleWeg(id,btn){
 
 // ------------------------------------------------------------- Aktkarten
 let karteArt='taufe';
+// 35 Felder mal drei Aktarten sind 105 Tabellenzeilen. Gezeigt wird, was
+// dieses Buch fuehrt; der ganze Vorrat auf Knopfdruck.
+let vorratZeigen=false;
 
 const AMTFARBE={offiziell:'#8fe3b4', verbreitet:'#e0c98a',
                 hauseigen:'#e0a06c', unbekannt:'#e06c5f'};
@@ -807,6 +824,40 @@ function tagMarke(ziel,amt){
  if(!ziel) return '<span class=dim>—</span>';
  return `<code style="color:${AMTFARBE[amt]||'#c3c9d4'}"
    title="${esc((E.tag_amt||{})[amt]||'')}">${esc(ziel)}</code>`;
+}
+
+function periodenKarte(){
+ return `
+ <h2>Formularperioden — was das Buch selbst sagt</h2>
+ <div class=karte>
+  <p class=dim style="font-size:.86rem;margin:0 0 .7rem">
+   Ein Kirchenbuch wechselt im Lauf der Jahrzehnte das gedruckte Formular.
+   Gelesen wird dafür nicht die Seite, sondern nur der <b>gedruckte Kopf</b>
+   jeder fünften Seite — daraus entstehen die Abschnitte. Geometrisch geht
+   das nicht: Die senkrechte Linienerkennung schwankt auf demselben
+   Formular zwischen 2 und 11 Linien.</p>
+  ${Object.keys(E.aktkarten||{}).map(a=>{
+    const ps=(S&&S.perioden||[]).filter(p=>p.register===a);
+    const hs=((S&&S.haende)||{})[a]||[];
+    return `<div style="margin-bottom:.9rem">
+     <div class=reihe>
+      <b>${esc(a)}</b>
+      <button onclick="periodenPruefen('${esc(a)}',this)">Köpfe lesen</button>
+      <span class=dim style="font-size:.84rem">${ps.length
+        ? ps.length+' Periode'+(ps.length>1?'n':'') : 'noch nicht geprüft'}</span>
+     </div>
+     ${ps.map(p=>`<div class=dim style="font-size:.85rem;margin:.35rem 0 0 .6rem">
+       <code>${esc(p.von_bild)}</code> – <code>${esc(p.bis_bild)}</code>
+       (${p.seiten} Seiten) · ${p.spalten.length} Spalten
+       <div style="margin-left:.6rem">${p.spalten.map(esc).join(' | ')}</div>
+      </div>`).join('')}
+     ${hs.length?`<div class=dim style="font-size:.85rem;margin:.35rem 0 0 .6rem">
+       <b>Schreiber</b> (aus den erfassten Einträgen, kostet nichts):
+       ${hs.map(h=>`${esc(h.wer)} <span style=opacity:.7>(${h.n})</span>`).join(' · ')}
+      </div>`:''}
+    </div>`;}).join('')}
+  <div id=perhinweis class=dim style="font-size:.86rem"></div>
+ </div>`;
 }
 
 function aktkarten(){
@@ -826,6 +877,8 @@ function aktkarten(){
    <span style=flex:1></span>
    <span class=dim style="font-size:.84rem">
     ${felder.filter(f=>f.aktiv).length} aktiv, ${felder.length} im Vorrat</span>
+   <button onclick="vorratZeigen=!vorratZeigen;neuZeichnen()">${
+     vorratZeigen?'nur aktive':'ganzen Vorrat'}</button>
   </div>
 
   <p class=dim style="font-size:.86rem;margin:0 0 .8rem">
@@ -847,7 +900,7 @@ function aktkarten(){
   <table>
    <tr><th></th><th>Feld</th><th>Rolle</th><th>Ziel kanonisch</th>
        <th>Ziel Kirchenbuchform</th><th></th></tr>
-   ${felder.map(f=>`<tr style="${f.aktiv?'':'opacity:.45'}">
+   ${(vorratZeigen?felder:felder.filter(f=>f.aktiv)).map(f=>`<tr style="${f.aktiv?'':'opacity:.45'}">
      <td><input type=checkbox ${f.aktiv?'checked':''}
        onchange="feldSchalten('${esc(f.name)}',this.checked)"></td>
      <td><code>${esc(f.name)}</code>
@@ -884,6 +937,15 @@ function aktkarten(){
   beim Wechsel zu einem anderen Programm geht er still verloren.
   Deshalb steht der Wortlaut zusätzlich im <code>volltext</code>: was kein
   Programm versteht, ist wenigstens lesbar geblieben.</p>`;
+}
+
+async function periodenPruefen(reg,btn){
+ btn.disabled=true;
+ document.getElementById('perhinweis').textContent =
+  `liest die Formularköpfe von ${reg} — das dauert ein paar Minuten, `
+  +'die Seite kann inzwischen zu.';
+ await fetch('/api/perioden',{method:'POST',
+   body:JSON.stringify({register:reg})});
 }
 
 async function feldSchalten(name,an){
@@ -924,16 +986,20 @@ async function feldDazu(btn){
 }
 
 function neuZeichnen(){
- document.getElementById('app').innerHTML=ansichtEinstellungen();
+ document.getElementById('app').innerHTML =
+   P==='/formular' ? ansichtFormular() : ansichtEinstellungen();
  quelleArt();
 }
 
-function ansichtEinstellungen(){
- const r=E.register;
- return `
+// Zehn Abschnitte untereinander waren unbedienbar. Was ein
+// Arbeitsschritt ist — Dubletten, Formularperioden, Aktkarten — steht
+// jetzt dort, wo man es braucht; der Rest liegt hinter Reitern, einer
+// sichtbar.
+let zahnradReiter = sessionStorage.getItem('zahnrad') || 'Bestand';
+
+const ZAHNRAD = { "Bestand": () => `
  ${quellenKarte()}
- ${aktkarten()}
- <h2>Reihenfolge der Register</h2>
+`, "Bücher": () => ` <h2>Reihenfolge der Register</h2>
  <div class=karte>
   <div class=reihe id=reihe>
    ${E.reihenfolge.map((x,i)=>`<span class=chip data-r="${esc(x)}">
@@ -979,7 +1045,7 @@ function ansichtEinstellungen(){
    : '<span style=color:#e06c5f>pdftoppm fehlt — Paket poppler-utils.</span>'}</p>
  </div>
 
- <h2>KI-Anbindung</h2>
+`, "KI": () => ` <h2>KI-Anbindung</h2>
  <div class=karte>
   <h3 style="margin:0 0 .5rem">Über Claude Code — das eigene Abonnement</h3>
   <div id=anmeldung>${anmeldeblock(E.ki.cli)}</div>
@@ -1080,7 +1146,7 @@ function ansichtEinstellungen(){
    Werkstatt-Tab vor dem Beenden des Browsers schließen.</p>
  </div>
 
- <h2>Wie viel läuft ohne Rückfrage durch</h2>
+`, "Arbeitsweise": () => ` <h2>Wie viel läuft ohne Rückfrage durch</h2>
  <div class=karte>
   ${Object.entries(E.autopilot_text).map(([k,v])=>`
    <label style="display:block;padding:.3rem 0;cursor:pointer">
@@ -1167,7 +1233,7 @@ function ansichtEinstellungen(){
   <span class=dim id=espeichert></span>
  </div>
 
- <h2>Struktur — steht in der Datei, nicht hier</h2>
+`, "Über": () => ` <h2>Struktur — steht in der Datei, nicht hier</h2>
  <div class=karte><p class=dim style="font-size:.88rem;margin:0">
   Registerarten, Felder, Rollen und Kontextquellen stehen in
   <code>konfig.toml</code>, eigene Pfade in <code>konfig.local.toml</code>
@@ -1176,10 +1242,27 @@ function ansichtEinstellungen(){
   Datei bei jedem Klick neu zu schreiben und dabei ihre Kommentare zu
   verlieren; die machen den halben Erklärwert aus.</p></div>
 
- ${ansichtUeber(E.ueber)}`;
+ 
+ ${ansichtUeber(E.ueber)}
+`,};
+function ansichtEinstellungen(){
+ const r=E.register;
+ const namen=Object.keys(ZAHNRAD);
+ if(!namen.includes(zahnradReiter)) zahnradReiter=namen[0];
+ return `
+ <div class=reihe style="margin-bottom:1rem">
+  ${namen.map(n=>`<button class="${n===zahnradReiter?'ja':''}"
+    onclick="zahnradWaehlen('${n}')">${esc(n)}</button>`).join('')}
+ </div>
+ ${ZAHNRAD[zahnradReiter]()}`;
 }
 
-let geaendert={};
+function zahnradWaehlen(n){
+ zahnradReiter=n; sessionStorage.setItem('zahnrad',n);
+ document.getElementById('app').innerHTML=ansichtEinstellungen();
+ quelleArt();
+}
+
 function merken(k,v){
  geaendert[k]=v;
  const b=document.getElementById('speichern');
@@ -1285,6 +1368,6 @@ function ansichtUeber(U){
 laden().then(()=>{
  if(P==='/uebergabe') probeHolen();
  if(P==='/ausgabe') ausgabeHolen();
- if(P==='/einstellungen') einstellungenHolen();
+ if(P==='/einstellungen'||P==='/formular') einstellungenHolen();
 });
 </script></body></html>"""
