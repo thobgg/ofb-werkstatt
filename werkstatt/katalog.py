@@ -348,6 +348,29 @@ def setze(con, art, name, **w):
     con.commit()
 
 
+def leeren(con, art, name):
+    """Die erfassten Werte eines Feldes löschen — endgültig.
+
+    Abschalten laesst die Werte stehen; das ist die Voreinstellung, weil
+    eine Einstellungsaenderung keine Daten kosten darf. Wer ein Feld aber
+    gar nicht fuehren will, soll es auch wieder loswerden koennen —
+    sonst schleppt die Ausgabe Angaben mit, die niemand mehr ansieht.
+
+    Bestaetigte Eintraege bleiben unberuehrt: Was ein Mensch geprueft hat,
+    wird nicht durch einen Klick in den Einstellungen entfernt.
+    """
+    n = con.execute(
+        "SELECT count(*) FROM feld f JOIN eintrag e ON e.id=f.eintrag_id "
+        "WHERE e.register=? AND f.name=? AND e.status <> 'bestaetigt'",
+        (art, name)).fetchone()[0]
+    con.execute(
+        "DELETE FROM feld WHERE name=? AND eintrag_id IN "
+        "(SELECT id FROM eintrag WHERE register=? AND status <> 'bestaetigt')",
+        (name, art))
+    con.commit()
+    return n
+
+
 def zuruecksetzen(con, art, name):
     """Die Anpassung entfernen — der Katalog gilt wieder.
 
@@ -476,12 +499,20 @@ def uebersicht(art, con=None):
     """Jedes Feld mit beiden Zielen und deren Einstufung — für das Zahnrad."""
     aus_katalog = {x.name for x in KATALOG.get(art, [])}
     abgeschaltet = []
+    werte = {}
     if con is not None:
         try:
             abgeschaltet = [r["name"] for r in con.execute(
                 "SELECT name FROM feldwahl WHERE art=? AND aktiv=0", (art,))]
         except Exception:
             abgeschaltet = []
+        # Wie viele Werte zu einem Feld schon erfasst sind. Ohne diese Zahl
+        # ist „Feld loeschen" ein Sprung ins Dunkle.
+        werte = {r["name"]: r["n"] for r in con.execute(
+            "SELECT f.name, count(*) n FROM feld f "
+            "JOIN eintrag e ON e.id=f.eintrag_id WHERE e.register=? "
+            "AND COALESCE(f.korrigiert, f.gelesen) IS NOT NULL "
+            "GROUP BY f.name", (art,))}
     z = []
     for x in felder(art, con):
         z.append(dict(
@@ -489,7 +520,8 @@ def uebersicht(art, con=None):
             hinweis=x.hinweis,
             ziel=x.ziel, ziel_amt=einstufung(x.ziel),
             ziel_kb=x.ziel_kb, ziel_kb_amt=einstufung(x.ziel_kb),
-            eigen=x.name not in aus_katalog, aktiv=True))
+            eigen=x.name not in aus_katalog, aktiv=True,
+            werte=werte.get(x.name, 0)))
     # Abgeschaltetes bleibt sichtbar — sonst findet niemand wieder, was er
     # weggeklickt hat.
     for name in abgeschaltet:
@@ -502,7 +534,8 @@ def uebersicht(art, con=None):
                       ziel_amt=einstufung(x.ziel) if x else None,
                       ziel_kb=x.ziel_kb if x else None,
                       ziel_kb_amt=einstufung(x.ziel_kb) if x else None,
-                      eigen=name not in aus_katalog, aktiv=False))
+                      eigen=name not in aus_katalog, aktiv=False,
+                      werte=werte.get(name, 0)))
     return z
 
 

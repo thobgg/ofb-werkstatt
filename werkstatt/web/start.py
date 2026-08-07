@@ -178,6 +178,24 @@ function ansichtEinrichtung(){
       style="flex:1;min-width:14rem">
    </div>`).join('')}
 
+  <div style="margin:1.2rem 0 .3rem"><b>Was soll erfasst werden?</b></div>
+  <div class=dim style="font-size:.86rem;margin-bottom:.5rem">
+   Der Vorrat steht fest; hier wählen Sie, was Ihre Arbeit braucht. Was Sie
+   jetzt abwählen, wird gar nicht erst gelesen — später abschalten heißt,
+   die schon gelesenen Werte einzeln wieder loszuwerden. Änderbar bleibt es
+   jederzeit unter <b>Formular</b>.</div>
+  ${Object.entries(S.felder||{}).map(([art,fs])=>`
+   <details style="margin-bottom:.3rem">
+    <summary style="cursor:pointer;color:#9aa3b2">${esc(art)} —
+     ${fs.filter(f=>f.vorgeschlagen).length} von ${fs.length} Feldern</summary>
+    <div style="display:flex;flex-wrap:wrap;gap:.2rem .9rem;padding:.4rem 0 0 1rem">
+     ${fs.map(f=>`<label style="cursor:pointer;font-size:.86rem;width:14rem">
+       <input type=checkbox class=efeld data-art="${esc(art)}"
+         data-name="${esc(f.name)}" ${f.vorgeschlagen?'checked':''}>
+       ${esc(f.titel)}</label>`).join('')}
+    </div>
+   </details>`).join('')}
+
   <div class=reihe style="margin-top:1.1rem">
    <button class=ja onclick=einrichten(this)>Projekt anlegen</button>
    <span class=dim id=ehinweis>Geschrieben wird eine Datei
@@ -204,8 +222,11 @@ async function einrichten(btn){
      ordner:(document.querySelector(`.eord[data-art="${c.dataset.art}"]`)||{}).value}));
  if(!reg.length){h.textContent='Mindestens ein Register ankreuzen.';return;}
  btn.disabled=true; h.textContent='lege an …';
+ const aus={};
+ document.querySelectorAll('.efeld').forEach(c=>{ if(!c.checked){
+   (aus[c.dataset.art]=aus[c.dataset.art]||[]).push(c.dataset.name); }});
  const a=await (await fetch('/api/einrichten',{method:'POST',
-   body:JSON.stringify({gemeinde:gem, register:reg})})).json();
+   body:JSON.stringify({gemeinde:gem, register:reg, felder_aus:aus})})).json();
  if(a.fehler){btn.disabled=false; h.textContent=a.fehler; return;}
  location.href='/';
 }
@@ -910,8 +931,12 @@ function aktkarten(){
      <td>${tagMarke(f.ziel,f.ziel_amt)}</td>
      <td>${f.kb?tagMarke(f.ziel_kb,f.ziel_kb_amt)
         :'<span class=dim>keine</span>'}</td>
-     <td class=z><button onclick="feldAendern('${esc(f.name)}')"
-       title="Ziel ändern">ändern</button></td>
+     <td class=z>${f.werte
+       ? `<span class=dim style=font-size:.78rem>${f.werte} Werte</span> `:''}
+       <button onclick="feldAendern('${esc(f.name)}')"
+       title="Ziel ändern">ändern</button>${f.werte && !f.aktiv
+       ? ` <button onclick="feldLeeren('${esc(f.name)}',${f.werte},this)"
+           title="erfasste Werte löschen">löschen</button>`:''}</td>
     </tr>`).join('')}
   </table>
  </div>
@@ -951,6 +976,17 @@ async function periodenPruefen(reg,btn){
 async function feldSchalten(name,an){
  await fetch('/api/feld',{method:'POST',
   body:JSON.stringify({art:karteArt, name, aktiv:an?1:0})});
+ await einstellungenHolen();
+}
+
+async function feldLeeren(name,n,btn){
+ if(!confirm(`Die ${n} erfassten Werte von „${name}“ löschen?\n\n`
+  +'Bestätigte Einträge bleiben unberührt — was ein Mensch geprüft hat, '
+  +'wird nicht durch einen Klick in den Einstellungen entfernt.\n'
+  +'Alles Übrige ist danach weg.')) return;
+ btn.disabled=true;
+ const a=await (await fetch('/api/feld-leeren',{method:'POST',
+   body:JSON.stringify({art:karteArt, name})})).json();
  await einstellungenHolen();
 }
 
