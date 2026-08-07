@@ -31,7 +31,7 @@ from pathlib import Path
 from .seite import SEITE
 from .start import STARTSEITE
 from .. import (abgleich, ausgabe, db, einrichtung, einstellungen,
-                gespraech, katalog,
+                dubletten, gespraech, katalog,
                 import_gedcom,
                 import_wortschatz, konfig, lesen,
                 runde as _runde,
@@ -322,6 +322,18 @@ class Handler(BaseHTTPRequestHandler):
                     (o if o.is_absolute() else ROOT / o).mkdir(
                         parents=True, exist_ok=True)
             return self._json(dict(ok=True))
+        if pfad == "/api/dubletten":
+            d = self._rumpf()
+            con = db.verbinde()
+            try:
+                if d.get("bild"):
+                    dubletten.entscheide(con, d["bild"],
+                                         bool(d.get("dublette")))
+                    return self._json(dict(ok=True))
+                return self._json(dubletten.pruefe(
+                    con, d.get("register"), still=True))
+            finally:
+                con.close()
         if pfad == "/api/feld":
             d = self._rumpf()
             con = db.verbinde()
@@ -499,6 +511,7 @@ class Handler(BaseHTTPRequestHandler):
                 datenbank=str(DB.relative_to(ROOT)),
                 eingerichtet=einrichtung.eingerichtet(),
                 einrichtung=einrichtung.vorschlag(),
+                dubletten=dubletten.gemeldet(con),
                 testdaten=len(testdaten.seiten()),
                 pdf_werkzeug=bool(seiten.pdf_werkzeug()),
             )
@@ -578,6 +591,7 @@ class Handler(BaseHTTPRequestHandler):
                 quellen_fehlend=fehlend,
                 eingerichtet=einrichtung.eingerichtet(),
                 einrichtung=einrichtung.vorschlag(),
+                dubletten=dubletten.gemeldet(con),
                 testdaten=len(testdaten.seiten()),
                 runde=r,
                 vorschlag=v,

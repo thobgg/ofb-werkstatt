@@ -309,6 +309,61 @@ function ampelReihe(a){
 }
 
 // ---------------------------------------------------------------- Lesen
+function dublettenKarte(){
+ const d=(S.dubletten||[]);
+ const offen=d.filter(x=>x.stand==='verdacht');
+ const weg=d.filter(x=>x.stand==='dublette');
+ if(!d.length) return `
+ <div class=karte>
+  <div class=reihe>
+   <button onclick=dublettenPruefen(this)>Auf doppelte Aufnahmen prüfen</button>
+   <span class=dim style="font-size:.86rem;flex:1">Archion- und
+    Ancestry-Bände enthalten oft zwei Aufnahmen derselben Buchöffnung. Wer
+    sie beide liest, zahlt zweimal und bekommt jeden Eintrag doppelt.</span>
+  </div>
+  <div id=dubhinweis class=dim style="margin-top:.5rem;font-size:.86rem"></div>
+ </div>`;
+ return `
+ ${offen.length?`<div class=warn>
+   <b>${offen.length} verdächtige Aufnahme${offen.length>1?'n':''}.</b>
+   Deutlich ähnlicher als der Rest der Strecke — vermutlich dieselbe
+   Buchöffnung zweimal. Bitte einmal ansehen und entscheiden.
+   <table style="margin-top:.5rem">
+    ${offen.map(x=>`<tr>
+      <td><code>${esc(x.bild)}</code> gleicht <code>${esc(x.gleich_wie)}</code></td>
+      <td class=z title="Abstand gegen Median der Nachbarpaare">
+        ${x.abstand} von ${Math.round(x.median)}</td>
+      <td class=z>
+        <button onclick="dublettenUrteil('${esc(x.bild)}',true,this)">Dublette</button>
+        <button onclick="dublettenUrteil('${esc(x.bild)}',false,this)">eigene Seite</button>
+      </td></tr>`).join('')}
+   </table></div>`:''}
+ ${weg.length?`<p class=dim style="font-size:.86rem">
+   ${weg.length} Aufnahme${weg.length>1?'n werden':' wird'} übersprungen:
+   ${weg.map(x=>`<code>${esc(x.bild)}</code>`).join(' ')}</p>`:''}`;
+}
+
+async function dublettenPruefen(btn){
+ const h=document.getElementById('dubhinweis');
+ btn.disabled=true; h.textContent='messe die Strecke …';
+ const reg=(S.vorschlag&&S.vorschlag.register)||S.register[0].register;
+ const a=await (await fetch('/api/dubletten',{method:'POST',
+   body:JSON.stringify({register:reg})})).json();
+ S=await (await fetch('/api/stand')).json();
+ document.getElementById('app').innerHTML=ansichtLesen();
+ const h2=document.getElementById('dubhinweis');
+ if(h2) h2.textContent=`${a.bilder} Bilder geprüft, `
+   +(a.verdacht.length?`${a.verdacht.length} verdächtig.`:'keine Dublette.');
+}
+
+async function dublettenUrteil(bild,ist,btn){
+ btn.disabled=true;
+ await fetch('/api/dubletten',{method:'POST',
+   body:JSON.stringify({bild, dublette:ist})});
+ S=await (await fetch('/api/stand')).json();
+ document.getElementById('app').innerHTML=ansichtLesen();
+}
+
 function ansichtLesen(){
  const r=S.runde;
  if(r && r.quelle==='datei' && S.vorlage) return vorlageKarte();
@@ -322,7 +377,8 @@ function ansichtLesen(){
    data-test="${x.offen_test}" data-api="${x.offen_api}"
    ${x.register===v.register?'selected':''}>${esc(x.titel)}
    — ${x.offen_api} Seiten offen${x.offen_test?`, davon ${x.offen_test} als Testdaten`:''}</option>`).join('');
- return `<div class=schritt>
+ return `${dublettenKarte()}
+ <div class=schritt>
   <div class=was>Tranche planen</div>
   <div class=warum>${esc(v.grund)}. Die Reihenfolge Ehen → Taufen → Tode ist
    keine Empfehlung: Der Elternehe-Anker trägt im Taufjahr 1808 noch 94 %,
