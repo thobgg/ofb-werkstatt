@@ -25,6 +25,7 @@ main{padding:1rem;max-width:1500px;margin:0 auto}
 .bildbox.gross img{width:auto;max-width:none}
 .zh{position:absolute;top:.3rem;right:.5rem;background:#0009;color:#fff;
  font-size:.7rem;padding:.1rem .4rem;border-radius:4px;pointer-events:none}
+.zh a{pointer-events:auto}
 .person{display:grid;grid-template-columns:5.5rem 15rem 1fr auto;gap:.6rem;
  align-items:center;padding:.4rem .9rem;border-bottom:1px solid #23272f}
 .person.aktiv{background:#182031}
@@ -70,6 +71,14 @@ details summary{cursor:pointer;color:#8b93a3;font-size:.84rem;padding:.3rem 0}
 .zeile{display:grid;grid-template-columns:10rem 1fr 1fr;gap:.4rem;padding:.15rem 0}
 .zeile label{color:#8b93a3;font-size:.8rem;align-self:center}
 .fuss{padding:.5rem .9rem;background:#191d24;display:flex;gap:.5rem;align-items:center}
+.seitenschau{position:fixed;inset:0;background:#0b0d10ee;z-index:50;
+ display:flex;flex-direction:column;padding:1rem;gap:.6rem}
+.seitenschau .leiste{display:flex;gap:.6rem;align-items:center;
+ font-size:.9rem;flex-wrap:wrap}
+.seitenschau .blatt{position:relative;flex:1;overflow:auto;background:#fff}
+.seitenschau img{width:100%;display:block;max-width:none}
+.seitenschau i{position:absolute;border:3px solid #4b7bec;
+ background:#4b7bec22;pointer-events:none;border-radius:2px}
 .gespraech{padding:.6rem .9rem .7rem;border-top:1px solid #23272f}
 .gespraech .reihe{display:flex;gap:.5rem;align-items:center}
 .gespraech .frage{flex:1;background:#12141a;border:1px solid #333a45;
@@ -180,6 +189,8 @@ function karte(e,k){
   <div class=kopf><span class=q>Nr. ${esc(e.nr)}</span>
    <span>${e.jahr||''}</span><span style=color:#6f7787>${esc(e.bild||'')}</span>
    <span style=flex:1></span>
+   ${e.seite?`<button onclick="ganzeSeite(${k})"
+     title="die ganze Buchöffnung, mit dieser Zeile markiert">ganze Seite</button>`:''}
    <span class=zaehler>${liste?esc(e.status):`Eintrag ${k+1} von ${daten.length}`}</span></div>
   ${e.ausschnitt?`<div class=bildbox onclick="this.classList.toggle('gross')">
     <img src="/bild/${encodeURI(e.ausschnitt)}" loading=lazy alt="">
@@ -278,6 +289,38 @@ async function beenden(){
  document.body.innerHTML='<main class=leer style="padding:4rem">'
   +'<div style="font-size:1.2rem;margin-bottom:.6rem">Werkstatt beendet.</div>'
   +'<div class=dim>Dieses Fenster kann zu.</div></main>';
+}
+
+// Wer einen Buchstaben nicht entziffert, sucht ihn anderswo auf derselben
+// Buchoeffnung — in einer Formel, die dieselbe Hand zehnmal geschrieben
+// hat. Der Streifen allein nimmt diese Eichung weg; das ist keine
+// Schoenheitsfrage, sondern die Regel „Kontext ist Teil der Information".
+function ganzeSeite(k){
+ const e=daten[k]; if(!e||!e.seite) return;
+ // x,y,w,h im Original, dahinter die Seitengroesse — die Marke wird
+ // gegen die Originalbreite umgerechnet, nicht gegen die des
+ // ausgelieferten (verkleinerten) Bildes.
+ const [x,y,w,h,SB,SH]=(e.kasten||'0,0,0,0,0,0').split(',').map(Number);
+ if(!SB) return;
+ const d=document.createElement('div');
+ d.className='seitenschau';
+ d.onclick=ev=>{ if(ev.target===d||ev.target.classList.contains('zu')) d.remove(); };
+ d.innerHTML=`<div class=leiste>
+   <b>Nr. ${esc(e.nr)}</b> auf ${esc(e.bild)}
+   <span class=dim>— die Zeile ist markiert; dieselbe Hand schreibt ihre
+    Formeln auf der ganzen Seite gleich</span>
+   <span style=flex:1></span><button class=zu>schließen</button></div>
+  <div class=blatt><img src="/bild/${encodeURI(e.seite)}?kante=1600" alt="">
+   <i style="left:0;top:0;width:0;height:0"></i></div>`;
+ document.body.appendChild(d);
+ const img=d.querySelector('img'), mark=d.querySelector('i');
+ const setzen=()=>{
+  const f=img.clientWidth/SB;
+  Object.assign(mark.style,{left:(x*f)+'px', top:(y*f)+'px',
+                            width:(w*f)+'px', height:(h*f)+'px'});
+  mark.scrollIntoView({block:'center'});
+ };
+ if(img.complete) setzen(); else img.onload=setzen;
 }
 
 function feld(e,n){return e.felder.find(f=>f.name===n)||{}}

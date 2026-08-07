@@ -73,6 +73,27 @@ class Handler(BaseHTTPRequestHandler):
         v = (self._frage.get(name) or [""])[0].strip()
         return int(v) if v.isdigit() else None
 
+    def _klein(self, ziel, kante):
+        """Verkleinerte Fassung, einmal gerechnet und aufgehoben."""
+        try:
+            from PIL import Image
+        except Exception:
+            return None
+        cache = ROOT / "daten" / "schau"
+        cache.mkdir(parents=True, exist_ok=True)
+        name = f"{ziel.stem}_{kante}.jpg"
+        p = cache / name
+        if p.exists() and p.stat().st_mtime >= ziel.stat().st_mtime:
+            return p
+        try:
+            with Image.open(ziel) as im:
+                im = im.convert("RGB")
+                im.thumbnail((kante, kante))
+                im.save(p, quality=85)
+        except Exception:
+            return None
+        return p
+
     def _rumpf(self):
         n = int(self.headers.get("Content-Length", 0))
         return json.loads(self.rfile.read(n) or b"{}")
@@ -202,11 +223,31 @@ class Handler(BaseHTTPRequestHandler):
             return self._json(d)
         if pfad.startswith("/bild/"):
             rel = urllib.parse.unquote(pfad[len("/bild/"):])
-            ziel = (ROOT / rel).resolve()
-            if not str(ziel).startswith(str(ROOT.resolve())) or not ziel.is_file():
+            # Nicht `resolve()`: Die Scans liegen ueblicherweise als
+            # Symlink im Projekt und in Wirklichkeit woanders — auf einer
+            # zweiten Platte, im Archivordner. `resolve()` folgt dem Link,
+            # und die Herkunftspruefung schlaegt dann fehl. Die volle Seite
+            # kam so nie an; die Seitenschau blieb weiss, und es sah nach
+            # einem Problem der Bildgroesse aus.
+            #
+            # Geprueft wird deshalb der Pfad *ohne* Linkaufloesung, nur
+            # normalisiert — das haelt `../` genauso ab, laesst aber
+            # Symlinks zu, die der Bearbeiter selbst gelegt hat.
+            import os
+            ziel = Path(os.path.normpath(str(ROOT / rel)))
+            if not str(ziel).startswith(str(ROOT)) or not ziel.is_file():
                 return self._send(404, "text/plain", "nicht gefunden")
             typ = ("image/jpeg" if ziel.suffix.lower() in (".jpg", ".jpeg")
                    else "image/png")
+            # Die vollen Aufnahmen sind 24 Megapixel. Roh ausgeliefert
+            # friert der Browser ein — beim ersten Versuch blieb die
+            # Seitenschau weiss und die Bildaufnahme lief in die
+            # Zeitgrenze. Also verkleinert, und das Ergebnis gemerkt.
+            k = self._zahl("kante")
+            if k and k < 8000:
+                klein = self._klein(ziel, k)
+                if klein:
+                    return self._send(200, "image/jpeg", klein.read_bytes())
             return self._send(200, typ, ziel.read_bytes())
         self._send(404, "text/plain", "nicht gefunden")
 
@@ -680,6 +721,10 @@ class Handler(BaseHTTPRequestHandler):
             raus.append(dict(id=e["id"], register=e["register"], band=e["band"],
                              bild=e["bild"], nr=e["nr"], jahr=e["jahr"],
                              ausschnitt=e["ausschnitt"], status=e["status"],
+                             kasten=(e["kasten"] if "kasten" in e.keys()
+                                     else None),
+                             seite=(e["seite"] if "seite" in e.keys()
+                                    else None),
                              runde=e["runde"], felder=felder))
         con.close()
         return raus
