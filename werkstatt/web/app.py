@@ -725,6 +725,7 @@ class Handler(BaseHTTPRequestHandler):
                                      else None),
                              seite=(e["seite"] if "seite" in e.keys()
                                     else None),
+                             kopf=(e["kopf"] if "kopf" in e.keys() else None),
                              runde=e["runde"], felder=felder))
         con.close()
         return raus

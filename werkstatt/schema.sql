@@ -141,6 +141,12 @@ CREATE TABLE IF NOT EXISTS eintrag (
   -- will. Der Streifen allein nimmt die Eichung weg.
   kasten     TEXT,
   seite      TEXT,                  -- die volle Aufnahme, relativ zur Wurzel
+  -- Der gedruckte Spaltenkopf derselben Seite, auf dieselbe Breite
+  -- geschnitten wie der Streifen. Ohne ihn sieht man ab dem zweiten
+  -- Eintrag nur Zellen und weiss nicht mehr, welche was bedeutet — und
+  -- rechts stehen "Zeit der Geburt" und "Ort und Tag der Taufe"
+  -- nebeneinander, beide mit einem Datum darin.
+  kopf       TEXT,
   fam_reg    TEXT,                  -- Seitenzahl des Familienregisters:
                                     -- der stärkste Anker, vom Pfarrer gesetzt.
                                     -- Gleiche Nummer = gleiche Familie,

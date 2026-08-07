@@ -102,6 +102,21 @@ def schneide(con, art, bild, nummern, still=True):
     ziel.mkdir(parents=True, exist_ok=True)
     raus = {}
     with Image.open(datei) as im:
+        # Der gedruckte Kopf, einmal je Seite und exakt so breit wie die
+        # Streifen — dann stehen Ueberschrift und Zelle uebereinander.
+        kopf = None
+        if b:
+            oben = b[0][0]
+            hoehe = b[0][1] - b[0][0]
+            # 0,75 statt 1,4 Zeilenhoehen: Darueber liegt nur noch der
+            # Papierrand mit dem Schatten der Buchkante, und der nimmt in
+            # der Maske Platz weg, den der Eintrag braucht.
+            k0 = max(0, int(oben - hoehe * 0.75))
+            if oben - k0 > 20:
+                kp = ziel / f"{bild}_kopf.jpg"
+                im.crop((block["x0"], k0, block["x1"], oben)).save(
+                    kp, quality=88)
+                kopf = konfig.kurz(kp)
         for nr, (a, e) in zip(nummern, b):
             p = ziel / f"{bild}_{nr}.jpg"
             k = (block["x0"], max(0, a - RAND),
@@ -115,7 +130,7 @@ def schneide(con, art, bild, nummern, still=True):
             raus[nr] = (konfig.kurz(p),
                         ",".join(str(int(v)) for v in
                                  (*k, im.size[0], im.size[1])),
-                        konfig.kurz(datei))
+                        konfig.kurz(datei), kopf)
     if not still:
         print(f"  {bild}: {len(raus)} Streifen — {guete}")
     return raus, guete
@@ -129,10 +144,10 @@ def fuer_bild(con, art, bild, still=True):
     if not nummern:
         return 0, "keine Einträge"
     pfade, guete = schneide(con, art, bild, nummern, still)
-    for nr, (p, kasten, seite) in pfade.items():
-        con.execute("UPDATE eintrag SET ausschnitt=?, kasten=?, seite=? "
-                    "WHERE register=? AND bild=? AND nr=?",
-                    (p, kasten, seite, art, bild, nr))
+    for nr, (p, kasten, seite, kopf) in pfade.items():
+        con.execute("UPDATE eintrag SET ausschnitt=?, kasten=?, seite=?, "
+                    "kopf=? WHERE register=? AND bild=? AND nr=?",
+                    (p, kasten, seite, kopf, art, bild, nr))
     if guete.startswith("gleichmäßig"):
         con.execute("UPDATE eintrag SET bemerkung=? WHERE register=? AND bild=?",
                     (f"Zeilenraster unsicher: {guete}", art, bild))
