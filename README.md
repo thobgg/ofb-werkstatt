@@ -8,11 +8,10 @@ GEDCOM ausgeben.
 > Kirchenbüchern von Haberschlacht, Württemberg, ab 1808. Für Fremde noch
 > nicht ohne Weiteres benutzbar — siehe [Ausprobieren](#ausprobieren).
 >
-> Gebaut für **eine Person**, die ihre eigene Parochie abschreibt. Kein
-> Login, kein Hosting, kein Mehrbenutzerbetrieb. Wer ein Kirchenbuch
-> abschreibt, tut das aus persönlichem Bezug zum Ort — das sind Einzelne,
-> keine Crowd, und jeder hat sein eigenes Dorf, seinen eigenen Bestand,
-> seine eigene Handschrift.
+> Gebaut für **eine Person**, die ihre eigene Parochie abschreibt: ohne
+> Login, ohne Hosting, ohne Mehrbenutzerbetrieb. Wer ein Kirchenbuch
+> abschreibt, tut das aus persönlichem Bezug zum Ort; jeder hat sein eigenes
+> Dorf, seinen eigenen Bestand, seine eigene Handschrift.
 
 ## Wofür
 
@@ -29,71 +28,67 @@ zusammen gelesen, korrigiert und übergeben werden.
 
     geplant ──lesen──► korrigieren ──übergeben──► fertig
 
-Die Reihenfolge **Ehen → Taufen → Tode** ist Bedingung, nicht Empfehlung.
+Die Reihenfolge **Ehen → Taufen → Tode** muss eingehalten werden.
 Ein Bestand endet irgendwann; die Eltern einer Taufe von 1808 haben meist
 vorher geheiratet und stehen noch drin, die von 1825 nicht mehr. Der
 Elternehe-Anker versiegt also mit jedem Jahrgang — es sei denn, die Ehen
-werden mit erfasst und vorher übergeben. Dann wächst er mit, statt zu
-verfallen. Wer die Taufen vorzieht, prüft sie später ein zweites Mal.
+werden mit erfasst und vorher übergeben. Dann wächst er mit. Wer die Taufen
+vorzieht, prüft sie später ein zweites Mal.
 
-Der Zustand liegt in der Datenbank, nicht im Prozess. Der Läufer arbeitet im
-Hintergrund weiter, wenn das Browserfenster zugeht, und ein Abbruch
-hinterlässt einen lesbaren Zustand statt eines Rätsels.
+Der Zustand liegt in der Datenbank. Der Läufer arbeitet im Hintergrund
+weiter, wenn das Browserfenster zugeht, und nach einem Abbruch ist ablesbar,
+wie weit er gekommen ist.
 
 ## Wie es arbeitet
 
-**Nah an der Quelle erfassen, nicht nah an GEDCOM.** Eine Zeile je
-Registereintrag, so wie es dasteht. Die GEDCOM-Ausgabe wird daraus
-abgeleitet. So lässt sich eine Zuordnung korrigieren, ohne die Lesung
-anzufassen — und umgekehrt.
+**Nah an der Quelle erfassen.** Eine Zeile je Registereintrag, so wie es
+dasteht; die GEDCOM-Ausgabe wird daraus abgeleitet. So lässt sich eine
+Zuordnung korrigieren, ohne die Lesung anzufassen — und umgekehrt.
 
-**Journal statt Veränderung.** Der Ausgangsbestand wird nie verändert. Jede
-Ergänzung und jede Korrektur ist ein festgehaltener Vorgang mit seinem
-Beleg; die Ausgabedatei entsteht daraus. Rücknahme heißt, einen Vorgang zu
-deaktivieren.
+**Der Ausgangsbestand bleibt unangetastet.** Jede Ergänzung und jede
+Korrektur ist ein festgehaltener Vorgang mit seinem Beleg; die Ausgabedatei
+entsteht daraus. Rücknahme heißt, einen Vorgang zu deaktivieren.
 
-**Belege statt Urteile.** Nicht „Sicherheitsstufe A", sondern *woran* eine
-Aussage hängt: `Elternehe F1149, oo 14.02.1798`. Das Urteil folgt aus dem
-Beleg, nicht umgekehrt.
+**Jede Zuordnung führt ihren Beleg mit.** Also `Elternehe F1149,
+oo 14.02.1798` — woran die Aussage hängt, in nachprüfbarer Form. Wie sicher
+sie ist, ergibt sich daraus.
 
 **Der Bestand wächst mit.** Ohne vorhandenes GEDCOM gleicht die Werkstatt
 gegen die eigenen früheren Einträge ab: Die ersten hundert tragen die
 nächsten tausend.
 
-## Ein Abgleichsverfahren, kein Leseverfahren
+## Wo die Arbeit liegt
 
 Wie gut die Maschine liest, hängt an der Handschrift, am Erhaltungszustand
-und an der Auflösung des Scans — nicht am Werkzeug. Eine Trefferquote
-anzugeben wäre deshalb irreführend: Sie gälte für ein Buch, eine Hand, einen
-Bestand.
-
-Worauf es stattdessen ankommt:
+und an der Auflösung des Scans. Eine Trefferquote anzugeben wäre deshalb
+irreführend: Sie gälte für ein Buch, eine Hand, einen Bestand. Der Teil, den
+die Werkstatt beisteuert, ist der Schritt danach — die Entscheidung, welche
+der sechs Personen eines Eheeintrags im Bestand schon stehen.
 
 **Was gut lesbar ist, trägt den Abgleich — was schlecht lesbar ist, wird
 durch ihn bestimmt.** Datum, Vornamen, Beruf und Ort sind auch in schwieriger
 Kurrentschrift meist eindeutig; die Familiennamen sind es selten. Genau
-deshalb wird der ganze Eintrag als Suchschlüssel benutzt und nicht Feld für
-Feld geraten.
+deshalb dient der ganze Eintrag als Suchschlüssel.
 
 **Grün wird nur, was ein Anker bestätigt.** Weder die Selbsteinschätzung des
 Modells noch die Häufigkeit eines Namens im Bestand machen grün. Ein Name,
 der hundertmal vorkommt, ist deshalb noch lange nicht der, der dasteht.
 
-**Nichtfinden ist ein Ergebnis, kein Fehler.** Zuzug, andere Parochie, Lücke
-im Buch — das gehört vermerkt, nicht weggedrückt.
+**Nichtfinden ist ein Ergebnis.** Zuzug, andere Parochie, Lücke im Buch —
+das gehört vermerkt.
 
 **Die Ausgabe ist verlustfrei.** Die Vorlage läuft Record für Record durch;
 unberührte Records gehen zeichengleich hindurch. Belegt durch einen
 Leerlauftest: ohne Änderungen muss die Ausgabe Byte für Byte der Vorlage
-entsprechen. Das ist eine Eigenschaft des Codes, keine der Handschrift.
+entsprechen.
 
 Alle Messwerte aus der Entwicklung — samt dem, was daran ungeprüft ist —
 stehen in `doku/`, wo auch dabeisteht, woran sie gemessen wurden.
 
 ## Für welche Bücher
 
-Der Lese-Teil setzt **tabellarisch geführte Register** voraus. Ob ein Bestand
-geeignet ist, entscheidet nicht die Jahreszahl, sondern die Vorlage:
+Der Lese-Teil setzt **tabellarisch geführte Register** voraus. Über die
+Eignung eines Bestandes entscheiden vier Eigenschaften der Vorlage:
 
 | Bedingung | warum |
 |---|---|
@@ -109,9 +104,9 @@ Zeitpunkte — und auch ein spätes, aber schlampig geführtes oder schlecht
 gescanntes Buch kann ungeeignet sein.
 
 Ältere Fließtext-Register liest die Werkstatt **nicht**. Sie kommen als
-vorhandene Transkription in den Bestand und werden beim Abgleich gefunden —
-Verknüpfen braucht kein Lesen; gemessen an Sterbeeinträgen 1750–1807
-(`doku/verknuepfung.md`).
+vorhandene Transkription in den Bestand und werden beim Abgleich trotzdem
+gefunden — der arbeitet auf Daten und ist vom Seitenlayout unabhängig.
+Gemessen an Sterbeeinträgen 1750–1807 (`doku/verknuepfung.md`).
 
 ## Stand
 
@@ -172,7 +167,7 @@ Fragen direkt am Eintrag („steht da Möß oder Wöß?"):
 
 *Bildstreifen: Taufregister Haberschlacht 1808, Digitalisat via Archion.*
 
-## Ein Sprachmodell ist Voraussetzung, nicht Zubehör
+## Das Sprachmodell ist Voraussetzung
 
 Der ganze Sinn ist *Maschine liest zuerst, Mensch korrigiert*. Ohne das wäre
 es eine gewöhnliche Eingabemaske — und die haben Ahnenblatt, Gramps und
@@ -186,9 +181,8 @@ Dienstleister decken, muss jeder für seine eigenen Quellen klären.
 Alles Übrige bleibt lokal: Bestand, Erfassung und Ausgabe liegen in einer
 SQLite-Datei und im Ordner `ausgabe/`. Der Server hört nur auf `127.0.0.1`.
 
-Zwei Teile laufen ganz ohne Modell — die Bestandspflege (Dublettensuche,
-Äquivalenzklassen, Plausibilitätsprüfung) und die GEDCOM-Ausgabe. Nützlich,
-aber nicht der Grund, warum es das Projekt gibt.
+Zwei Teile laufen ganz ohne Modell: die Bestandspflege (Dublettensuche,
+Äquivalenzklassen, Plausibilitätsprüfung) und die GEDCOM-Ausgabe.
 
 ## Ausprobieren
 
@@ -246,8 +240,7 @@ Scans von Archion, Ancestry und ähnlichen Diensten **dürfen nicht
 weiterverbreitet werden**. `bilder/` und `daten/` sind deshalb von der
 Versionsverwaltung ausgenommen und gehören in kein öffentliches Repo.
 Einzelne Ausschnitte mit Quellenangabe — wie der Bildstreifen oben im
-Einblick — sind von den Archion-Bedingungen gedeckt; die Regel gilt den
-Beständen, nicht dem einzelnen Beleg.
+Einblick — sind von den Archion-Bedingungen gedeckt.
 
 ## Sprache
 
@@ -281,15 +274,14 @@ from parish registers: a model transcribes the page, you correct it, and each
 named person is matched against your existing dataset — or against your own
 earlier entries, if you start from scratch. Output is GEDCOM.
 
-It is **a matching tool with a reader attached**, not a transcription tool.
-The reading step presupposes tabular, pre-printed registers (in Württemberg
-the rule from 1808 onward); older free-text entries are not read by the tool,
-but existing transcriptions of them can be imported and matched against.
-How well the machine reads depends on the hand, the state of the book and the
-scan — not on the tool. What the tool contributes is the step afterwards:
-deciding which of the six people named in a marriage entry already exist in
-your dataset, and recording the evidence for each decision. Dedicated HTR
-tools do the reading well; that decision is not what they are for.
+The emphasis is on **matching**, with a reader attached. The reading step
+presupposes tabular, pre-printed registers (in Württemberg the rule from 1808
+onward); older free-text entries are left to dedicated HTR tools, and their
+transcriptions can be imported and matched against. How well the machine
+reads depends on the hand, the state of the book and the scan. What this tool
+adds is the step afterwards: deciding which of the six people named in a
+marriage entry already exist in your dataset, and recording the evidence for
+each decision.
 
 Built for a single researcher working on their own parish. Local, SQLite, no
 service, no accounts. Requires an Anthropic API key for the reading step —
