@@ -180,6 +180,12 @@ TAUFE = [
               "Verweis (_ASSO + RELA Godparent) und im Wortlaut (_GODP)."),
     f("taufender", None, "text", ziel="CHR.AGNC", titel="taufender Geistlicher"),
     f("religion", None, "text", ziel="CHR.RELI", titel="Konfession"),
+    f("fam_reg", None, "text", ziel="_FAMREG", titel="Seitenzahl des Familienregisters",
+      hinweis="Die letzte gedruckte Spalte des Formulars, meist eine blosse "
+              "Zahl. Sie verweist auf die Seite im Familienregister, wo "
+              "dieselbe Familie mit allen Kindern steht — der stärkste "
+              "Anker, den das Buch selbst mitliefert, weil ihn der Pfarrer "
+              "gezogen hat und nicht wir."),
     f("sterbe_datum", "kind", "datum", ziel="DEAT.DATE",
       titel="Tod des Täuflings",
       hinweis="Nicht gelesen, sondern aus dem Randvermerk erschlossen; "
@@ -217,6 +223,12 @@ EHE = [
       hinweis="„Textus: Prov. XIV. v.1.“ — der Bibelspruch der Traurede. "
               "Steht im Bestand im Volltext der Trauung."),
     f("religion", None, "text", ziel="MARR.RELI", titel="Konfession"),
+    f("fam_reg", None, "text", ziel="_FAMREG", titel="Seitenzahl des Familienregisters",
+      hinweis="Die letzte gedruckte Spalte des Formulars, meist eine blosse "
+              "Zahl. Sie verweist auf die Seite im Familienregister, wo "
+              "dieselbe Familie mit allen Kindern steht — der stärkste "
+              "Anker, den das Buch selbst mitliefert, weil ihn der Pfarrer "
+              "gezogen hat und nicht wir."),
     *ABSCHLUSS,
 ]
 
