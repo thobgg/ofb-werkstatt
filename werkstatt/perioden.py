@@ -40,8 +40,13 @@ je Seite ein oder zwei Bilder, links und rechts vom Bund. Es geht **nicht**
 um die handschriftlichen Einträge, sondern allein um den **gedruckten
 Formularkopf**.
 
-Für jede Seite: Lies die Spaltenüberschriften von links nach rechts ab, im
-Wortlaut des Drucks, mit originaler Rechtschreibung.
+Für jede **Seite** genau ein Eintrag — nicht je Bild. Wo zwei Bilder zu
+einer Seite gehören (links und rechts vom Bund), gehören ihre Spalten in
+**eine** Liste, links zuerst. Als `bild` den Seitennamen einsetzen, der
+unten vor dem Doppelpunkt steht, nicht den Dateipfad.
+
+Lies die Spaltenüberschriften von links nach rechts ab, im Wortlaut des
+Drucks, mit originaler Rechtschreibung.
 
 Antworte NUR mit JSON:
 
@@ -140,14 +145,44 @@ def _enthalten(klein, gross):
     return any(gross[i:i + n] == klein for i in range(len(gross) - n + 1))
 
 
+def _seitenname(x):
+    """Aus dem, was das Modell als „bild" zurückgibt, den Seitennamen.
+
+    Der Auftrag nennt Seitenname und Bildpfade; welchen von beiden die
+    Antwort einsetzt, ist nicht erzwingbar. Ein Lauf lieferte
+    `1184798-00389/kopf_links.jpg` — daraus wurden 32 „Seiten" statt 17,
+    und die Segmentierung zerfiel. Also hier zurechtrücken statt sich auf
+    die Form der Antwort zu verlassen.
+    """
+    s = str(x or "").replace("\\", "/")
+    teile = [t for t in s.split("/") if t]
+    for t in teile:
+        if t.lower().startswith("kopf"):
+            continue
+        return Path(t).stem
+    return Path(s).stem
+
+
+def _zusammenlegen(proben):
+    """Linke und rechte Hälfte derselben Seite zu einem Kopf vereinen."""
+    nach_seite = {}
+    for s in proben:
+        name = _seitenname(s.get("bild"))
+        e = nach_seite.setdefault(name, dict(bild=name, spalten=[],
+                                             lesbar=False))
+        if s.get("lesbar") and s.get("spalten"):
+            e["spalten"] += list(s["spalten"])
+            e["lesbar"] = True
+    return sorted(nach_seite.values(), key=lambda s: s["bild"])
+
+
 def segmentiere(gelesen, alle_bilder):
     """Aus den Stichproben zusammenhängende Abschnitte machen.
 
     Unlesbare Köpfe unterbrechen nicht: Sie erben den Abschnitt der
     vorigen Stichprobe. Ein verdeckter Kopf ist kein Formularwechsel.
     """
-    proben = [s for s in gelesen.get("seiten", [])]
-    proben.sort(key=lambda s: s["bild"])
+    proben = _zusammenlegen(gelesen.get("seiten", []))
     abschnitte = []
     for s in proben:
         if not s.get("lesbar") or not s.get("spalten"):
