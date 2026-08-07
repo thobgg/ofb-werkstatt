@@ -716,6 +716,19 @@ class Handler(BaseHTTPRequestHandler):
                       for f in con.execute(
                           "SELECT * FROM feld WHERE eintrag_id=? "
                           "ORDER BY reihe, id", (e["id"],))]
+            # Felder ohne Zeile ergaenzen. Eine Zeile entsteht nur, wenn
+            # das Modell das Feld geliefert hat — was es nicht liefert,
+            # hatte in der Maske keinen Ort, und der Mädchenname liess sich
+            # nicht nachtragen, obwohl die Aktkarte ihn fuehrt.
+            da = {f["name"] for f in felder}
+            for name in konfig.felder(e["register"], con):
+                if name not in da:
+                    felder.append(dict(
+                        name=name, wert=None, kb_form=None, beleg=None,
+                        person=None, status="gelesen", ampel="grau",
+                        zuversicht=None, rolle=_runde._rolle(e["register"],
+                                                             name),
+                        entscheidung="offen"))
             if nur == "offen" and e["status"] == "bestaetigt":
                 continue
             raus.append(dict(id=e["id"], register=e["register"], band=e["band"],
@@ -739,7 +752,18 @@ class Handler(BaseHTTPRequestHandler):
                     "SELECT id, gelesen, status FROM feld "
                     "WHERE eintrag_id=? AND name=?", (d["id"], name)).fetchone()
                 if not row:
-                    continue
+                    # Erst beim Schreiben entstehen: Wer ein Feld
+                    # nachtraegt, das die Lesung nicht geliefert hat, soll
+                    # es eintragen koennen — nicht ins Leere tippen.
+                    con.execute(
+                        "INSERT OR IGNORE INTO feld (eintrag_id, name, reihe) "
+                        "VALUES (?,?,99)", (d["id"], name))
+                    row = con.execute(
+                        "SELECT id, gelesen, status FROM feld "
+                        "WHERE eintrag_id=? AND name=?",
+                        (d["id"], name)).fetchone()
+                    if not row:
+                        continue
                 wert = (v.get("wert") or "").strip()
                 kb = (v.get("kb") or "").strip() or None
                 korr = None if wert == (row["gelesen"] or "") else wert
