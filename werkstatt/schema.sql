@@ -1,6 +1,6 @@
 -- Datenbasis. EINE Struktur, viele Eingangstüren:
 -- GEDCOM, XLSX, CSV, DOCX und die eigene Erfassung schreiben hierher.
--- Die Suche kennt keine Herkunft — nur den Inhalt.
+-- Die Suche kennt keine Herkunft – nur den Inhalt.
 
 PRAGMA foreign_keys = ON;
 
@@ -18,7 +18,7 @@ PRAGMA foreign_keys = ON;
 -- getroffenen Datensatzes 'beleg' ist und die Parochie passt. Alles andere
 -- rankt die Vorschlagsliste und bleibt gelb.
 --
--- Ein Bestand kann beides sein — `kirchenbuch.db` belegt für zwei Parochien
+-- Ein Bestand kann beides sein – `kirchenbuch.db` belegt für zwei Parochien
 -- und ist für die übrigen 32 nur Wortschatz. Deshalb wird er zweimal
 -- eingetragen, einmal je Rang, mit unterschiedlicher Parochienliste.
 CREATE TABLE IF NOT EXISTS herkunft (
@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS herkunft (
 --
 -- `person.raw` und `familie.raw` bewahren zwar jeden INDI- und FAM-Record,
 -- aber eine GEDCOM-Datei besteht nicht nur daraus. Gemessen am Bestand
--- Haberschlacht: 5.615 Records, davon 4.111 INDI und 1.346 FAM — und 158
+-- Haberschlacht: 5.615 Records, davon 4.111 INDI und 1.346 FAM – und 158
 -- weitere, die niemand aufhob: HEAD, SUBM, 35 SOUR, **120 _LOC** und TRLR.
 -- Die _LOC-Records sind die Ortsdefinitionen, auf die jede Person mit
 -- `3 _LOC @L1@` zeigt; ohne sie hat die Ausgabe tote Verweise.
@@ -136,14 +136,14 @@ CREATE TABLE IF NOT EXISTS eintrag (
   jahr       INTEGER,
   ausschnitt TEXT,                  -- Zeilenstreifen, relativ zur Wurzel
   -- Wo der Streifen auf der Seite sitzt: "x,y,w,h". Ohne das laesst sich
-  -- die ganze Buchoeffnung nicht mit der Zeile darin zeigen — und genau
+  -- die ganze Buchoeffnung nicht mit der Zeile darin zeigen – und genau
   -- die braucht, wer einen Buchstaben an anderer Stelle nachschlagen
   -- will. Der Streifen allein nimmt die Eichung weg.
   kasten     TEXT,
   seite      TEXT,                  -- die volle Aufnahme, relativ zur Wurzel
   -- Der gedruckte Spaltenkopf derselben Seite, auf dieselbe Breite
   -- geschnitten wie der Streifen. Ohne ihn sieht man ab dem zweiten
-  -- Eintrag nur Zellen und weiss nicht mehr, welche was bedeutet — und
+  -- Eintrag nur Zellen und weiss nicht mehr, welche was bedeutet – und
   -- rechts stehen "Zeit der Geburt" und "Ort und Tag der Taufe"
   -- nebeneinander, beide mit einem Datum darin.
   kopf       TEXT,
@@ -197,7 +197,7 @@ CREATE INDEX IF NOT EXISTS ix_feld_person  ON feld(person);
 --
 -- Die Reihenfolge Ehen → Taufen → Tode ist kein Vorschlag, sondern Bedingung:
 -- Der Elternehe-Anker trägt im Taufjahr 1808 noch 94 %, 1813 noch 53 %,
--- 1820 nur 18 % — es sei denn, die Ehen ab 1808 sind vorher übergeben.
+-- 1820 nur 18 % – es sei denn, die Ehen ab 1808 sind vorher übergeben.
 -- Deshalb prüft runde.py, ob die Vorgängerrunde 'uebergeben' ist.
 CREATE TABLE IF NOT EXISTS runde (
   id       INTEGER PRIMARY KEY,
@@ -243,7 +243,7 @@ CREATE TABLE IF NOT EXISTS auftrag (
 
 -- Fehler gelten je Seite, nicht je Lauf. Bricht Seite 7 von 20 ab, sind die
 -- ersten sechs gespeichert, die siebte trägt ihre Meldung, und der Lauf geht
--- weiter — in einem Hintergrund-Thread wäre ein SystemExit ein stiller Tod.
+-- weiter – in einem Hintergrund-Thread wäre ein SystemExit ein stiller Tod.
 CREATE TABLE IF NOT EXISTS auftrag_seite (
   id        INTEGER PRIMARY KEY,
   auftrag   INTEGER NOT NULL REFERENCES auftrag(id) ON DELETE CASCADE,
@@ -266,7 +266,7 @@ CREATE INDEX IF NOT EXISTS ix_auftrag_runde ON auftrag(runde);
 --                   -> Betrieb. Ändert man beim Arbeiten.
 --
 -- Betriebswerte in die TOML-Datei zurückzuschreiben hieße, sie bei jedem
--- Klick neu zu erzeugen — und dabei ihre Kommentare zu verlieren, die den
+-- Klick neu zu erzeugen – und dabei ihre Kommentare zu verlieren, die den
 -- halben Erklärwert der Datei ausmachen. Was hier fehlt, kommt weiterhin
 -- aus konfig.toml; die Einstellung überschreibt nur.
 CREATE TABLE IF NOT EXISTS einstellung (
@@ -282,7 +282,7 @@ CREATE TABLE IF NOT EXISTS einstellung (
 -- Steht bewusst in DERSELBEN Datei wie alles andere. Die Vorgängerfassung
 -- schrieb nach `daten/aenderung.sqlite`; über zwei Dateien hinweg kann ein
 -- Bestätigen aber nicht das Feld UND den Vorgang in einer Transaktion
--- schreiben — bei einem Abbruch dazwischen stimmen sie nicht mehr überein.
+-- schreiben – bei einem Abbruch dazwischen stimmen sie nicht mehr überein.
 --
 -- Rücknahme heißt `aktiv=0`, nicht löschen. Der Ausgangszustand bleibt
 -- jederzeit rekonstruierbar, und jeder Vorgang trägt seinen Beleg statt
@@ -303,7 +303,7 @@ CREATE INDEX IF NOT EXISTS ix_vorgang_ziel ON vorgang(ziel);
 CREATE INDEX IF NOT EXISTS ix_vorgang_art  ON vorgang(art);
 
 -- Chronologie-Anker: Datum jedes Eintrags gegen seine Nachbarn.
--- Register sind chronologisch geführt — ein Datum außerhalb des
+-- Register sind chronologisch geführt – ein Datum außerhalb des
 -- Nachbarintervalls ist widerlegt, ohne dass etwas nachgeschlagen wird.
 CREATE VIEW IF NOT EXISTS chronologie AS
   SELECT e.id, e.register, e.bild, e.nr, e.jahr,
@@ -320,7 +320,7 @@ CREATE VIEW IF NOT EXISTS chronologie AS
 
 -- ------------------------------------------------------------- Wortschatz
 -- Wörter ohne Person. Eine Namensliste, ein Ortsverzeichnis, eine
--- Berufstabelle — alles, was Schreibweisen kennt, aber keine Lebensdaten
+-- Berufstabelle – alles, was Schreibweisen kennt, aber keine Lebensdaten
 -- hat und deshalb nie bestätigen kann.
 --
 -- Getrennt von `person`, weil sonst jede Zeile einer Tabelle eine erfundene
@@ -346,7 +346,7 @@ CREATE INDEX IF NOT EXISTS ix_wortschatz_klasse ON wortschatz(klasse);
 --
 -- Warum nicht alles hier: Ein leerer Vorrat waere kein Schutz vor
 -- Wildwuchs. Der Katalog ist der gemeinsame Nenner aller Bestaende; was
--- hier steht, ist die Abweichung dieses einen Projekts — und die ist
+-- hier steht, ist die Abweichung dieses einen Projekts – und die ist
 -- damit auch benennbar, wenn der Bestand einmal weitergegeben wird.
 CREATE TABLE IF NOT EXISTS feldwahl (
   art      TEXT NOT NULL,          -- taufe | ehe | tod
@@ -367,7 +367,7 @@ CREATE TABLE IF NOT EXISTS feldwahl (
 
 -- ------------------------------------------------------------- Merkmale
 -- Alles, was zu einer Person gehoert und kein Ereignis ist: Beruf,
--- Wohnort, Religion, Rufname, Unehelichkeit — und zu jedem davon die
+-- Wohnort, Religion, Rufname, Unehelichkeit – und zu jedem davon die
 -- Kirchenbuchform, wo sie sich unterscheidet.
 --
 -- Als eigene Tabelle statt als Spalten, weil der Feldkatalog waechst und
@@ -388,7 +388,7 @@ CREATE INDEX IF NOT EXISTS ix_merkmal_person ON merkmal(person);
 
 -- ------------------------------------------------------------- Aufwand
 -- Wie viel Arbeit ein Eintrag gemacht hat: Tastendruecke, Klicks,
--- Sekunden. Das ist der ehrlichere Massstab als eine Trefferquote — die
+-- Sekunden. Das ist der ehrlichere Massstab als eine Trefferquote – die
 -- misst das Buch, nicht das Werkzeug.
 --
 -- Bei schwerer Hand tippt der Bearbeiter viel, bei klarer Schrift

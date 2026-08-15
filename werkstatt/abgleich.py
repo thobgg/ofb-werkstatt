@@ -13,14 +13,14 @@ Die Ampel ist **Ergebnis des Abgleichs, keine Eigenschaft der Lesung**:
 Zwei Dinge machen ausdrücklich NICHT grün, beide teuer gelernt:
 
   * **Die Selbsteinschätzung des Modells.** Bei `Koch`/`Roth` war es viermal
-    sicher und viermal falsch — der Buchstabe ist eindeutig lesbar, nur eben
+    sicher und viermal falsch – der Buchstabe ist eindeutig lesbar, nur eben
     als der falsche.
   * **Häufigkeit und Wortschatz.** `Roth` kommt 59-mal im Bestand vor und
     hätte jeden Plausibilitätstest bestanden.
 
 Dazu kommt der Rang der Quelle aus `herkunft.gilt`: Ein Treffer aus einer
 Vokabularquelle rankt die Vorschlagsliste und bleibt gelb, auch wenn er
-perfekt passt. Ohne eingetragene Beleg-Quelle bleibt also alles gelb — das
+perfekt passt. Ohne eingetragene Beleg-Quelle bleibt also alles gelb – das
 ist der Nullstart, und er ist langsam, aber nicht falsch.
 """
 import argparse
@@ -76,14 +76,14 @@ def _nullstart(bestand):
     Beim ersten Start ist er leer. „Kein Treffer im Bestand" ist dann
     zwar wörtlich richtig, aber als **rot** eine Falschmeldung: Rot heißt
     „die Kandidaten widersprechen sich", und es gab gar keine. Ein neuer
-    Nutzer sieht sonst 44 rote Felder und hält die Werkstatt für kaputt —
+    Nutzer sieht sonst 44 rote Felder und hält die Werkstatt für kaputt –
     beim ersten Durchlauf nach dem Klonen genau so passiert.
     """
     pers, nach, fam, beleg, gr = bestand
     return not beleg or not pers
 
 
-# Lebensgrenzen. Bewusst weit — sie sollen Unmögliches ausschließen, nicht
+# Lebensgrenzen. Bewusst weit – sie sollen Unmögliches ausschließen, nicht
 # Ungewöhnliches. Alles dazwischen entscheidet der Mensch. Änderbar in den
 # Einstellungen; die Werte hier sind nur der Rückfall.
 MUTTER_MIN, MUTTER_MAX = 14, 50
@@ -94,12 +94,12 @@ def _plausibel(pers, f, jahr, gr=None):
     """Kann dieses Paar im Jahr `jahr` ein Kind bekommen haben?
 
     Rückgabe (möglich, datiert). `datiert` sagt, ob überhaupt ein Datum die
-    Familie in der Zeit verankert — ohne eines darf sie nie grün werden.
+    Familie in der Zeit verankert – ohne eines darf sie nie grün werden.
 
     Diese Prüfung fehlte zuerst, und die Messung hat es sofort gezeigt: Der
     Taufe Nr. 12 von 1809 wurde ein Paar zugeordnet, das 1699 und 1703
     geboren wurde und dessen Frau 1767 starb. Einziger gemeinsamer Nachname
-    im Bestand, kein Trauungsdatum — und damit nach der alten Regel grün.
+    im Bestand, kein Trauungsdatum – und damit nach der alten Regel grün.
     Ein Falschtreffer sieht aus wie ein Erfolg und wird nie wieder geprüft.
     """
     if not jahr:
@@ -118,7 +118,7 @@ def _plausibel(pers, f, jahr, gr=None):
                 return False, datiert
         if p["tod"]:
             datiert = True
-            # Der Vater darf im Jahr davor gestorben sein — nachgeborene
+            # Der Vater darf im Jahr davor gestorben sein – nachgeborene
             # Kinder sind häufig und im Register oft vermerkt.
             grenze = jahr - 1 if p is m else jahr
             if p["tod"] < grenze:
@@ -134,7 +134,7 @@ def _teile(text):
 
 # Wie viele Vornamen übereinstimmen müssen, wenn der Nachname nicht trägt.
 # Einer genügt nicht: `Johann` und `Maria` sind hier fast Allgemeingut.
-# Zwei sind spezifisch — `Agnes Dorothea`, `Rosina Margaretha`.
+# Zwei sind spezifisch – `Agnes Dorothea`, `Rosina Margaretha`.
 VORNAMEN_MINDESTENS = 2
 
 
@@ -142,7 +142,7 @@ def _passt(person, gelesen):
     """Wie eine Bestandsperson zu einer gelesenen Angabe passt.
 
     Rückgabe: (trifft, über_nachnamen). Der zweite Wert sagt, ob der
-    Nachname beteiligt war — er entscheidet später über die Beweiskraft.
+    Nachname beteiligt war – er entscheidet später über die Beweiskraft.
     """
     if not person:
         return False, False
@@ -167,7 +167,7 @@ def _paare(pers, fam, vater_gelesen, mutter_gelesen):
         Beweislast. In vier von 22 Fällen war der Vatername falsch gelesen
         und der Treffer kam allein über die Vornamen der Mutter.
 
-    Die Vorgängerfassung verlangte **beide Nachnamen** — also ausgerechnet
+    Die Vorgängerfassung verlangte **beide Nachnamen** – also ausgerechnet
     die zwei Felder, die im Register am schwersten zu lesen sind. Bei den
     Testdaten fiel das nie auf, weil dort schon die korrigierten Nachnamen
     standen. An einer frisch gelesenen Seite fand sie null Elternehen: kein
@@ -212,7 +212,7 @@ def _setze(con, fid, person=None, ampel="gelb", beleg=None, entscheidung=None):
 def _randvermerk_auswerten(con, e):
     """Steht am Rand ein Tod, wird er als Sterbedatum vorgeschlagen.
 
-    Nur wenn das Feld leer ist — eine eigene Eingabe wird nie überschrieben,
+    Nur wenn das Feld leer ist – eine eigene Eingabe wird nie überschrieben,
     auch nicht bei einem erneuten Abgleich. Das Feld bleibt grau: Es ist
     eine Lesung, kein Treffer, und ob der Vermerk dem Täufling gilt oder
     einem anderen, sagt allein das Bild.
@@ -222,7 +222,7 @@ def _randvermerk_auswerten(con, e):
         return
     # Nur eine eigene Eingabe ist unantastbar. Ein frueher abgeleiteter
     # Wert muss der Quelle folgen: Nach einer zweiten Lesung stand im
-    # Randvermerk „4. Februar" und im Sterbedatum weiter „11 FEB" — zwei
+    # Randvermerk „4. Februar" und im Sterbedatum weiter „11 FEB" – zwei
     # Angaben im selben Eintrag, die einander widersprachen.
     r = con.execute("SELECT id, korrigiert FROM feld WHERE eintrag_id=? "
                     "AND name='sterbe_datum'", (e["id"],)).fetchone()
@@ -235,7 +235,7 @@ def _randvermerk_auswerten(con, e):
     bel = randvermerk.beleg(
         text, geraten_jahr=not re.search(r"\b1[5-9]\d\d\b", text))
     if fid_s is None:
-        # Das Feld entsteht nur, wenn das Modell es liefert — beim
+        # Das Feld entsteht nur, wenn das Modell es liefert – beim
         # Taufeintrag tut es das nie, dort steht der Tod am Rand. Also hier
         # anlegen, sonst hätte der Vermerk keinen Ort.
         reihen = {n: i for i, n in enumerate(konfig.felder(e["register"], con))}
@@ -253,7 +253,7 @@ def _randvermerk_auswerten(con, e):
 def taufe_pruefen(con, e, bestand):
     """Elternehe-Anker: die Mutter wird abgeleitet, nicht gesucht.
 
-    Deshalb trägt er auch, wenn ihr Name falsch gelesen wurde — im Pilotlauf
+    Deshalb trägt er auch, wenn ihr Name falsch gelesen wurde – im Pilotlauf
     fand er vier Fälle, in denen der *Vater*name falsch war.
     """
     pers, nach, fam, beleg, gr = bestand
@@ -279,12 +279,12 @@ def taufe_pruefen(con, e, bestand):
                  + (f", oo {f['marr']}" if f["marr"] else ""))
         if not darf:
             farbe = "gelb"
-            grund += " — Quelle darf nicht bestätigen"
+            grund += " – Quelle darf nicht bestätigen"
         elif not datiert:
             # Zwei gleiche Nachnamen ohne jedes Datum sind ein Vorschlag,
             # kein Anker. Genau hier entstehen die stillen Fehltreffer.
             farbe = "gelb"
-            grund += " — kein Datum, das die Familie zeitlich einordnet"
+            grund += " – kein Datum, das die Familie zeitlich einordnet"
         else:
             farbe = "gruen"
         _setze(con, fid_v, f["mann"], farbe, grund,
@@ -294,29 +294,29 @@ def taufe_pruefen(con, e, bestand):
         return farbe
 
     if len(treffer) > 1:
-        grund = f"{len(treffer)} mögliche Elternehen — Entscheidung nötig"
+        grund = f"{len(treffer)} mögliche Elternehen – Entscheidung nötig"
         _setze(con, fid_v, None, "gelb", grund)
         _setze(con, fid_m, None, "gelb", grund)
         return "gelb"
 
     # Keine gemeinsame Familie. Einseitige Treffer sind ein Hinweis, kein
-    # Beleg — genau hier stand im Pilotlauf der falsch gelesene Nachname.
+    # Beleg – genau hier stand im Pilotlauf der falsch gelesene Nachname.
     kv = [i for x in _teile(v) for i in nach.get(x, [])]
     km = [i for x in _teile(m) for i in nach.get(x, [])]
     if kv and km:
-        grund = ("beide Namen im Bestand, aber KEINE gemeinsame Familie — "
+        grund = ("beide Namen im Bestand, aber KEINE gemeinsame Familie – "
                  "Zweitehe oder Fehllesung")
         _setze(con, fid_v, None, "rot", grund)
         _setze(con, fid_m, None, "rot", grund)
         return "rot"
     if kv or km:
         wer = "Vater" if kv else "Mutter"
-        grund = f"nur der {wer}name kommt im Bestand vor — Elternehe fehlt"
+        grund = f"nur der {wer}name kommt im Bestand vor – Elternehe fehlt"
         _setze(con, fid_v, None, "gelb" if kv else "rot", grund)
         _setze(con, fid_m, None, "gelb" if km else "rot", grund)
         return "gelb"
     if _nullstart(bestand):
-        grund = ("Nullstart — es gibt noch keinen Bestand, gegen den "
+        grund = ("Nullstart – es gibt noch keinen Bestand, gegen den "
                  "geprüft werden könnte. Alles wird vorgelegt.")
         _setze(con, fid_v, None, "gelb", grund)
         _setze(con, fid_m, None, "gelb", grund)
@@ -329,7 +329,7 @@ def taufe_pruefen(con, e, bestand):
 def allgemein_pruefen(con, e, bestand, art):
     """Für Register ohne eigene Kaskade: Namen ranken, nie bestätigen.
 
-    Ein Nachname allein genügt nie — `Johannes Bierle` hätte sonst auf
+    Ein Nachname allein genügt nie – `Johannes Bierle` hätte sonst auf
     `Carl Heinrich Bierle` gezeigt. Deshalb gibt es hier kein Grün.
     """
     pers, nach, fam, beleg, gr = bestand
@@ -341,7 +341,7 @@ def allgemein_pruefen(con, e, bestand, art):
         k = nach.get(falte(w), [])
         if len(k) == 1:
             _setze(con, fid, None, "gelb",
-                   f"ein Namensträger im Bestand ({pers[k[0]]['name']}) — "
+                   f"ein Namensträger im Bestand ({pers[k[0]]['name']}) – "
                    "ein Nachname allein bestätigt nicht")
             farbe = "gelb"
         elif k:
@@ -349,7 +349,7 @@ def allgemein_pruefen(con, e, bestand, art):
             farbe = "gelb"
         elif _nullstart(bestand):
             _setze(con, fid, None, "gelb",
-                   "Nullstart — es gibt noch keinen Bestand, gegen den "
+                   "Nullstart – es gibt noch keinen Bestand, gegen den "
                    "geprüft werden könnte. Alles wird vorgelegt.")
             farbe = "gelb"
         else:
@@ -358,7 +358,7 @@ def allgemein_pruefen(con, e, bestand, art):
 
 
 def runde_pruefen(con, runde_id=None, nur_offen=False):
-    """Abgleich für eine Runde — oder für alles, was noch grau ist.
+    """Abgleich für eine Runde – oder für alles, was noch grau ist.
 
     `nur_offen` lässt bestätigte Einträge in Ruhe. Das braucht es, wenn
     nachträglich eine Quelle dazukommt: Der Abgleich soll die neuen

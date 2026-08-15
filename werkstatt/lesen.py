@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Modellanbindung: Registerseite hinein, strukturierte Einträge heraus.
 
-Der Kern der Werkstatt. Alles andere — Sichtung, Suche, Kaskade, Maske —
+Der Kern der Werkstatt. Alles andere – Sichtung, Suche, Kaskade, Maske –
 arbeitet um diesen Schritt herum.
 
     export ANTHROPIC_API_KEY=...
@@ -57,7 +57,7 @@ Die Seite ist tabellarisch gedruckt; jede Zeile ist ein Eintrag.
 
 GRUNDREGELN
 
-1. Lies WÖRTLICH, was dasteht — nicht, was plausibel wäre. Abkürzungen,
+1. Lies WÖRTLICH, was dasteht – nicht, was plausibel wäre. Abkürzungen,
    alte Schreibungen und Kürzel bleiben unverändert.
 2. Gib zu jedem Feld an, wie sicher du bist (0.0 bis 1.0). Sei ehrlich:
    Familiennamen sind erfahrungsgemäß die unsicherste Angabe, Daten und
@@ -65,21 +65,21 @@ GRUNDREGELN
 3. Rate nicht. Ist etwas unlesbar, schreibe null und begründe kurz.
 3a. **Teillesungen gehören ins Feld, nicht in die Notiz.** Ist bei einer
    Person der Vorname klar und der Nachname nicht, schreibe die Vornamen in
-   "wert" und erkläre in "notiz", dass der Nachname fehlt — nicht umgekehrt.
+   "wert" und erkläre in "notiz", dass der Nachname fehlt – nicht umgekehrt.
    Der Abgleich trägt über die Vornamen: Er sucht die Elternehe im Bestand
    und leitet den Nachnamen daraus ab. Ein Feld mit null verschenkt genau
    die Angabe, die den Treffer bringen würde.
    Beispiel: Steht da "Rosina Margaretha, geb. ⟨unleserlich⟩", dann
    wert = "Rosina Margaretha", notiz = "Nachname nach 'geb.' nicht lesbar".
 4. Nutze die Nachbarzeilen: Dieselbe Hand schreibt wiederkehrende Formeln
-   ("B. u. Weingärtner in ...") — daran eichst du die Buchstabenformen.
+   ("B. u. Weingärtner in ...") – daran eichst du die Buchstabenformen.
    Register sind chronologisch: Das Datum eines Eintrags liegt zwischen dem
    des vorigen und des nächsten.
 5. Die letzte Spalte nennt meist die Seitenzahl des Familienregisters.
-   Sie ist wertvoll — gib sie immer an, wenn lesbar."""
+   Sie ist wertvoll – gib sie immer an, wenn lesbar."""
 
 WARNUNG = """
-BELEGTE FEHLLESUNGEN DIESER HAND — prüfe diese Stellen besonders:
+BELEGTE FEHLLESUNGEN DIESER HAND – prüfe diese Stellen besonders:
 {katalog}
 Diese Liste stammt aus bestätigten Korrekturen an derselben Handschrift."""
 
@@ -102,7 +102,7 @@ abweicht. "notiz" nur bei Unsicherheit oder Besonderheit."""
 
 
 def fehlerkatalog(con, schreiber=None, grenze=12):
-    """Belegte Fehllesungen aus den bisherigen Korrekturen — je Hand."""
+    """Belegte Fehllesungen aus den bisherigen Korrekturen – je Hand."""
     q = ("SELECT gelesen, korrigiert, sum(anzahl) n FROM fehlerkatalog "
          "GROUP BY gelesen, korrigiert ORDER BY n DESC LIMIT ?")
     try:
@@ -123,7 +123,7 @@ def prompt(art, con=None, schreiber=None):
         if kat:
             text += WARNUNG.format(katalog=kat)
     # Der Katalog statt einer Aufzählung: Er nennt zu jedem Feld, was
-    # gemeint ist, und bei den heiklen auch, woran man es erkennt —
+    # gemeint ist, und bei den heiklen auch, woran man es erkennt –
     # „geborene“, „weiland“, Zwillinge, Nottaufe, Zählmonate. Eine bloße
     # Namensliste lässt das Modell raten, was `mutter_herkunft` sein soll.
     from . import katalog
@@ -215,7 +215,7 @@ def _seitenteile(pfad, art, kante):
     2576 px verkleinert bleiben je Spalte gut zweihundert Pixel, und die
     schmalen rechten Spalten kommen unlesbar an. Gemessen an Seite 00359:
     Die Lesung füllte die vier linken Spalten und notierte zu allen fünf
-    rechten „im vorliegenden Bildausschnitt nicht enthalten" — falsch, sie
+    rechten „im vorliegenden Bildausschnitt nicht enthalten" – falsch, sie
     standen im selben Bild.
 
     Der Weg über die Sitzung war deshalb schon umgestellt; dieser hier
@@ -223,7 +223,7 @@ def _seitenteile(pfad, art, kante):
     vier von neun Spalten.
 
     Teurer ist es trotzdem nicht sehr. Gerechnet für eine Eheseite:
-    ganze Seite 6.900 Bildtoken, achtzehn Blöcke 20.500 — 0,12 gegen
+    ganze Seite 6.900 Bildtoken, achtzehn Blöcke 20.500 – 0,12 gegen
     0,24 $ je Seite, und mit der Batch-API die Hälfte davon. Zum
     Vergleich: der Weg über die Sitzung kostet gemessen 2,25 $.
     """
@@ -233,7 +233,7 @@ def _seitenteile(pfad, art, kante):
     except Exception:
         z = {}
     if not z.get("bloecke"):
-        # Ohne Raster bleibt nur die ganze Seite — mit dem Vermerk, dass
+        # Ohne Raster bleibt nur die ganze Seite – mit dem Vermerk, dass
         # die schmalen Spalten dann unsicher sind.
         return [bild_teil(pfad, kante),
                 {"type": "text", "text":
@@ -246,22 +246,22 @@ def _seitenteile(pfad, art, kante):
     teile = []
     if z.get("kopf"):
         teile.append({"type": "text", "text":
-                      "Zuerst der gedruckte Spaltenkopf dieser Seite — er "
+                      "Zuerst der gedruckte Spaltenkopf dieser Seite – er "
                       "sagt, welche Spalte was bedeutet:"})
         teile += [bild_teil(k["datei"], kante) for k in z["kopf"]]
     teile.append({"type": "text", "text":
                   f"Nun die Einträge, je Zeile ein oder zwei Bilder (links "
-                  f"und rechts vom Bund derselben Zeile — sie gehören "
+                  f"und rechts vom Bund derselben Zeile – sie gehören "
                   f"zusammen). Transkribiere jede Zeile als einen Eintrag "
                   f"({art})."})
     for b in z["bloecke"]:
-        teile.append({"type": "text", "text": f"— Zeile {b['zeile']} —"})
+        teile.append({"type": "text", "text": f"– Zeile {b['zeile']} –"})
         teile += [bild_teil(t["datei"], kante) for t in b["teile"]]
     return teile
 
 
 def kosten(modell, ein, aus, batch=False):
-    """Was ein Lauf gekostet hat — in Dollar."""
+    """Was ein Lauf gekostet hat – in Dollar."""
     m = MODELLE.get(modell)
     if not m:
         return None
@@ -299,7 +299,7 @@ def speichere(con, art, pfad, ergebnis):
                 " reihe=excluded.reihe "
                 # Nicht `entscheidung IS NULL` pruefen: Die Spalte steht per
                 # Vorgabe auf 'offen' und wird vom Abgleich gesetzt, ist
-                # also nie leer — die Bedingung blockierte jede
+                # also nie leer – die Bedingung blockierte jede
                 # Aktualisierung. Der ehrliche Marker fuer Menschenarbeit
                 # ist `korrigiert` und der bestaetigte Eintrag.
                 "WHERE feld.korrigiert IS NULL AND EXISTS ("

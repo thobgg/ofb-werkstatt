@@ -8,13 +8,13 @@
 Nachgebaut nach zwei etablierten Vorbildern, damit hier nichts neu erfunden
 wird, was seit Jahren funktioniert:
 
-  **Gramps**, `Verify the Data` — 43 Regeln, 15 Grenzwerte, getrennt nach
+  **Gramps**, `Verify the Data` – 43 Regeln, 15 Grenzwerte, getrennt nach
   Fehler (logisch unmöglich) und Warnung (auffällig, aber denkbar).
   Vorgaben: Höchstalter 90, Altersabstand Ehepartner 30, Jahre zwischen
   Kindern 8, Spanne aller Kinder 25, Heirat ab 17 bis 50, Mutter 17–48,
   Vater 18–65, höchstens 3 Ehen, 12 bzw. 15 Kinder.
 
-  **Ahnenblatt**, Plausibilitätsprüfung — sieben Altersgrenzen
+  **Ahnenblatt**, Plausibilitätsprüfung – sieben Altersgrenzen
   (Mindestalter bei Geburt eines Kindes, Höchstalter Mutter, Höchstalter
   Vater, Mindestalter bei Eheschließung, Altersdifferenz Ehepartner,
   Altersdifferenz Geschwister, maximales Alter) sowie Prüfungen auf
@@ -24,7 +24,7 @@ wird, was seit Jahren funktioniert:
 ## Was hier anders ist
 
 Beide Programme prüfen einen **fertigen Bestand auf innere Widersprüche**.
-Die Werkstatt braucht das auch — aber sie braucht zusätzlich etwas anderes:
+Die Werkstatt braucht das auch – aber sie braucht zusätzlich etwas anderes:
 zu entscheiden, ob ein **Zuordnungsvorschlag** überhaupt möglich ist. Das
 tut `abgleich._plausibel()` und ist nicht dasselbe.
 
@@ -40,11 +40,11 @@ Nicht alles aus den Vorlagen taugt hier unverändert:
   * **Mehrfachehen** sind kein Verdacht, sondern Normalfall. Bei hoher
     Sterblichkeit ist die dritte Ehe häufig; die Grenze steht auf 4 statt 3.
   * **Gleicher Nachname der Eheleute** ist im Dorf verbreitet, nicht
-    verdächtig — bleibt Warnung, aber ohne Nachdruck.
+    verdächtig – bleibt Warnung, aber ohne Nachdruck.
   * **Unbekanntes Geschlecht** ist dagegen sehr wohl ein Befund: Die
     Übergabe setzt es nur, wenn das Register ein Feld dafür führt.
   * **Geburtsabstand unter neun Monaten** meldet Ahnenblatt. Zwillinge
-    dürfen dabei nicht auffallen — gleiches Datum wird ausgenommen.
+    dürfen dabei nicht auffallen – gleiches Datum wird ausgenommen.
 """
 import argparse
 import re
@@ -88,7 +88,7 @@ GRENZWERTE = [
     ("kinder_abstand", 8, "Jahre", "Gramps cspace",
      "Lücke zwischen zwei Kindern", ""),
     ("geschwister_abstand_min_monate", 9, "Monate", "Ahnenblatt",
-     "Kinder dichter als", "Zwillinge sind ausgenommen — gleiches Datum "
+     "Kinder dichter als", "Zwillinge sind ausgenommen – gleiches Datum "
      "gilt nicht als Befund."),
     ("kinder_spanne", 25, "Jahre", "Gramps cbspan · Ahnenblatt",
      "Spanne aller Kinder einer Familie", ""),
@@ -137,7 +137,7 @@ def monate(a, b):
 
 
 def frueher(a, b):
-    """a liegt sicher vor b — bei gleicher Genauigkeit verglichen."""
+    """a liegt sicher vor b – bei gleicher Genauigkeit verglichen."""
     if not a or not b:
         return False
     tiefe = min(len([x for x in a if x is not None]),
@@ -192,7 +192,7 @@ def geburt(x):
 
 
 # ---------------------------------------------------------------- Regeln
-# (schluessel, schwere, titel) — die Reihenfolge bestimmt die Ausgabe.
+# (schluessel, schwere, titel) – die Reihenfolge bestimmt die Ausgabe.
 REGELN = [
     ("geburt_nach_tod", "fehler", "Geburt nach dem Tod"),
     ("taufe_vor_geburt", "fehler", "Taufe vor der Geburt"),
@@ -299,7 +299,7 @@ def pruefe(con, grenzen=None):
             if gm and gf and abs(gm[0] - gf[0]) > g["ehe_altersabstand"]:
                 melde("ehe_altersabstand", None, fid,
                       f"{abs(gm[0] - gf[0])} Jahre")
-            # Im Dorf verbreitet, nicht verdächtig — aber gelegentlich ein
+            # Im Dorf verbreitet, nicht verdächtig – aber gelegentlich ein
             # Zeichen für eine Fehlzuordnung.
             if (mann["surn"] and frau["surn"]
                     and mann["surn"].lower() == frau["surn"].lower()):
@@ -381,7 +381,7 @@ def main():
 
     if a.regel:
         treffer = [b for b in befunde if b["regel"] == a.regel]
-        print(f"=== {TITEL.get(a.regel, a.regel)} — {len(treffer)} Fälle ===")
+        print(f"=== {TITEL.get(a.regel, a.regel)} – {len(treffer)} Fälle ===")
         for b in treffer:
             print(f"  {(b['name'] or ''):38} {b['text']}")
         return
@@ -395,7 +395,7 @@ def main():
             continue
         teil = [(k, s, t) for k, s, t in REGELN if s == schwere and z.get(k)]
         n = sum(z[k] for k, _, _ in teil)
-        print(f"=== {schwere.upper()} — {n} Befunde ===")
+        print(f"=== {schwere.upper()} – {n} Befunde ===")
         if not teil:
             print("  keine\n")
             continue

@@ -8,7 +8,7 @@ Verlustfrei in zwei Stufen:
 
 Die erste Stufe fehlte lange, und die Lücke war unsichtbar: `person.raw`
 bewahrt jeden INDI-Record, aber eine GEDCOM-Datei besteht nicht nur daraus.
-Gemessen am Bestand Haberschlacht — 5.615 Records, davon 4.111 INDI und
+Gemessen am Bestand Haberschlacht – 5.615 Records, davon 4.111 INDI und
 1.346 FAM, und 158 weitere, die niemand aufhob: HEAD, SUBM, 35 SOUR,
 **120 _LOC** und TRLR. Auf die _LOC-Records zeigt jede Person mit
 `3 _LOC @L1@`; ohne sie hätte die Ausgabe tote Verweise.
@@ -93,7 +93,7 @@ def nachname_aus(voll):
 def lies_person(raw):
     """Namensfelder und abweichende Formen aus einem INDI-Record.
 
-    Ein INDI kann MEHRERE `1 NAME`-Bloecke tragen, jeder mit eigenem SURN —
+    Ein INDI kann MEHRERE `1 NAME`-Bloecke tragen, jeder mit eigenem SURN –
     das sind Schreibvarianten desselben Namens (Bierle / Buehrlen). Alle
     Nachnamensformen werden als `namensform` mit art='surn' abgelegt, damit
     die Suche sie findet.
@@ -155,7 +155,7 @@ def lies_datei(pfad):
 
     BOM, Zeilenende und Schlussumbruch entscheiden über das erste und das
     letzte Byte. Ohne sie unterscheidet sich eine Ausgabe von der Vorlage,
-    ohne dass ein einziges Feld anders wäre — und der Leerlauftest, der die
+    ohne dass ein einziges Feld anders wäre – und der Leerlauftest, der die
     Verlustfreiheit belegen soll, schlägt aus einem belanglosen Grund fehl.
     """
     roh = Path(pfad).read_bytes()
@@ -199,7 +199,7 @@ def nur_rec(pfad, con=None, still=False):
     row = con.execute("SELECT id FROM herkunft WHERE art='gedcom' AND datei=?",
                       (pfad.name,)).fetchone()
     if not row:
-        raise SystemExit(f"{pfad.name} ist nicht als Herkunft eingetragen — "
+        raise SystemExit(f"{pfad.name} ist nicht als Herkunft eingetragen – "
                          "erst importieren")
     n = merke_rec(con, row["id"], zerlege(text), eig)
     if not still:

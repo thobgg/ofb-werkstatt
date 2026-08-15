@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
-"""Zeilenstreifen schneiden — für den Menschen, nicht für das Modell.
+"""Zeilenstreifen schneiden – für den Menschen, nicht für das Modell.
 
     python3 -m werkstatt.streifen taufe 1184798-00359
     python3 -m werkstatt.streifen --runde 1
 
 Der Streifen ist das, was der Bearbeiter beim Entscheiden ansieht. Er
-entsteht deshalb **nach** dem Lesen und **vor** dem Korrigieren — und kostet
+entsteht deshalb **nach** dem Lesen und **vor** dem Korrigieren – und kostet
 dort nichts: gedruckte Linien finden, Pixel zählen, Pillow. Ein Modell dafür
 zu bezahlen wäre Geld fürs Kopfrechnen.
 
 ## Wer was beisteuert
 
     Modell     wie viele Einträge, in welcher Reihenfolge
-               — fällt beim Transkribieren ohnehin an, kostet nichts extra
+               – fällt beim Transkribieren ohnehin an, kostet nichts extra
     Geometrie  wo die Zeilenlinien liegen
     Abzählen   Eintrag N ist Band N
 
@@ -23,13 +23,13 @@ zu lassen ist in diesem Projekt zweimal gescheitert (`ansatz.md`).
 ## Warum nicht dem Modell Streifen schicken
 
 Weil es teurer und schlechter wäre. Heute geht **eine** Seite als **ein**
-Bild hinein. Sechs Streifen wären sechs Bilder — mehr Token für weniger
+Bild hinein. Sechs Streifen wären sechs Bilder – mehr Token für weniger
 Zusammenhang. Dieselbe Hand schreibt in jedem Eintrag `B. u. Weingärtner in
 Haberschlacht`; daran eicht man die Buchstabenformen.
 
 ## Wenn die Erkennung nicht aufgeht
 
-Gemessen wurden 22 von 22 Zeilenlinien bei ±40 px — aber auf anderen Seiten
+Gemessen wurden 22 von 22 Zeilenlinien bei ±40 px – aber auf anderen Seiten
 als jeder beliebigen. Auf Bild 00359 fand die linke Buchseite nur eine
 Linie, die rechte sechs; gerettet hat es die Vereinigung. Deshalb drei
 Stufen, und die schwächste sagt es:
@@ -59,7 +59,7 @@ def baender(bild, anzahl):
     # Taufe links Name und Eltern, rechts Tauftag, Taufender und Paten;
     # Ehe links Namen, Stand und Eltern, rechts Geburtsdaten,
     # Proklamation, Dispensationen. Der Streifen zeigte bisher nur die
-    # linke Hälfte — in der Maske stand ein Taufdatum, das im Bild nicht
+    # linke Hälfte – in der Maske stand ein Taufdatum, das im Bild nicht
     # zu sehen war, und niemand konnte es prüfen.
     #
     # Ob ein Formular wirklich durchläuft, wollte ich messen; die
@@ -78,7 +78,7 @@ def baender(bild, anzahl):
         g = z + [block["y1"]]
         return list(zip(g, g[1:])), block, "letzte Linie ergänzt"
 
-    # Gleichmäßig teilen. Grob, aber besser als kein Streifen — und der
+    # Gleichmäßig teilen. Grob, aber besser als kein Streifen – und der
     # Vermerk sorgt dafür, dass niemand es für gemessen hält.
     y0, y1 = (z[0], z[-1]) if len(z) >= 2 else (block["y0"], block["y1"])
     h = (y1 - y0) / anzahl
@@ -103,7 +103,7 @@ def schneide(con, art, bild, nummern, still=True):
     raus = {}
     with Image.open(datei) as im:
         # Der gedruckte Kopf, einmal je Seite und exakt so breit wie die
-        # Streifen — dann stehen Ueberschrift und Zelle uebereinander.
+        # Streifen – dann stehen Ueberschrift und Zelle uebereinander.
         kopf = None
         if b:
             oben = b[0][0]
@@ -132,7 +132,7 @@ def schneide(con, art, bild, nummern, still=True):
                                  (*k, im.size[0], im.size[1])),
                         konfig.kurz(datei), kopf)
     if not still:
-        print(f"  {bild}: {len(raus)} Streifen — {guete}")
+        print(f"  {bild}: {len(raus)} Streifen – {guete}")
     return raus, guete
 
 

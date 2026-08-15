@@ -2,7 +2,7 @@
 """Lesezugriff auf einen vorhandenen Bestand (ofb-ki/kirchenbuch.db).
 
 **Nur lesend.** Die Werkstatt greift nie schreibend in einen fremden Bestand
-ein — sie nutzt ihn als Vokabular und als Anker.
+ein – sie nutzt ihn als Vokabular und als Anker.
 
 Verlässlichkeit ist nicht überall gleich: In `kirchenbuch.db` sind die
 Personenstrukturen nur für einzelne Parochien belastbar, sonst taugt der

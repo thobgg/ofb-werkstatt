@@ -2,7 +2,7 @@
 """Feldkatalog: was in einer Aktart überhaupt vorkommen kann.
 
 Bisher wuchsen die Feldlisten in `konfig.toml` von Hand, und was niemand
-eingetragen hatte, ging verloren — der Tod des Täuflings im Randvermerk
+eingetragen hatte, ging verloren – der Tod des Täuflings im Randvermerk
 fiel nur auf, weil ein Mensch ihn vermisste. Das ist die falsche
 Reihenfolge: Die Werkstatt muss den möglichen Umfang kennen, nicht der
 Bearbeiter ihn nachtragen.
@@ -32,8 +32,8 @@ weil sie die Quelle ist. `ziel_kb` sagt, unter welchem Tag sie landet.
 
 Kein Katalog fängt alles. Deshalb hat jede Aktart ein Feld `volltext`: der
 Eintrag im Wortlaut, so wie ihn der Bestand als `2 NOTE` unter dem Ereignis
-führt. Was kein Feld hat — eine Bemerkung des Pfarrers, ein Trauspruch,
-eine Randbedingung —, steht wenigstens dort und ist wiederfindbar.
+führt. Was kein Feld hat – eine Bemerkung des Pfarrers, ein Trauspruch,
+eine Randbedingung –, steht wenigstens dort und ist wiederfindbar.
 """
 from collections import namedtuple
 
@@ -55,7 +55,7 @@ def f(name, rolle=None, art="text", kb=False, ziel=None, ziel_kb=None,
 
 # --------------------------------------------------------------- Bausteine
 # Eine Person kommt in jeder Aktart in denselben Facetten vor. Einmal
-# beschrieben, dreimal verwendet — sonst driften die Register auseinander.
+# beschrieben, dreimal verwendet – sonst driften die Register auseinander.
 def person(r, titel, *, geburt=False, eltern=False, stand=True):
     z = [
         f(f"{r}_name", r, "name", kb=True, ziel="NAME", ziel_kb="_KB_NAME",
@@ -75,12 +75,12 @@ def person(r, titel, *, geburt=False, eltern=False, stand=True):
           hinweis="Auch „allhier“, „von Bönnigheim“, mit Amtsangabe."),
         f(f"{r}_religion", r, "text", ziel="RELI",
           titel=f"{titel}: Religion",
-          hinweis="Nur wenn genannt — meist bei Andersgläubigen."),
+          hinweis="Nur wenn genannt – meist bei Andersgläubigen."),
     ]
     if stand:
         z.append(f(f"{r}_stand", r, "text", kb=True, ziel=None,
                    ziel_kb="_NOTE_STAND", titel=f"{titel}: Personenstand",
-                   hinweis="ledig, Wittwer, Wittib, verwitwet, geschieden — "
+                   hinweis="ledig, Wittwer, Wittib, verwitwet, geschieden – "
                            "und „weiland“/„weyl:“, wenn die Person zum "
                            "Zeitpunkt des Eintrags bereits tot war."))
     if geburt:
@@ -108,7 +108,7 @@ def person(r, titel, *, geburt=False, eltern=False, stand=True):
 
 
 def geborene(r, titel):
-    """Der Geburtsname — das Feld, das am häufigsten verschenkt wird.
+    """Der Geburtsname – das Feld, das am häufigsten verschenkt wird.
 
     Im Buch steht er als „geb.“, „geborne“, „eine geborene“ oder gar nicht,
     dann aber in movierter Form am Namen selbst. Kanonisch ist er der
@@ -128,9 +128,9 @@ ABSCHLUSS = [
     f("volltext", None, "text", ziel="NOTE", titel="Eintrag im Wortlaut",
       hinweis="Der ganze Eintrag, so wie er dasteht, mit Abkürzungen und "
               "alter Rechtschreibung. Fängt alles auf, wofür es kein Feld "
-              "gibt — Trauspruch, Bemerkung des Pfarrers, Sonderfall."),
+              "gibt – Trauspruch, Bemerkung des Pfarrers, Sonderfall."),
     f("unleserlich", None, "text", titel="nicht entzifferbar",
-      hinweis="Was im Eintrag steht, aber nicht gelesen werden konnte — "
+      hinweis="Was im Eintrag steht, aber nicht gelesen werden konnte – "
               "mit Angabe der Stelle. Eine Lücke, die benannt ist, ist "
               "keine verlorene Angabe."),
 ]
@@ -146,7 +146,7 @@ TAUFE = [
     f("geburt_datum", "kind", "datum", ziel="BIRT.DATE", titel="Geburtsdatum"),
     f("geburt_zeit", "kind", "text", kb=True, ziel=None, ziel_kb="_NOTE_TAUFE",
       titel="Geburtsstunde",
-      hinweis="„nachts um 2 Uhr“ — steht in vielen Formularen als eigene "
+      hinweis="„nachts um 2 Uhr“ – steht in vielen Formularen als eigene "
               "Spalte."),
     f("geburt_ort", "kind", "ort", ziel="BIRT.PLAC", titel="Geburtsort"),
     f("kind_vorname", "kind", "name", kb=True, ziel="GIVN",
@@ -155,7 +155,7 @@ TAUFE = [
     f("kind_geschlecht", "kind", "text", ziel="SEX", titel="Geschlecht"),
     f("mehrling", "kind", "text", kb=True, ziel=None, ziel_kb="_NOTE_TAUFE",
       titel="Zwilling/Drilling",
-      hinweis="„Zwilling“, „der andere Zwilling“ — entscheidet über die "
+      hinweis="„Zwilling“, „der andere Zwilling“ – entscheidet über die "
               "Zuordnung zweier Einträge zu einer Geburt."),
     f("totgeburt", "kind", "text", kb=True, ziel="DEAT", ziel_kb="_NOTE_TAUFE",
       titel="tot geboren / Nottaufe",
@@ -173,7 +173,7 @@ TAUFE = [
     f("vater_angeblich", None, "name", kb=True, ziel=None,
       ziel_kb="_NOTE_TAUFE", titel="angegebener Vater",
       hinweis="Bei unehelichen Geburten nennt das Buch oft den vom "
-              "Kindsvater Bezichtigten — als Angabe, nicht als Tatsache."),
+              "Kindsvater Bezichtigten – als Angabe, nicht als Tatsache."),
     f("paten", None, "text", kb=True, ziel="_ASSO", ziel_kb="_GODP",
       titel="Paten",
       hinweis="Alle, mit Beruf und Ort. Im Bestand doppelt geführt: als "
@@ -183,7 +183,7 @@ TAUFE = [
     f("fam_reg", None, "text", ziel="_FAMREG", titel="Seitenzahl des Familienregisters",
       hinweis="Die letzte gedruckte Spalte des Formulars, meist eine blosse "
               "Zahl. Sie verweist auf die Seite im Familienregister, wo "
-              "dieselbe Familie mit allen Kindern steht — der stärkste "
+              "dieselbe Familie mit allen Kindern steht – der stärkste "
               "Anker, den das Buch selbst mitliefert, weil ihn der Pfarrer "
               "gezogen hat und nicht wir."),
     f("sterbe_datum", "kind", "datum", ziel="DEAT.DATE",
@@ -211,22 +211,22 @@ EHE = [
     f("verwandtschaft", None, "text", kb=True, ziel=None,
       ziel_kb="_NOTE_HEIRAT", titel="Verwandtschaft / Dispens",
       hinweis="„im dritten Grad verwandt“, „mit obrigkeitlicher "
-              "Erlaubnis“ — bei nahen Verwandten brauchte es einen Dispens."),
+              "Erlaubnis“ – bei nahen Verwandten brauchte es einen Dispens."),
     f("ehenummer", None, "text", kb=True, ziel=None, ziel_kb="_NOTE_HEIRAT",
       titel="wievielte Ehe",
-      hinweis="„zum zweiten Mal“, „Wittwer“ — entscheidet, ob eine frühere "
+      hinweis="„zum zweiten Mal“, „Wittwer“ – entscheidet, ob eine frühere "
               "Ehe im Bestand zu suchen ist."),
     f("zeugen", None, "text", kb=True, ziel="_ASSO", ziel_kb="_NOTE_HEIRAT",
       titel="Trauzeugen und Beistände"),
     f("trauender", None, "text", ziel="MARR.AGNC", titel="trauender Geistlicher"),
     f("textus", None, "text", ziel="MARR.NOTE", titel="Trauspruch",
-      hinweis="„Textus: Prov. XIV. v.1.“ — der Bibelspruch der Traurede. "
+      hinweis="„Textus: Prov. XIV. v.1.“ – der Bibelspruch der Traurede. "
               "Steht im Bestand im Volltext der Trauung."),
     f("religion", None, "text", ziel="MARR.RELI", titel="Konfession"),
     f("fam_reg", None, "text", ziel="_FAMREG", titel="Seitenzahl des Familienregisters",
       hinweis="Die letzte gedruckte Spalte des Formulars, meist eine blosse "
               "Zahl. Sie verweist auf die Seite im Familienregister, wo "
-              "dieselbe Familie mit allen Kindern steht — der stärkste "
+              "dieselbe Familie mit allen Kindern steht – der stärkste "
               "Anker, den das Buch selbst mitliefert, weil ihn der Pfarrer "
               "gezogen hat und nicht wir."),
     *ABSCHLUSS,
@@ -252,7 +252,7 @@ TOD = [
               "„Brustfieber“, „an der Ruhr“."),
     f("ehegatte", "verstorbener", "name", kb=True, ziel=None,
       ziel_kb="_NOTE_BEGR", titel="Ehegatte",
-      hinweis="„hinterläßt eine Wittib“, „des N.N. Ehefrau“ — der stärkste "
+      hinweis="„hinterläßt eine Wittib“, „des N.N. Ehefrau“ – der stärkste "
               "Anker, um den Verstorbenen im Bestand zu finden."),
     f("hinterbliebene", "verstorbener", "text", kb=True, ziel=None,
       ziel_kb="_NOTE_BEGR", titel="Hinterbliebene",
@@ -270,13 +270,13 @@ TOD = [
     f("begraebnisart", None, "text", kb=True, ziel=None, ziel_kb="_NOTE_BEGR",
       titel="Art des Begräbnisses",
       hinweis="„in der Stille“, „ohne Gesang“, „mit ganzer Leichenbegleitung“ "
-              "— sagt oft mehr über den Fall als die Todesursache."),
+              "– sagt oft mehr über den Fall als die Todesursache."),
     f("religion", None, "text", ziel="BURI.RELI", titel="Konfession"),
     f("fam_reg", None, "text", ziel="_FAMREG",
       titel="Seitenzahl des Familienregisters",
       hinweis="Die letzte gedruckte Spalte des Formulars, meist eine blosse "
               "Zahl. Sie verweist auf die Seite im Familienregister, wo "
-              "dieselbe Familie mit allen Kindern steht — der stärkste "
+              "dieselbe Familie mit allen Kindern steht – der stärkste "
               "Anker, den das Buch selbst mitliefert."),
     *ABSCHLUSS,
 ]
@@ -287,7 +287,7 @@ KATALOG = {"taufe": TAUFE, "ehe": EHE, "tod": TOD}
 
 # ------------------------------------------------------------------ Zugriff
 def felder(art, con=None):
-    """Die Felder dieser Aktart — Vorrat, angepasst durch die Aktkarte.
+    """Die Felder dieser Aktart – Vorrat, angepasst durch die Aktkarte.
 
     Ohne `con` der reine Katalog. Mit `con` das, was der Bearbeiter im
     Zahnrad daraus gemacht hat: Abgeschaltetes fehlt, geänderte Ziele
@@ -349,11 +349,11 @@ def setze(con, art, name, **w):
 
 
 def leeren(con, art, name):
-    """Die erfassten Werte eines Feldes löschen — endgültig.
+    """Die erfassten Werte eines Feldes löschen – endgültig.
 
     Abschalten laesst die Werte stehen; das ist die Voreinstellung, weil
     eine Einstellungsaenderung keine Daten kosten darf. Wer ein Feld aber
-    gar nicht fuehren will, soll es auch wieder loswerden koennen —
+    gar nicht fuehren will, soll es auch wieder loswerden koennen –
     sonst schleppt die Ausgabe Angaben mit, die niemand mehr ansieht.
 
     Bestaetigte Eintraege bleiben unberuehrt: Was ein Mensch geprueft hat,
@@ -372,7 +372,7 @@ def leeren(con, art, name):
 
 
 def zuruecksetzen(con, art, name):
-    """Die Anpassung entfernen — der Katalog gilt wieder.
+    """Die Anpassung entfernen – der Katalog gilt wieder.
 
     Bei einem eigenen Feld heißt das: es verschwindet. Bereits erfasste
     Werte bleiben in `feld` stehen; sie zu löschen wäre Datenverlust für
@@ -410,12 +410,12 @@ def datumsfelder(art):
 def als_prompt(art, con=None):
     """Der Katalog als Anweisung für das Lesen.
 
-    Damit steht im Prompt, was vorkommen *kann* — nicht, was der letzte
+    Damit steht im Prompt, was vorkommen *kann* – nicht, was der letzte
     Bearbeiter zufällig eingetragen hat. Leere Felder sind erwünscht;
     fehlende Felder sind Verlust.
     """
     z = [f"Felder der Aktart „{art}“. Gib jedes Feld an, das im Eintrag "
-         "vorkommt, und lass die übrigen leer — leer ist eine Aussage, "
+         "vorkommt, und lass die übrigen leer – leer ist eine Aussage, "
          "Raten ist keine.", ""]
     for x in felder(art, con):
         zeile = f"  {x.name:24} {x.titel}"
@@ -438,10 +438,10 @@ def main():
         if a.prompt:
             print(als_prompt(art))
             continue
-        print(f"=== {art} — {len(felder(art))} Felder, "
+        print(f"=== {art} – {len(felder(art))} Felder, "
               f"{len(mit_kb(art))} davon mit Kirchenbuchform")
         for x in felder(art):
-            print(f"  {x.name:26} {x.rolle or '—':13} {x.art:6} "
+            print(f"  {x.name:26} {x.rolle or '–':13} {x.art:6} "
                   f"{'KB' if x.kb else '  '} {x.ziel or ''}")
         print()
 
@@ -452,7 +452,7 @@ if __name__ == "__main__":
 
 # ------------------------------------------------------- Herkunft der Tags
 # GEDCOM 5.5.1 kennt einen festen Vorrat an Tags. Alles, was mit einem
-# Unterstrich beginnt, ist **per Definition nicht standardisiert** — die
+# Unterstrich beginnt, ist **per Definition nicht standardisiert** – die
 # Norm gibt den Unterstrich für eigene Erweiterungen frei und sagt nichts
 # darüber, was sie bedeuten. Ob ein anderes Programm sie versteht, hängt
 # allein davon ab, ob es dieselbe Erweiterung kennt.
@@ -473,7 +473,7 @@ RELI REPO RESI RESN RETI RFN RIN ROLE ROMN SEX SLGC SLGS SOUR SPFX SSN
 STAE STAT SUBM SUBN SURN TEMP TEXT TIME TITL TRLR TYPE VERS WIFE WILL WWW
 """.split())
 
-# Eigene Tags, die über dieses Projekt hinaus in Gebrauch sind — vor allem
+# Eigene Tags, die über dieses Projekt hinaus in Gebrauch sind – vor allem
 # in deutschsprachigen Programmen. Kein Standard, aber die Aussicht, dass
 # ein anderes Programm sie erkennt, ist erheblich besser als bei den
 # hauseigenen. Die Einstufung ist eine Einschätzung, keine Norm.
@@ -496,7 +496,7 @@ def einstufung(ziel):
 
 
 def uebersicht(art, con=None):
-    """Jedes Feld mit beiden Zielen und deren Einstufung — für das Zahnrad."""
+    """Jedes Feld mit beiden Zielen und deren Einstufung – für das Zahnrad."""
     aus_katalog = {x.name for x in KATALOG.get(art, [])}
     abgeschaltet = []
     werte = {}
@@ -522,7 +522,7 @@ def uebersicht(art, con=None):
             ziel_kb=x.ziel_kb, ziel_kb_amt=einstufung(x.ziel_kb),
             eigen=x.name not in aus_katalog, aktiv=True,
             werte=werte.get(x.name, 0)))
-    # Abgeschaltetes bleibt sichtbar — sonst findet niemand wieder, was er
+    # Abgeschaltetes bleibt sichtbar – sonst findet niemand wieder, was er
     # weggeklickt hat.
     for name in abgeschaltet:
         x = feld(art, name)
@@ -558,7 +558,7 @@ def bilanz(art):
 # nicht aus den Feldern ableiten laesst.
 # Diese Ziele traegt der Personendatensatz schon in eigenen Spalten. Sie
 # zusaetzlich als Merkmal zu fuehren hiesse, sie in der Ausgabe zweimal zu
-# schreiben — einmal aus `person`, einmal aus `merkmal`.
+# schreiben – einmal aus `person`, einmal aus `merkmal`.
 IN_PERSON = {"NAME", "GIVN", "SURN", "SEX"}
 
 PAAR = {"ehe": ("braeutigam", "braut"), "taufe": ("vater", "mutter")}
@@ -579,11 +579,11 @@ def rollen(art, con=None):
 
 
 def bauplan(art, con=None):
-    """Was die Uebergabe aus einem Eintrag macht — abgeleitet, nicht gepflegt.
+    """Was die Uebergabe aus einem Eintrag macht – abgeleitet, nicht gepflegt.
 
     Ereignisse entstehen aus jedem Datumsfeld, dessen Ziel auf `.DATE`
     endet; der Ort kommt aus dem Feld mit demselben Tag und `.PLAC`. Damit
-    zieht jede Aenderung an der Aktkarte sofort durch bis in die Ausgabe —
+    zieht jede Aenderung an der Aktkarte sofort durch bis in die Ausgabe –
     vorher stand hier eine zweite, von Hand gepflegte Liste, und sie kannte
     das Sterbedatum aus dem Randvermerk nicht.
 

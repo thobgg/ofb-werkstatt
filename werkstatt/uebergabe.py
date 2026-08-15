@@ -3,7 +3,7 @@
 
 Ohne diesen Schritt bringt der Registerwechsel nichts. Die Ehe von 1812 kann
 die Taufe von 1819 nur ankern, wenn sie zwischen beiden Arbeitsschritten aus
-`eintrag`/`feld` in `person`/`familie`/`ereignis` überführt wurde — dort sucht
+`eintrag`/`feld` in `person`/`familie`/`ereignis` überführt wurde – dort sucht
 `suche.py`.
 
 Das ist der Mechanismus "die ersten hundert tragen die nächsten tausend".
@@ -13,7 +13,7 @@ Das ist der Mechanismus "die ersten hundert tragen die nächsten tausend".
     python3 -m werkstatt.uebergabe ehe --schreib
 
 Nur **bestätigte** Einträge werden übernommen. Was das Modell gelesen, aber
-niemand geprüft hat, wird nicht zum Anker für die nächste Tranche — sonst
+niemand geprüft hat, wird nicht zum Anker für die nächste Tranche – sonst
 verfestigen sich Lesefehler stillschweigend.
 """
 import argparse
@@ -33,7 +33,7 @@ BAUPLAN = {
         "familie": ("vater", "mutter"),
         "kind": "kind",
         # DEAT beim Taufeintrag: der Randvermerk am Seitenrand nennt oft
-        # den Tod des Täuflings. Diese Angabe steht im Buch — sie hier
+        # den Tod des Täuflings. Diese Angabe steht im Buch – sie hier
         # liegen zu lassen hieße, sie später im Sterberegister erneut
         # suchen zu müssen. Gefüllt wird das Feld von randvermerk.py.
         "ereignis": [("BIRT", "geburt_datum", "geburt_ort", "kind"),
@@ -107,7 +107,7 @@ def teile_namen(wert):
 def namensteile(felder, rolle):
     """Vor- und Nachname einer Rolle. Der Nachname darf fehlen.
 
-    Im Taufregister steht beim Kind **nur der Vorname** — sein Nachname
+    Im Taufregister steht beim Kind **nur der Vorname** – sein Nachname
     ergibt sich aus dem Vater. Die Vorgängerfassung nahm dasselbe Feld für
     beides und schrieb `Georg Christian /Georg Christian/` in die Ausgabe.
     """
@@ -121,7 +121,7 @@ def namensteile(felder, rolle):
 def uebernimm(con, art, schreib=False, runde_id=None, marke=None):
     # Der Bauplan wird aus dem Feldkatalog abgeleitet, nicht gepflegt. Die
     # Liste BAUPLAN weiter oben ist nur noch der Rückfall für Register, die
-    # der Katalog nicht kennt — sonst hätte jede Änderung an der Aktkarte
+    # der Katalog nicht kennt – sonst hätte jede Änderung an der Aktkarte
     # zwei Stellen, und die zweite bliebe zurück. Genau das war beim
     # Sterbedatum aus dem Randvermerk passiert.
     plan = katalog.bauplan(art, con) if art in katalog.KATALOG else None
@@ -135,7 +135,7 @@ def uebernimm(con, art, schreib=False, runde_id=None, marke=None):
     if not plan:
         return {"uebersprungen": f"kein Bauplan für {art}"}
     # Die Herkunft wird je Runde geführt, nicht je Register. Damit ist zu
-    # jeder Person nachvollziehbar, welche Tranche sie angelegt hat — und
+    # jeder Person nachvollziehbar, welche Tranche sie angelegt hat – und
     # eine Runde lässt sich rückstandslos verwerfen.
     hid = db.herkunft_id(con, "erfassung", marke or art,
                          "aus bestätigter Erfassung", gilt="beleg")
@@ -156,7 +156,7 @@ def uebernimm(con, art, schreib=False, runde_id=None, marke=None):
         pid = {}
 
         # Der Nachname des Haushaltsvorstands vererbt sich auf die Rollen,
-        # für die das Register keinen eigenen führt — beim Täufling steht
+        # für die das Register keinen eigenen führt – beim Täufling steht
         # nur der Vorname.
         erbe = None
         if plan.get("familie"):
@@ -182,7 +182,7 @@ def uebernimm(con, art, schreib=False, runde_id=None, marke=None):
                     con, "neu_person", ziel=str(pid[rolle]),
                     daten=dict(givn=vn, surn=nn, rolle=rolle),
                     quelle=f"{art} {e['bild']} Nr. {e['nr']}",
-                    beleg=f["beleg"] or "kein Treffer im Bestand — neu angelegt")
+                    beleg=f["beleg"] or "kein Treffer im Bestand – neu angelegt")
             else:
                 pid[rolle] = -1                 # Platzhalter im Probelauf
             z["personen_neu"] += 1
@@ -192,7 +192,7 @@ def uebernimm(con, art, schreib=False, runde_id=None, marke=None):
             a, b = plan["familie"]
             if pid.get(a) or pid.get(b):
                 # Erst suchen, dann anlegen. Der Elternehe-Anker findet die
-                # Familie ja gerade — sie danach ein zweites Mal anzulegen
+                # Familie ja gerade – sie danach ein zweites Mal anzulegen
                 # macht den Treffer wieder zunichte.
                 #
                 # Gemessen vor dieser Prüfung: von 22 übergebenen Familien
@@ -244,7 +244,7 @@ def uebernimm(con, art, schreib=False, runde_id=None, marke=None):
                      f"{art} {e['bild']} Nr. {e['nr']}"))
             z["ereignisse"] += 1
 
-        # Merkmale: alles, was kein Ereignis ist — Beruf, Wohnort,
+        # Merkmale: alles, was kein Ereignis ist – Beruf, Wohnort,
         # Religion, Rufname und die Kirchenbuchformen. Ohne diesen Schritt
         # deklariert der Katalog Ziele, die nie jemand schreibt.
         for m in plan.get("merkmal", []):
@@ -253,7 +253,7 @@ def uebernimm(con, art, schreib=False, runde_id=None, marke=None):
                 continue
             wert = (f.get("kb") if m["kb"] else f.get("wert")) or ""
             wert = str(wert).strip()
-            # Die Kirchenbuchform nur, wenn sie sich unterscheidet — sonst
+            # Die Kirchenbuchform nur, wenn sie sich unterscheidet – sonst
             # steht dieselbe Angabe zweimal im Bestand.
             if not wert or (m["kb"] and wert == str(f.get("wert") or "").strip()):
                 continue
@@ -300,7 +300,7 @@ def main():
         print(f"{art} ({modus}): " +
               " · ".join(f"{k} {v}" for k, v in z.items()))
     if not a.schreib:
-        print("\n(nichts geschrieben — mit --schreib übernehmen)")
+        print("\n(nichts geschrieben – mit --schreib übernehmen)")
 
 
 if __name__ == "__main__":

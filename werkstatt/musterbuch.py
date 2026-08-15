@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Nachgestellte Kirchenbuchseiten für die Demo — ohne fremde Rechte.
+"""Nachgestellte Kirchenbuchseiten für die Demo – ohne fremde Rechte.
 
     python3 -m werkstatt.musterbuch            nach bilder/taufe/
     python3 -m werkstatt.musterbuch --ziel /tmp/probe
@@ -7,20 +7,20 @@
 Die Werkstatt liest Bilder, und ohne Bilder kann sie niemand ausprobieren:
 keine Streifen, kein Spaltenkopf, keine Seitenschau. Echte Scans dürfen
 aber nicht mit. Urheberrechtlich wären Aufnahmen einer Seite von 1808
-zwar frei — § 68 UrhG stellt originalgetreue Reproduktionen gemeinfreier
-Werke selbst frei —, aber die Nutzungsbedingungen der Anbieter (hier
+zwar frei – § 68 UrhG stellt originalgetreue Reproduktionen gemeinfreier
+Werke selbst frei –, aber die Nutzungsbedingungen der Anbieter (hier
 Ancestry) untersagen die Weitergabe unabhängig davon, und daran hängt der
 Zugang des Bearbeiters. Das ist die bindende Schranke, nicht das
 Urheberrecht.
 
-Wo dasselbe Buch bei einem Anbieter mit freier Rechteangabe liegt — die
+Wo dasselbe Buch bei einem Anbieter mit freier Rechteangabe liegt – die
 Deutsche Digitale Bibliothek führt die Haberschlachter Kirchenbücher bis
-1807 —, wäre eine echte Seite erlaubt und besser als jede Nachstellung.
+1807 –, wäre eine echte Seite erlaubt und besser als jede Nachstellung.
 Diese Datei ist der Weg, der ohne solche Prüfung auskommt.
 
 Also werden Seiten **nachgestellt**: dieselbe Spaltenaufteilung wie das
 württembergische Normalformular ab 1808, gefüllt mit den Pilotlesungen,
-die ohnehin mitfahren. Das ist kein Faksimile und will keins sein — die
+die ohnehin mitfahren. Das ist kein Faksimile und will keins sein – die
 Schrift ist gesetzt, nicht Kurrent. Was es zeigt, ist die **Mechanik**:
 Zeilenerkennung, Spaltenblöcke, Kopfband, Streifen, Seitenschau.
 
@@ -35,7 +35,7 @@ from pathlib import Path
 
 from . import konfig
 
-# Das Normalformular: neun Spalten, vier links vom Bund, fünf rechts —
+# Das Normalformular: neun Spalten, vier links vom Bund, fünf rechts –
 # abgelesen am gedruckten Kopf, nicht erfunden. Die Breiten sind Anteile.
 SPALTEN_LINKS = [
     ("Zahl\nder\nGebor-\nnen.", 0.07, ["lfd_nr"]),
@@ -85,7 +85,7 @@ def _umbrechen(zeichner, text, schrift, breite):
 
 
 def _eltern(f):
-    """Die Elternspalte, wie sie im Buch steht — ein Fließtext."""
+    """Die Elternspalte, wie sie im Buch steht – ein Fließtext."""
     v = f.get("vater_name", {}).get("wert") or ""
     beruf = f.get("vater_beruf", {}).get("wert") or ""
     m = f.get("mutter_name", {}).get("wert") or ""
@@ -144,7 +144,7 @@ def seite(eintraege, ziel, titel="1808"):
             grenzen.append(x)
         grenzen[-1] = hx1
 
-        # Rahmen und Spaltenlinien — die kraeftigen Striche, an denen
+        # Rahmen und Spaltenlinien – die kraeftigen Striche, an denen
         # raster.py sein Gitter findet.
         d.rectangle([hx0, y_kopf, hx1, HOEHE - RAND], outline=0, width=5)
         for g in grenzen[1:-1]:
@@ -178,7 +178,7 @@ def seite(eintraege, ziel, titel="1808"):
                     ty += 44
 
     # "a. 1808" steht im Original im Kopf der Elternspalte, nicht mitten
-    # auf der Seite — dort ueberdeckte es die Nachbarueberschrift.
+    # auf der Seite – dort ueberdeckte es die Nachbarueberschrift.
     hx0, _, spalten = haelften[0]
     anteil = sum(s[1] for s in spalten[:2]) / sum(s[1] for s in spalten)
     breite = haelften[0][1] - hx0
@@ -193,7 +193,7 @@ def erzeuge(ziel_ordner=None, still=False):
     """Aus den mitgelieferten Pilotlesungen ein Musterbuch zeichnen."""
     quelle = konfig.WURZEL / "daten" / "pilot.json"
     if not quelle.exists():
-        raise SystemExit(f"{quelle} fehlt — ohne Lesungen keine Musterseiten")
+        raise SystemExit(f"{quelle} fehlt – ohne Lesungen keine Musterseiten")
     d = json.loads(quelle.read_text(encoding="utf-8"))
     ziel = Path(ziel_ordner or (konfig.WURZEL / "bilder" / d.get("register",
                                                                 "taufe")))
@@ -204,7 +204,7 @@ def erzeuge(ziel_ordner=None, still=False):
                   titel=str(es[0].get("jahr") or 1808) if es else "1808")
         raus.append(p)
         if not still:
-            print(f"  {konfig.kurz(p)} — {len(es)} Einträge")
+            print(f"  {konfig.kurz(p)} – {len(es)} Einträge")
     return raus
 
 
@@ -214,7 +214,7 @@ def main():
     a = ap.parse_args()
     fs = erzeuge(a.ziel)
     print(f"{len(fs)} Musterseiten. Sie sind **nachgestellt**, kein Faksimile "
-          "— gesetzte Schrift statt Kurrent.")
+          "– gesetzte Schrift statt Kurrent.")
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 """HTML des Startbildschirms, der Leseseite und der Übergabe.
 
-Eine Datei, drei Ansichten — welche gezeigt wird, entscheidet der Pfad.
+Eine Datei, drei Ansichten – welche gezeigt wird, entscheidet der Pfad.
 Ausgelagert, damit app.py lesbar bleibt.
 """
 
@@ -80,7 +80,7 @@ label input[type=radio]{margin-right:.4rem}
 <header><span class=logo title="Was grün ist, ist belegt.">
  <svg viewBox="0 0 24 24" width=22 height=22 aria-hidden=true>
   <!-- Die aufgeschlagene Doppelseite: links das Kirchenbuch mit seinen
-       Zeilen, rechts der Bestand. Der grüne Punkt sitzt auf der Naht —
+       Zeilen, rechts der Bestand. Der grüne Punkt sitzt auf der Naht –
        da entsteht der Beleg. -->
   <path d="M2 5.4c3.1-1.1 6-1.1 9 .3v13c-3-1.4-5.9-1.4-9-.3z"
         fill=none stroke=currentColor stroke-width=1.4 stroke-linejoin=round/>
@@ -167,7 +167,7 @@ function ansichtEinrichtung(){
    Scans?</b></div>
   <div class=dim style="font-size:.86rem;margin-bottom:.5rem">
    ${(S.einrichtung||[]).some(r=>r.beispiel)?`<b style=color:#8fe3b4>Fünfzehn
-    Beispielseiten liegen bei</b> — je fünf aus Tauf-, Ehe- und
+    Beispielseiten liegen bei</b> – je fünf aus Tauf-, Ehe- und
     Sterberegister Haberschlacht 1808/09. Die Ordner stehen schon da; wer
     eigene Bücher hat, trägt stattdessen deren Ordner ein. Herkunft in
     <code>demo/QUELLE.md</code>.<br>`:''}
@@ -186,12 +186,12 @@ function ansichtEinrichtung(){
   <div style="margin:1.2rem 0 .3rem"><b>Was soll erfasst werden?</b></div>
   <div class=dim style="font-size:.86rem;margin-bottom:.5rem">
    Der Vorrat steht fest; hier wählen Sie, was Ihre Arbeit braucht. Was Sie
-   jetzt abwählen, wird gar nicht erst gelesen — später abschalten heißt,
+   jetzt abwählen, wird gar nicht erst gelesen – später abschalten heißt,
    die schon gelesenen Werte einzeln wieder loszuwerden. Änderbar bleibt es
    jederzeit unter <b>Formular</b>.</div>
   ${Object.entries(S.felder||{}).map(([art,fs])=>`
    <details style="margin-bottom:.3rem">
-    <summary style="cursor:pointer;color:#9aa3b2">${esc(art)} —
+    <summary style="cursor:pointer;color:#9aa3b2">${esc(art)} –
      ${fs.filter(f=>f.vorgeschlagen).length} von ${fs.length} Feldern</summary>
     <div style="display:flex;flex-wrap:wrap;gap:.2rem .9rem;padding:.4rem 0 0 1rem">
      ${fs.map(f=>`<label style="cursor:pointer;font-size:.86rem;width:14rem">
@@ -205,7 +205,7 @@ function ansichtEinrichtung(){
     <label style=cursor:pointer><input type=checkbox id=ebestand checked>
      <b>Beispielbestand einlesen</b></label>
     <div class=dim style="font-size:.86rem;margin-top:.2rem">
-     23 Personen und 12 Familien aus einem Ortsfamilienbuch — genau die,
+     23 Personen und 12 Familien aus einem Ortsfamilienbuch – genau die,
      die zu den Beispielseiten gehören. Ohne sie bleibt alles gelb: Es gibt
      nichts, wogegen geprüft werden könnte. Mit ihnen werden auf denselben
      Seiten 16 Felder grün, weil die Elternehe im Bestand steht.</div>
@@ -222,7 +222,7 @@ function ansichtEinrichtung(){
   <div style="font-weight:600;margin-bottom:.3rem">Eine zweite Pfarrei?</div>
   <p class=dim style="font-size:.88rem;margin:0">
    Ein Projekt ist ein Ordner. Für eine weitere Pfarrei packen Sie die
-   Werkstatt ein zweites Mal aus — eigene Datenbank, eigene Bilder, eigene
+   Werkstatt ein zweites Mal aus – eigene Datenbank, eigene Bilder, eigene
    Einstellungen. Das hält zwei Bestände sauber getrennt: nichts kann
    versehentlich vom einen in den anderen wandern.</p>
  </div>`;
@@ -283,13 +283,13 @@ function ansichtStand(){
   <p class=dim style="font-size:.86rem;margin:.6rem 0 0">
    Gezählt wird beim Korrigieren, je Eintrag: getippte Zeichen, Klicks,
    verbrachte Sekunden. Keine Tastenfolgen, kein Inhalt.
-   Das ist der ehrlichere Maßstab als eine Trefferquote — die misst das
+   Das ist der ehrlichere Maßstab als eine Trefferquote – die misst das
    Buch, diese Zahlen messen das Werkzeug. Bei schwerer Hand wird viel
    getippt, bei klarer Schrift nur bestätigt; brauchbar ist beides, die
    Frage ist, wie viel Arbeit übrig bleibt.</p>
  </div>`:''}
 
- <h2>Kontextquellen — was darf bestätigen</h2>
+ <h2>Kontextquellen – was darf bestätigen</h2>
  ${S.quellen.some(q=>q.gilt==='beleg')?'':`<div class=warn>
    Keine Quelle darf bestätigen. Das ist der <b>Nullstart</b>: Der Abgleich
    findet nichts, jedes Feld bleibt gelb und wird vorgelegt. Nicht falsch,
@@ -301,22 +301,22 @@ function ansichtStand(){
     <td>${esc(q.name||q.datei||q.art)}</td>
     <td><span class="marke ${q.gilt}">${q.gilt==='beleg'
        ?'darf bestätigen':'rankt nur'}</span></td>
-    <td class=dim>${esc(q.parochien||'—')}</td>
+    <td class=dim>${esc(q.parochien||'–')}</td>
     <td class="z ${q.n?'':'dim'}">${q.n}</td></tr>`).join('')}
  </table></div>
  <p class=dim style="font-size:.86rem">
   Ein Treffer macht grün, wenn die Herkunft des getroffenen Datensatzes
-  <b>beleg</b> ist. Vokabular rankt die Vorschlagsliste und bestätigt nie —
+  <b>beleg</b> ist. Vokabular rankt die Vorschlagsliste und bestätigt nie –
   <code>Roth</code> kommt 59-mal im Bestand vor und stand doch für
   <code>Koch</code>.</p>
 
  ${(S.quellen_fehlend||[]).length?`<div class=warn>
    <b>Eingetragen, aber nicht eingelesen.</b> Diese Quellen stehen in
-   <code>konfig.toml</code> und liegen nicht in der Datenbank — sie wirken
+   <code>konfig.toml</code> und liegen nicht in der Datenbank – sie wirken
    also nicht:
    <ul style="margin:.4rem 0 0 1.1rem;padding:0">
     ${S.quellen_fehlend.map(q=>`<li>${esc(q.name)}
-      <code>${esc(q.datei)}</code> — ${q.liest_wer
+      <code>${esc(q.datei)}</code> – ${q.liest_wer
        ? `einlesen mit <code>python3 -m werkstatt.${esc(q.liest_wer)} --aus-konfig</code>`
        : `Format <b>${esc(q.art)}</b> kennt kein Einleser. Für Wortlisten
           <code>art = "wortschatz"</code> setzen`}</li>`).join('')}
@@ -325,13 +325,13 @@ function ansichtStand(){
  <p class=dim style="font-size:.86rem">
   <b>Zwei Arten, fremde Arbeit einzubinden.</b>
   <code>art = "gedcom"</code> bringt einen ganzen Bestand mit Personen,
-  Familien und Daten — das Einzige, was <i>bestätigen</i> darf.
+  Familien und Daten – das Einzige, was <i>bestätigen</i> darf.
   <code>art = "wortschatz"</code> nimmt alles, was Schreibweisen kennt, aber
   keine Lebensdaten hat: Namenslisten, Ortsverzeichnisse, abgetippte
   Register, in <code>.csv .tsv .txt .xlsx .ods .docx</code> oder als ganzer
   Ordner. Die Spalten erkennt der Einleser an der Kopfzeile; wo das nicht
   reicht, ordnet man sie in <code>konfig.toml</code> zu. Solche Quellen
-  bleiben immer <code>vokabular</code> — ohne Daten lässt sich ein Treffer
+  bleiben immer <code>vokabular</code> – ohne Daten lässt sich ein Treffer
   nicht prüfen.</p>
 
  <h2>Bestand</h2>
@@ -346,9 +346,9 @@ function ansichtStand(){
 function schrittKarte(){
  const r=S.runde, v=S.vorschlag;
  if(!r) return `<div class=schritt>
-   <div class=was>Runde ${v.register?'beginnen':'—'}</div>
+   <div class=was>Runde ${v.register?'beginnen':'–'}</div>
    <div class=warum>${v.register
-     ?`Als Nächstes: <b>${esc(v.register)}</b> — ${esc(v.grund)}`
+     ?`Als Nächstes: <b>${esc(v.register)}</b> – ${esc(v.grund)}`
      :esc(v.grund)}</div>
    ${v.register?`<a href="/lesen"><button class=ja>Weiter zum Lesen</button></a>`:''}
   </div>`;
@@ -388,7 +388,7 @@ function dublettenKarte(){
  return `
  ${offen.length?`<div class=warn>
    <b>${offen.length} verdächtige Aufnahme${offen.length>1?'n':''}.</b>
-   Deutlich ähnlicher als der Rest der Strecke — vermutlich dieselbe
+   Deutlich ähnlicher als der Rest der Strecke – vermutlich dieselbe
    Buchöffnung zweimal. Bitte einmal ansehen und entscheiden.
    <table style="margin-top:.5rem">
     ${offen.map(x=>`<tr>
@@ -431,20 +431,20 @@ function ansichtLesen(){
  if(r && r.quelle==='datei' && S.vorlage) return vorlageKarte();
  if(r && r.stand!=='geplant' && r.stand!=='liest')
   return `<div class=schritt><div class=was>Runde ${r.nr} ist gelesen</div>
-   <div class=warum>Stand <b>${esc(r.stand)}</b> — weiter in der Korrekturmaske.</div>
+   <div class=warum>Stand <b>${esc(r.stand)}</b> – weiter in der Korrekturmaske.</div>
    <a href="/korrektur"><button class=ja>Korrigieren</button></a></div>`;
  if(r) return fortschrittKarte();
  const v=S.vorschlag;
  const arten=S.register.map(x=>`<option value="${esc(x.register)}"
    data-test="${x.offen_test}" data-api="${x.offen_api}"
    ${x.register===v.register?'selected':''}>${esc(x.titel)}
-   — ${x.offen_api} Seiten offen${x.offen_test?`, davon ${x.offen_test} als Testdaten`:''}</option>`).join('');
+   – ${x.offen_api} Seiten offen${x.offen_test?`, davon ${x.offen_test} als Testdaten`:''}</option>`).join('');
  return `${dublettenKarte()}
  <div class=schritt>
   <div class=was>Tranche planen</div>
   <div class=warum>${esc(v.grund)}. Die Reihenfolge Ehen → Taufen → Tode ist
    keine Empfehlung: Der Elternehe-Anker trägt im Taufjahr 1808 noch 94 %,
-   1820 nur 18 % — es sei denn, die Ehen sind vorher übergeben.</div>
+   1820 nur 18 % – es sei denn, die Ehen sind vorher übergeben.</div>
   <div class=reihe>
    <label class=dim>Register</label><select id=reg>${arten}</select>
    <label class=dim>Seiten</label>
@@ -452,10 +452,10 @@ function ansichtLesen(){
    <label class=dim>Quelle</label>
    <select id=q onchange=quelleGewaehlt()>
     ${S.claude_code
-      ?`<option value=datei>Claude Code — über Ihr Abo, kein API-Schlüssel</option>`:''}
-    <option value=api>API — braucht ANTHROPIC_API_KEY</option>
+      ?`<option value=datei>Claude Code – über Ihr Abo, kein API-Schlüssel</option>`:''}
+    <option value=api>API – braucht ANTHROPIC_API_KEY</option>
     ${S.register.some(x=>x.offen_test)
-      ?`<option value=testdaten>Testdaten — zum Ausprobieren, kostet nichts</option>`:''}
+      ?`<option value=testdaten>Testdaten – zum Ausprobieren, kostet nichts</option>`:''}
    </select>
    <button class=ja onclick=starten()>Lesen starten</button>
   </div>
@@ -464,7 +464,7 @@ function ansichtLesen(){
  </div>
  <p class=dim style="font-size:.86rem">Der Läufer arbeitet im Hintergrund
   weiter, auch wenn dieses Fenster zugeht. Fehler gelten je Seite, nicht je
-  Lauf — bricht Seite 7 ab, laufen 8 bis 20 trotzdem durch.</p>`;
+  Lauf – bricht Seite 7 ab, laufen 8 bis 20 trotzdem durch.</p>`;
 }
 
 function fortschrittKarte(){
@@ -492,12 +492,12 @@ function quelleGewaehlt(){
  const q=document.getElementById('q').value;
  // Die Reihenfolge beginnt mit den Ehen, die Testdaten decken aber nur
  // das Taufregister. Wer beim Ausprobieren auf "Lesen starten" drueckt,
- // lief damit vor die Wand — und das war der erste Klick, den ein Fremder
+ // lief damit vor die Wand – und das war der erste Klick, den ein Fremder
  // ueberhaupt tut. Also auf ein Register umstellen, das die Quelle kennt.
  let umgestellt=null;
  if(q==='testdaten' && !+reg.options[reg.selectedIndex].dataset.test){
   const passt=[...reg.options].find(x=>+x.dataset.test>0);
-  if(passt){ umgestellt=reg.options[reg.selectedIndex].text.split(' —')[0];
+  if(passt){ umgestellt=reg.options[reg.selectedIndex].text.split(' –')[0];
              reg.value=passt.value; }
  }
  const o=reg.options[reg.selectedIndex];
@@ -508,12 +508,12 @@ function quelleGewaehlt(){
  const hin=document.getElementById('hinweis');
  hin.textContent = rest
   ? (umgestellt
-     ? `Die Testdaten decken nur das ${o.text.split(' —')[0]} ab — von `
+     ? `Die Testdaten decken nur das ${o.text.split(' –')[0]} ab – von `
        + `${umgestellt} umgestellt. ${rest} Seite(n) verfügbar.`
      : `${rest} Seite(n) verfügbar aus dieser Quelle.`)
   : (q==='testdaten'
      ? 'Die Testdaten decken kein Register ab, in dem noch etwas offen ist '
-       + '— für die übrigen braucht es Claude Code oder die API.'
+       + '– für die übrigen braucht es Claude Code oder die API.'
      : 'Keine ungelesenen Bilder in diesem Register.');
  document.querySelector('#app button.ja').disabled = !rest;
 }
@@ -524,7 +524,7 @@ function vorlageKarte(){
  return `<div class=schritt>
   <div class=was>Runde ${r.nr} · ${esc(r.register)} · über Claude Code</div>
   <div class=warum>${v.fertig} von ${v.gesamt} Seiten beantwortet.
-   Das Lesen läuft über Ihr Abonnement — kein API-Schlüssel, keine zweite
+   Das Lesen läuft über Ihr Abonnement – kein API-Schlüssel, keine zweite
    Rechnung. Die Werkstatt hält dabei keine Anmeldedaten.</div>
   <div class=balken><i style="width:${p}%"></i></div>
   <div class=seiten>${v.seiten.map(s=>`<div class="${s.da?'fertig':''}">
@@ -542,14 +542,14 @@ function vorlageKarte(){
    <b>Lesen lassen</b> startet eine Claude-Code-Sitzung im Rundenordner, die
    die Seiten liest und die Antworten schreibt. Das kann je Seite eine Minute
    dauern; das Fenster darf zugehen. <b>Antworten einlesen</b> nimmt auf, was
-   schon dasteht — auch wenn Sie selbst in einer eigenen Sitzung gelesen
+   schon dasteht – auch wenn Sie selbst in einer eigenen Sitzung gelesen
    haben.</p>
   <div id=meldung class=dim style="margin-top:.6rem"></div>
  </div>`;
 }
 
 async function lesenLassen(){
- document.getElementById('meldung').textContent='Sitzung läuft — das dauert.';
+ document.getElementById('meldung').textContent='Sitzung läuft – das dauert.';
  await fetch('/api/lesen-lassen',{method:'POST',
   headers:{'content-type':'application/json'},
   body:JSON.stringify({runde:S.runde.id})});
@@ -594,7 +594,7 @@ function ansichtUebergabe(){
  return `<div class=schritt>
   <div class=was>Runde ${r.nr} übergeben</div>
   <div class=warum>Bestätigte Einträge werden zu Personen und Familien.
-   Erst danach kann die nächste Tranche gegen sie ankern — das ist der
+   Erst danach kann die nächste Tranche gegen sie ankern – das ist der
    Mechanismus „die ersten hundert tragen die nächsten tausend".</div>
   <div class=reihe style="margin-bottom:.8rem">
    <div><div class=gross>${o.bestaetigt}</div>
@@ -604,7 +604,7 @@ function ansichtUebergabe(){
    <div style="margin-left:1rem">${ampelReihe(o.ampel)}</div>
   </div>
   ${rest>0?`<div class=warn>${rest} Eintrag/Einträge sind noch nicht bestätigt.
-    Sie bleiben zurück — was niemand geprüft hat, wird nicht zum Anker für
+    Sie bleiben zurück – was niemand geprüft hat, wird nicht zum Anker für
     die nächste Tranche, sonst verfestigen sich Lesefehler stillschweigend.
     <a href="/korrektur" style=color:inherit>Jetzt korrigieren</a></div>`:''}
   <div id=probe class=dim>Probelauf wird geholt…</div>
@@ -636,11 +636,11 @@ async function uebergeben(){
   body:JSON.stringify({runde:S.runde.id})});
  const j=await r.json();
  if(!j.ok){alert('Übergabe fehlgeschlagen');return}
- // Die Arbeitskopie ist der eigentliche Ertrag der Runde — sie zu
+ // Die Arbeitskopie ist der eigentliche Ertrag der Runde – sie zu
  // erwähnen, gehört zur Übergabe, nicht in ein Protokoll.
  const z=j.zahlen||{};
  if(z.arbeitskopie_fehler)
-  alert('Übergeben — aber die Arbeitskopie ließ sich nicht schreiben:\n'
+  alert('Übergeben – aber die Arbeitskopie ließ sich nicht schreiben:\n'
         +z.arbeitskopie_fehler);
  else if(z.arbeitskopie)
   sessionStorage.setItem('meldung','Übergeben. Arbeitskopie neu geschrieben: '
@@ -670,10 +670,10 @@ async function ausgabeHolen(){
    <div class=dim style="font-size:.88rem;margin:.3rem 0 .6rem">
     ${fort
       ? `Die Vorlage <code>${esc(d.vorlage)}</code> läuft Record für Record
-         durch. Unberührte Records gehen <b>zeichengleich</b> hindurch —
+         durch. Unberührte Records gehen <b>zeichengleich</b> hindurch –
          Quellenangaben, Notizen, Ortsdefinitionen und Paten bleiben, wie sie
          sind. Nur was ein Vorgang anfasst, wird neu geschrieben.`
-      : `Keine Vorlage vorhanden — alles wird aus den eigenen Tabellen
+      : `Keine Vorlage vorhanden – alles wird aus den eigenen Tabellen
          geschrieben.`}
    </div>
    ${fort?`<div class=reihe style="margin-bottom:.6rem">
@@ -683,7 +683,7 @@ async function ausgabeHolen(){
     <div class=dim style="font-size:.84rem;margin-bottom:.6rem">
      Der Test schreibt die Vorlage aus der Datenbank zurück und vergleicht
      Byte für Byte. Schlägt er fehl, ist beim Einlesen etwas verloren
-     gegangen — und man sieht, an welcher Stelle.</div>`:''}
+     gegangen – und man sieht, an welcher Stelle.</div>`:''}
    <table>
     ${Object.entries(z).map(([k,v])=>
       `<tr><td>${esc(k.replace(/_/g,' '))}</td><td class=z>${v}</td></tr>`).join('')}
@@ -725,7 +725,7 @@ async function einstellungenHolen(){
 }
 
 // ------------------------------------------------------------- Formular
-// Aktkarten und Formularperioden sind keine Einstellungen — man schaut
+// Aktkarten und Formularperioden sind keine Einstellungen – man schaut
 // hin, wenn ein Feld fehlt oder das Buch das Formular wechselt. Deshalb
 // eine eigene Seite statt zweier weiterer Abschnitte im Zahnrad, das
 // zuletzt zehn davon hatte.
@@ -743,11 +743,11 @@ function anmeldeblock(c){
      Anmeldung der erste Verdacht.</span></div></div>`;
  if(c.angemeldet) return `<div class=reihe style="margin-bottom:.6rem">
    <span class=ampel><i class="pkt gruen"></i>
-   <b>Angemeldet${c.abo?' — '+esc(c.abo)+'-Abonnement':''}</b></span>
+   <b>Angemeldet${c.abo?' – '+esc(c.abo)+'-Abonnement':''}</b></span>
    <span class=dim>${esc(c.konto||'')} · ${esc(c.weg||'')}
     · Claude Code ${esc(c.version||'')}</span></div>`;
  if(!c.da) return `<div class=warn>${esc(c.meldung||'')}
-   <div style="margin-top:.5rem">Claude Code zuerst installieren —
+   <div style="margin-top:.5rem">Claude Code zuerst installieren –
    <code>claude.com/download</code>, unter Windows das
    Installationsprogramm. Danach diese Seite neu laden; der Knopf zum
    Anmelden erscheint dann hier.</div></div>`;
@@ -808,13 +808,13 @@ function quellenKarte(){
   <p class=dim style="font-size:.86rem;margin:.6rem 0 0">
    Gezählt wird beim Korrigieren, je Eintrag: getippte Zeichen, Klicks,
    verbrachte Sekunden. Keine Tastenfolgen, kein Inhalt.
-   Das ist der ehrlichere Maßstab als eine Trefferquote — die misst das
+   Das ist der ehrlichere Maßstab als eine Trefferquote – die misst das
    Buch, diese Zahlen messen das Werkzeug. Bei schwerer Hand wird viel
    getippt, bei klarer Schrift nur bestätigt; brauchbar ist beides, die
    Frage ist, wie viel Arbeit übrig bleibt.</p>
  </div>`:''}
 
- <h2>Kontextquellen — was darf bestätigen</h2>
+ <h2>Kontextquellen – was darf bestätigen</h2>
  <div class=karte>
   <table>
    <tr><th>Quelle</th><th>Art</th><th>Rang</th><th class=z>Personen</th>
@@ -830,7 +830,7 @@ function quellenKarte(){
      <td class=z>${x.art==='erfassung'?'<span class=dim>bleibt</span>'
        :`<button onclick="quelleWeg(${x.id},this)">entfernen</button>`}</td>
     </tr>`).join('')
-    :'<tr><td colspan=6 class=dim>Noch keine Quelle — Nullstart.</td></tr>'}
+    :'<tr><td colspan=6 class=dim>Noch keine Quelle – Nullstart.</td></tr>'}
   </table>
  </div>
 
@@ -843,8 +843,8 @@ function quellenKarte(){
   <div class=reihe>
    <input id=qdatei placeholder="~/bestaende/ofb.ged" style="flex:1;min-width:16rem">
    <select id=qart onchange=quelleArt()>
-    <option value=gedcom>GEDCOM — Bestand mit Personen</option>
-    <option value=wortschatz>Wortschatz — Liste, Tabelle, Text</option>
+    <option value=gedcom>GEDCOM – Bestand mit Personen</option>
+    <option value=wortschatz>Wortschatz – Liste, Tabelle, Text</option>
    </select>
   </div>
   <div class=reihe style="margin-top:.6rem">
@@ -860,18 +860,18 @@ function quellenKarte(){
  </div>
 
  <p class=dim style="font-size:.86rem">
-  <b>GEDCOM</b> bringt Personen mit Daten — das Einzige, was <i>bestätigen</i>
+  <b>GEDCOM</b> bringt Personen mit Daten – das Einzige, was <i>bestätigen</i>
   darf, weil ein Treffer sich an Datum und Ort prüfen lässt.
   <b>Wortschatz</b> nimmt alles, was Schreibweisen kennt, aber keine
   Lebensdaten hat: Namenslisten, Ortsverzeichnisse, abgetippte Register, in
   <code>.csv .tsv .txt .xlsx .ods .docx</code> oder als ganzer Ordner. Die
   Spalten erkennt der Einleser an der Kopfzeile. Solche Quellen bleiben
-  immer <code>vokabular</code> — <code>Roth</code> kommt 59-mal im Bestand
+  immer <code>vokabular</code> – <code>Roth</code> kommt 59-mal im Bestand
   vor und stand doch für <code>Koch</code>.</p>`;
 }
 
 function quelleArt(){
- // Wortschatz kann nicht bestaetigen — die Wahl waere eine Luege.
+ // Wortschatz kann nicht bestaetigen – die Wahl waere eine Luege.
  document.getElementById('qrang').style.visibility =
    document.getElementById('qart').value==='gedcom' ? 'visible' : 'hidden';
 }
@@ -892,7 +892,7 @@ async function quelleDazu(btn){
  const z=a.neu_geprueft||{};
  const n=(z.gruen||0)+(z.gelb||0)+(z.rot||0);
  h.textContent = n
-  ? `eingelesen. ${n} noch offene Einträge neu abgeglichen — ${z.gruen||0} grün.`
+  ? `eingelesen. ${n} noch offene Einträge neu abgeglichen – ${z.gruen||0} grün.`
   : 'eingelesen.';
  S=await (await fetch('/api/stand')).json();
  document.getElementById('app').innerHTML=ansichtEinstellungen();
@@ -918,19 +918,19 @@ const AMTFARBE={offiziell:'#8fe3b4', verbreitet:'#e0c98a',
                 hauseigen:'#e0a06c', unbekannt:'#e06c5f'};
 
 function tagMarke(ziel,amt){
- if(!ziel) return '<span class=dim>—</span>';
+ if(!ziel) return '<span class=dim>–</span>';
  return `<code style="color:${AMTFARBE[amt]||'#c3c9d4'}"
    title="${esc((E.tag_amt||{})[amt]||'')}">${esc(ziel)}</code>`;
 }
 
 function periodenKarte(){
  return `
- <h2>Formularperioden — was das Buch selbst sagt</h2>
+ <h2>Formularperioden – was das Buch selbst sagt</h2>
  <div class=karte>
   <p class=dim style="font-size:.86rem;margin:0 0 .7rem">
    Ein Kirchenbuch wechselt im Lauf der Jahrzehnte das gedruckte Formular.
    Gelesen wird dafür nicht die Seite, sondern nur der <b>gedruckte Kopf</b>
-   jeder fünften Seite — daraus entstehen die Abschnitte. Geometrisch geht
+   jeder fünften Seite – daraus entstehen die Abschnitte. Geometrisch geht
    das nicht: Die senkrechte Linienerkennung schwankt auf demselben
    Formular zwischen 2 und 11 Linien.</p>
   ${Object.keys(E.aktkarten||{}).map(a=>{
@@ -965,7 +965,7 @@ function aktkarten(){
    if(t) z[a]=(z[a]||0)+1;});
   if(!f.ziel&&!f.ziel_kb) z.ohne++;});
  return `
- <h2>Aktkarten — welche Felder eine Registerart führt</h2>
+ <h2>Aktkarten – welche Felder eine Registerart führt</h2>
  <div class=karte>
   <div class=reihe style="margin-bottom:.8rem">
    ${Object.keys(E.aktkarten||{}).map(a=>`<button
@@ -979,7 +979,7 @@ function aktkarten(){
   </div>
 
   <p class=dim style="font-size:.86rem;margin:0 0 .8rem">
-   Der Vorrat steht fest — das ist der Schutz gegen Wildwuchs. Was Sie
+   Der Vorrat steht fest – das ist der Schutz gegen Wildwuchs. Was Sie
    hier tun, ist auswählen: abschalten, was Ihre Bücher nicht führen,
    Ziele umhängen, im Notfall ein eigenes Feld ergänzen. Ein Feld
    abzuschalten löscht nichts; bereits erfasste Werte bleiben stehen.</p>
@@ -1003,7 +1003,7 @@ function aktkarten(){
      <td><code>${esc(f.name)}</code>
        <div class=dim style="font-size:.78rem">${esc(f.titel||'')}${
         f.eigen?' <b style=color:#e0a06c>eigenes Feld</b>':''}</div></td>
-     <td class=dim>${esc(f.rolle||'—')}</td>
+     <td class=dim>${esc(f.rolle||'–')}</td>
      <td>${tagMarke(f.ziel,f.ziel_amt)}</td>
      <td>${f.kb?tagMarke(f.ziel_kb,f.ziel_kb_amt)
         :'<span class=dim>keine</span>'}</td>
@@ -1021,7 +1021,7 @@ function aktkarten(){
   <div style="font-weight:600;margin-bottom:.3rem">Eigenes Feld ergänzen</div>
   <p class=dim style="font-size:.86rem;margin:0 0 .7rem">
    Nur wenn Ihre Bücher etwas führen, das der Vorrat nicht kennt. Der Name
-   wird zum Schlüssel — Kleinbuchstaben, Ziffern, Unterstrich.</p>
+   wird zum Schlüssel – Kleinbuchstaben, Ziffern, Unterstrich.</p>
   <div class=reihe>
    <input id=fname placeholder="z. B. hausnummer" style=width:12rem>
    <input id=ftitel placeholder="Beschriftung in der Maske" style="flex:1;min-width:12rem">
@@ -1034,7 +1034,7 @@ function aktkarten(){
  <p class=dim style="font-size:.86rem">
   <b>Warum die Farben zählen.</b> GEDCOM gibt den Unterstrich für eigene
   Erweiterungen frei und sagt nichts darüber, was sie bedeuten. Ein Tag wie
-  <code>_TODURSACHE</code> versteht nur, wer dieselbe Erweiterung kennt —
+  <code>_TODURSACHE</code> versteht nur, wer dieselbe Erweiterung kennt –
   beim Wechsel zu einem anderen Programm geht er still verloren.
   Deshalb steht der Wortlaut zusätzlich im <code>volltext</code>: was kein
   Programm versteht, ist wenigstens lesbar geblieben.</p>`;
@@ -1043,7 +1043,7 @@ function aktkarten(){
 async function periodenPruefen(reg,btn){
  btn.disabled=true;
  document.getElementById('perhinweis').textContent =
-  `liest die Formularköpfe von ${reg} — das dauert ein paar Minuten, `
+  `liest die Formularköpfe von ${reg} – das dauert ein paar Minuten, `
   +'die Seite kann inzwischen zu.';
  await fetch('/api/perioden',{method:'POST',
    body:JSON.stringify({register:reg})});
@@ -1057,7 +1057,7 @@ async function feldSchalten(name,an){
 
 async function feldLeeren(name,n,btn){
  if(!confirm(`Die ${n} erfassten Werte von „${name}“ löschen?\n\n`
-  +'Bestätigte Einträge bleiben unberührt — was ein Mensch geprüft hat, '
+  +'Bestätigte Einträge bleiben unberührt – was ein Mensch geprüft hat, '
   +'wird nicht durch einen Klick in den Einstellungen entfernt.\n'
   +'Alles Übrige ist danach weg.')) return;
  btn.disabled=true;
@@ -1104,7 +1104,7 @@ function neuZeichnen(){
 }
 
 // Zehn Abschnitte untereinander waren unbedienbar. Was ein
-// Arbeitsschritt ist — Dubletten, Formularperioden, Aktkarten — steht
+// Arbeitsschritt ist – Dubletten, Formularperioden, Aktkarten – steht
 // jetzt dort, wo man es braucht; der Rest liegt hinter Reitern, einer
 // sichtbar.
 let zahnradReiter = sessionStorage.getItem('zahnrad') || 'Bestand';
@@ -1124,7 +1124,7 @@ const ZAHNRAD = { "Bestand": () => `
   </div>
   <p class=dim style="font-size:.86rem;margin:.7rem 0 0">
    <b>Ehen zuerst ist keine Geschmacksfrage.</b> Der Elternehe-Anker trägt im
-   Taufjahr 1808 noch 94 %, 1813 noch 53 %, 1820 nur 18 % — es sei denn, die
+   Taufjahr 1808 noch 94 %, 1813 noch 53 %, 1820 nur 18 % – es sei denn, die
    Ehen ab 1808 sind vorher übergeben, dann wächst er mit. Tode zuletzt, weil
    sie beide vorigen Register als Anker nutzen.</p>
  </div>
@@ -1150,27 +1150,27 @@ const ZAHNRAD = { "Bestand": () => `
   Ungleiche Seitenzahlen mit Absicht: Ein Eheeintrag nennt <b>sechs</b>
   Personen, ein Taufeintrag drei. Zehn Ehe-Seiten sind ungefähr so viel
   Arbeit wie zwanzig Taufseiten.<br>
-  <b>PDFs</b> sind Behälter, keine Bilder — sie werden einmal in Einzelseiten
+  <b>PDFs</b> sind Behälter, keine Bilder – sie werden einmal in Einzelseiten
   zerlegt (300 dpi, nach <code>entpackt/</code>) und danach wie gewöhnliche
   Bilder behandelt. ${E.pdf_werkzeug
    ? '<span style=color:#8fe3b4>pdftoppm gefunden.</span>'
-   : '<span style=color:#e06c5f>pdftoppm fehlt — Paket poppler-utils.</span>'}</p>
+   : '<span style=color:#e06c5f>pdftoppm fehlt – Paket poppler-utils.</span>'}</p>
  </div>
 
 `, "KI": () => ` <h2>KI-Anbindung</h2>
  <div class=karte>
-  <h3 style="margin:0 0 .5rem">Über Claude Code — das eigene Abonnement</h3>
+  <h3 style="margin:0 0 .5rem">Über Claude Code – das eigene Abonnement</h3>
   <div id=anmeldung>${anmeldeblock(E.ki.cli)}</div>
   <p class=dim style="font-size:.86rem;margin:.2rem 0 0">
    Die Werkstatt speichert <b>keine Anmeldedaten</b> und hängt sich an
    <b>keinen laufenden Chat</b>. Sie ruft für jede Runde einmal
    <code>claude&nbsp;-p</code> auf; das ist eine eigene, kurze Sitzung ohne
    Verlauf. Wer angemeldet ist, entscheidet allein die Anmeldung im
-   Benutzerprofil — dieselbe, mit der Sie Claude Code sonst auch bedienen.
+   Benutzerprofil – dieselbe, mit der Sie Claude Code sonst auch bedienen.
    Über diesen Weg zählt das Lesen auf das Abonnement, nicht auf eine
    zweite Rechnung.</p>
 
-  <h3 style="margin:1.2rem 0 .5rem">Über die API — mit Schlüssel</h3>
+  <h3 style="margin:1.2rem 0 .5rem">Über die API – mit Schlüssel</h3>
   ${E.ki.schluessel
     ? `<div class=reihe style="margin-bottom:.7rem">
         <span class=ampel><i class="pkt gruen"></i>
@@ -1193,7 +1193,7 @@ const ZAHNRAD = { "Bestand": () => `
   </table>
   <p class=dim style="font-size:.84rem;margin:.5rem 0 0">
    * grobe Schätzung bei 5.000 Token hinein und 3.000 heraus. Mit Batch halbiert
-   sich beides — das ist bei seitenweiser Verarbeitung der natürliche Modus und
+   sich beides – das ist bei seitenweiser Verarbeitung der natürliche Modus und
    noch nicht gebaut.</p>
 
   <div class=reihe style="margin-top:.9rem">
@@ -1208,10 +1208,10 @@ const ZAHNRAD = { "Bestand": () => `
   </div>
   <p class=dim style="font-size:.84rem;margin:.5rem 0 0">
    <b>Die Bildkante ist der Hebel für die Lesequalität.</b> Sie stand auf
-   1568 px mit dem Vermerk „größer bringt nichts" — das galt für ältere
+   1568 px mit dem Vermerk „größer bringt nichts" – das galt für ältere
    Modelle; Opus 5 und Sonnet 5 nehmen 2576 px. Bei Kurrentschrift zählt das:
    Ancestry-JPG mit 24 MP löste einen Eheeintrag auf, den das Archion-PDF mit
-   14 MP unlesbar ließ. Der Preis dafür ist klein — 1.600 statt 4.784 Bildtoken
+   14 MP unlesbar ließ. Der Preis dafür ist klein – 1.600 statt 4.784 Bildtoken
    sind bei Opus 5 rund zwei Cent je Seite.</p>
 
   ${(E.ki.verbrauch.wege||[]).length
@@ -1222,23 +1222,23 @@ const ZAHNRAD = { "Bestand": () => `
         ${E.ki.verbrauch.wege.map(w=>`<tr>
           <td>${w.quelle==='api'?'API':'Abonnement'}
             <div class=dim style=font-size:.78rem>${w.bezahlt
-              ?'wird berechnet':'kostet nichts extra — was es über die API gekostet hätte'}</div></td>
+              ?'wird berechnet':'kostet nichts extra – was es über die API gekostet hätte'}</div></td>
           <td class=z>${w.seiten}</td>
           <td class=z>${w.tokens_ein.toLocaleString('de')}</td>
           <td class=z>${(w.tokens_cache||0).toLocaleString('de')}</td>
           <td class=z>${w.tokens_aus.toLocaleString('de')}</td>
-          <td class=z>${w.minuten!=null?w.minuten+' min':'—'}</td>
-          <td class=z>${w.je_seite!=null?w.je_seite.toFixed(3)+' $':'—'}</td>
+          <td class=z>${w.minuten!=null?w.minuten+' min':'–'}</td>
+          <td class=z>${w.je_seite!=null?w.je_seite.toFixed(3)+' $':'–'}</td>
           <td class=z><b>${w.dollar.toFixed(2)} $</b></td></tr>`).join('')}
        </table>
        <p class=dim style="font-size:.86rem;margin:.6rem 0 0">
         Beide Zeilen sind <b>gemessen</b>, nicht geschätzt: über die API aus
         Token und Preisliste, über das Abonnement aus dem, was
         <code>claude -p</code> selbst meldet. Der Zwischenspeicher ist der
-        Grund, warum eine zweite Seite viel weniger kostet als die erste —
+        Grund, warum eine zweite Seite viel weniger kostet als die erste –
         Prompt und Bestand werden nur einmal bezahlt.</p>`
     : `<p class=dim style="font-size:.86rem;margin:.9rem 0 0">
-        Noch nichts gelesen — sobald ein Lauf durch ist, steht hier der
+        Noch nichts gelesen – sobald ein Lauf durch ist, steht hier der
         <b>gemessene</b> Verbrauch statt einer Schätzung. Auch der Weg über
         das Abonnement wird beziffert: Er kostet nichts extra, aber die Zahl
         beantwortet die Frage, ob sich das für andere lohnt.</p>`}
@@ -1252,8 +1252,8 @@ const ZAHNRAD = { "Bestand": () => `
    <b>Browserfenster öffnen</b></label>
   <p class=dim style="font-size:.86rem;margin:.5rem 0 0">
    Gehen beim Start <b>zwei</b> Tabs auf, liegt das am Browser, nicht an
-   der Werkstatt: Er stellt die letzte Sitzung wieder her — die Werkstatt
-   war beim Schließen ja offen — und bekommt unseren Aufruf zusätzlich.
+   der Werkstatt: Er stellt die letzte Sitzung wieder her – die Werkstatt
+   war beim Schließen ja offen – und bekommt unseren Aufruf zusätzlich.
    Entweder hier abschalten und das Lesezeichen benutzen, oder den
    Werkstatt-Tab vor dem Beenden des Browsers schließen.</p>
  </div>
@@ -1264,11 +1264,11 @@ const ZAHNRAD = { "Bestand": () => `
    <label style="display:block;padding:.3rem 0;cursor:pointer">
     <input type=radio name=ap value="${esc(k)}" ${E.autopilot===k?'checked':''}
      onchange="merken('autopilot',this.value)">
-    <b>${esc(k)}</b> <span class=dim>— ${esc(v)}</span></label>`).join('')}
+    <b>${esc(k)}</b> <span class=dim>– ${esc(v)}</span></label>`).join('')}
   <p class=dim style="font-size:.86rem;margin:.7rem 0 0">
    Jede Stufe höher tauscht Tempo gegen stille Fehler. Eine Grenze bleibt auf
    jeder Stufe fest: <b>Die Selbsteinschätzung des Modells macht nie grün.</b>
-   Sie darf bestimmen, was zuerst gezeigt wird — nicht, was als bestätigt
+   Sie darf bestimmen, was zuerst gezeigt wird – nicht, was als bestätigt
    gilt. Bei <code>Koch</code>/<code>Roth</code> war das Modell viermal sicher
    und viermal falsch.</p>
  </div>
@@ -1277,13 +1277,13 @@ const ZAHNRAD = { "Bestand": () => `
  <div class=karte>
   <p class=dim style="margin:0 0 .8rem;font-size:.88rem">
    Zwei Sätze, und das ist Absicht: Der <b>Abgleich</b> entscheidet, ob ein
-   Zuordnungsvorschlag überhaupt möglich ist — er darf nur Unmögliches
+   Zuordnungsvorschlag überhaupt möglich ist – er darf nur Unmögliches
    ausschließen, sonst verwirft er richtige Treffer. Die
-   <b>Bestandsprüfung</b> sucht Widersprüche in dem, was schon dasteht — sie
+   <b>Bestandsprüfung</b> sucht Widersprüche in dem, was schon dasteht – sie
    darf enger sein, weil sie nur meldet.</p>
 
   <h3 style="font-size:.95rem;margin:.4rem 0 .5rem">Was der Abgleich
-   ausschließt <span class=dim style=font-weight:400>— weit gefasst</span></h3>
+   ausschließt <span class=dim style=font-weight:400>– weit gefasst</span></h3>
   <div class=reihe>
    <label class=dim>Mutter</label>
    <input type=number value="${E.grenzen.mutter[0]}" style=width:4rem
@@ -1301,11 +1301,11 @@ const ZAHNRAD = { "Bestand": () => `
   </div>
   <p class=dim style="font-size:.86rem;margin:.5rem 0 1.2rem">
    Ohne diese Prüfung ordnete der Abgleich einer Taufe von <b>1809</b> ein
-   Paar zu, das 1699 und 1703 geboren wurde und dessen Frau 1767 starb — und
+   Paar zu, das 1699 und 1703 geboren wurde und dessen Frau 1767 starb – und
    machte es grün.</p>
 
   <h3 style="font-size:.95rem;margin:1rem 0 .3rem">Was die Bestandsprüfung
-   meldet <span class=dim style=font-weight:400>— nach Gramps und
+   meldet <span class=dim style=font-weight:400>– nach Gramps und
    Ahnenblatt</span></h3>
   <p class=dim style="font-size:.86rem;margin:0 0 .6rem">
    Übernommen aus <b>Gramps</b> („Verify the Data", 43 Regeln, 15 Grenzwerte)
@@ -1345,11 +1345,11 @@ const ZAHNRAD = { "Bestand": () => `
   <span class=dim id=espeichert></span>
  </div>
 
-`, "Über": () => ` <h2>Struktur — steht in der Datei, nicht hier</h2>
+`, "Über": () => ` <h2>Struktur – steht in der Datei, nicht hier</h2>
  <div class=karte><p class=dim style="font-size:.88rem;margin:0">
   Registerarten, Felder, Rollen und Kontextquellen stehen in
   <code>konfig.toml</code>, eigene Pfade in <code>konfig.local.toml</code>
-  (in <code>.gitignore</code>). Das ist Struktur — sie ändert man beim
+  (in <code>.gitignore</code>). Das ist Struktur – sie ändert man beim
   Einrichten, nicht beim Arbeiten. Sie hier bearbeitbar zu machen hieße, die
   Datei bei jedem Klick neu zu schreiben und dabei ihre Kommentare zu
   verlieren; die machen den halben Erklärwert aus.</p></div>
@@ -1424,11 +1424,11 @@ function ansichtUeber(U){
     zuletzt: ${esc(f.betreff)}</div>`:''}
  </div>
 
- <h2>Wohin Daten gehen — bitte lesen</h2>
+ <h2>Wohin Daten gehen – bitte lesen</h2>
  <div class=warn style="line-height:1.5">
   <b>Beim Lesen verlassen Ihre Kirchenbuchbilder diesen Rechner.</b>
   Sie werden an die Anthropic-API geschickt. Scans von Archion, Ancestry
-  oder einem Archiv unterliegen deren Nutzungsbedingungen — ob die eine
+  oder einem Archiv unterliegen deren Nutzungsbedingungen – ob die eine
   Übermittlung an einen Dienstleister decken, muss jeder für seine eigenen
   Quellen klären. Die Werkstatt kann das nicht für Sie entscheiden.
   <br><br>
@@ -1441,13 +1441,13 @@ function ansichtUeber(U){
   Ablauf ohne Netz und ohne Kosten.
  </div>
 
- <h2>Was das Werkzeug kann — und was nicht</h2>
+ <h2>Was das Werkzeug kann – und was nicht</h2>
  <div class=karte style="line-height:1.55">
   <p style=margin-top:0><b>Es ist ein Abgleichsverfahren, kein
   Leseverfahren.</b> Im Pilotlauf waren 42 % der gelesenen Familiennamen
   falsch; auf 13,4 % markierte Felder kam das Verfahren erst durch den
-  Abgleich gegen den vorhandenen Bestand. Was gut lesbar ist — Datum,
-  Vornamen, Beruf, Ort — trägt den Abgleich; die Nachnamen werden
+  Abgleich gegen den vorhandenen Bestand. Was gut lesbar ist – Datum,
+  Vornamen, Beruf, Ort – trägt den Abgleich; die Nachnamen werden
   <i>durch</i> ihn bestimmt.</p>
   <p><b>Grün wird nur, was ein Anker bestätigt.</b> Weder die
   Selbsteinschätzung des Modells noch die Häufigkeit im Bestand machen
@@ -1455,7 +1455,7 @@ function ansichtUeber(U){
   sicher und viermal falsch, und <code>Roth</code> kommt 59-mal vor.</p>
   <p style=margin-bottom:0><b>Ungeprüft geblieben ist die Lesequalität
   selbst.</b> Alle bisherigen Zahlen messen die Verknüpfung, nicht das
-  Lesen — die Testdaten enthalten bereits korrigierte Lesungen. Dafür
+  Lesen – die Testdaten enthalten bereits korrigierte Lesungen. Dafür
   braucht es einen Lauf über die API gegen eine Seite mit bekannter
   Wahrheit.</p>
  </div>
@@ -1463,7 +1463,7 @@ function ansichtUeber(U){
  <h2>Nachlesen</h2>
  <div class=karte>
   <p class=dim style="margin:0 0 .5rem">Alle Entwurfsentscheidungen stehen
-   mit ihren Messwerten in <code>doku/</code> — nichts davon ist behauptet,
+   mit ihren Messwerten in <code>doku/</code> – nichts davon ist behauptet,
    ohne dass daneben steht, woran es gemessen wurde.</p>
   <table>${U.doku.map(d=>`<tr><td><code>doku/${esc(d)}</code></td></tr>`).join('')}
    <tr><td><code>CLAUDE.md</code></td></tr>

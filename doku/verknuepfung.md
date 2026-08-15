@@ -1,4 +1,4 @@
-# Verknüpfungskaskade — der anspruchsvollste Teil
+# Verknüpfungskaskade – der anspruchsvollste Teil
 
 Nicht das Lesen ist die OFB-Arbeit, sondern das **Verknüpfen**: Zu jedem
 Registereintrag muss entschieden werden, welche der genannten Personen im
@@ -17,7 +17,7 @@ Familienregisters**. Beispiel Taufregister Bd. 4, Bild 00361:
     Nr.  8    38      Nr. 11   69
     Nr.  9   146      Nr. 12   78
 
-**Alle Einträge mit derselben Nummer gehören zur selben Familie** — ohne
+**Alle Einträge mit derselben Nummer gehören zur selben Familie** – ohne
 Namensabgleich, ohne Datumsvergleich, ohne Wahrscheinlichkeitsrechnung. Der
 Verweis stammt vom Pfarrer selbst und ist damit die höchste verfügbare
 Autorität.
@@ -30,19 +30,19 @@ register-übergreifend verbindet:
             Taufe 18xx  Geschwister
             Tod   1844  Johannes Faller
 
-Damit fallen Taufe, Ehe und Tod derselben Familie von selbst zusammen — die
+Damit fallen Taufe, Ehe und Tod derselben Familie von selbst zusammen – die
 Kaskade unten wird dort überflüssig, wo die Nummer lesbar ist.
 
 ### In allen drei Registern vorhanden
 
 | Register | Spalte |
 |---|---|
-| Taufen Bd. 4 | 9, letzte — *Seitenzahl des Familien-Registers* |
+| Taufen Bd. 4 | 9, letzte – *Seitenzahl des Familien-Registers* |
 | Sterberegister | letzte Spalte |
 | Eheregister Bd. 6 | letzte Spalte (zu prüfen) |
 
 Damit verbindet die Nummer nicht nur innerhalb eines Registers, sondern **über
-alle drei hinweg** — genau die Kette Taufe → Ehe → Tod, für die sonst die
+alle drei hinweg** – genau die Kette Taufe → Ehe → Tod, für die sonst die
 Kaskade nötig ist.
 
 ### Vorbehalte
@@ -55,7 +55,7 @@ Kaskade nötig ist.
    nicht Familienbuch Bönnigheim. Die Nummer muss immer mit der Parochie
    zusammen geführt werden.
 3. **Nicht jeder Eintrag trägt eine.** Uneheliche Geburten, Auswärtige und
-   Durchreisende bleiben ohne — dort greift weiter die Kaskade.
+   Durchreisende bleiben ohne – dort greift weiter die Kaskade.
 
 ### Rang unter den Ankern
 
@@ -70,11 +70,11 @@ Kaskade nötig ist.
 Gegenüber dem 16./17. Jahrhundert sind die Namensformen ab etwa 1810 gefestigt.
 Das wirkt zweifach:
 
-**Für die Lesung günstig** — kleinerer Lösungsraum. Ein gelesenes `Kröneck` ist
+**Für die Lesung günstig** – kleinerer Lösungsraum. Ein gelesenes `Kröneck` ist
 um 1830 wahrscheinlich genau so geschrieben; 1650 stehen `Krönich`, `Kroneck`,
 `Krönegk` nebeneinander.
 
-**Für den Rückbezug entscheidend** — und deshalb bleiben die Äquivalenzklassen
+**Für den Rückbezug entscheidend** – und deshalb bleiben die Äquivalenzklassen
 nötig, nur in umgekehrter Richtung als zunächst gedacht: Die **stabile Form von
 1830 muss die variablen alten Formen finden**, wenn Eltern und Großeltern in
 Beständen von 1750 gesucht werden. `Bierle` muss `Bührlen`, `Bürle`, `Bierlen`
@@ -92,13 +92,13 @@ Zeiträume sich nicht überschneiden.
     Familie ─► gemeinsame Familie von Vater und Mutter
     Kind   ──► immer neu, dort eingehängt
 
-**Der Elternehe-Anker.** Die Mutter wird nicht gesucht, sondern *abgeleitet* —
+**Der Elternehe-Anker.** Die Mutter wird nicht gesucht, sondern *abgeleitet* –
 deshalb trägt er auch, wenn ihr Name falsch gelesen wurde. Im Pilotlauf fand er
 vier Fälle, in denen der *Vater*name falsch war und der Treffer allein über die
 Vornamen der Mutter kam.
 
 Fehlt die gemeinsame Familie, obwohl beide Eltern gefunden sind: **nicht still
-neu anlegen** — das ist entweder eine Zweitehe oder eine Fehlzuordnung.
+neu anlegen** – das ist entweder eine Zweitehe oder eine Fehlzuordnung.
 
 ## Heirat
 
@@ -130,11 +130,11 @@ und **beide** Hauptpersonen betrifft.
 
     † 14.01.1800  Catharina Dorothea Schneider, Alter 39 J 5 M 24 T
       → errechnet geb. 21.07.1760
-      → Taufe 21.07.1760 — auf den Tag
+      → Taufe 21.07.1760 – auf den Tag
       → Eltern Joh. Friedrich Schneider ⚭ Christina Susanna Felger
       → im Sterbeeintrag genannter Vater: derselbe ✓
 
-## Die drei Fehlschläge — und was daraus folgt
+## Die drei Fehlschläge – und was daraus folgt
 
 | Fall | Ursache | Konsequenz |
 |---|---|---|
@@ -148,10 +148,10 @@ wird nie wieder geprüft. Deshalb:
 > **Ein Match braucht mindestens zwei übereinstimmende Merkmale, von denen
 > eines nicht der Nachname ist.** Nachname + Jahr genügt nie.
 
-## Machbarkeitsnachweis — gemessen 04.08.2026
+## Machbarkeitsnachweis – gemessen 04.08.2026
 
 `werkstatt/kaskade_tod.py`, gemessen gegen `~/ofb-ki/kirchenbuch.db`,
-Parochie Haberschlacht. Ohne Bilder, ohne API — die Testdaten waren vorhanden.
+Parochie Haberschlacht. Ohne Bilder, ohne API – die Testdaten waren vorhanden.
 
 | Zeitraum | Einträge | Treffer | Umweg nötig | kein Treffer | mehrdeutig |
 |---|---|---|---|---|---|
@@ -176,7 +176,7 @@ Die Alternative ist, jeden Eintrag von Hand zu durchsuchen.
 ### Nichtfinden ist oft richtig
 
 Belegt am Fall der Zwillinge Wolff, † 11. und 19.03.1801 nach 14 bzw. 22 Tagen:
-Die Kaskade findet keine Taufe — und im kuratierten OFB steht bei beiden
+Die Kaskade findet keine Taufe – und im kuratierten OFB steht bei beiden
 `BIRT CAL 25 FEB 1801` **ohne** `CHR`. Sie wurden vermutlich nur nottauft.
 Das Nichtfinden ist die korrekte Auskunft, kein Fehler des Verfahrens.
 
@@ -189,13 +189,13 @@ Das Nichtfinden ist die korrekte Auskunft, kein Fehler des Verfahrens.
 Nur die mittlere Gruppe ist teilweise ein Bestandsproblem: `kirchenbuch.db`
 führt für Haberschlacht 1795–1807 **271** Taufen, der kuratierte OFB **392**
 Tauf- und Geburtsereignisse. Für diese Parochie ist der OFB die vollständigere
-Quelle — ein Argument dafür, mehrere Bestände gestaffelt abzufragen.
+Quelle – ein Argument dafür, mehrere Bestände gestaffelt abzufragen.
 
 ### Zwei Bugs, die der Test aufgedeckt hat
 
 1. **Geschlechtsprüfung vor dem Mädchennamen-Umweg.** `geschl_verst` ist in
    835 von 1.292 Einträgen leer; die Prüfung verhinderte den Umweg fast immer.
-   Entfernt — ein genannter Ehepartner genügt als Anlass. Wirkung: Treffer von
+   Entfernt – ein genannter Ehepartner genügt als Anlass. Wirkung: Treffer von
    53,8 auf 59,8 %.
 2. **Naiver Nachname-plus-Jahr-Match.** Hätte `Johannes Bierle` mit
    `Carl Heinrich Bierle` verknüpft. Verhindert durch die Pflichtregel.
@@ -203,9 +203,9 @@ Quelle — ein Argument dafür, mehrere Bestände gestaffelt abzufragen.
 ## Regeln für die Umsetzung
 
 1. **Errechnete Geburtsdaten aus Altersangaben sind stark**, wenn sie Monate und
-   Tage enthalten — dann taggenau vergleichbar. Nur „65 Jahre" heißt ±1 Jahr.
+   Tage enthalten – dann taggenau vergleichbar. Nur „65 Jahre" heißt ±1 Jahr.
 2. **Verheiratete Frauen** über die Ehe erschließen, nicht über den Nachnamen.
-3. **Nichtfinden ist ein Ergebnis.** Zuzug, andere Parochie, Lücke im Buch — das
+3. **Nichtfinden ist ein Ergebnis.** Zuzug, andere Parochie, Lücke im Buch – das
    gehört vermerkt, nicht als Fehler behandelt.
 4. **Kein stiller Match.** Jede Verknüpfung trägt ihre Begründung, jede
    Mehrdeutigkeit wird vorgelegt.

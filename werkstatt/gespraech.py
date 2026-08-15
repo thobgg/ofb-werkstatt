@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Rückfragen zu einem einzelnen Eintrag — im Zweifel nachfragen können.
+"""Rückfragen zu einem einzelnen Eintrag – im Zweifel nachfragen können.
 
 Die Maske kennt zwei Antworten: übernehmen oder neu anlegen. Für den
 Regelfall reicht das. Der Ertrag der Arbeit steckt aber in den Fällen, die
@@ -39,13 +39,13 @@ Beantworte die Frage des Bearbeiters knapp und sachlich, auf Deutsch.
 Halte dich an diese Regeln:
 
 - **Sag, worauf du dich stützt.** Bild, gelesener Text, Bestandstreffer
-  oder Erfahrung mit der Schrift — das ist der Unterschied zwischen einer
+  oder Erfahrung mit der Schrift – das ist der Unterschied zwischen einer
   Lesung und einer Vermutung.
 - **Vokabular und Häufigkeit bestätigen nichts.** Dass ein Name im Bestand
   häufig ist, macht ihn nicht richtig. Im Pilotlauf stand `Roth` 59-mal im
   Bestand und war doch `Koch`.
 - **Widersprich nicht dem Bild.** Wenn die Lesung anders aussieht als der
-  Bestand, ist das ein Befund, kein Fehler — benenne beide Seiten.
+  Bestand, ist das ein Befund, kein Fehler – benenne beide Seiten.
 - **Du änderst nichts.** Wenn eine Änderung sinnvoll ist, sag welches Feld
   und was hinein sollte; eintragen wird es der Bearbeiter.
 - Wenn du es nicht erkennen kannst, sag das. Eine ehrliche Unsicherheit ist
@@ -81,7 +81,7 @@ def _merke(con, eintrag_id, wer, text):
 
 
 def lage(con, eintrag_id):
-    """Alles, was zum Eintrag bekannt ist — als Text für das Modell.
+    """Alles, was zum Eintrag bekannt ist – als Text für das Modell.
 
     Bewusst flach und lesbar statt JSON: Das Modell soll den Eintrag lesen
     wie ein Mensch, der über die Schulter schaut.
@@ -104,7 +104,7 @@ def lage(con, eintrag_id):
         if f["ampel"] and f["ampel"] != "grau":
             teile.append(f"<{f['ampel']}>")
         if f["beleg"]:
-            teile.append(f"— {f['beleg']}")
+            teile.append(f"– {f['beleg']}")
         z.append(" ".join(teile))
     return "\n".join(z)
 
@@ -142,14 +142,14 @@ def bild(con, eintrag_id):
 def frage(con, eintrag_id, text, zeitlimit=300):
     """Eine Frage stellen und die Antwort zurückgeben.
 
-    Läuft über `claude -p`, also über den Zugang des Bearbeiters — kein
+    Läuft über `claude -p`, also über den Zugang des Bearbeiters – kein
     API-Schlüssel, keine zweite Rechnung. Ohne Claude Code gibt es eine
     ehrliche Absage statt einer erfundenen Antwort.
     """
     w = vorlage.werkzeug()
     if not w:
         return dict(ok=False, antwort=(
-            "Claude Code ist auf diesem Rechner nicht eingerichtet — ohne das "
+            "Claude Code ist auf diesem Rechner nicht eingerichtet – ohne das "
             "kann hier niemand antworten. Einrichten im Zahnrad unter "
             "KI-Anbindung."))
     _merke(con, eintrag_id, "mensch", text)

@@ -4,29 +4,29 @@ Werkstatt für ein **Ortsfamilienbuch**: Kirchenbuchseite lesen lassen, korrigie
 gegen den Bestand abgleichen, anbinden oder neu anlegen, am Ende GEDCOM ausgeben.
 
 **Funktioniert mit und ohne vorhandenen Bestand.** Wer eines fortschreibt, ankert
-gegen sein GEDCOM; wer bei Null anfängt, gegen die eigenen früheren Einträge —
+gegen sein GEDCOM; wer bei Null anfängt, gegen die eigenen früheren Einträge –
 die ersten hundert tragen die nächsten tausend. Zwei der vier Ankertypen
 (Chronologie, Kontext) brauchen überhaupt keinen Bestand.
 
-⚠️ Der Nullstart ist **nie getestet** — alle bisherigen Messwerte stammen aus
+⚠️ Der Nullstart ist **nie getestet** – alle bisherigen Messwerte stammen aus
 einem Lauf gegen ein reiches Ortsfamilienbuch mit 4.111 Personen.
 
-**Vor der Arbeit lesen — in dieser Reihenfolge:**
-1. `doku/landkarte.md` — wo liegt was, welcher Bestand gilt wofür, **wann Thomas
+**Vor der Arbeit lesen – in dieser Reihenfolge:**
+1. `doku/landkarte.md` – wo liegt was, welcher Bestand gilt wofür, **wann Thomas
    gefragt wird und wie**
-2. `doku/ansatz.md` — Begründung aller Entwurfsentscheidungen, mit Messwerten
-3. `doku/verknuepfung.md` — die Kaskade je Aktart, der anspruchsvollste Teil
-4. `doku/naechste-sitzung.md` — Stand und offene Punkte
+2. `doku/ansatz.md` – Begründung aller Entwurfsentscheidungen, mit Messwerten
+3. `doku/verknuepfung.md` – die Kaskade je Aktart, der anspruchsvollste Teil
+4. `doku/naechste-sitzung.md` – Stand und offene Punkte
 
 ## Die drei Regeln der Zusammenarbeit
 
 1. **Erst Regel, dann Ausnahmen.** Nie Einzelfälle abarbeiten, solange eine
    Regel möglich ist. Am 3.8. wurden acht Doppelehen einzeln diskutiert, bis
-   Thomas bremste — die anschließende fünfzeilige Regel entschied sechs davon
+   Thomas bremste – die anschließende fünfzeilige Regel entschied sechs davon
    allein.
 2. **Fragen sammeln.** Zweifelsfälle einer Runde am Stück vorlegen.
 3. **Mit Empfehlung fragen.** Nicht „was soll ich tun", sondern „ich würde X,
-   weil Y — einverstanden?"
+   weil Y – einverstanden?"
 
 ⚠️ `~/ofb-ki/` wird **nur lesend** angefasst. Kein Eingriff ins Live-System.
 
@@ -34,7 +34,7 @@ einem Lauf gegen ein reiches Ortsfamilienbuch mit 4.111 Personen.
 
 ```
 werkstatt/     Paket: db, konfig, suche, import_gedcom, raster, klassen, web/
-konfig.toml      Registerarten, Felder, Vorbelegungen — alles Ortsspezifische
+konfig.toml      Registerarten, Felder, Vorbelegungen – alles Ortsspezifische
 bilder/{ehe,taufe,tod}/   Scans je Aktart (nie einchecken)
 daten/           erfassung.sqlite (nie einchecken)
 doku/            ansatz.md, naechste-sitzung.md
@@ -52,12 +52,12 @@ praktisch fehlerfrei; Familiennamen waren im Pilotlauf zu 42 % falsch. Die
 Nachnamen werden *durch* den Abgleich bestimmt, nicht umgekehrt.
 
 **Selbsteinschätzung des Modells macht nicht grün.** Bei `Koch`/`Roth` war das
-Modell viermal sicher und viermal falsch. Vokabular und Häufigkeit ebenso wenig —
+Modell viermal sicher und viermal falsch. Vokabular und Häufigkeit ebenso wenig –
 `Roth` kommt 59-mal vor und hätte jeden Plausibilitätstest bestanden. Grün wird
 nur, was ein Anker bestätigt.
 
 **Kontext ist Teil der Information.** Ausschnitte nie isoliert zeigen oder ans
-Modell schicken — weder in der Oberfläche noch im Prompt. Dieselbe Hand schreibt
+Modell schicken – weder in der Oberfläche noch im Prompt. Dieselbe Hand schreibt
 in jedem Eintrag `B. u. Weingärtner in Haberschlacht`; daran eicht man die
 Buchstaben.
 
@@ -73,7 +73,7 @@ bleibt erhalten auch wenn falsch), `kb_form` (wörtlich, → `_KB_NAME`), `kanon
 
 | Anker | braucht | trägt ab |
 |---|---|---|
-| Chronologie — Datum zwischen Vorgänger und Nachfolger | nichts | erster Seite |
+| Chronologie – Datum zwischen Vorgänger und Nachfolger | nichts | erster Seite |
 | Kontext der Nachbarzeilen | nichts | erster Seite |
 | Bestand: Person, Elternehe, Beruf | vorhandenes GEDCOM | sofort |
 | Verweise zwischen Tauf-, Ehe- und Totenregister | mehrere Register | nach Jahrgängen |
@@ -91,7 +91,7 @@ Standard, Englisch zweite Datei) und die `herkunft`-Spalte je Datensatz.
 
 Eine **Runde** ist eine Tranche: so und so viele Seiten EINES Registers, die
 zusammen gelesen, korrigiert und übergeben werden. Der Zustand liegt in der
-Datenbank, nicht im Prozess — der Läufer arbeitet weiter, wenn das Browser-
+Datenbank, nicht im Prozess – der Läufer arbeitet weiter, wenn das Browser-
 fenster zugeht, und ein Abbruch hinterlässt einen lesbaren Zustand.
 
     geplant ──lesen──► korrigieren ──übergeben──► fertig
@@ -116,7 +116,7 @@ python3 -m werkstatt.runde --verwirf 1      # rückstandslos zurücknehmen
 **Zwei Lesequellen.** `--quelle testdaten` spielt die 22 Piloteinträge ein
 und braucht keinen API-Schlüssel. Das ist keine Bequemlichkeit: Die Maske war
 seit dem Schemawechsel kaputt (`ofb_id` gegen `person`) und niemandem
-aufgefallen, weil sie nur zwei Zustände kannte — leer, oder Schlüssel und
+aufgefallen, weil sie nur zwei Zustände kannte – leer, oder Schlüssel und
 echtes Geld. Was nur gegen Bezahlung sichtbar wird, wird nicht geprüft.
 
 Die Testquelle liefert **nur die Rohlesung**; die 39 geprüften Verweise
@@ -155,7 +155,7 @@ poppler-utils meldet die Einstellungsseite das.
 ## KI-Anbindung
 
 Modell, Bildkante und Tokengrenze stehen unter `/einstellungen`, nicht mehr
-im Code. Preise je Million Token, Stand August 2026 — die Batch-API halbiert
+im Code. Preise je Million Token, Stand August 2026 – die Batch-API halbiert
 beide:
 
 | Modell | ein | aus | Bildkante |
@@ -166,30 +166,30 @@ beide:
 | Fable 5 `claude-fable-5` | 10,00 $ | 50,00 $ | 2576 px |
 
 **Die Bildkante ist der Hebel für die Lesequalität.** Sie stand auf 1568 px
-mit dem Vermerk „größer bringt nichts, kostet nur Tokens" — das galt für die
+mit dem Vermerk „größer bringt nichts, kostet nur Tokens" – das galt für die
 damaligen Modelle. Opus 5 und Sonnet 5 nehmen **2576 px**. Bei Kurrentschrift
 zählt genau das, und die eigene Messung sagt es: „Ancestry-JPG (24 MP) gegen
 Archion-PDF (14 MP) löste Eheeintrag Nr. 4 auf, der vorher unlesbar war."
-Der Preis ist klein — 1.600 auf 4.784 Bildtoken, bei Opus 5 rund zwei Cent
+Der Preis ist klein – 1.600 auf 4.784 Bildtoken, bei Opus 5 rund zwei Cent
 je Seite gegen gemessene 0,13 $.
 
 Das Modell stand außerdem auf `claude-opus-4-5`. Jetzt `claude-opus-5`.
 
 **Der Schlüssel wird nie angezeigt**, nur ob `ANTHROPIC_API_KEY` gesetzt ist.
-Der Verbrauch kommt aus der Auftragstabelle — gemessen, nicht geschätzt.
+Der Verbrauch kommt aus der Auftragstabelle – gemessen, nicht geschätzt.
 
 ### Zweiter Weg: über das eigene Abonnement
 
 Quelle `datei` legt die Seiten ab und lässt sie von `claude -p` lesen. Das
 läuft über den Zugang des Bearbeiters, kostet also keine zweite Rechnung.
-**Es gibt dabei keinen Chat, an den sich die Werkstatt hängt** — jeder Aufruf
+**Es gibt dabei keinen Chat, an den sich die Werkstatt hängt** – jeder Aufruf
 ist eine eigene, kurze Sitzung ohne Verlauf. Wer angemeldet ist, entscheidet
 allein `claude auth login`; die Werkstatt hält keine Anmeldedaten und fragt
 über `vorlage.bereitschaft()` nur `claude auth status` ab.
 
 Im Zahnrad steht das Konto samt Abo, und wenn keines da ist, ein Knopf
 „Jetzt anmelden" (`vorlage.anmelden()`). Er öffnet ein Terminalfenster mit
-`claude auth login` — die Anmeldung schickt in den Browser und wartet auf
+`claude auth login` – die Anmeldung schickt in den Browser und wartet auf
 Rückmeldung, blind im Hintergrund geht sie nicht. Die Seite pollt danach
 `/api/anmeldestand` und schaltet von selbst auf grün.
 
@@ -197,17 +197,17 @@ Rückmeldung, blind im Hintergrund geht sie nicht. Die Seite pollt danach
 neu gestartet, Knopf gedrückt, Fenster ging auf, Anmeldung im Browser, Seite
 schaltete von selbst auf grün.
 
-○ **Ungetestet bleiben Windows und macOS** — die Zweige für `cmd` und
+○ **Ungetestet bleiben Windows und macOS** – die Zweige für `cmd` und
 Terminal.app. Zum Prüfen muss man sich abmelden, was die begleitende
 Claude-Code-Sitzung mit beendet; also allein testen, nicht nebenher. Greift
 `claude auth logout` nicht, hilft
 `mv ~/.claude/.credentials.json ~/.claude/.credentials.json.aus`.
 
-**Starten:** `python3 start.py` genügt — wartet auf den Server und öffnet den
+**Starten:** `python3 start.py` genügt – wartet auf den Server und öffnet den
 Browser (`--kein-browser` schaltet das ab), und bei belegtem Port wird nur
 das Fenster geöffnet. Die beiden Dateien zum Doppelklick reichen bloß durch.
 Ein laufender Server merkt Codeänderungen nicht: nach dem Bearbeiten
-`pkill -f "python3 start.py"`, sonst misst man den alten Stand — genau daran
+`pkill -f "python3 start.py"`, sonst misst man den alten Stand – genau daran
 ist der erste Anmeldetest gescheitert.
 
 ○ **Batch fehlt.** Halbiert die Kosten und ist bei seitenweiser Verarbeitung
@@ -226,7 +226,7 @@ Der Rang landet in `herkunft.gilt`; damit ist die Ampelregel eine Abfrage und
 keine Sonderlogik. Keine Quelle eingetragen = Nullstart: alles bleibt gelb,
 die Maske legt jedes Feld vor. Langsam, aber nicht falsch.
 
-## Stand — gemessen 4. August 2026
+## Stand – gemessen 4. August 2026
 
 Fertig: Datenbasis mit Herkunftsrang, GEDCOM-Import verlustfrei, Suche mit
 Äquivalenzklassen, Familienanbindung, Rundenautomat mit Hintergrundläufer,
@@ -243,15 +243,15 @@ Voller Durchlauf gegen die Testquelle, 4 Seiten Taufregister:
 | Abgleich gegen die geprüfte Wahrheit | **18 von 39 wiedergefunden (46 %), 0 falsch** |
 
 Die 46 % sind die Untergrenze: Die Piloteinträge enthalten nur Nachnamen,
-keine Vornamen und keine Daten — der Abgleich hat nur Nachname+Nachname+Ehe.
+keine Vornamen und keine Daten – der Abgleich hat nur Nachname+Nachname+Ehe.
 
 **Ein Falschtreffer, den die Messung gefunden hat.** Der Taufe Nr. 12 von 1809
 wurde ein Paar zugeordnet, das 1699 und 1703 geboren wurde und dessen Frau
-1767 starb — einziger gemeinsamer Nachname im Bestand, kein Trauungsdatum,
+1767 starb – einziger gemeinsamer Nachname im Bestand, kein Trauungsdatum,
 und damit **grün**. Seither prüft `abgleich._plausibel()` Lebensgrenzen, und
 ohne ein Datum, das die Familie zeitlich einordnet, wird nichts mehr grün.
 
-## Ausgabe — der Weg nach draußen
+## Ausgabe – der Weg nach draußen
 
 ```sh
 python3 -m werkstatt.ausgabe --leerlauf        Verlustfreiheit belegen
@@ -259,7 +259,7 @@ python3 -m werkstatt.ausgabe --fort -o x.ged   Fortschreibung
 python3 -m werkstatt.ausgabe --neu  -o x.ged   Neuausgabe
 ```
 
-`rec` bewahrt die Quelldatei vollständig und in Reihenfolge — **nicht nur
+`rec` bewahrt die Quelldatei vollständig und in Reihenfolge – **nicht nur
 INDI und FAM.** Der Import verwarf vorher 158 Records: HEAD, SUBM, 35 SOUR,
 120 `_LOC` und TRLR. Auf die `_LOC` zeigt jede Person mit `3 _LOC @L1@`.
 Nachtragen für alte Bestände: `import_gedcom --nur-rec datei.ged`.
@@ -272,7 +272,7 @@ Bytestelle.
 die Auswertung des Journals beim Fortschreiben (nötig erst, wenn Records
 nicht nur ergänzt, sondern geändert werden).
 
-## Stand 6. August 2026 — was an diesem Tag entstand
+## Stand 6. August 2026 – was an diesem Tag entstand
 
 Die App ist bedienbar geworden. Der Reihe nach:
 
@@ -293,32 +293,32 @@ Rang immer `vokabular`. Nach jedem Import werden die gemerkten Listen
 verworfen und alles noch nicht Bestätigte neu abgeglichen.
 
 **Arbeitskopie nach jeder Übergabe.** `ausgabe/<Gemeinde>_arbeitskopie.ged`,
-vorige Fassung als `.vorher.ged`. Nicht erst am Ende — zwei getrennt
+vorige Fassung als `.vorher.ged`. Nicht erst am Ende – zwei getrennt
 gewachsene Bestände hinterher zu verschmelzen bekommt niemand mehr sauber
 hin.
 
 **Gesprächsfenster unter jedem Eintrag.** Der Bearbeiter fragt, das Modell
-antwortet mit Eintrag, Bildausschnitt und Bestandstreffern vor Augen —
+antwortet mit Eintrag, Bildausschnitt und Bestandstreffern vor Augen –
 und ändert nichts. Der Verlauf bleibt stehen.
 
 **Randvermerk wird zum Sterbeereignis** (`randvermerk.py`), samt der
 Zählmonate 7ber/8ber/9ber/Xber. Zwei von sechs Einträgen der Runde 1
 tragen einen Tod am Rand.
 
-**Feldkatalog** (`katalog.py`) — der eigentliche Umbau. Je Aktart steht
+**Feldkatalog** (`katalog.py`) – der eigentliche Umbau. Je Aktart steht
 jetzt fest, was vorkommen *kann*, nicht was jemand nachgetragen hat:
 
     Taufe 16 -> 34 Felder · Ehe 22 -> 36 · Tod 10 -> 29
 
 Jedes Feld weiß, ob es eine Kirchenbuchform hat und wohin beide Formen
-gehören. Jedes Ziel ist eingestuft — GEDCOM 5.5.1, gebräuchlicher eigener
+gehören. Jedes Ziel ist eingestuft – GEDCOM 5.5.1, gebräuchlicher eigener
 Tag, hauseigener Tag. Etwa ein Drittel ist hauseigen und übersteht einen
 Programmwechsel nicht; dagegen steht `volltext`. Die Aktkarten sind im
 Zahnrad bedienbar: abschalten, Ziele umhängen, eigene Felder ergänzen
 (`feldwahl`).
 
 **Bauplan aus dem Katalog.** `uebergabe` hatte eine zweite, von Hand
-gepflegte Feldliste — und kannte das Sterbedatum nicht. Ereignisse werden
+gepflegte Feldliste – und kannte das Sterbedatum nicht. Ereignisse werden
 jetzt abgeleitet, alles Übrige landet in der neuen Tabelle `merkmal` und
 von dort unverändert ins GEDCOM.
 
@@ -328,7 +328,7 @@ von dort unverändert ins GEDCOM.
   was gerade eine Kennung bekommen hatte. Die Arbeitskopie der zweiten
   Runde hätte die erste stillschweigend weggeworfen. „Neu" heißt jetzt
   „steht nicht in der Vorlage".
-- In der Ehe bekam der Bräutigam den Geburtsort der Braut — beide Felder
+- In der Ehe bekam der Bräutigam den Geburtsort der Braut – beide Felder
   zielen auf `BIRT.PLAC`.
 - Ein Bildordner außerhalb des Projekts riss die Startseite ab
   (`relative_to` wirft dort). Dafür jetzt `konfig.kurz()`.
@@ -337,28 +337,28 @@ von dort unverändert ins GEDCOM.
 
 **Runde 1 steht offen** (Seite 00359, sechs Einträge, Stand
 `korrigieren`). Sie wurde vor dem Katalog gelesen und hat nur die alten
-16 Felder — *geborene*, *Personenstand*, *Paten*, *Volltext* fehlen dort,
+16 Felder – *geborene*, *Personenstand*, *Paten*, *Volltext* fehlen dort,
 weil beim Lesen niemand danach gefragt hat.
 
 Vorschlag: **Runde 1 verwerfen und 00359–00365 mit dem neuen Katalog neu
 lesen.** Das ist zugleich der erste echte Durchlauf und bringt die
-Stichprobe von 24 auf rund 68 Namensfelder — damit wird der Grenzfall von
+Stichprobe von 24 auf rund 68 Namensfelder – damit wird der Grenzfall von
 29 % markiert entscheidbar. Kostet Abo-Zeit, keine Rechnung.
 
 ## Nächste Schritte
 
-1. ~~Papierabgrenzung in `raster.py`~~ — **erledigt.** Nicht über Helligkeit
+1. ~~Papierabgrenzung in `raster.py`~~ – **erledigt.** Nicht über Helligkeit
    (die Unterlage ist so hell wie das Papier), sondern über die gedruckten
    Linien. 22/22 Zeilenlinien bei ±40 px, 0 überzählige Vorschläge.
    Messung: `python3 -m werkstatt.messung`, Sollwerte in `daten/soll_zeilen.json`.
-2. ~~**GEDCOM-Ausgabe**~~ — **erledigt.** `werkstatt/ausgabe.py`, zwei Arten:
+2. ~~**GEDCOM-Ausgabe**~~ – **erledigt.** `werkstatt/ausgabe.py`, zwei Arten:
    **Fortschreibung** reicht die Vorlage Record für Record durch (5.605
    zeichengleich, 9 ergänzt, 57 neu, 0 verloren, 0 tote Verweise) und belegt
    das mit dem **Leerlauftest**: `3444327 Byte, zeichengleich`. **Neuausgabe**
-   schreibt alles aus den eigenen Tabellen — aber nur 31 % der Dateigröße,
+   schreibt alles aus den eigenen Tabellen – aber nur 31 % der Dateigröße,
    weil Quellen, Notizen, Paten und Ortsdefinitionen dabei wegfallen. Deshalb
    ist Durchreichen die Voreinstellung.
-3. **Kaskaden für Ehe und Tod** — nach dem Muster von Taufe. `kaskade_tod.py`
+3. **Kaskaden für Ehe und Tod** – nach dem Muster von Taufe. `kaskade_tod.py`
    liegt fertig vor und ist noch nicht angeschlossen.
 4. **Bildausschnitte je Feld.** Arbeitsteilung statt Entweder-Oder: Das Modell
    sagt, *welche* Zeile und *welche* Spalte (das braucht keine Pixel, weil
@@ -371,7 +371,7 @@ Stichprobe von 24 auf rund 68 Namensfelder — damit wird der Grenzfall von
    bleiben `katalog.KATALOG`, `PAAR`, `KIND` und die Maske
    (`vater`/`mutter`/`braeutigam`).
 6. **Katalogfelder in die Maske.** Die Aktkarte kennt 34 Felder, die
-   Korrekturmaske zeigt Personenrollen, Datumsfelder und „alle Felder" —
+   Korrekturmaske zeigt Personenrollen, Datumsfelder und „alle Felder" –
    für Paten, Volltext und Unleserliches gibt es noch keine eigene Stelle.
 7. **Kirchenbuchform beim Eintragen.** `feld.kb_form` wird gelesen und
    ausgegeben, aber in der Maske gibt es nur unter „alle Felder" ein

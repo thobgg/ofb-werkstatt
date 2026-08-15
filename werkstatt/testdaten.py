@@ -6,14 +6,14 @@
 
 Warum das kein Luxus ist: Die Maske war messbar kaputt (`ofb_id` gegen
 `person`), seit dem Schemawechsel. Aufgefallen ist es nie, weil sie nur zwei
-Zustände kannte — leer, oder ein API-Schlüssel und echtes Geld. Ein Werkzeug,
+Zustände kannte – leer, oder ein API-Schlüssel und echtes Geld. Ein Werkzeug,
 dessen Hauptbildschirm nur gegen Bezahlung sichtbar wird, wird nicht geprüft.
 
 Quelle sind die 22 Taufeinträge des Pilotlaufs (Haberschlacht 1808/09,
 Bilder 00361–00365) aus dem Nachbarprojekt, das dabei unangetastet bleibt.
 
 **Ausgeliefert wird nur die Rohlesung.** Die 39 von Hand geprüften
-Personenverweise bleiben zurück — sie sind die *Wahrheit*, nicht die Eingabe.
+Personenverweise bleiben zurück – sie sind die *Wahrheit*, nicht die Eingabe.
 Der Abgleich muss sie selbst wiederfinden; genau das macht den Durchlauf
 prüfbar statt selbstbestätigend. Wer die Verweise mitliefert, misst
 hinterher nur, dass er sie mitgeliefert hat.
@@ -28,7 +28,7 @@ from . import konfig
 PILOT = (konfig.WURZEL.parent / "OFB" / "OFB-Haberschlacht"
          / "Transkription-1808" / "daten" / "erfassung.sqlite")
 # Dieselben Lesungen als mitgelieferte Datei. Ohne sie startet ein frisch
-# geklontes Projekt zwar, hat aber nichts zu tun — im Forum hiess es, die
+# geklontes Projekt zwar, hat aber nichts zu tun – im Forum hiess es, die
 # Werkstatt "konnte noch nicht getestet werden", und das war der Grund.
 MITGELIEFERT = konfig.WURZEL / "daten" / "pilot.json"
 STREIFEN = PILOT.parent.parent / "scans" / "zeilen"
@@ -61,7 +61,7 @@ def seiten(register=None):
     """Welche Bilder diese Quelle abdeckt.
 
     Die Registerangabe steht je Seite. Anfangs stand sie nur einmal oben
-    in der Datei, und die Demo deckte damit nur ein Register ab — wer
+    in der Datei, und die Demo deckte damit nur ein Register ab – wer
     frisch auspackte, waehlte nach der Reihenfolge das Eheregister und
     bekam „die Testquelle deckt dieses Register nicht ab" als ersten
     Klick ueberhaupt.
@@ -81,7 +81,7 @@ def seiten(register=None):
 
 
 def lies_seite(bild):
-    """Eine Seite 'lesen' — dieselbe Form, die auch die API liefert.
+    """Eine Seite 'lesen' – dieselbe Form, die auch die API liefert.
 
     Rückgabe wie in lesen.lies_seite(): {"eintraege": [{"lfd_nr", "felder"}]}
     """
@@ -121,7 +121,7 @@ def _streifen(pfad):
 def streifen_kopieren():
     """Zeilenstreifen in die Werkstatt holen.
 
-    Der Bildpfad der Maske ist bewusst auf die Projektwurzel eingesperrt —
+    Der Bildpfad der Maske ist bewusst auf die Projektwurzel eingesperrt –
     ein Verweis ins Nachbarverzeichnis wäre ein Loch im Dateizugriff.
     """
     if not STREIFEN.exists():

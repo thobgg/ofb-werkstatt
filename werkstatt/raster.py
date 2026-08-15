@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Seitenraster: Spalten je Buch, Zeilen je Seite.
 
-Daraus ergibt sich für jedes Feld der Bildausschnitt — deterministisch,
+Daraus ergibt sich für jedes Feld der Bildausschnitt – deterministisch,
 ohne dass ein Modell Koordinaten schätzen muss.
 
 ## Warum Helligkeit nicht trennt
@@ -17,12 +17,12 @@ Die Unterlage ist so hell wie das Papier. Was das Formular auszeichnet, ist
 nicht seine Helligkeit, sondern seine **gedruckten Linien**: dunkle Pixel mit
 hellen Nachbarn quer zur Laufrichtung. Buchdeckel ist dunkel mit dunklen
 Nachbarn, die Unterlage hell ohne Struktur. `linienmaske` trennt genau das,
-und zwar relativ zum Papierniveau der jeweiligen Aufnahme — keine feste Zahl.
+und zwar relativ zum Papierniveau der jeweiligen Aufnahme – keine feste Zahl.
 
 ## Die drei Abgrenzungen
 
     Falz      dunkelste Spalte im mittleren Drittel. Über alle vier Seiten
-              x=3024–3052 bei Kontrast 5–46 gegen Papiermittel ~220 —
+              x=3024–3052 bei Kontrast 5–46 gegen Papiermittel ~220 –
               das mit Abstand stabilste Merkmal der ganzen Seite.
     links     erste und letzte kräftige senkrechte Linie
     /rechts
@@ -33,12 +33,12 @@ und zwar relativ zum Papierniveau der jeweiligen Aufnahme — keine feste Zahl.
 **Waagerechte Linien werden je Buchseite gemessen, nie über den Falz hinweg.**
 Sie laufen nur über je eine Seite; über die Doppelseite gemessen verschmieren
 sie. Ebenso zählt der **Anteil dunkler Pixel**, nicht die längste
-durchgehende Lauflänge — jede Stelle, an der Handschrift eine Linie kreuzt,
+durchgehende Lauflänge – jede Stelle, an der Handschrift eine Linie kreuzt,
 halbiert den Lauf.
 
 ## Stand der Messung
 
-`python3 -m werkstatt.messung` misst gegen `daten/soll_zeilen.json` — vier
+`python3 -m werkstatt.messung` misst gegen `daten/soll_zeilen.json` – vier
 Taufregisterseiten mit 26 von Hand gezogenen Grenzen, davon 22 gedruckte
 Linien und 4 das Ende der Erfassung.
 
@@ -49,7 +49,7 @@ Linien und 4 das Ende der Erfassung.
     Falz ueber alle sieben Seiten:      x=3024–3072
 
 Die Sollwerte sind aus den von Hand geschnittenen Eintragsstreifen
-zurueckgewonnen und selbst nur auf etwa ±40 px genau — unterhalb dieser
+zurueckgewonnen und selbst nur auf etwa ±40 px genau – unterhalb dieser
 Toleranz misst man teilweise den Rekonstruktionsfehler mit. Die ±25-px-Zahl
 ist deshalb eine Untergrenze, nicht das Koennen des Verfahrens.
 
@@ -57,13 +57,13 @@ Zum Vergleich die frueheren Messungen: 14 % (laengster Lauf ueber die
 Doppelseite), 42 % (Anteil dunkler Pixel, Seiten getrennt), 71 % (dieselbe
 Methode bei sauber abgegrenzter Seite).
 
-**Offen:** Die aeusserste linke Randlinie wird nicht immer erfasst — auf
+**Offen:** Die aeusserste linke Randlinie wird nicht immer erfasst – auf
 00365 beginnt der erkannte Block bei x=1264 statt 1160. Fuer die Zeilen
 folgenlos, fuer das Spaltenraster nicht; das wird ohnehin von Hand gezogen.
 
 **Verwendung: Vorschlag, nicht Entscheidung.** Der Rastereditor zeigt die
 gefundenen Linien vor, der Bearbeiter zieht fehlende nach. Zusätzlich erbt
-jede Folgeseite das Raster der vorigen — das Formular bleibt über Jahrzehnte
+jede Folgeseite das Raster der vorigen – das Formular bleibt über Jahrzehnte
 gleich, es ist nur Nachschieben um wenige Pixel.
 
     python3 -m werkstatt.raster bilder/taufe/seite.jpg
@@ -87,7 +87,7 @@ def graustufen(pfad):
 
 
 def papierniveau(a):
-    """Helligkeit des Papiers — relativ zur Aufnahme, nicht fest verdrahtet."""
+    """Helligkeit des Papiers – relativ zur Aufnahme, nicht fest verdrahtet."""
     return float(np.percentile(a, 90))
 
 
@@ -205,7 +205,7 @@ def zeilenlinien(a, block, mindest=0.45, luecke=3):
 
 
 def spaltenlinien(a, block, mindest=0.30, luecke=3):
-    """Senkrechte Linien einer Buchseite — dieselbe Idee, um 90 Grad gedreht."""
+    """Senkrechte Linien einer Buchseite – dieselbe Idee, um 90 Grad gedreht."""
     x0, x1, y0, y1 = block
     m = linienmaske(a, achse=1)[y0:y1 + 1, x0:x1]
     if m.size == 0:
@@ -218,7 +218,7 @@ def spaltenlinien(a, block, mindest=0.30, luecke=3):
 
 
 def vereinen(links, rechts, tol):
-    """Zeilengrenzen beider Buchseiten vereinen — nahe Paare mitteln.
+    """Zeilengrenzen beider Buchseiten vereinen – nahe Paare mitteln.
 
     Eine Eintragszeile läuft über beide Seiten. Was nur eine Seite findet,
     bleibt trotzdem stehen: fehlende Linien kosten mehr als überzählige,
@@ -249,7 +249,7 @@ def vorschlag(pfad):
     ganz = []
     if len(seiten) == 2:
         # Dieselbe Eintragszeile steht auf beiden Buchseiten unterschiedlich
-        # hoch — gemessen bis 20 px Versatz durch die Buchkruemmung. Die
+        # hoch – gemessen bis 20 px Versatz durch die Buchkruemmung. Die
         # Toleranz muss darueber liegen, aber deutlich unter der Zeilenhoehe
         # (rund 450 px), sonst werden benachbarte Zeilen verschmolzen.
         ganz = [y * sk for y in vereinen(
@@ -263,7 +263,7 @@ def vorschlag(pfad):
 
 
 def ausschnitt(raster, seite, zeile, spalte, rand=25):
-    """Bildausschnitt für Zelle (Zeile, Spalte) — Basis der Lupe."""
+    """Bildausschnitt für Zelle (Zeile, Spalte) – Basis der Lupe."""
     s = raster["seiten"][seite]
     zs, sp = sorted(s["zeilen"]), sorted(s["spalten"])
     y0 = zs[zeile] if zeile < len(zs) else s["y0"]
@@ -290,7 +290,7 @@ def main():
         print(f"    Zeilenlinien  ({len(s['zeilen']):2}): {s['zeilen']}")
         print(f"    Spaltenlinien ({len(s['spalten']):2}): {s['spalten']}")
     print(f"  vereint ({len(v['zeilen'])}): {v['zeilen']}")
-    print("\nVorschlag — unvollständig. Im Editor nachziehen und bestätigen.")
+    print("\nVorschlag – unvollständig. Im Editor nachziehen und bestätigen.")
 
 
 if __name__ == "__main__":
@@ -302,7 +302,7 @@ def paarung(v, tol=None):
 
     Gedacht war das als Entscheidung: Läuft ein Eintrag über den Bund oder
     steht jede Buchseite für sich? Davon hängt ab, wie breit ein Streifen
-    sein muss — beim Taufregister 1808 steht links Name und Eltern, rechts
+    sein muss – beim Taufregister 1808 steht links Name und Eltern, rechts
     Tauftag, Taufender und Paten.
 
     **Als Entscheidung taugt die Zahl nicht.** Gemessen an drei Registern:
@@ -314,7 +314,7 @@ def paarung(v, tol=None):
         Tod   00018   Linien [9, 4]   Paarung 1,00
 
     Auf 00917 findet die Linienerkennung links vier und rechts fünf Linien,
-    die einander nicht entsprechen — ungleich hohe Einträge und die
+    die einander nicht entsprechen – ungleich hohe Einträge und die
     Buchkrümmung reichen dafür. Das Formular läuft ersichtlich durch.
 
     Deshalb schaltet nichts automatisch um. Der Streifen geht **immer**
@@ -323,7 +323,7 @@ def paarung(v, tol=None):
     niemand kann prüfen, was in der Maske steht. Fälschlich verbunden heißt,
     der Streifen ist doppelt so breit wie nötig.
 
-    Die Zahl bleibt als Auskunft — sie zeigt, wie sicher das Zeilenraster
+    Die Zahl bleibt als Auskunft – sie zeigt, wie sicher das Zeilenraster
     einer Seite sitzt.
     """
     s = v.get("seiten") or []

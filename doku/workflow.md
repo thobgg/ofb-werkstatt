@@ -1,4 +1,4 @@
-# Der Arbeitsablauf — Vorschlag zum Festzurren
+# Der Arbeitsablauf – Vorschlag zum Festzurren
 
 Stand 5. August 2026. Diese Datei beschreibt **einen Arbeitstag an der
 Werkstatt** von der ersten Seite bis zur GEDCOM-Ausgabe.
@@ -7,7 +7,7 @@ Zwei Zeichen trennen, was schon geht, von dem, was ich vorschlage:
 
     ✓  gebaut und gelaufen
     ○  vorgeschlagen, noch nicht gebaut
-    ?  offene Entscheidung — hier ist Ihr Wort gefragt
+    ?  offene Entscheidung – hier ist Ihr Wort gefragt
 
 ---
 
@@ -37,7 +37,7 @@ Eintrag 7 entscheiden, wird Seite 4 gelesen.
 
 Damit stimmt beides: der Zusammenhang beim Lesen und die Ruhe beim Entscheiden.
 
-## Die Tranche bleibt — aber als Reihenfolge, nicht als Wartezeit
+## Die Tranche bleibt – aber als Reihenfolge, nicht als Wartezeit
 
 Die Tranche ordnet, **in welcher Reihenfolge** die Register drankommen, nicht
 wann Sie etwas zu sehen bekommen.
@@ -51,7 +51,7 @@ wann Sie etwas zu sehen bekommen.
               Tranche 1821–1832
 
 Der Grund ist kein Geschmack, sondern eine Messung. Der Elternehe-Anker trägt
-im Taufjahr 1808 noch 94 %, 1813 noch 53 %, 1820 nur 18 % — **es sei denn,
+im Taufjahr 1808 noch 94 %, 1813 noch 53 %, 1820 nur 18 % – **es sei denn,
 die Ehen ab 1808 sind vorher übergeben.** Dann wächst er mit. Wer die Taufen
 vorzieht, prüft sie später ein zweites Mal.
 
@@ -59,7 +59,7 @@ Deshalb: **Ehen → Taufen → Tode**, und erst dann die nächste Tranche.
 
 ---
 
-## 0. Einrichten — einmal je Ort
+## 0. Einrichten – einmal je Ort
 
 ✓ **Register beschreiben.** `konfig.toml` nennt Registerarten, ihre Felder und
 die Personenrollen. Nichts davon steht im Code.
@@ -67,18 +67,18 @@ die Personenrollen. Nichts davon steht im Code.
 ✓ **Bilder ablegen.** `bilder/ehe/`, `bilder/taufe/`, `bilder/tod/`. Die
 Werkstatt liest, was da liegt, und schreibt nie hinein.
 
-✓ **Kontextquellen eintragen** — der wichtigste Schritt der Einrichtung.
+✓ **Kontextquellen eintragen** – der wichtigste Schritt der Einrichtung.
 Jede Quelle bekommt ihren Rang:
 
     gilt = "beleg"       darf bestätigen  → ein Treffer macht grün
     gilt = "vokabular"   rankt nur        → ein Treffer bleibt gelb
 
 Eigene Pfade in `konfig.local.toml` (gitignoriert). Keine Quelle eingetragen
-heißt Nullstart — alles bleibt gelb, jedes Feld wird vorgelegt. Langsam, aber
+heißt Nullstart – alles bleibt gelb, jedes Feld wird vorgelegt. Langsam, aber
 nicht falsch.
 
 ○ **Bestände importieren.** Bisher nur GEDCOM. XLSX, CSV und DOCX sind im
-Entwurf gezeichnet und nicht gebaut — genau die Formate, in denen die
+Entwurf gezeichnet und nicht gebaut – genau die Formate, in denen die
 Nachbarorte vorliegen (Frauenzimmern, Güglingen, Zabergäu).
 
 ○ **Quellwissen importieren.** Der Fehlerkatalog dieser Hand steht in
@@ -94,10 +94,10 @@ Die Zeilen sitzen automatisch (22/22 bei ±40 px), die Spalten nicht.
 
 Beim Start soll **ein** Knopf dastehen, und er soll wissen, wo es weitergeht:
 
-    ▸ Weiter — Taufregister, Eintrag 7 von 118
+    ▸ Weiter – Taufregister, Eintrag 7 von 118
 
 ✓ Der Startbildschirm zeigt Stand und Vorschlag samt Begründung:
-„erste Runde — Ehen zuerst, sie bauen den Anker".
+„erste Runde – Ehen zuerst, sie bauen den Anker".
 
 ○ **Der Merkpunkt ist zu grob.** Gemerkt wird die Runde, nicht der Eintrag.
 Für „weiter, wo ich aufgehört habe" fehlt eine Zeile in der Datenbank.
@@ -111,14 +111,14 @@ es und **was davon darf bestätigen**. Heute ist das Handarbeit in
 ist, lässt sich keine zweite beginnen.
 
 **? Tranchengröße.** Vorbelegt sind 20 Seiten. Bei Ehen sind das grob 100
-Einträge und 600 Personenfelder — vermutlich zu viel. Vorschlag: **10 bei
+Einträge und 600 Personenfelder – vermutlich zu viel. Vorschlag: **10 bei
 Ehen, 20 bei Taufen und Toden**, weil ein Eheeintrag sechs Personen nennt und
 ein Taufeintrag drei. Die Zahl steht ohnehin in den Einstellungen; sie
 bestimmt nur, wie oft übergeben wird, nicht wie lange Sie warten.
 
 ---
 
-## 2. Lesen — im Voraus, im Hintergrund  ✓
+## 2. Lesen – im Voraus, im Hintergrund  ✓
 
 Der Läufer arbeitet die Seiten ab, während Sie an den vorigen Einträgen
 sitzen. Das Browserfenster darf zugehen; der Zustand liegt in der Datenbank.
@@ -139,7 +139,7 @@ trotzdem durch, und die siebte trägt ihre Meldung. In einem Hintergrund-Thread
 wäre ein Abbruch sonst ein stiller Tod.
 
 **Zwei Quellen.** `api` schickt die Bilder an das Modell. `testdaten` spielt
-die 22 Piloteinträge ein und kostet nichts — dafür da, dass sich der ganze
+die 22 Piloteinträge ein und kostet nichts – dafür da, dass sich der ganze
 Ablauf ohne Schlüssel prüfen lässt.
 
 ○ **Batch statt Einzelanfragen.** Halbiert die Kosten (0,13 → 0,07 $/Seite).
@@ -147,13 +147,13 @@ Der Rundenautomat ist bereits die Struktur, die Batch braucht: eine Liste
 eingereichter Einheiten mit Zustand. Wer synchron baut und später nachrüstet,
 baut sie zweimal.
 
-○ **Was im Prompt mitgeht** — heute unvollständig: Fehlerkatalog dieser Hand,
+○ **Was im Prompt mitgeht** – heute unvollständig: Fehlerkatalog dieser Hand,
 Nachbardaten für den Chronologie-Anker, Nachbarzeilen als Kontext, und die
 Bitte, je Feld die **Position** zu nennen (welches Zeilenband, welche Spalte).
 
 ---
 
-## 3. Abgleichen  ✓ — läuft von selbst, ohne Zutun
+## 3. Abgleichen  ✓ – läuft von selbst, ohne Zutun
 
 Sobald die letzte Seite gelesen ist, läuft der Abgleich durch und setzt je
 Feld die Ampel. **Das ist der eigentliche Wert der Werkstatt**, nicht das
@@ -167,14 +167,14 @@ Lesen.
 
 Drei Dinge machen ausdrücklich **nicht** grün, alle drei teuer gelernt:
 
-* Die **Selbsteinschätzung des Modells** — bei `Koch`/`Roth` war es viermal
+* Die **Selbsteinschätzung des Modells** – bei `Koch`/`Roth` war es viermal
   sicher und viermal falsch.
-* **Häufigkeit und Wortschatz** — `Roth` kommt 59-mal im Bestand vor und
+* **Häufigkeit und Wortschatz** – `Roth` kommt 59-mal im Bestand vor und
   stand doch für `Koch`.
 * **Ein Treffer aus einer Vokabularquelle**, auch wenn er perfekt passt.
 
 ✓ Kaskade für die **Taufe**: Elternehe-Anker, mit Lebensgrenzen.
-○ Kaskaden für **Ehe** und **Tod** — für die rankt der Abgleich derzeit nur
+○ Kaskaden für **Ehe** und **Tod** – für die rankt der Abgleich derzeit nur
 Nachnamen und macht nie grün. `kaskade_tod.py` liegt fertig und ist nicht
 angeschlossen (59,8 % Treffer gemessen).
 
@@ -186,11 +186,11 @@ aber weder gelesen noch ausgewertet.
 
 ---
 
-## 4. Vorlegen — die Bedienschleife  ◑ teilweise gebaut
+## 4. Vorlegen – die Bedienschleife  ◑ teilweise gebaut
 
 Hier arbeitet der Mensch, und hier entscheidet sich, ob das Werkzeug taugt.
 
-**Ein Eintrag füllt den Bildschirm.** Nicht zwanzig Seiten, nicht eine Seite —
+**Ein Eintrag füllt den Bildschirm.** Nicht zwanzig Seiten, nicht eine Seite –
 ein Eintrag. Was entschieden ist, verschwindet; der nächste rückt nach. Die
 Schlange dahinter ist unsichtbar.
 
@@ -204,7 +204,7 @@ Schlange dahinter ist unsichtbar.
     │              │  Ausschnitt │  ← Lupe daneben              │
     │              └─────────────┘                              │
     ├──────────────────────────────────────────────────────────┤
-    │  gelesen und stimmig — nichts zu tun                      │
+    │  gelesen und stimmig – nichts zu tun                      │
     │  ● Kind      Johannes          ● geb. 3. Febr.            │
     │  ● Vater     Bürger u. Weingärtner in Haberschlacht       │
     │                                                           │
@@ -219,18 +219,18 @@ Schlange dahinter ist unsichtbar.
                           nächster Eintrag
 
 **Was sicher ist, wird nicht gefragt.** Datum, Vorname, Beruf und Ort waren im
-Pilotlauf praktisch fehlerfrei — sie stehen da, sichtbar, aber ohne Frage.
+Pilotlauf praktisch fehlerfrei – sie stehen da, sichtbar, aber ohne Frage.
 Gefragt wird bei Familiennamen und bei allem, was der Abgleich nicht trägt.
 
 **Der Zeilenstreifen bleibt immer sichtbar**, auch bei den stillen Feldern.
-Wer mitliest, will hinsehen können — und dieselbe Hand schreibt in jedem
+Wer mitliest, will hinsehen können – und dieselbe Hand schreibt in jedem
 Eintrag `B. u. Weingärtner in Haberschlacht`, woran man die Buchstaben eicht.
 
 **Ein Tastendruck je Entscheidung.** `Enter` nimmt den Vorschlag und geht
 weiter, `N` legt neu an, `Pfeil` blättert durch Alternativen. Tippen nur,
 wenn wirklich etwas anderes dasteht.
 
-### Was angeboten wird — je Registerart verschieden
+### Was angeboten wird – je Registerart verschieden
 
 Das ist die eigentliche OFB-Arbeit. Zu jeder genannten Person muss entschieden
 werden: gibt es sie schon, oder ist sie neu?
@@ -238,12 +238,12 @@ werden: gibt es sie schon, oder ist sie neu?
 | Register | wer wird angebunden | woran |
 |---|---|---|
 | **Ehe** | Bräutigam, Braut | Geburtsdatum + Ort stehen im Eintrag → Taufe tagesgenau. Der stärkste Anker, und er trifft **beide** Hauptpersonen |
-| | deren Eltern | über die gefundene Taufe — und die Vaterangabe des Eheeintrags prüft sie gegen |
+| | deren Eltern | über die gefundene Taufe – und die Vaterangabe des Eheeintrags prüft sie gegen |
 | | die neue Familie | wird angelegt, beide als Kind ihrer Herkunftsfamilie verknüpft |
-| **Taufe** | Vater, Mutter | Elternehe im Bestand. Die Mutter wird *abgeleitet*, nicht gesucht — deshalb trägt der Anker auch, wenn ihr Name falsch gelesen wurde |
+| **Taufe** | Vater, Mutter | Elternehe im Bestand. Die Mutter wird *abgeleitet*, nicht gesucht – deshalb trägt der Anker auch, wenn ihr Name falsch gelesen wurde |
 | | Kind | immer neu, in die Elternfamilie eingehängt |
 | **Begräbnis** | Verstorbener | Alter → Geburtsdatum, bei Monats- und Tagesangabe oft tagesgenau → Taufe |
-| | bei „weyl.", Witwe, Witwer | erst die Ehe, daraus der Partner — und bei verheirateten Frauen der Mädchenname, ohne den die Taufe nicht zu finden ist |
+| | bei „weyl.", Witwe, Witwer | erst die Ehe, daraus der Partner – und bei verheirateten Frauen der Mädchenname, ohne den die Taufe nicht zu finden ist |
 | | genannte Eltern | gegen die Eltern der gefundenen Taufe geprüft |
 
 ✓ gebaut: Taufe.  ○ offen: Ehe und Begräbnis. Für die rankt der Abgleich
@@ -252,7 +252,7 @@ derzeit nur Nachnamen und macht nie grün.
 **Zwei Regeln, die dabei nie fallen dürfen:**
 
 > Ein Match braucht **mindestens zwei übereinstimmende Merkmale, von denen
-> eines nicht der Nachname ist.** Nachname + Jahr genügt nie — sonst wird aus
+> eines nicht der Nachname ist.** Nachname + Jahr genügt nie – sonst wird aus
 > „Johannes Bierle" die Taufe von *Carl Heinrich* Bierle.
 
 > **Nichtfinden ist ein Ergebnis, kein Fehler.** Zuzug, andere Parochie, Lücke
@@ -260,8 +260,8 @@ derzeit nur Nachnamen und macht nie grün.
 
 ○ **Die Lupe fehlt.** Heute gibt es den ganzen Zeilenstreifen, nicht den
 Ausschnitt am Feld. Vereinbart ist die Arbeitsteilung: Das Modell sagt,
-*welche* Zeile und *welche* Spalte — das braucht keine Pixel, weil Einträge
-und Zeilenbänder dieselbe Reihenfolge haben —, die Geometrie liefert die
+*welche* Zeile und *welche* Spalte – das braucht keine Pixel, weil Einträge
+und Zeilenbänder dieselbe Reihenfolge haben –, die Geometrie liefert die
 Pixel. Nachbarzeilen werden abgedunkelt, nicht weggeschnitten.
 
 ○ **Der Chronologie-Anker wird nicht genutzt.** Register sind chronologisch
@@ -278,7 +278,7 @@ Runde", nicht „Eintrag 7 von 118".
 ## Wie viel darf die Maschine allein entscheiden?  ◑
 
 Die Stellschraube, an der alles hängt. Sie steht seit dem 6. August unter
-**/einstellungen** — die Stufen sind wählbar, ihre Wirkung im Abgleich ist
+**/einstellungen** – die Stufen sind wählbar, ihre Wirkung im Abgleich ist
 noch nicht angeschlossen.
 
     Autopilot: streng | normal | zuegig
@@ -291,7 +291,7 @@ noch nicht angeschlossen.
 
 **Jede Stufe höher tauscht Tempo gegen stille Fehler.** Das ist keine
 Vermutung: Beim ersten Lauf ordnete der Abgleich einer Taufe von **1809** ein
-Paar zu, das 1699 und 1703 geboren wurde und dessen Frau 1767 starb —
+Paar zu, das 1699 und 1703 geboren wurde und dessen Frau 1767 starb –
 einziger gemeinsamer Nachname, kein Trauungsdatum, und damit grün. Gefunden
 hat ihn nur die Messung gegen die geprüfte Wahrheit. Von innen sah er wie ein
 Erfolg aus.
@@ -299,10 +299,10 @@ Erfolg aus.
 Deshalb bleibt eine Grenze fest, unabhängig von der Stufe:
 
 > **Die Selbsteinschätzung des Modells darf nie grün machen.** Sie darf
-> bestimmen, was zuerst gezeigt wird — nicht, was als bestätigt gilt.
+> bestimmen, was zuerst gezeigt wird – nicht, was als bestätigt gilt.
 > Bei `Koch`/`Roth` war das Modell viermal sicher und viermal falsch.
 
-Weitere Einstellungen — ✓ gebaut, unter **/einstellungen** oder über
+Weitere Einstellungen – ✓ gebaut, unter **/einstellungen** oder über
 `python3 -m werkstatt.einstellungen`:
 
     reihenfolge        ehe → taufe → tod, per Pfeiltasten umstellbar
@@ -320,7 +320,7 @@ halben Band, kein Bild. Ein Klick zerlegt ihn mit `pdftoppm` (300 dpi) nach
 `entpackt/`; danach zählen die Seiten wie gewöhnliche Bilder.
 
 **? Sollen bestätigte Entscheidungen zurückwirken?** Wenn Sie einmal sagen,
-`Bührlin` ist `Bierle`, gilt das fortan — jede Bestätigung ist eine neue Kante
+`Bührlin` ist `Bierle`, gilt das fortan – jede Bestätigung ist eine neue Kante
 im Klassengraphen. Vorsicht dabei: Die Relation ist **nicht transitiv**. Eine
 einzige falsche Kante (`Bührle → Müller`, ein einziger Beleg) verschmolz im
 Pilotbestand zwei fremde Familien zu einer Klasse von 231 Personen. Ich würde
@@ -329,7 +329,7 @@ nicht sofort.
 
 ---
 
-## 5. Übergeben  ✓ — zwei Klicks, dazwischen die Wahrheit
+## 5. Übergeben  ✓ – zwei Klicks, dazwischen die Wahrheit
 
 Erst der Probelauf, der zeigt, **was entstehen wird**:
 
@@ -343,7 +343,7 @@ Erst der Probelauf, der zeigt, **was entstehen wird**:
 Dann erst der Knopf, der schreibt.
 
 **Nur bestätigte Einträge gehen über.** Was das Modell gelesen und niemand
-geprüft hat, wird nicht zum Anker für die nächste Tranche — sonst verfestigen
+geprüft hat, wird nicht zum Anker für die nächste Tranche – sonst verfestigen
 sich Lesefehler stillschweigend.
 
 **Die Zahl „Personen neu" ist die wichtige.** Sie sagt, wie viele Menschen
@@ -373,7 +373,7 @@ Zwei Arten, beide gebaut und gemessen:
 | | für wen | Ergebnis am Bestand Haberschlacht |
 |---|---|---|
 | **Fortschreibung** | wer ein OFB hat | 5.605 Records zeichengleich durchgereicht, 9 ergänzt, 57 neu, **0 verloren, 0 tote Verweise** |
-| **Neuausgabe** | Nullstart | 4.156 Personen, 1.358 Familien — aber nur **31 % der Dateigröße** |
+| **Neuausgabe** | Nullstart | 4.156 Personen, 1.358 Familien – aber nur **31 % der Dateigröße** |
 
 **Der Leerlauftest ist der Beleg.** Ohne Änderungen muss die Ausgabe Byte für
 Byte der Vorlage entsprechen:
@@ -381,18 +381,18 @@ Byte der Vorlage entsprechen:
     ✓ Leerlauftest: 3444327 Byte, zeichengleich
 
 Er misst nicht, ob die Ausgabe plausibel aussieht, sondern ob überhaupt etwas
-verloren ging — und zeigt bei Abweichung die Bytestelle.
+verloren ging – und zeigt bei Abweichung die Bytestelle.
 
 **Warum Durchreichen die Voreinstellung ist**, sieht man an den 31 %: Ein
 gewachsenes Ortsfamilienbuch enthält Jahrzehnte Handarbeit in Feldern, die
-diese Werkstatt gar nicht kennt — Quellenangaben, Notizen, Paten, Bilder,
+diese Werkstatt gar nicht kennt – Quellenangaben, Notizen, Paten, Bilder,
 Ortsdefinitionen. Wer aus den eigenen Tabellen neu schreibt, wirft zwei
 Drittel davon weg. Die Oberfläche fragt vor der Neuausgabe deshalb nach.
 
 ○ **Noch nicht ausgewertet: das Journal.** Es füllt sich (57 Vorgänge je
 Runde, jeder mit seinem Beleg), aber die Fortschreibung leitet ihre
 Ergänzungen bisher aus den Daten ab, nicht aus den Vorgängen. Nötig wird das
-erst, wenn Records nicht nur ergänzt, sondern **geändert** werden — bei
+erst, wenn Records nicht nur ergänzt, sondern **geändert** werden – bei
 Korrekturen an vorhandenen Personen und beim Zusammenlegen von Dubletten.
 
 **? Wann wird ausgegeben?** Vorschlag: nach jeder Tranche, nicht am Ende.
@@ -430,7 +430,7 @@ führt aus, das Journal hält beides fest.
 
 ✓ Die Sicht `fehlerkatalog` wertet `gelesen` gegen `korrigiert` aus.
 ✓ `lesen.py` schreibt sie in den Prompt.
-○ Vorhandenes Wissen wird noch nicht importiert — der Katalog dieser Hand
+○ Vorhandenes Wissen wird noch nicht importiert – der Katalog dieser Hand
 liegt als Text vor und müsste abgetippt werden.
 
 Nach zwanzig Seiten weiß die Werkstatt, dass diese Hand `Koch` wie `Roth`
@@ -455,7 +455,7 @@ Ehrlich aufgeschrieben, was zwischen dem Gebauten und dem Beschriebenen liegt:
 | ~~Seitenzahl, Ordner, Reihenfolge~~ | ~~nur in der Datei~~ | **erledigt am 6. August** |
 | ~~Ausgabe~~ | ~~keine~~ | **erledigt am 6. August** |
 
-Das ist mehr Arbeit als das, was bisher steht — aber es ist kein Umbau. Die
+Das ist mehr Arbeit als das, was bisher steht – aber es ist kein Umbau. Die
 Datenbank trägt es bereits: Die Schlange ist `SELECT … WHERE runde=? AND
 status<>'bestaetigt' ORDER BY …  LIMIT 1`, der Merkpunkt eine Spalte, der
 Vorlauf ein Startsignal an den Läufer nach der ersten Seite statt nach der
@@ -473,7 +473,7 @@ Neun Punkte, bei denen ich eine Meinung habe, aber Sie entscheiden:
    an, Pfeile blättern Alternativen. Tippen nur im Ausnahmefall.
 3. **Autopilot als Einstellung**, drei Stufen, Vorgabe `normal`. Aber die
    Selbsteinschätzung des Modells macht auf keiner Stufe grün.
-4. **Tranchengröße 10 bei Ehen, 20 bei Taufen und Toden** — sechs Personen
+4. **Tranchengröße 10 bei Ehen, 20 bei Taufen und Toden** – sechs Personen
    je Eheeintrag gegen drei je Taufeintrag.
 5. **GEDCOM nach jeder Tranche**, nicht am Ende.
 6. **Der Familienbuch-Anker zuerst**, vor den Kaskaden für Ehe und Tod. Er
@@ -485,7 +485,7 @@ Neun Punkte, bei denen ich eine Meinung habe, aber Sie entscheiden:
    falsche Kante verschmolz im Pilotbestand 231 Personen zu einer Klasse.
 
 **Zurückgestellt: der Qualitätstest.** Eine Eheseite mit bekannter Wahrheit
-gegen das Modell — die einzige Messung, die etwas über die *Lesequalität*
+gegen das Modell – die einzige Messung, die etwas über die *Lesequalität*
 sagen würde. Braucht `ANTHROPIC_API_KEY` und kostet Geld. Auf Entscheidung
 vom 5. August vertagt.
 
@@ -519,13 +519,13 @@ Drei Fehler, die still in die GEDCOM-Datei gewandert wären:
    Die `_LOC`-Records sind die Ortsdefinitionen, auf die jede Person mit
    `3 _LOC @L1@` zeigt. Jetzt liegt die ganze Datei in `rec`.
 2. **Die Übergabe legte Familien doppelt an.** Von 22 übergebenen Familien
-   gab es 10 mit denselben Eltern bereits im Bestand — der Elternehe-Anker
+   gab es 10 mit denselben Eltern bereits im Bestand – der Elternehe-Anker
    fand sie, und die Übergabe legte sie daneben noch einmal neu an.
 3. **Der Täufling bekam seinen Vornamen als Nachnamen.**
    `Georg Christian /Georg Christian/`. Im Taufregister hat das Kind keinen
    Nachnamen; er kommt vom Vater. 21 Kinder erben ihn jetzt.
 
-Alle drei wären ohne die Ausgabe unentdeckt geblieben — sie werden erst
+Alle drei wären ohne die Ausgabe unentdeckt geblieben – sie werden erst
 sichtbar, wenn etwas das Haus verlässt.
 
-Was noch anders soll, sagen Sie mir — sonst arbeite ich das der Reihe nach ab.
+Was noch anders soll, sagen Sie mir – sonst arbeite ich das der Reihe nach ab.

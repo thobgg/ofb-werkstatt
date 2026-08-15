@@ -2,7 +2,7 @@
 """Randvermerke lesen: was am Rand steht, ist eine Angabe wie jede andere.
 
 Im Taufregister trägt der Pfarrer später an den Rand, was aus dem Kind
-geworden ist — meistens sein Tod, oft mit Datum:
+geworden ist – meistens sein Tod, oft mit Datum:
 
     † 11. Februar 1808
     gest. 3. Merz 1809
@@ -11,7 +11,7 @@ geworden ist — meistens sein Tod, oft mit Datum:
 
 Das stand bisher als Text in `randvermerk` und kam nirgends an. Ein
 Sterbedatum, das im Buch steht und nicht im Bestand landet, ist verschenkte
-Quelle — dieselbe Angabe muss der Bearbeiter später mühsam im
+Quelle – dieselbe Angabe muss der Bearbeiter später mühsam im
 Sterberegister suchen.
 
 **Vorgeschlagen, nicht gesetzt.** Was hier herauskommt, füllt das Feld
@@ -51,13 +51,13 @@ ANDERES = re.compile(
 
 # Ordnungszahlen werden im Kirchenbuch ausgeschrieben angehaengt: „4.te",
 # „2.ten", „21.sten". Ohne diese Gruppe faellt das Datum auf das blosse
-# Jahr zurueck — gemessen an „† 4.te Februar 1808", das als „1808" ankam.
+# Jahr zurueck – gemessen an „† 4.te Februar 1808", das als „1808" ankam.
 _ORDNUNG = r"(?:\s*\.?\s*(?:s?te[nrms]?|ste))?"
 _TAG_MONAT_JAHR = re.compile(
     r"(\d{1,2})\s*\.?" + _ORDNUNG +
     r"\s*([A-Za-zÄÖÜäöü]{3,12})\.?\s*(\d{4})?")
 
-# 7ber, 8ber, 9ber, Xber — die alten Zählmonate. Sie stammen aus dem
+# 7ber, 8ber, 9ber, Xber – die alten Zählmonate. Sie stammen aus dem
 # römischen Jahr, das im März begann: September ist der siebte. In
 # württembergischen Kirchenbüchern stehen sie durchgehend, und wer sie
 # wörtlich nimmt, verlegt einen Tod um zwei Monate.
@@ -79,11 +79,11 @@ def _gedcom(tag, monat, jahr):
 
 
 def sterbedatum(text, jahr_vorgabe=None):
-    """Sterbedatum aus einem Randvermerk — oder None.
+    """Sterbedatum aus einem Randvermerk – oder None.
 
     `jahr_vorgabe` ist das Jahr des Eintrags. Späte Nachträge nennen oft nur
     Tag und Monat, weil das Jahr aus dem Zusammenhang klar ist. Das Jahr des
-    Eintrags einzusetzen ist die einzige belastbare Annahme — und sie ist
+    Eintrags einzusetzen ist die einzige belastbare Annahme – und sie ist
     nicht immer richtig, weshalb der Beleg sie ausdrücklich nennt.
     """
     t = (text or "").strip()
@@ -121,5 +121,5 @@ def beleg(text, geraten_jahr=False):
     kern = " ".join((text or "").split())[:60]
     z = f"aus dem Randvermerk „{kern}“"
     if geraten_jahr:
-        z += " — Jahr aus dem Eintrag ergänzt, im Vermerk steht keines"
+        z += " – Jahr aus dem Eintrag ergänzt, im Vermerk steht keines"
     return z + "; ob der Vermerk dem Täufling gilt, sagt nur das Bild"

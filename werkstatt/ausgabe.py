@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""GEDCOM ausgeben — der Weg nach draußen.
+"""GEDCOM ausgeben – der Weg nach draußen.
 
     python3 -m werkstatt.ausgabe --leerlauf         Verlustfreiheit belegen
     python3 -m werkstatt.ausgabe --fort             Fortschreibung, Probelauf
@@ -8,18 +8,18 @@
 
 Zwei Arten, und beide werden gebraucht:
 
-**Fortschreibung** — für den, der ein Ortsfamilienbuch hat. Die Quelldatei
+**Fortschreibung** – für den, der ein Ortsfamilienbuch hat. Die Quelldatei
 läuft Record für Record durch; unberührte Records gehen **zeichengleich**
 hindurch, nur was ein Vorgang anfasst, wird neu geschrieben. Der Beleg dafür
 ist der Leerlauftest: ohne Änderungen muss die Ausgabe Byte für Byte der
-Vorlage entsprechen. Schlägt er fehl, ist irgendwo etwas verloren gegangen —
+Vorlage entsprechen. Schlägt er fehl, ist irgendwo etwas verloren gegangen –
 und man sieht sofort wo.
 
-**Neuausgabe** — für den, der bei Null angefangen hat. Alles aus
+**Neuausgabe** – für den, der bei Null angefangen hat. Alles aus
 `person`/`familie`/`ereignis`, ohne Vorlage.
 
 Der Unterschied ist nicht Bequemlichkeit. Ein Ortsfamilienbuch enthält
-Jahrzehnte Handarbeit in Feldern, die diese Werkstatt gar nicht kennt —
+Jahrzehnte Handarbeit in Feldern, die diese Werkstatt gar nicht kennt –
 Quellenangaben, Notizen, Bilder, Ortsdefinitionen. Wer es aus den eigenen
 Tabellen neu schreibt, wirft all das weg. Deshalb ist Durchreichen die
 Voreinstellung und Neuschreiben die Ausnahme.
@@ -41,7 +41,7 @@ def eigenschaften(con, hid):
 
 
 def als_bytes(records, eig):
-    """Recordliste zu Dateibytes — mit BOM, Zeilenende und Schlussumbruch."""
+    """Recordliste zu Dateibytes – mit BOM, Zeilenende und Schlussumbruch."""
     text = "\n".join(records)
     if eig["schluss"]:
         text += "\n"
@@ -52,7 +52,7 @@ def als_bytes(records, eig):
 
 
 def quelle_id(con):
-    """Die Herkunft, die als Vorlage dient — die eingelesene GEDCOM-Datei."""
+    """Die Herkunft, die als Vorlage dient – die eingelesene GEDCOM-Datei."""
     r = con.execute("SELECT id, datei FROM herkunft WHERE art='gedcom' "
                     "AND id IN (SELECT herkunft FROM rec) "
                     "ORDER BY id LIMIT 1").fetchone()
@@ -70,7 +70,7 @@ def gedcom_datum(datum):
     return (datum or "").strip()
 
 
-# Diese Tags schreibt person_record schon unter 1 NAME — als Merkmal
+# Diese Tags schreibt person_record schon unter 1 NAME – als Merkmal
 # noch einmal, und die Angabe stünde zweimal im Record.
 SCHON_AM_NAMEN = {"_KB_NAME", "_RUFNAME"}
 
@@ -81,7 +81,7 @@ ALS_ORT = {"RESI"}
 def merkmale(con, *, person=None, familie=None):
     """Merkmalszeilen einer Person oder Familie.
 
-    Der Tag kommt aus dem Feldkatalog und wird unverändert geschrieben —
+    Der Tag kommt aus dem Feldkatalog und wird unverändert geschrieben –
     ob er in GEDCOM 5.5.1 steht oder eine eigene Erweiterung ist,
     entscheidet die Aktkarte, nicht die Ausgabe. Die Einstufung steht im
     Zahnrad; hier wird sie nicht noch einmal beurteilt.
@@ -122,7 +122,7 @@ def merkmale_zu(con, tag, *, person=None, familie=None):
 
 
 def person_record(con, p, xref, fam_als_kind, fam_als_gatte):
-    """Einen neuen INDI-Record schreiben — für Personen ohne Vorlage."""
+    """Einen neuen INDI-Record schreiben – für Personen ohne Vorlage."""
     z = [f"0 @{xref}@ INDI"]
     voll = " ".join(x for x in (p["givn"], f"/{p['surn']}/" if p["surn"] else "")
                     if x) or (p["name"] or "")
@@ -131,7 +131,7 @@ def person_record(con, p, xref, fam_als_kind, fam_als_gatte):
         z.append(f"2 GIVN {p['givn']}")
     if p["surn"]:
         z.append(f"2 SURN {p['surn']}")
-    # Kirchenbuchform neben der Normalform — Konvention des bestehenden OFB.
+    # Kirchenbuchform neben der Normalform – Konvention des bestehenden OFB.
     # Sie darf die Normalform nie ersetzen: dort steht `Krönich`, nicht `Kröneck`.
     for n in con.execute("SELECT wert FROM namensform WHERE person=? AND art='kb'",
                          (p["id"],)):
@@ -202,7 +202,7 @@ def freie_kennung(vorhanden, praefix):
 
 
 def kennungen_vergeben(con, schreib=False):
-    """Neuen Personen und Familien eine Kennung geben — dauerhaft.
+    """Neuen Personen und Familien eine Kennung geben – dauerhaft.
 
     Die Kennung muss in die Datenbank zurück. Sonst bekommt jede Ausgabe
     andere Nummern, und jedes Programm, das die Datei liest, hält dieselben
@@ -240,12 +240,12 @@ def fortschreiben(con, schreib=False):
     hid, datei = quelle_id(con)
     if hid is None:
         raise SystemExit(
-            "keine Vorlage vorhanden — es wurde kein GEDCOM mit Recordtabelle "
+            "keine Vorlage vorhanden – es wurde kein GEDCOM mit Recordtabelle "
             "eingelesen.\nFür einen Bestand ohne Vorlage: --neu")
     eig = eigenschaften(con, hid)
     kennungen_vergeben(con, schreib)
 
-    # „Neu" heißt: steht noch nicht in der Vorlage — nicht „hat gerade
+    # „Neu" heißt: steht noch nicht in der Vorlage – nicht „hat gerade
     # eine Kennung bekommen". Der Unterschied fällt erst beim zweiten Mal
     # auf: Nach der ersten Ausgabe haben die Personen ihre Kennung, und
     # eine Fortschreibung, die nur frisch Vergebenes anhängt, ließe sie
@@ -268,7 +268,7 @@ def fortschreiben(con, schreib=False):
         "SELECT id, xref FROM familie WHERE xref IS NOT NULL")}
     xf.update(neu_f)
 
-    # Wer gehört zu welcher Familie — für FAMC/FAMS der neuen Personen und
+    # Wer gehört zu welcher Familie – für FAMC/FAMS der neuen Personen und
     # für die CHIL-Zeilen, die in bestehende Familien nachgetragen werden.
     als_kind, als_gatte = {}, {}
     for r in con.execute("SELECT familie, person FROM kind"):
@@ -349,7 +349,7 @@ def leerlauf(con):
 
     quelle = _vorlagenpfad(con, hid)
     if not quelle or not quelle.exists():
-        return None, f"Vorlage {datei} liegt nicht mehr am Ort — nicht prüfbar", aus
+        return None, f"Vorlage {datei} liegt nicht mehr am Ort – nicht prüfbar", aus
     soll = quelle.read_bytes()
     if aus == soll:
         return True, f"{len(soll)} Byte, zeichengleich", aus
@@ -395,7 +395,7 @@ KOPF = """0 HEAD
 
 
 def neuausgabe(con, schreib=False):
-    """Alles aus den eigenen Tabellen — für den Bestand ohne Vorlage."""
+    """Alles aus den eigenen Tabellen – für den Bestand ohne Vorlage."""
     neu_p, neu_f = kennungen_vergeben(con, schreib)
     xr = {r["id"]: r["xref"] for r in con.execute(
         "SELECT id, xref FROM person WHERE xref IS NOT NULL")}
@@ -458,7 +458,7 @@ def main():
         p.write_bytes(daten)
         print(f"  geschrieben: {p}")
     else:
-        print("  (nichts geschrieben — mit -o DATEI ausgeben)")
+        print("  (nichts geschrieben – mit -o DATEI ausgeben)")
 
 
 if __name__ == "__main__":
@@ -474,7 +474,7 @@ def arbeitskopie(con, ordner=None):
     einer Kopie davon. Zwei getrennt gewachsene Bestände am Schluss
     zusammenzuführen ist die Arbeit, die niemand mehr sauber hinbekommt:
     Dieselbe Person steht dann zweimal da, mit anderer Kennung, anderer
-    Schreibweise, anderen Kindern — und keine Maschine kann entscheiden,
+    Schreibweise, anderen Kindern – und keine Maschine kann entscheiden,
     welche der beiden die richtige ist.
 
     Deshalb entsteht die Kopie schrittweise: Jede übergebene Runde schreibt
@@ -483,7 +483,7 @@ def arbeitskopie(con, ordner=None):
 
     **Die Vorlage wird nie angefasst.** Geschrieben wird ausschließlich nach
     `ausgabe/`; die Quelldatei bleibt Byte für Byte, wie sie war. Die
-    vorige Kopie bleibt als `.vorher.ged` liegen — ein Schritt zurück ist
+    vorige Kopie bleibt als `.vorher.ged` liegen – ein Schritt zurück ist
     damit immer möglich.
     """
     hid, _ = quelle_id(con)

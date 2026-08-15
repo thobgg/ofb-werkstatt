@@ -4,7 +4,7 @@
 bilder/**
 !bilder/**/LIESMICH.txt
 # Ausnahme: die fuenfzehn Beispielseiten. Ohne Bilder laesst sich die
-# Werkstatt nicht ausprobieren — im Forum hiess es, sie "konnte noch nicht
+# Werkstatt nicht ausprobieren – im Forum hiess es, sie "konnte noch nicht
 # getestet werden". Die Buecher sind von 1808/09 und gemeinfrei; § 68 UrhG
 # stellt seit 2021 auch originalgetreue Reproduktionen gemeinfreier Werke
 # frei. Herkunft und Zitation stehen in demo/QUELLE.md.
@@ -18,12 +18,12 @@ demo/**/zeilen/
 demo/**/entpackt/
 daten/**
 !daten/.gitkeep
-# Ausnahme: Sollwerte der Rastermessung. Reine Pixelkoordinaten — keine
+# Ausnahme: Sollwerte der Rastermessung. Reine Pixelkoordinaten – keine
 # Personendaten, keine Bildinhalte. Sie muessen mit, sonst ist die Messung
 # in werkstatt/messung.py nicht nachvollziehbar.
 !daten/soll_zeilen.json
 # Ausnahme: die Rohlesungen des Pilotlaufs. Sie machen die Werkstatt zum
-# ersten Mal ohne eigene Buecher ausprobierbar — im Forum hiess es, sie
+# ersten Mal ohne eigene Buecher ausprobierbar – im Forum hiess es, sie
 # "konnte noch nicht getestet werden", und der Grund war genau das.
 # Es sind Transkriptionen eines Kirchenbuchs von 1808/09: laengst
 # verstorbene Menschen, eigene Arbeit. **Die Scans bleiben draussen.**
@@ -31,8 +31,8 @@ daten/**
 ausgabe/
 *.ged
 # ... ausser dem Bestandsauszug fuer die Demo. Ohne ihn bleibt beim
-# Ausprobieren alles gelb, und der Elternehe-Anker — der Kern des
-# Verfahrens — ist nicht zu sehen. 15 kB, Herkunft in demo/QUELLE.md.
+# Ausprobieren alles gelb, und der Elternehe-Anker – der Kern des
+# Verfahrens – ist nicht zu sehen. 15 kB, Herkunft in demo/QUELLE.md.
 !demo/bestand.ged
 *.sqlite
 *.sqlite3

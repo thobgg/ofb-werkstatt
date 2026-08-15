@@ -2,7 +2,7 @@
 """Bildsichtung: Vollständigkeit, Dubletten, Auflösung.
 
 Erster Arbeitsschritt jeder Runde. Prüft, was tatsächlich vorliegt, bevor
-gelesen wird — Scans enthalten regelmäßig dieselbe Buchöffnung zweimal, und
+gelesen wird – Scans enthalten regelmäßig dieselbe Buchöffnung zweimal, und
 Nummernlücken weisen auf fehlende Seiten hin.
 
     python3 -m werkstatt.seiten ehe
@@ -82,14 +82,14 @@ def pdf_seitenzahl(pdf):
 
 
 def entpacken(ordner, still=False):
-    """PDFs in Einzelseiten zerlegen — einmal, danach wie Bilder behandelt.
+    """PDFs in Einzelseiten zerlegen – einmal, danach wie Bilder behandelt.
 
     Bereits entpackte PDFs werden übersprungen; der Aufruf ist damit
     beliebig oft wiederholbar und kostet dann nichts.
     """
     werkzeug = pdf_werkzeug()
     if not werkzeug:
-        return dict(fehler="pdftoppm nicht gefunden — Paket poppler-utils")
+        return dict(fehler="pdftoppm nicht gefunden – Paket poppler-utils")
     ziel = Path(ordner) / ENTPACKT
     z = dict(pdfs=0, seiten_neu=0, uebersprungen=0)
     for pdf in pdfs(ordner):
@@ -137,7 +137,7 @@ def abstand(a, b):
 
 
 def dubletten(dateien):
-    """Nachbarpaare mit auffaellig geringem Abstand — relativ zum Median."""
+    """Nachbarpaare mit auffaellig geringem Abstand – relativ zum Median."""
     if Image is None or len(dateien) < 3:
         return [], None
     minis = [miniatur(f) for f in dateien]
@@ -180,7 +180,7 @@ def sichte(art, uebersicht=False, ordner=None):
               f"(kleinste {mps[0]:.1f}, größte {mps[-1]:.1f})")
         if mps[0] < 15:
             schwach = sum(1 for m in mps if m < 15)
-            print(f"  ⚠ {schwach} Bild(er) unter 15 MP — höhere Auflösung suchen")
+            print(f"  ⚠ {schwach} Bild(er) unter 15 MP – höhere Auflösung suchen")
 
         dub, med = dubletten(fs)
         echte = [d for d in dub if d[4] == "dublette"]

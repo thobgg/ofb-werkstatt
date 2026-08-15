@@ -7,7 +7,7 @@ religion_default = "evangelisch"
 
 [bestand]
 # Optional: vorhandener GEDCOM-Bestand, gegen den angebunden wird.
-# Leer lassen, wenn bei Null angefangen wird — dann waechst der
+# Leer lassen, wenn bei Null angefangen wird – dann waechst der
 # Bestand aus der eigenen Erfassung.
 gedcom = ""
 
@@ -19,7 +19,7 @@ gedcom = ""
 #
 # Der Unterschied ist nicht Feinheit, sondern die Lehre aus dem Pilotlauf:
 # `Roth` kommt 59-mal im Bestand vor und haette jeden Plausibilitaetstest
-# bestanden — dabei stand `Koch` da. Haeufigkeit und Wortschatz duerfen
+# bestanden – dabei stand `Koch` da. Haeufigkeit und Wortschatz duerfen
 # ranken, aber niemals bestaetigen. Gruen wird nur, was ein Anker traegt.
 #
 # Ein Bestand kann beides sein: fuer die eigene Parochie belastbar, fuer
@@ -28,7 +28,7 @@ gedcom = ""
 # Nichts eingetragen heisst Nullstart. Das ist erlaubt: dann bleibt alles
 # gelb und die Maske legt jedes Feld vor. Langsamer, aber nicht falsch.
 #
-# Eigene Pfade gehoeren nach konfig.local.toml — die steht in .gitignore.
+# Eigene Pfade gehoeren nach konfig.local.toml – die steht in .gitignore.
 #
 # [[kontext]]
 # name      = "Eigenes Ortsfamilienbuch"
@@ -38,7 +38,7 @@ gedcom = ""
 # parochien = ["Musterhausen"]
 # bis_jahr  = 1807                 # danach traegt es nicht mehr
 #
-# Wortschatz: alles, was Schreibweisen kennt, aber keine Lebensdaten hat —
+# Wortschatz: alles, was Schreibweisen kennt, aber keine Lebensdaten hat –
 # Namenslisten, Ortsverzeichnisse, abgetippte Register, Vorarbeiten anderer
 # Forscher. Gelesen werden .csv .tsv .txt .xlsx .ods .docx und ganze Ordner.
 # Der Rang ist immer "vokabular", auch wenn hier etwas anderes stuende: ohne
@@ -51,7 +51,7 @@ gedcom = ""
 # art   = "wortschatz"
 # datei = "~/listen/nachbarn.xlsx"
 #
-# Die Klasse je Spalte kommt aus der Kopfzeile — Nachname, Vorname, Ort,
+# Die Klasse je Spalte kommt aus der Kopfzeile – Nachname, Vorname, Ort,
 # Beruf und ihre ueblichen Varianten werden erkannt, auch englische. Nur
 # wenn das nicht reicht, braucht es eine Zuordnung:
 #

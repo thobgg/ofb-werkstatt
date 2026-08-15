@@ -15,7 +15,7 @@ Damit gilt:
 
 Die Tabelle liegt in **derselben** Datei wie alles andere. Vorher stand sie
 in `daten/aenderung.sqlite`; über zwei Dateien hinweg lässt sich ein
-Bestätigen nicht in einer Transaktion schreiben — bricht es dazwischen ab,
+Bestätigen nicht in einer Transaktion schreiben – bricht es dazwischen ab,
 stimmen Feld und Vorgang nicht mehr überein.
 """
 import argparse

@@ -7,7 +7,7 @@
     genannter Vater ──► gegen die Eltern der Taufe prüfen (zweiter Beleg)
 
 **Pflichtregel:** Ein Treffer braucht mindestens zwei übereinstimmende Merkmale,
-von denen eines **nicht** der Nachname ist. Nachname + Jahr genügt nie — sonst
+von denen eines **nicht** der Nachname ist. Nachname + Jahr genügt nie – sonst
 wird `Johannes Bierle` still mit `Carl Heinrich Bierle` verknüpft.
 
     python3 -m werkstatt.kaskade_tod --parochie Haberschlacht --von 1800 --bis 1807
@@ -150,7 +150,7 @@ def verknuepfe(rec):
         return Ergebnis("mehrdeutig", gut, "mehrere gleichwertige Kandidaten")
 
     # Umweg: verheiratete Frau, Taufe steht unter dem Mädchennamen.
-    # NICHT auf geschl_verst prüfen — das ist in 2 von 3 Einträgen leer.
+    # NICHT auf geschl_verst prüfen – das ist in 2 von 3 Einträgen leer.
     # Ein genannter Ehepartner genügt als Anlass, den Umweg zu versuchen.
     verheiratet = (rec["fn_ehepart_verst"] or rec["vn_ehepart_verst"])
     if verheiratet:
@@ -174,7 +174,7 @@ def verknuepfe(rec):
         return Ergebnis("kein_treffer", kand,
                         "Kandidaten vorhanden, aber keiner tragfähig (Regel: zwei "
                         "Merkmale, eines nicht der Nachname)")
-    return Ergebnis("kein_treffer", hinweis="keine Taufe am Ort — vermutlich Zuzug")
+    return Ergebnis("kein_treffer", hinweis="keine Taufe am Ort – vermutlich Zuzug")
 
 
 def main():
@@ -199,7 +199,7 @@ def main():
         if gezeigt < a.zeige and e.art in ("treffer", "mehrdeutig", "umweg_noetig"):
             gezeigt += 1
             print(f"\n† {r['dat_tod']}  {r['vn_verst']} {r['fn_verst']}"
-                  f"   [{r['alter_kb'] or '—'}]")
+                  f"   [{r['alter_kb'] or '–'}]")
             print(f"   {e.art}{' · ' + e.hinweis if e.hinweis else ''}")
             for k in e.kandidaten[:3]:
                 print(f"     {k.datum}  {k.vn} {k.fn}   {'+'.join(k.merkmale)}"

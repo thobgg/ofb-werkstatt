@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Wortschatz aus fremden Dateien einlesen — Tabellen, Texte, Listen.
+"""Wortschatz aus fremden Dateien einlesen – Tabellen, Texte, Listen.
 
 Der Bestandsimport (`import_gedcom.py`) verlangt Personen: Namen mit Daten,
 aus denen ein Treffer sich prüfen lässt. Die meisten Vorarbeiten anderer
 Forscher haben diese Form nicht. Da liegt eine Namensliste als Tabelle, ein
 Ortsverzeichnis, ein abgetipptes Register als Textdokument. Solche Quellen
-können nie bestätigen — aber sie können die Vorschlagsliste ordnen, und
+können nie bestätigen – aber sie können die Vorschlagsliste ordnen, und
 genau daran scheitert das Lesen fremder Familien.
 
 **Offen für beliebige Dateien.** Es gibt kein vorgeschriebenes Format. Der
@@ -69,7 +69,7 @@ WORT = re.compile(r"[^\W\d_][\w'’\-\.]*", re.UNICODE)
 
 
 def falte(s):
-    """Vergleichsform — dieselbe Regel wie in suche.falte()."""
+    """Vergleichsform – dieselbe Regel wie in suche.falte()."""
     s = unicodedata.normalize("NFKD", (s or "").strip().lower())
     return "".join(c for c in s if not unicodedata.combining(c))
 
@@ -82,7 +82,7 @@ def kopf_klasse(text):
 
 # ------------------------------------------------------------- Leser
 # Jeder Leser liefert Zeilen als Liste von Zellen. Was daraus wird,
-# entscheidet erst `sammle()` — so bleibt das Format austauschbar.
+# entscheidet erst `sammle()` – so bleibt das Format austauschbar.
 
 def lies_csv(pfad):
     roh = pfad.read_bytes()
@@ -209,7 +209,7 @@ def dateien(pfad):
 def zerlege(zelle, klasse):
     """Eine Zelle in Wörter. Was Wort ist, hängt von der Klasse ab.
 
-    Bei Orten und Berufen zählt die ganze Zelle — „Bönnigheim, Amt
+    Bei Orten und Berufen zählt die ganze Zelle – „Bönnigheim, Amt
     Besigheim" ist eine Ortsangabe, nicht zwei. Bei Namen zählt jedes Wort
     einzeln, weil Vornamensketten die Regel sind.
     """
@@ -222,7 +222,7 @@ def zerlege(zelle, klasse):
 
 
 def sammle(pfad, vorgabe=None, spalten=None, still=False):
-    """Wörter aus einer Datei ziehen — mit Klasse, wo sie erkennbar ist.
+    """Wörter aus einer Datei ziehen – mit Klasse, wo sie erkennbar ist.
 
     Reihenfolge der Zuordnung: was in der Konfiguration steht, schlägt die
     Kopfzeile; die Kopfzeile schlägt die Vorgabe; ohne alles `offen`.
@@ -233,7 +233,7 @@ def sammle(pfad, vorgabe=None, spalten=None, still=False):
         return {}
     spalten = {falte(k): v for k, v in (spalten or {}).items()}
 
-    # Kopfzeile nur annehmen, wenn sie mindestens eine Spalte erklärt —
+    # Kopfzeile nur annehmen, wenn sie mindestens eine Spalte erklärt –
     # sonst ist die erste Zeile schon Inhalt und darf nicht verlorengehen.
     kopf = [None] * max(len(z) for z in zeilen)
     erste = zeilen[0]
@@ -251,7 +251,7 @@ def sammle(pfad, vorgabe=None, spalten=None, still=False):
     for z in rest:
         # Eine Zeile mit anderer Spaltenzahl gehört nicht zu dieser
         # Kopfzeile. In einem .docx stehen Absätze und Tabellen
-        # nebeneinander — ohne diese Prüfung erbte ein freier Absatz die
+        # nebeneinander – ohne diese Prüfung erbte ein freier Absatz die
         # Spaltenbedeutung der Tabelle darüber.
         passt = len(z) == len(erste)
         for i, zelle in enumerate(z):
@@ -283,7 +283,7 @@ def importiere(pfad, con=None, klasse=None, spalten=None, name=None,
     """Eine Datei oder einen Ordner einlesen. Gibt die Herkunfts-ID zurück.
 
     Der Rang steht fest: **immer `vokabular`**. Eine Wortliste hat keine
-    Daten, an denen ein Treffer sich prüfen ließe — sie darf ranken, nie
+    Daten, an denen ein Treffer sich prüfen ließe – sie darf ranken, nie
     bestätigen. Wer in konfig.toml `gilt = "beleg"` schreibt, bekommt hier
     trotzdem Vokabular; das ist keine Bevormundung, sondern der Unterschied
     zwischen „der Name kommt vor" und „diese Person ist es".
@@ -292,7 +292,7 @@ def importiere(pfad, con=None, klasse=None, spalten=None, name=None,
     quelle = Path(pfad).expanduser()
     fs = dateien(quelle)
     if not fs:
-        raise SystemExit(f"{quelle}: nichts Lesbares gefunden — bekannt sind "
+        raise SystemExit(f"{quelle}: nichts Lesbares gefunden – bekannt sind "
                          + ", ".join(sorted(LESER)))
     hid = db.herkunft_id(con, "wortschatz", quelle.name,
                          notiz=f"Wortschatz aus {quelle}",
@@ -327,7 +327,7 @@ def aus_konfig(con=None, still=False):
             q["datei"], con, spalten=q.get("spalten"), name=q["name"],
             parochien=q["parochien"], still=still))
     if not getan and not still:
-        print("Keine Wortschatzquelle in konfig.toml — "
+        print("Keine Wortschatzquelle in konfig.toml – "
               'art = "wortschatz" eintragen.')
     return getan
 

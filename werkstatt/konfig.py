@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Konfiguration laden. Alles Ortsspezifische steht in konfig.toml,
-nicht im Code — Registerarten, Felder, Vorbelegungen, Bestandsdatei."""
+nicht im Code – Registerarten, Felder, Vorbelegungen, Bestandsdatei."""
 import tomllib
 from functools import lru_cache
 from pathlib import Path
@@ -26,7 +26,7 @@ def konfig():
     """konfig.toml, darüber konfig.local.toml.
 
     Die lokale Datei steht in .gitignore. Dort stehen die eigenen Bestände
-    mit ihren Pfaden — die gehören niemandem sonst und dürfen in kein Repo.
+    mit ihren Pfaden – die gehören niemandem sonst und dürfen in kein Repo.
     Die eingecheckte konfig.toml bleibt damit das Beispiel, das jeder liest.
     """
     if not DATEI.exists():
@@ -49,13 +49,13 @@ def felder(art, con=None):
     """Alle Felder dieser Aktart.
 
     Der Feldkatalog gibt den Umfang vor, nicht konfig.toml. Grund: Eine
-    von Hand gepflegte Liste kennt nur, was jemand nachgetragen hat — der
+    von Hand gepflegte Liste kennt nur, was jemand nachgetragen hat – der
     Tod des Täuflings im Randvermerk fiel auf, weil ein Mensch ihn
     vermisste. `[register.x] felder` kann den Katalog noch erweitern, für
     Register, die er nicht kennt.
     """
     from . import katalog
-    # Mit `con` gilt die Aktkarte aus dem Zahnrad — abgeschaltete Felder
+    # Mit `con` gilt die Aktkarte aus dem Zahnrad – abgeschaltete Felder
     # fehlen dann, eigene kommen hinzu. Ohne `con` der reine Vorrat.
     aus_katalog = [x.name for x in katalog.felder(art, con)]
     eigen = [x for x in register(art).get("felder", [])
@@ -98,7 +98,7 @@ RAENGE = ("beleg", "vokabular")
 
 
 def kontext():
-    """Die Quellen, mit denen abgeglichen wird — samt Rang.
+    """Die Quellen, mit denen abgeglichen wird – samt Rang.
 
     Der Rang ist die eine Angabe, die über die Ampel entscheidet:
 
@@ -117,7 +117,7 @@ def kontext():
         rang = (q.get("gilt") or "vokabular").lower()
         if rang not in RAENGE:
             raise SystemExit(
-                f"kontext {q.get('name')!r}: gilt={rang!r} — erlaubt: "
+                f"kontext {q.get('name')!r}: gilt={rang!r} – erlaubt: "
                 + ", ".join(RAENGE))
         pfad = q.get("datei", "")
         raus.append(dict(
@@ -139,7 +139,7 @@ def kontext():
 def kurz(pfad):
     """Pfad zum Anzeigen: kurz, wenn er im Projekt liegt, sonst vollständig.
 
-    `relative_to` wirft, sobald ein Pfad ausserhalb liegt — und Scans liegen
+    `relative_to` wirft, sobald ein Pfad ausserhalb liegt – und Scans liegen
     oft ausserhalb, auf einer zweiten Platte oder im Netz. Vorher riss das
     die ganze Startseite ab, weil sie den Bildordner nur anzeigen wollte.
     """

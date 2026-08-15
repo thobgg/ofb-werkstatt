@@ -3,7 +3,7 @@
 
 Bisher war der Einstieg eine Datei. Wer die Werkstatt frisch auspackte,
 sah „Musterhausen" und leere Register und musste erst `konfig.local.toml`
-von Hand schreiben — genau dort bricht ab, wer kein Programmierer ist.
+von Hand schreiben – genau dort bricht ab, wer kein Programmierer ist.
 
 Hier wird dieselbe Datei geschrieben, nur aus drei Angaben: wie die
 Gemeinde heißt, welche Register geführt werden, wo die Scans liegen.
@@ -11,7 +11,7 @@ Alles Weitere bleibt, wo es steht: Feldlisten, Rollen und Kaskaden stehen
 in `konfig.toml` und sind nichts, was man beim ersten Start entscheidet.
 
 **Ein Projekt ist ein Ordner.** Eine zweite Pfarrei bekommt eine zweite
-Auspackung — eigene Datenbank, eigene Bilder, eigene lokale Konfiguration.
+Auspackung – eigene Datenbank, eigene Bilder, eigene lokale Konfiguration.
 Das ist keine Notlösung, sondern hält zwei Bestände sauber getrennt; nichts
 kann versehentlich vom einen in den anderen wandern.
 """
@@ -32,7 +32,7 @@ def _wert(s):
     """Eine Zeichenkette so einpacken, dass TOML sie wieder herausbekommt.
 
     Von Hand, weil die Standardbibliothek TOML nur lesen kann. Es geht
-    ausschließlich um Zeichenketten — deshalb reicht der einfache
+    ausschließlich um Zeichenketten – deshalb reicht der einfache
     Grundstock: Rückstrich und Anführungszeichen schützen, Steuerzeichen
     fliegen raus.
     """
@@ -44,12 +44,12 @@ def schreibe(gemeinde, register, ort=None, religion=None):
     """konfig.local.toml erzeugen. Gibt den geschriebenen Text zurück.
 
     `register` ist eine Liste aus `{art, ordner}`. Nur bekannte Arten
-    werden übernommen — eine erfundene hätte keine Feldliste und würde
+    werden übernommen – eine erfundene hätte keine Feldliste und würde
     beim ersten Lesen scheitern, dann aber unverständlich.
     """
     bekannt = list(konfig.register())
     zeilen = [
-        "# Lokale Konfiguration — steht in .gitignore und geht in kein Repo.",
+        "# Lokale Konfiguration – steht in .gitignore und geht in kein Repo.",
         "# Von der Einrichtung geschrieben; von Hand ändern ist erlaubt.",
         "",
         "[gemeinde]",
@@ -74,7 +74,7 @@ def schreibe(gemeinde, register, ort=None, religion=None):
     konfig.LOKAL.write_text(text, encoding="utf-8")
     # Die Konfiguration wird einmal gelesen und gemerkt. Ohne das Leeren
     # arbeitet der laufende Server bis zum Neustart mit „Musterhausen"
-    # weiter — und niemand versteht, warum die Einrichtung nichts bewirkt.
+    # weiter – und niemand versteht, warum die Einrichtung nichts bewirkt.
     konfig.konfig.cache_clear()
     return text
 
@@ -95,7 +95,7 @@ ENTBEHRLICH = {
 def feldvorschlag():
     """Je Aktart die Felder mit dem Vermerk, ob sie meist gebraucht werden.
 
-    Damit die Einrichtung fragen kann, was erfasst werden soll — statt dass
+    Damit die Einrichtung fragen kann, was erfasst werden soll – statt dass
     der Bearbeiter es nach der ersten Runde in der Aktkarte nachholt und
     die schon gelesenen Werte wieder loswerden muss.
     """
@@ -112,7 +112,7 @@ def beispielbestand():
     """Der mitgelieferte Bestandsauszug, falls vorhanden.
 
     Ohne ihn zeigt die Demo den Nullstart: alles gelb, der Elternehe-Anker
-    unsichtbar. Gemessen an denselben Seiten — ohne Auszug null grün, mit
+    unsichtbar. Gemessen an denselben Seiten – ohne Auszug null grün, mit
     Auszug sechzehn.
     """
     p = konfig.WURZEL / "demo" / "bestand.ged"
@@ -122,7 +122,7 @@ def beispielbestand():
 def vorschlag():
     """Was die Einrichtung anbietet, wenn sie nichts weiß.
 
-    Liegen die Beispielseiten bei, werden ihre Ordner vorgeschlagen — dann
+    Liegen die Beispielseiten bei, werden ihre Ordner vorgeschlagen – dann
     hat ein frisch ausgepacktes Projekt vom ersten Klick an etwas zu tun.
     Wer eigene Bücher hat, trägt deren Ordner ein; die Beispiele bleiben
     unberührt.

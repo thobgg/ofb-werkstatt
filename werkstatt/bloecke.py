@@ -5,12 +5,12 @@
 
 **Warum überhaupt.** Eine Kirchenbuchseite dieses Bandes ist 5679 px breit
 und trägt neun Spalten. Wer sie als ein Bild anschaut, bekommt sie
-heruntergerechnet — bei 1500 px Anzeigebreite bleiben je Spalte gut
+heruntergerechnet – bei 1500 px Anzeigebreite bleiben je Spalte gut
 hundert Pixel, und Kurrent auf hundert Pixel ist kein Text mehr.
 
 Gemessen an Seite 00359: Die Lesung füllte die vier linken Spalten und
 notierte zu allen fünf rechten „steht auf der rechten Buchseite; im
-vorliegenden Bildausschnitt nicht enthalten". Das war falsch — sie stehen
+vorliegenden Bildausschnitt nicht enthalten". Das war falsch – sie stehen
 im selben Bild. Sie waren nur nicht lesbar angekommen, und das Modell hat
 sich die Lücke plausibel erklärt, statt sie zu melden. Verloren gingen
 dabei Geburtsdatum, Taufdatum, Taufender, Paten und der Verweis ins
@@ -20,7 +20,7 @@ Familienregister, also die wertvollsten Anker der Seite.
 rechts vom Bund. Jeder ist rund 2800 px breit und behält damit fast die
 volle Auflösung, wenn er mit 2576 px Kante angeschaut wird.
 
-Die Zeile bleibt zusammen — das ist die Regel „Kontext ist Teil der
+Die Zeile bleibt zusammen – das ist die Regel „Kontext ist Teil der
 Information". Getrennt wird nur am Bund, und beide Hälften gehören im
 Auftrag zusammen, weil sie derselbe Eintrag sind. Dazu kommt der
 gedruckte Spaltenkopf als eigener Block: Ohne ihn weiß niemand, dass die
@@ -60,7 +60,7 @@ def _speichern(im, kasten, ziel, guete=88):
 def schneide(pfad, ziel_ordner=None, still=False, nur_kopf=False):
     """Eine Seite in Blöcke schneiden. Gibt die Beschreibung zurück.
 
-    Ohne erkannte Zeilenlinien wird nichts geschnitten — dann ist der
+    Ohne erkannte Zeilenlinien wird nichts geschnitten – dann ist der
     ehrliche Zustand „kein Raster", nicht ein willkürlich geteiltes Bild.
     """
     pfad = Path(pfad)
@@ -72,7 +72,7 @@ def schneide(pfad, ziel_ordner=None, still=False, nur_kopf=False):
             f"kein brauchbares Raster: {len(zeilen)} Zeilenlinien, "
             f"{len(seiten)} Buchseiten"))
 
-    # Die unterste Zeile hat oft keine Schlusslinie — das Formular endet
+    # Die unterste Zeile hat oft keine Schlusslinie – das Formular endet
     # am Papier, nicht an einem Strich. Ohne Ergaenzung faellt der letzte
     # Eintrag jeder Seite weg, und zwar lautlos.
     unten = max(s["y1"] for s in seiten)
@@ -84,7 +84,7 @@ def schneide(pfad, ziel_ordner=None, still=False, nur_kopf=False):
     ziel = Path(ziel_ordner or (pfad.parent / ORDNER / pfad.stem))
     im = _bild(pfad)
     # Die Haelften: was die Papiererkennung als Buchseiten gefunden hat.
-    # Bei nur einer Seite bleibt es bei einer Haelfte — ein Register muss
+    # Bei nur einer Seite bleibt es bei einer Haelfte – ein Register muss
     # nicht ueber den Bund laufen.
     haelften = [(s["x0"], s["x1"]) for s in seiten]
     namen = ["links", "rechts"][:len(haelften)] or ["ganz"]

@@ -22,7 +22,7 @@ main{padding:1rem;max-width:1500px;margin:0 auto}
 .bildbox{overflow-x:auto;background:#fff;cursor:zoom-in;position:relative}
 .bildbox.gross{cursor:zoom-out}
 .bildbox img{width:100%;display:block}
-/* Der gedruckte Kopf ueber jedem Streifen, gleich breit geschnitten —
+/* Der gedruckte Kopf ueber jedem Streifen, gleich breit geschnitten –
    damit Ueberschrift und Zelle uebereinanderstehen. Ohne ihn sieht man ab
    dem zweiten Eintrag nur Zellen: rechts liegen "Zeit der Geburt" und
    "Ort und Tag der Taufe" nebeneinander, beide mit einem Datum darin. */
@@ -153,7 +153,7 @@ let runde=null, i=0, liste=false;
 // ------------------------------------------------------------- Aufwand
 // Der ehrlichere Massstab als eine Trefferquote: Eine Quote misst das
 // Buch, diese Zahlen messen das Werkzeug. Bei schwerer Hand wird viel
-// getippt, bei klarer Schrift nur bestaetigt — beides brauchbar, die
+// getippt, bei klarer Schrift nur bestaetigt – beides brauchbar, die
 // Frage ist, wie viel Arbeit uebrig bleibt.
 //
 // Gezaehlt wird still im Hintergrund und nur je Eintrag: Zeichen, Klicks,
@@ -219,7 +219,7 @@ function umschalten(){ liste=!liste; zeichne();
 
 function karte(e,k){
  // Was der Abgleich getragen hat, steht still da. Was er nicht trägt,
- // bekommt den Platz — und den Fokus.
+ // bekommt den Platz – und den Fokus.
  const pers=e.felder.filter(f=>f.rolle);
  const still=pers.filter(f=>f.ampel==='gruen');
  const frage=pers.filter(f=>f.ampel!=='gruen');
@@ -263,7 +263,7 @@ function karte(e,k){
      <select class=feldwahl onchange="feldDazu(this)"
        style="display:none;background:#12141a;border:1px solid #333a45;
               color:#e6e8ec;border-radius:6px;padding:.3rem .5rem;font:inherit">
-      <option value="">— welches Feld? —</option>
+      <option value="">– welches Feld? –</option>
       ${leere(e).map(f=>`<option value="${esc(f.name)}">${
         esc(f.name.replace(/_/g,' '))}</option>`).join('')}
      </select>
@@ -273,12 +273,12 @@ function karte(e,k){
   <div class=gespraech data-eintrag=${e.id}>
    <div class=verlauf></div>
    <div class=reihe>
-    <input class=frage placeholder="Nachfragen — z. B. „steht da Möß oder Wöß?“"
+    <input class=frage placeholder="Nachfragen – z. B. „steht da Möß oder Wöß?“"
       onkeydown="if(event.key==='Enter'){event.stopPropagation();fragen(this)}">
     <button onclick="fragen(this)">fragen</button>
    </div>
    <div class=zh>Antwortet mit Eintrag, Bildausschnitt und Bestandstreffern
-    vor Augen. Ändert nichts — eintragen tust du selbst.</div>
+    vor Augen. Ändert nichts – eintragen tust du selbst.</div>
   </div>
   <div class=fuss><button class=ja onclick="fertig(${k})">Fertig · weiter</button>
    <span class=zaehler>Strg+Enter</span>
@@ -314,7 +314,7 @@ async function fragen(el){
  if(!text) return;
  const knopf=box.querySelector('button');
  inp.disabled=knopf.disabled=true;
- // Sofort anzeigen, was gefragt wurde — sonst sieht es aus, als sei nichts
+ // Sofort anzeigen, was gefragt wurde – sonst sieht es aus, als sei nichts
  // passiert, und die Antwort kann eine halbe Minute brauchen.
  const v=box.querySelector('.verlauf');
  v.insertAdjacentHTML('beforeend',
@@ -343,12 +343,12 @@ async function beenden(){
 }
 
 // Wer einen Buchstaben nicht entziffert, sucht ihn anderswo auf derselben
-// Buchoeffnung — in einer Formel, die dieselbe Hand zehnmal geschrieben
+// Buchoeffnung – in einer Formel, die dieselbe Hand zehnmal geschrieben
 // hat. Der Streifen allein nimmt diese Eichung weg; das ist keine
 // Schoenheitsfrage, sondern die Regel „Kontext ist Teil der Information".
 function ganzeSeite(k){
  const e=daten[k]; if(!e||!e.seite) return;
- // x,y,w,h im Original, dahinter die Seitengroesse — die Marke wird
+ // x,y,w,h im Original, dahinter die Seitengroesse – die Marke wird
  // gegen die Originalbreite umgerechnet, nicht gegen die des
  // ausgelieferten (verkleinerten) Bildes.
  const [x,y,w,h,SB,SH]=(e.kasten||'0,0,0,0,0,0').split(',').map(Number);
@@ -358,7 +358,7 @@ function ganzeSeite(k){
  d.onclick=ev=>{ if(ev.target===d||ev.target.classList.contains('zu')) d.remove(); };
  d.innerHTML=`<div class=leiste>
    <b>Nr. ${esc(e.nr)}</b> auf ${esc(e.bild)}
-   <span class=dim>— die Zeile ist markiert; dieselbe Hand schreibt ihre
+   <span class=dim>– die Zeile ist markiert; dieselbe Hand schreibt ihre
     Formeln auf der ganzen Seite gleich</span>
    <span style=flex:1></span><button class=zu>schließen</button></div>
   <div class=blatt><img src="/bild/${encodeURI(e.seite)}?kante=1600" alt="">
@@ -376,7 +376,7 @@ function ganzeSeite(k){
 
 // Zwei unabhaengige Lesungen derselben Zeile: Wo sie auseinandergehen,
 // liegt der Zweifel. Dieselbe Zeile ergab einmal Wöß / Weingärtner /
-// 11. Februar und einmal Möß / Wagner / 4. Februar — drei Unterschiede,
+// 11. Februar und einmal Möß / Wagner / 4. Februar – drei Unterschiede,
 // alle drei vorher unauffaellig.
 async function nochmalLesen(k,btn){
  const e=daten[k];
@@ -385,22 +385,22 @@ async function nochmalLesen(k,btn){
  if(!feld){ feld=document.createElement('div'); feld.className='zweite';
             box.querySelector('.still, .person, .daten').before(feld); }
  btn.disabled=true;
- feld.innerHTML='<span class=dim>liest — das dauert eine Weile …</span>';
+ feld.innerHTML='<span class=dim>liest – das dauert eine Weile …</span>';
  const a=await (await fetch('/api/nachlesen',{method:'POST',
    body:JSON.stringify({eintrag:e.id})})).json();
  btn.disabled=false;
  if(!a.ok){ feld.innerHTML=`<span class=dim>${esc(a.meldung||'')}</span>`; return; }
  const anders=a.felder.filter(f=>!f.gleich);
  feld.innerHTML = `<div class=zkopf>Zweite Lesung: ${a.gleich} gleich,
-   <b>${a.anders} anders</b>. Geändert wird nichts — was gilt, entscheiden
+   <b>${a.anders} anders</b>. Geändert wird nichts – was gilt, entscheiden
    Sie am Bild.</div>`
   + (anders.length ? `<table class=ztab>
       <tr><th>Feld</th><th>steht da</th><th>zweite Lesung</th></tr>
       ${anders.map(f=>`<tr>
         <td>${esc(f.name.replace(/_/g,' '))}${f.eigen
           ?' <span class=dim>(von Ihnen)</span>':''}</td>
-        <td>${esc(f.alt)||'<span class=dim>—</span>'}</td>
-        <td>${esc(f.neu)||'<span class=dim>—</span>'}</td></tr>`).join('')}
+        <td>${esc(f.alt)||'<span class=dim>–</span>'}</td>
+        <td>${esc(f.neu)||'<span class=dim>–</span>'}</td></tr>`).join('')}
      </table>` : '');
 }
 
@@ -408,7 +408,7 @@ function feld(e,n){return e.felder.find(f=>f.name===n)||{}}
 
 // Welche Felder in den Nachtragsblock gehoeren: alles, was kein
 // Personenfeld und kein Datum ist. Gefuellte immer, leere erst wenn der
-// Bearbeiter sie ueber "+ Feld" holt — sonst stuenden 16 leere Zeilen da,
+// Bearbeiter sie ueber "+ Feld" holt – sonst stuenden 16 leere Zeilen da,
 // durch die niemand scrollen will.
 function passt(f){ return !f.rolle && !/_datum$/.test(f.name); }
 function zeilen(e){ return e.felder.filter(f=>passt(f) && (f.wert||f.kb_form||f.offen)); }
@@ -423,7 +423,7 @@ function zeileFeld(f){
   </div>`;
 }
 
-// Der Knopf holt genau ein Feld dazu — kein Aufklappen von 35 Zeilen.
+// Der Knopf holt genau ein Feld dazu – kein Aufklappen von 35 Zeilen.
 function feldDazu(el){
  const box=el.closest('.mehr');
  const wahl=box.querySelector('.feldwahl');
@@ -493,7 +493,7 @@ async function anbindung(el){
    d.weitere.map(f=>`<span class=fid>${f.id}</span> <span>${esc(f.text)}</span>`).join(' ');
   box.dataset.fam='';
  } else {
-  inhalt=`<span class=hinw>${esc(d.hinweis)} — neue Familie</span>`;
+  inhalt=`<span class=hinw>${esc(d.hinweis)} – neue Familie</span>`;
   box.dataset.fam='';
  }
  const hv=d.herkunft_vater[0], hm=d.herkunft_mutter[0];
@@ -546,7 +546,7 @@ async function fertig(k){
  if(naechst>=0){ i=naechst; zeichne(); window.scrollTo(0,0); return; }
  const rest=daten.findIndex(e=>e.status!=='bestaetigt');
  if(rest>=0){ i=rest; zeichne(); window.scrollTo(0,0); return; }
- // Alles bestätigt — weiter zur Übergabe.
+ // Alles bestätigt – weiter zur Übergabe.
  document.getElementById('app').className='leer';
  document.getElementById('app').innerHTML=
   `<p><b>${daten.length} Einträge bestätigt.</b></p>
@@ -576,7 +576,7 @@ function zeige(inp,d){
  const box=document.createElement('div'); box.className='vorschlag';
  let html='';
  if(d.personen.length){
-  html+='<div class=kopfz>Person übernehmen — find &amp; use</div>';
+  html+='<div class=kopfz>Person übernehmen – find &amp; use</div>';
   html+=d.personen.map(p=>`<div data-typ=person data-id="${esc(p.id)}"
     data-name="${esc(p.surn)}"><span class=id>${esc(p.id)}</span>
     <span>${esc(p.name)}</span>
@@ -631,7 +631,7 @@ document.addEventListener('keydown',ev=>{
  const vorschlagOffen = inp && ev.target.closest('.feldbox')?.querySelector('.vorschlag');
  const el = ev.target.closest?.('.eintrag') || document.querySelector('.eintrag');
 
- // Strg+Enter: Eintrag fertig — gilt immer.
+ // Strg+Enter: Eintrag fertig – gilt immer.
  if(ev.key==='Enter' && ev.ctrlKey && el){
   ev.preventDefault(); fertig(+el.dataset.i); return; }
 

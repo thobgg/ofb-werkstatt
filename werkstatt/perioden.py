@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Formularperioden eines Bandes finden — einmal je Ordner, am Kopf.
+"""Formularperioden eines Bandes finden – einmal je Ordner, am Kopf.
 
     python3 -m werkstatt.perioden taufe
     python3 -m werkstatt.perioden --alle
@@ -11,7 +11,7 @@ mit den falschen Feldern.
 
 **Geometrisch geht es nicht.** Gemessen an 14 Stichproben desselben
 Taufregisters findet die senkrechte Linienerkennung zwischen 2 und 11
-Spaltenlinien — Belichtung, Buchkrümmung und die Lage im Bild schwanken
+Spaltenlinien – Belichtung, Buchkrümmung und die Lage im Bild schwanken
 stärker als jeder echte Formularwechsel. Deshalb liest hier das Modell.
 
 **Aber sparsam.** Nicht die Seiten, nur den **gedruckten Kopf**: ein
@@ -21,8 +21,8 @@ und ein Aufruf je Register. Wo sich der Spaltentext ändert, liegt eine
 Grenze; die genaue Seite dazwischen wird durch Halbieren nachgefasst.
 
 **Die Hand kostet nichts.** Wer die Taufe verrichtet hat, steht als eigene
-Spalte im Formular und wird ohnehin gelesen. Der Pfarrerwechsel — laut
-`CLAUDE.md` die Variable mit dem größten Einfluss — fällt also aus den
+Spalte im Formular und wird ohnehin gelesen. Der Pfarrerwechsel – laut
+`CLAUDE.md` die Variable mit dem größten Einfluss – fällt also aus den
 erfassten Daten heraus, sobald eine Tranche durch ist. Dafür braucht es
 keinen zweiten Blick.
 """
@@ -35,12 +35,12 @@ from . import bloecke, db, einstellungen, konfig, seiten, vorlage
 
 JEDE = 5
 
-AUFTRAG = """Du siehst die gedruckten Spaltenköpfe von Kirchenbuchseiten —
+AUFTRAG = """Du siehst die gedruckten Spaltenköpfe von Kirchenbuchseiten –
 je Seite ein oder zwei Bilder, links und rechts vom Bund. Es geht **nicht**
 um die handschriftlichen Einträge, sondern allein um den **gedruckten
 Formularkopf**.
 
-Für jede **Seite** genau ein Eintrag — nicht je Bild. Wo zwei Bilder zu
+Für jede **Seite** genau ein Eintrag – nicht je Bild. Wo zwei Bilder zu
 einer Seite gehören (links und rechts vom Bund), gehören ihre Spalten in
 **eine** Liste, links zuerst. Als `bild` den Seitennamen einsetzen, der
 unten vor dem Doppelpunkt steht, nicht den Dateipfad.
@@ -54,7 +54,7 @@ Antworte NUR mit JSON:
              "lesbar": true, "notiz": null}]}
 
 `lesbar: false`, wenn der Kopf abgeschnitten, verdeckt oder unleserlich
-ist — dann `spalten: []`. Rate nichts: Ein erfundener Spaltenname erzeugt
+ist – dann `spalten: []`. Rate nichts: Ein erfundener Spaltenname erzeugt
 eine Formulargrenze, die es nicht gibt.
 
 Die Bilder:
@@ -105,7 +105,7 @@ def frage_modell(kopfbilder, zeitlimit=1800):
     """Ein Aufruf für alle Stichproben eines Registers."""
     w = vorlage.werkzeug()
     if not w:
-        raise SystemExit("Claude Code ist nicht eingerichtet — ohne das "
+        raise SystemExit("Claude Code ist nicht eingerichtet – ohne das "
                          "lassen sich die Formularköpfe nicht lesen.")
     zeilen = []
     ordner = set()
@@ -132,7 +132,7 @@ def frage_modell(kopfbilder, zeitlimit=1800):
 
 
 def _schluessel(spalten):
-    """Vergleichsform eines Formularkopfs — Reihenfolge zählt, Zierrat nicht."""
+    """Vergleichsform eines Formularkopfs – Reihenfolge zählt, Zierrat nicht."""
     return tuple(" ".join(str(s).lower().split()).strip(" .:-")
                  for s in (spalten or []))
 
@@ -150,7 +150,7 @@ def _seitenname(x):
 
     Der Auftrag nennt Seitenname und Bildpfade; welchen von beiden die
     Antwort einsetzt, ist nicht erzwingbar. Ein Lauf lieferte
-    `1184798-00389/kopf_links.jpg` — daraus wurden 32 „Seiten" statt 17,
+    `1184798-00389/kopf_links.jpg` – daraus wurden 32 „Seiten" statt 17,
     und die Segmentierung zerfiel. Also hier zurechtrücken statt sich auf
     die Form der Antwort zu verlassen.
     """
@@ -192,7 +192,7 @@ def segmentiere(gelesen, alle_bilder):
         # Aufnahmen ist nur eine Buchhaelfte im Bild oder ihr Kopf nicht
         # lesbar; dann kommen fuenf statt neun Spalten zurueck. Der erste
         # Lauf machte daraus vier Perioden, die abwechselnd 9 und 5 Spalten
-        # hatten — sichtbar Unsinn, denn ein Formular wechselt nicht hin
+        # hatten – sichtbar Unsinn, denn ein Formular wechselt nicht hin
         # und her. Wo eine Spaltenfolge in der anderen enthalten ist,
         # gehoert beides zusammen, und die reichere gilt.
         vor = abschnitte[-1] if abschnitte else None
@@ -250,7 +250,7 @@ def haende(con, register):
     """Die Schreiber, gratis aus den schon gelesenen Einträgen.
 
     Der taufende, trauende oder beerdigende Geistliche steht als eigene
-    Spalte im Formular. Wo er wechselt, wechselt die Hand — und das ist
+    Spalte im Formular. Wo er wechselt, wechselt die Hand – und das ist
     die Variable mit dem groessten Einfluss auf die Lesequalitaet.
     """
     feld = {"taufe": "taufender", "ehe": "trauender",
@@ -266,7 +266,7 @@ def haende(con, register):
 
 
 def neu_schneiden(con, register, still=False):
-    """Aus der aufgehobenen Rohantwort noch einmal segmentieren — gratis."""
+    """Aus der aufgehobenen Rohantwort noch einmal segmentieren – gratis."""
     roh = konfig.WURZEL / "daten" / f"koepfe_{register}.json"
     if not roh.exists():
         raise SystemExit(f"keine gespeicherte Lesung für {register}")

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Betriebseinstellungen — was sich beim Arbeiten ändert.
+"""Betriebseinstellungen – was sich beim Arbeiten ändert.
 
     python3 -m werkstatt.einstellungen
     python3 -m werkstatt.einstellungen --setze seiten.ehe 10
@@ -13,7 +13,7 @@ Die Trennlinie zu `konfig.toml`:
                   -> Betrieb. Beim Arbeiten.
 
 Betriebswerte in die TOML-Datei zurückzuschreiben hieße, sie bei jedem Klick
-neu zu erzeugen und dabei ihre Kommentare zu verlieren — die machen den halben
+neu zu erzeugen und dabei ihre Kommentare zu verlieren – die machen den halben
 Erklärwert der Datei aus. Was hier nicht gesetzt ist, kommt weiterhin von dort.
 """
 import argparse
@@ -22,7 +22,7 @@ from pathlib import Path
 from . import db, konfig
 
 # Vorgaben mit Begründung. Die Seitenzahlen sind ungleich, weil ein
-# Eheeintrag sechs Personen nennt und ein Taufeintrag drei — gleich viele
+# Eheeintrag sechs Personen nennt und ein Taufeintrag drei – gleich viele
 # Seiten bedeuten sehr ungleich viel Arbeit.
 VORGABEN = {
     "reihenfolge": None,        # leer = Reihenfolge wie in konfig.toml
@@ -40,7 +40,7 @@ VORGABEN = {
 }
 
 AUTOPILOT = {
-    "streng": "nichts läuft durch — jedes Feld wird vorgelegt",
+    "streng": "nichts läuft durch – jedes Feld wird vorgelegt",
     "normal": "grün läuft durch, gelb und rot werden vorgelegt",
     "zuegig": "grün und eindeutiges Gelb laufen durch",
 }
@@ -84,7 +84,7 @@ def reihenfolge(con):
     """Register in der Reihenfolge, in der sie drankommen.
 
     Ehen zuerst: Der Elternehe-Anker trägt im Taufjahr 1808 noch 94 %, 1820
-    nur 18 % — es sei denn, die Ehen sind vorher übergeben. Tode zuletzt,
+    nur 18 % – es sei denn, die Ehen sind vorher übergeben. Tode zuletzt,
     weil sie beide vorigen Register als Anker nutzen.
     """
     aus_konfig = list(konfig.register())
@@ -92,7 +92,7 @@ def reihenfolge(con):
     if not gesetzt:
         return aus_konfig
     reihe = [x.strip() for x in str(gesetzt).split(",") if x.strip()]
-    # Unbekanntes verwerfen, Fehlendes hinten anhängen — eine veraltete
+    # Unbekanntes verwerfen, Fehlendes hinten anhängen – eine veraltete
     # Einstellung darf kein Register verschwinden lassen.
     reihe = [r for r in reihe if r in aus_konfig]
     return reihe + [r for r in aus_konfig if r not in reihe]
@@ -104,7 +104,7 @@ def seitenzahl(con, art):
 
 
 def ordner(con, art):
-    """Bildordner eines Registers — Einstellung schlägt konfig.toml."""
+    """Bildordner eines Registers – Einstellung schlägt konfig.toml."""
     p = wert(con, f"ordner.{art}")
     if p:
         p = Path(str(p)).expanduser()
@@ -119,7 +119,7 @@ def grenzen(con):
 
 
 def uebersicht(con):
-    """Was die Einstellungsseite zeigt — Wert plus Herkunft des Werts."""
+    """Was die Einstellungsseite zeigt – Wert plus Herkunft des Werts."""
     gesetzt = alle(con)
     raus = []
     for name, vorgabe in VORGABEN.items():
@@ -148,7 +148,7 @@ def main():
         return
 
     print(f"  Reihenfolge   {' → '.join(reihenfolge(con))}")
-    print(f"  Autopilot     {wert(con, 'autopilot')} — "
+    print(f"  Autopilot     {wert(con, 'autopilot')} – "
           f"{AUTOPILOT.get(wert(con, 'autopilot'), '')}")
     print()
     for art in reihenfolge(con):

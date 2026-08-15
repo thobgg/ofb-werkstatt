@@ -27,7 +27,7 @@ SCHEMA = Path(__file__).resolve().parent / "schema.sql"
 # Belegt beim Einbau dieser Funktion: `eintrag` stand seit Längerem mit
 # `fam_reg` und `schreiber` in schema.sql und hatte beide in der laufenden
 # Datenbank nicht. `fam_reg` ist nach doku/verknuepfung.md der stärkste Anker
-# überhaupt — die Spalte war da, wo man sie liest, und fehlte da, wo man sie
+# überhaupt – die Spalte war da, wo man sie liest, und fehlte da, wo man sie
 # schreibt. Eine von Hand gepflegte Liste hätte genau das wieder übersehen;
 # deshalb wird gegen die Schemadatei verglichen statt gegen eine Aufzählung.
 SPALTE = re.compile(r"^\s*([a-z_][a-z0-9_]*)\s+(.+?)\s*$", re.I)
@@ -79,7 +79,7 @@ def wandere(con, melde=None):
 def verbinde():
     DB.parent.mkdir(parents=True, exist_ok=True)
     # `timeout`: Mit mehreren Faeden kann ein Schreibvorgang auf einen
-    # anderen treffen. SQLite wirft dann sofort "database is locked" — mit
+    # anderen treffen. SQLite wirft dann sofort "database is locked" – mit
     # Wartezeit versucht es stattdessen bis zu zehn Sekunden lang weiter,
     # und das genuegt fuer alles, was diese Werkstatt tut.
     con = sqlite3.connect(DB, timeout=10)
@@ -90,7 +90,7 @@ def verbinde():
 
 
 def felder(art=None):
-    """Feldreihenfolge je Registerart — kommt aus konfig.toml."""
+    """Feldreihenfolge je Registerart – kommt aus konfig.toml."""
     if art:
         return _k.felder(art)
     return {a: _k.felder(a) for a in _k.register()}
@@ -114,7 +114,7 @@ def herkunft_id(con, art, datei, notiz=None, gilt=None, parochien=None):
 def kontext_anwenden(con):
     """Rang aus konfig.toml auf die vorhandenen Herkünfte übertragen.
 
-    Zugeordnet wird über den Dateinamen, nicht den Pfad — ein verschobener
+    Zugeordnet wird über den Dateinamen, nicht den Pfad – ein verschobener
     Bestand soll seinen Rang behalten.
 
     Die **eigene bestätigte Erfassung** ist immer `beleg`. Das ist keine

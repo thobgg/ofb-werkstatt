@@ -5,7 +5,7 @@
 
 Zwei unabhängige Lesungen derselben Zeile sind das beste Werkzeug gegen
 stille Lesefehler. Wo sie übereinstimmen, ist die Sache wahrscheinlich
-klar; wo sie auseinandergehen, liegt der Zweifel — und zwar sichtbar,
+klar; wo sie auseinandergehen, liegt der Zweifel – und zwar sichtbar,
 statt in einer Zuversichtszahl versteckt, die nichts wert ist.
 
 Gemessen am eigenen Bestand: Dieselbe Zeile wurde einmal als `Wöß`,
@@ -31,15 +31,15 @@ from pathlib import Path
 from . import bloecke, db, einstellungen, katalog, konfig, seiten, vorlage
 
 AUFTRAG = """Lies diesen einen Eintrag aus einem württembergischen
-Kirchenbuch. Du siehst ihn als ein oder zwei Bilder — links und rechts vom
-Bund derselben Zeile — und dazu den gedruckten Spaltenkopf.
+Kirchenbuch. Du siehst ihn als ein oder zwei Bilder – links und rechts vom
+Bund derselben Zeile – und dazu den gedruckten Spaltenkopf.
 
 Antworte NUR mit JSON:
 
 {"felder": {"feldname": {"wert": "…", "kb": "wörtlich wie im Buch"}}}
 
 `kb` nur, wenn die Schreibung im Buch von der normalisierten Form
-abweicht. Was du nicht lesen kannst, lässt du weg — geraten wird nicht.
+abweicht. Was du nicht lesen kannst, lässt du weg – geraten wird nicht.
 
 %s
 
@@ -66,7 +66,7 @@ def bilder_zum_eintrag(con, e):
         return [], z.get("grund", "keine Blöcke")
     i = _zeilenindex(con, e)
     if i is None or i >= len(z["bloecke"]):
-        return [], (f"Zeile {i} nicht im Raster — die Seite hat "
+        return [], (f"Zeile {i} nicht im Raster – die Seite hat "
                     f"{len(z['bloecke'])} Zeilenbänder")
     return ([k["datei"] for k in z.get("kopf", [])]
             + [t["datei"] for t in z["bloecke"][i]["teile"]], None)
@@ -75,7 +75,7 @@ def bilder_zum_eintrag(con, e):
 def frage_modell(bilder, art, con, zeitlimit=900):
     w = vorlage.werkzeug()
     if not w:
-        return None, ("Claude Code ist nicht eingerichtet — ohne das kann "
+        return None, ("Claude Code ist nicht eingerichtet – ohne das kann "
                       "hier niemand ein zweites Mal lesen.")
     auftrag = (AUFTRAG % katalog.als_prompt(art, con)
                + "\n".join(f"  {b}" for b in bilder))

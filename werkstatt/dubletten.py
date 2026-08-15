@@ -5,12 +5,12 @@
     python3 -m werkstatt.dubletten taufe --uebernehmen
 
 Archion- und Ancestry-Bände enthalten regelmäßig zwei Aufnahmen derselben
-Buchöffnung — mal anders belichtet, mal leicht verschoben. Wer sie beide
+Buchöffnung – mal anders belichtet, mal leicht verschoben. Wer sie beide
 liest, zahlt zweimal und bekommt jeden Eintrag doppelt in den Bestand.
 
 Gemessen an Runde 1: `1184798-00360` zeigt dieselbe Öffnung wie `00359`.
 Die Sitzung hat es beim Lesen selbst bemerkt und keine Einträge geliefert
-— aber erst, nachdem sie die Seite angeschaut hatte. Danach standen sechs
+– aber erst, nachdem sie die Seite angeschaut hatte. Danach standen sechs
 doppelte Einträge in der Datenbank, aus einem früheren Lauf.
 
 **Der Vergleich ist billig und deterministisch.** Beide Bilder auf 400×400
@@ -39,7 +39,7 @@ from . import db, einstellungen, konfig, seiten
 # gemessenen Werten Abstand nach beiden Seiten: 39,6 liegt bei 0,51 des
 # Medians, das naechstniedrigere echte Paar bei 0,94.
 ANTEIL = 0.6
-# Darueber ist nichts eine Dublette, auch wenn der Median hoch liegt —
+# Darueber ist nichts eine Dublette, auch wenn der Median hoch liegt –
 # sonst erklaert eine Strecke aus lauter aehnlichen Seiten sich selbst zur
 # Dublettensammlung.
 DECKEL = 60.0
@@ -123,7 +123,7 @@ def pruefe(con, register, still=False):
         print(f"{register}: {len(bilder)} Bilder, {len(paare)} Nachbarpaare"
               + (f", Median {m:.1f}" if m else ""))
         for p in v:
-            print(f"  ⚠ {p['bild']} gleicht {p['vorher']} — Abstand "
+            print(f"  ⚠ {p['bild']} gleicht {p['vorher']} – Abstand "
                   f"{p['abstand']} (Grenze {p['grenze']})")
         if not v:
             print("  keine Dublette gefunden")
