@@ -254,7 +254,8 @@ Was sich damit prüfen lässt:
 | Liest ein anderes Programm das Ergebnis? | ja — exportieren und in Gramps o. ä. importieren |
 | Überleben die eigenen Tags den Wechsel? | ja, prüfbar — sie werden dort zu Notizen |
 | Wie gut liest die Maschine? | nur mit eigenem Zugang, über *nochmal lesen* |
-| Ist die Fortschreibung verlustfrei? | **nicht** — der Leerlauftest braucht die volle Vorlage |
+| Ist die Fortschreibung verlustfrei? | ja — der Auszug dient als Vorlage, 15.976 Byte zeichengleich |
+| Wie oft liest die Maschine falsch? | **nicht** — dafür fehlt die korrigierte Fassung |
 
 Herkunft und Zitation der Beispielseiten stehen in `demo/QUELLE.md`.
 
