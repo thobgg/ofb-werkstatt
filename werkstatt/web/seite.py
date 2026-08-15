@@ -77,6 +77,13 @@ details summary{cursor:pointer;color:#8b93a3;font-size:.84rem;padding:.3rem 0}
 .zeile{display:grid;grid-template-columns:10rem 1fr 1fr;gap:.4rem;padding:.15rem 0}
 .zeile label{color:#8b93a3;font-size:.8rem;align-self:center}
 .fuss{padding:.5rem .9rem;background:#191d24;display:flex;gap:.5rem;align-items:center}
+.zweite{padding:.5rem .9rem;border-bottom:1px solid #23272f;font-size:.88rem}
+.zweite .zkopf{color:#9aa3b2;margin-bottom:.4rem}
+.ztab{width:100%;border-collapse:collapse;font-size:.86rem}
+.ztab th{text-align:left;color:#8b93a3;font-weight:500;font-size:.76rem;
+ text-transform:uppercase;letter-spacing:.04em;padding:.2rem .4rem}
+.ztab td{padding:.22rem .4rem;border-top:1px solid #23272f;vertical-align:top}
+.ztab td:nth-child(3){color:#e0b341}
 .seitenschau{position:fixed;inset:0;background:#0b0d10ee;z-index:50;
  display:flex;flex-direction:column;padding:1rem;gap:.6rem}
 .seitenschau .leiste{display:flex;gap:.6rem;align-items:center;
@@ -197,6 +204,9 @@ function karte(e,k){
    <span style=flex:1></span>
    ${e.seite?`<button onclick="ganzeSeite(${k})"
      title="die ganze Buchöffnung, mit dieser Zeile markiert">ganze Seite</button>`:''}
+   <button onclick="nochmalLesen(${k},this)"
+     title="dieselbe Zeile ein zweites Mal lesen lassen und vergleichen"
+     >nochmal lesen</button>
    <span class=zaehler>${liste?esc(e.status):`Eintrag ${k+1} von ${daten.length}`}</span></div>
   ${e.ausschnitt?`<div class=bildbox onclick="this.classList.toggle('gross')">
     ${e.kopf?`<img class=kopfband src="/bild/${encodeURI(e.kopf)}"
@@ -336,6 +346,36 @@ function ganzeSeite(k){
   mark.scrollIntoView({block:'center'});
  };
  if(img.complete) setzen(); else img.onload=setzen;
+}
+
+// Zwei unabhaengige Lesungen derselben Zeile: Wo sie auseinandergehen,
+// liegt der Zweifel. Dieselbe Zeile ergab einmal Wöß / Weingärtner /
+// 11. Februar und einmal Möß / Wagner / 4. Februar — drei Unterschiede,
+// alle drei vorher unauffaellig.
+async function nochmalLesen(k,btn){
+ const e=daten[k];
+ const box=btn.closest('.eintrag');
+ let feld=box.querySelector('.zweite');
+ if(!feld){ feld=document.createElement('div'); feld.className='zweite';
+            box.querySelector('.still, .person, .daten').before(feld); }
+ btn.disabled=true;
+ feld.innerHTML='<span class=dim>liest — das dauert eine Weile …</span>';
+ const a=await (await fetch('/api/nachlesen',{method:'POST',
+   body:JSON.stringify({eintrag:e.id})})).json();
+ btn.disabled=false;
+ if(!a.ok){ feld.innerHTML=`<span class=dim>${esc(a.meldung||'')}</span>`; return; }
+ const anders=a.felder.filter(f=>!f.gleich);
+ feld.innerHTML = `<div class=zkopf>Zweite Lesung: ${a.gleich} gleich,
+   <b>${a.anders} anders</b>. Geändert wird nichts — was gilt, entscheiden
+   Sie am Bild.</div>`
+  + (anders.length ? `<table class=ztab>
+      <tr><th>Feld</th><th>steht da</th><th>zweite Lesung</th></tr>
+      ${anders.map(f=>`<tr>
+        <td>${esc(f.name.replace(/_/g,' '))}${f.eigen
+          ?' <span class=dim>(von Ihnen)</span>':''}</td>
+        <td>${esc(f.alt)||'<span class=dim>—</span>'}</td>
+        <td>${esc(f.neu)||'<span class=dim>—</span>'}</td></tr>`).join('')}
+     </table>` : '');
 }
 
 function feld(e,n){return e.felder.find(f=>f.name===n)||{}}

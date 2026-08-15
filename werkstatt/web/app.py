@@ -31,7 +31,7 @@ from pathlib import Path
 from .seite import SEITE
 from .start import STARTSEITE
 from .. import (abgleich, ausgabe, db, einrichtung, einstellungen,
-                dubletten, gespraech, katalog, perioden,
+                dubletten, gespraech, katalog, nachlesen, perioden,
                 import_gedcom,
                 import_wortschatz, konfig, lesen,
                 runde as _runde,
@@ -439,6 +439,17 @@ class Handler(BaseHTTPRequestHandler):
             try:
                 katalog.zuruecksetzen(con, d.get("art"), d.get("name"))
                 return self._json(dict(ok=True))
+            finally:
+                con.close()
+        if pfad == "/api/nachlesen":
+            d = self._rumpf()
+            con = db.verbinde()
+            try:
+                return self._json(nachlesen.vergleiche(
+                    con, int(d["eintrag"])))
+            except Exception as e:
+                return self._json({"ok": False,
+                                   "meldung": f"{type(e).__name__}: {e}"}, 400)
             finally:
                 con.close()
         if pfad == "/api/frage":
