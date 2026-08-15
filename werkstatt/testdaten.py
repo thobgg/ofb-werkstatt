@@ -58,14 +58,21 @@ def _con():
 
 
 def seiten(register=None):
-    """Welche Bilder diese Quelle abdeckt."""
+    """Welche Bilder diese Quelle abdeckt.
+
+    Die Registerangabe steht je Seite. Anfangs stand sie nur einmal oben
+    in der Datei, und die Demo deckte damit nur ein Register ab — wer
+    frisch auspackte, waehlte nach der Reihenfolge das Eheregister und
+    bekam „die Testquelle deckt dieses Register nicht ab" als ersten
+    Klick ueberhaupt.
+    """
     if not PILOT.exists():
         d = _datei()
         if not d:
             return []
-        if register not in (None, d.get("register")):
-            return []
-        return sorted(d.get("seiten", {}))
+        vorgabe = d.get("register")
+        return sorted(b for b, s in d.get("seiten", {}).items()
+                      if register in (None, s.get("register", vorgabe)))
     p = _con()
     q = "SELECT DISTINCT register, bild FROM eintrag"
     r = [(x["register"], x["bild"]) for x in p.execute(q)]

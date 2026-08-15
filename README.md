@@ -166,7 +166,9 @@ Fragen direkt am Eintrag („steht da Möß oder Wöß?"):
 
 ![Korrigieren](doku/screenshots/korrigieren.jpg)
 
-*Bildstreifen: Taufregister Haberschlacht 1808, Digitalisat via Ancestry.*
+*Bildstreifen: Evangelische Kirchengemeinde Haberschlacht, Taufregister
+Bd. 4, Bild 1184798-00359, Eintrag Nr. 1 von 1808. Digitalisat über
+Ancestry.*
 
 ## Das Sprachmodell ist Voraussetzung
 
@@ -178,6 +180,29 @@ webtrees längst.
 an die Anthropic-API. Scans von Archion, Ancestry oder einem Archiv
 unterliegen deren Nutzungsbedingungen; ob die eine Übermittlung an einen
 Dienstleister decken, muss jeder für seine eigenen Quellen klären.
+
+Zwei Klarstellungen dazu, weil hier viele hängenbleiben:
+
+**Zum Training verwendet werden sie nicht.** Anthropic schreibt für die
+kommerziellen Produkte: *„By default, we will not use your inputs or
+outputs from our commercial products (e.g. Claude for Work, Anthropic API,
+Claude Gov, etc.) to train our models."* Anders liegt es nur, wenn man
+ausdrücklich Rückmeldung gibt oder der Nutzung zustimmt.
+
+**Gespeichert werden sie aber.** Eine Aufbewahrungsfrist ist Sache des
+Vertrags; ohne eigene Vereinbarung ist nicht zugesichert, dass die Bilder
+nach der Verarbeitung verschwinden. Wer das braucht, muss es vereinbaren —
+und wer es genau wissen will, liest die Bedingungen selbst, nicht diese
+Zeile.
+
+Die Übermittlung ist eine **Verarbeitung, keine Veröffentlichung** —
+funktional wie eine Texterkennung, die auf fremder Hardware läuft. Das ist
+eine Einordnung, keine Erlaubnis: Ob die eigenen Nutzungsbedingungen sie
+decken, entscheidet nicht diese Datei.
+
+Wer die Bilder gar nicht aus der Hand geben will, hat einen Weg: die
+Testquelle braucht kein Modell, und die Bestandspflege und die
+GEDCOM-Ausgabe laufen ohnehin ohne.
 
 Alles Übrige bleibt lokal: Bestand, Erfassung und Ausgabe liegen in einer
 SQLite-Datei und im Ordner `ausgabe/`. Der Server hört nur auf `127.0.0.1`.
@@ -257,8 +282,26 @@ in der Datei.
 Scans von Archion, Ancestry und ähnlichen Diensten **dürfen nicht
 weiterverbreitet werden**. `bilder/` und `daten/` sind deshalb von der
 Versionsverwaltung ausgenommen und gehören in kein öffentliches Repo.
-Einzelne Ausschnitte mit Quellenangabe — wie der Bildstreifen oben im
-Einblick — sind von den Nutzungsbedingungen gedeckt.
+
+Zwei Ausnahmen stehen hier bewusst und begründet:
+
+**Der Bildstreifen** im Abschnitt *Einblick* belegt die beschriebene
+Funktion — ohne ihn ist von der Arbeitsweise nichts zu sehen. Er ist ein
+Ausschnitt mit Quellenangabe; die abgebildete Vorlage stammt aus 1808 und
+ist gemeinfrei. Nach § 68 UrhG gilt das seit 2021 auch für originalgetreue
+Reproduktionen gemeinfreier Werke.
+
+**Die fünfzehn Beispielseiten** in `demo/bilder/` machen die Werkstatt ohne
+eigene Bücher ausprobierbar. Herkunft, Bandangabe und Zitation stehen in
+`demo/QUELLE.md`. Auch hier: Vorlagen von 1808/09, gemeinfrei, § 68 UrhG.
+
+Ob die eigenen Zugangsbedingungen eine solche Verwendung decken, bleibt
+Sache dessen, der sie eingeht — diese Datei nimmt die Entscheidung nicht
+ab, sie legt nur offen, was hier liegt und warum.
+
+**Die MIT-Lizenz gilt für den Code dieses Repos**, nicht für
+Kirchenbuchdaten, Scans oder daraus erzeugte Transkriptionen. Für die
+gelten die Bedingungen der jeweiligen Quelle.
 
 ## Sprache
 
