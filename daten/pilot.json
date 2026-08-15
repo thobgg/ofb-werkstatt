@@ -1,33 +1,567 @@
 {
- "name": "Pilotlauf Haberschlacht 1808/09",
+ "name": "Musterlesung Haberschlacht 1808/09",
  "herkunft": "Taufregister Haberschlacht, Dekanat Brackenheim, 1808/09",
- "hinweis": "Rohlesungen des Pilotlaufs — was ein Modell aus den Seiten gemacht hat, vor der Korrektur. Die geprüften Personenverweise fehlen bewusst: Der Abgleich soll sie selbst wiederfinden, sonst misst man hinterher nur, dass man sie mitgeliefert hat. Die Scans gehören Archion und dürfen nicht weitergegeben werden; hier liegen nur die Lesungen, keine Bilder.",
+ "hinweis": "Rohlesungen — was ein Modell aus den Seiten gemacht hat, vor der Korrektur. Die geprüften Personenverweise fehlen bewusst: Der Abgleich soll sie selbst wiederfinden, sonst misst man hinterher nur, dass man sie mitgeliefert hat. Die Scans stammen von Ancestry und dürfen nicht weitergegeben werden; die Musterseiten in bilder/ sind daraus nachgestellt, kein Faksimile.",
  "register": "taufe",
  "seiten": {
+  "1184798-00359": {
+   "eintraege": [
+    {
+     "lfd_nr": "1",
+     "jahr": 1808,
+     "felder": {
+      "tauf_datum": {
+       "wert": "2 FEB 1808"
+      },
+      "tauf_ort": {
+       "wert": "Haberschlacht"
+      },
+      "geburt_datum": {
+       "wert": "1 FEB 1808"
+      },
+      "geburt_zeit": {
+       "wert": "früh 6 Uhr",
+       "kb": "früh 6. Uhr"
+      },
+      "geburt_ort": {
+       "wert": "Haberschlacht"
+      },
+      "kind_vorname": {
+       "wert": "Christoph Friedrich"
+      },
+      "kind_geschlecht": {
+       "wert": "m",
+       "notiz": "aus den Vornamen erschlossen"
+      },
+      "vater_name": {
+       "wert": "Johann Michael Möß",
+       "kb": "Johann Michael Möß",
+       "notiz": "Elternehe F946 über Vornamen beider Eltern, oo 26 NOV 1800"
+      },
+      "vater_beruf": {
+       "wert": "Bürger und Wagner",
+       "kb": "B. u. Wagner",
+       "notiz": "Das Wort ist deutlich kürzer als das sonst übliche 'Weingärtner' dieser Hand. Bestätigt durch Eintrag 9 des Jahrgangs 1809 (Seite 00364), wo derselbe Mann als 'B. u. Wagner' auftritt."
+      },
+      "vater_ort": {
+       "wert": "Haberschlacht"
+      },
+      "mutter_name": {
+       "wert": "Agnes Dorothea",
+       "notiz": "Elternehe F946 über Vornamen beider Eltern, oo 26 NOV 1800"
+      },
+      "mutter_geborene": {
+       "wert": "Bartschmaier",
+       "kb": "geb. Bartschmaierin",
+       "notiz": "Lesung sehr unsicher; nur der Anfang 'Bar…' und die Endung '-in' sind klar."
+      },
+      "paten": {
+       "wert": "Friedrich Roth, B. u. Weingärtner; Friederike Roth",
+       "notiz": "Nur der erste Pate und ein Name der dritten Zeile sind sicher; die übrigen zwei bis drei Zeugen samt Berufsangaben sind in dieser Auflösung nicht zu entziffern."
+      },
+      "taufender": {
+       "wert": "M. Duvernoy",
+       "kb": "H. M. Duvernoy",
+       "notiz": "Dieselbe Abkürzung steht bei allen Einträgen dieser Seite."
+      },
+      "religion": {
+       "wert": "evangelisch",
+       "kb": "beide evangelischer Religion"
+      },
+      "sterbe_datum": {
+       "wert": "4 FEB 1808",
+       "notiz": "aus dem Randvermerk „† 4.te Februar 1808“; ob der Vermerk dem Täufling gilt, sagt nur das Bild"
+      },
+      "randvermerk": {
+       "wert": "† 4.te Februar 1808",
+       "notiz": "Späterer Vermerk unter dem Taufnamen. Tageszahl unsicher — gelesen als '4.', möglich auch '11.'."
+      },
+      "volltext": {
+       "wert": "1. | Christoph Friedrich | Johann Michael Möß, B. und Wagner u. Agnes Dorothea geb. Bartschmaierin, beide evangelischer Religion | Haberschlacht || 1. Februar früh 6. Uhr | Haberschlacht d. 2.ten Februar | H. M. Duvernoy | Friedrich Roth, B. u. Weingärtner … Friederike Roth … | Familien-Register S. 191",
+       "notiz": "Rekonstruktion aus den lesbaren Teilen; die Patenzeilen sind lückenhaft."
+      },
+      "unleserlich": {
+       "wert": "Taufzeugen-Spalte Zeilen 2–4 (Namen, Berufe, Orte); Nachname der Mutter nach 'geb.'; Berufswort des Vaters."
+      }
+     }
+    },
+    {
+     "lfd_nr": "2",
+     "jahr": 1808,
+     "felder": {
+      "tauf_datum": {
+       "wert": "24 FEB 1808",
+       "notiz": "Tageszahl unsicher (24. oder 23.)."
+      },
+      "tauf_ort": {
+       "wert": "Haberschlacht"
+      },
+      "geburt_datum": {
+       "wert": "22 FEB 1808"
+      },
+      "geburt_zeit": {
+       "wert": "mittags 2 Uhr",
+       "kb": "mittags 2 Uhr"
+      },
+      "geburt_ort": {
+       "wert": "Haberschlacht"
+      },
+      "kind_vorname": {
+       "wert": "Jacob Friedrich"
+      },
+      "kind_geschlecht": {
+       "wert": "m",
+       "notiz": "aus den Vornamen erschlossen"
+      },
+      "vater_name": {
+       "wert": "Georg Jacob Dürr",
+       "notiz": "Elternehe F997 über Vornamen beider Eltern, oo 23 NOV 1807"
+      },
+      "vater_beruf": {
+       "wert": "Bürger und Weingärtner",
+       "kb": "B. u. Weingärtner"
+      },
+      "vater_ort": {
+       "wert": "auf dem Magenheimer Hof",
+       "kb": "auf dem Magenheimer Hof",
+       "notiz": "Ortsname unsicher; 'Magenheimer Hof' passt zur Gegend, die Spalte 'Ort der Geburt' nennt gleichwohl Haberschlacht."
+      },
+      "mutter_name": {
+       "wert": "Rosina Margaretha",
+       "notiz": "Elternehe F997 über Vornamen beider Eltern, oo 23 NOV 1807"
+      },
+      "mutter_geborene": {
+       "wert": "Sinner",
+       "kb": "geb. Sinnerin",
+       "notiz": "Lesung unsicher."
+      },
+      "mutter_herkunft": {
+       "wert": "bei dem Magenheimer Hof",
+       "notiz": "gelesen 'bei dem Mag[en]heimer Hof'; Magenheim liegt in der Nähe, die Lesung ist aber nicht gesichert"
+      },
+      "paten": {
+       "wert": "Heinrich Weber, B. u. …; Johann Dürr, ledig; Henrietta Friederika, … Samuel Dürr …",
+       "notiz": "Berufs- und Ortsangaben der Zeugen nicht sicher zu entziffern."
+      },
+      "taufender": {
+       "wert": "M. Duvernoy",
+       "kb": "H. M. Duvernoy"
+      },
+      "religion": {
+       "wert": "evangelisch",
+       "kb": "beide evangelischer Religion"
+      },
+      "volltext": {
+       "wert": "2. | Jacob Friedrich | Georg Jacob Dürr, B. u. Weingärtner und Rosina Margaretha, geb. Sinnerin, auf dem Magenheimer Hof, beide evangelischer Religion | Haberschlacht || 22.ten Februar mittags 2 Uhr | Haberschlacht d. 24.ten Februar | H. M. Duvernoy | Heinrich Weber … Johann Dürr, ledig … Henrietta Friederika … Samuel Dürr … | Familien-Register S. 80"
+      },
+      "unleserlich": {
+       "wert": "Taufzeugen-Spalte: Berufe und Orte; Nachname der Mutter nach 'geb.'; Hofname in der Elternspalte."
+      }
+     }
+    },
+    {
+     "lfd_nr": "3",
+     "jahr": 1808,
+     "felder": {
+      "geburt_datum": {
+       "wert": "27 FEB 1808"
+      },
+      "geburt_zeit": {
+       "wert": "mittags 2 Uhr",
+       "kb": "mittags 2 Uhr"
+      },
+      "geburt_ort": {
+       "wert": "Haberschlacht"
+      },
+      "kind_geschlecht": {
+       "wert": "m",
+       "notiz": "aus 'Knäblein' erschlossen"
+      },
+      "totgeburt": {
+       "wert": "totgeboren",
+       "kb": "Ein todtgebornes Knäbl.",
+       "notiz": "Statt eines Taufnamens steht in der Namensspalte nur diese Angabe."
+      },
+      "vater_name": {
+       "wert": "Josias Balthasar Löffler",
+       "notiz": "nur der Vatername kommt im Bestand vor — Elternehe fehlt"
+      },
+      "vater_beruf": {
+       "wert": "Schulmeister",
+       "kb": "Schulmeister"
+      },
+      "vater_ort": {
+       "wert": "Haberschlacht",
+       "kb": "hier",
+       "notiz": "im Text 'Schulmeister hier'; die Wohnortspalte nennt Haberschlacht"
+      },
+      "mutter_name": {
+       "wert": "Christina Friederika",
+       "notiz": "nur der Vatername kommt im Bestand vor — Elternehe fehlt"
+      },
+      "mutter_geborene": {
+       "wert": "Ross",
+       "kb": "geb. Kochin",
+       "notiz": "Lesung sehr unsicher."
+      },
+      "religion": {
+       "wert": "evangelisch",
+       "kb": "beide evangelischer Religion"
+      },
+      "volltext": {
+       "wert": "3. | Ein todtgebornes Knäbl. | H. Josias Balthasar Löffler, Schulmeister und Christina Friederika geb. Rossin, beide evangelischer Religion | Haberschlacht || 27.ten Februar mittags 2 Uhr | — | — | — | Familien-Register S. 186"
+      },
+      "unleserlich": {
+       "wert": "Spalte 'Ort und Tag der Taufe' enthält ein kurzes, nicht sicher lesbares Wort; die Spalten für den taufenden Geistlichen und die Taufzeugen sind mit Strichen gefüllt — bei der Totgeburt fand offenbar keine Taufe statt. Nachname der Mutter nach 'geb.'."
+      }
+     }
+    },
+    {
+     "lfd_nr": "4",
+     "jahr": 1808,
+     "felder": {
+      "tauf_datum": {
+       "wert": "3 MAR 1808",
+       "kb": "d. 3.ten Merz"
+      },
+      "tauf_ort": {
+       "wert": "Haberschlacht"
+      },
+      "geburt_datum": {
+       "wert": "1 MAR 1808",
+       "kb": "1.ten Merz",
+       "notiz": "Monatswort schwer zu lesen ('Merz' oder 'May'); die Chronologie der Seite (27. Februar davor, 17. Merz danach) entscheidet für März."
+      },
+      "geburt_zeit": {
+       "wert": "früh 7 Uhr",
+       "kb": "früh 7. Uhr"
+      },
+      "geburt_ort": {
+       "wert": "Haberschlacht"
+      },
+      "kind_vorname": {
+       "wert": "Rosina Dorothea"
+      },
+      "kind_geschlecht": {
+       "wert": "w",
+       "notiz": "aus den Vornamen erschlossen"
+      },
+      "vater_name": {
+       "wert": "Johann Friedrich Roth",
+       "kb": "Johann Friedrich Chr. Roth",
+       "notiz": "nur der Vatername kommt im Bestand vor — Elternehe fehlt"
+      },
+      "vater_beruf": {
+       "wert": "Bürger und Weingärtner",
+       "kb": "B. u. Weingärtner"
+      },
+      "vater_ort": {
+       "wert": "Haberschlacht"
+      },
+      "vater_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
+      },
+      "mutter_name": {
+       "wert": "Christina",
+       "notiz": "nur der Vatername kommt im Bestand vor — Elternehe fehlt"
+      },
+      "mutter_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
+      },
+      "paten": {
+       "wert": "David Hartmann, B. u. …; Johann Georg Weiskopf, B. u. Weingärtner; Elisabetha Rosina Haasis, ledig",
+       "notiz": "Namen teilweise unsicher, Berufsangaben lückenhaft."
+      },
+      "taufender": {
+       "wert": "M. Duvernoy",
+       "kb": "H. M. Duvernoy"
+      },
+      "sterbe_datum": {
+       "wert": "30 APR 1850",
+       "notiz": "aus dem Randvermerk „† Haberschlacht 30. April 1850“; ob der Vermerk dem Täufling gilt, sagt nur das Bild"
+      },
+      "randvermerk": {
+       "wert": "† Haberschlacht 30. April 1850",
+       "notiz": "Späterer Vermerk in anderer Tinte unter dem Taufnamen."
+      },
+      "volltext": {
+       "wert": "4. | Rosina Dorothea | Johann Friedrich Chr. Roth, B. u. Weingärtner evangelischer Religion, und Christina … evangelischer Religion | Haberschlacht || 1.ten Merz früh 7. Uhr | Haberschlacht d. 3.ten Merz | H. M. Duvernoy | David Hartmann … Johann Georg Weiskopf, B. u. Weingärtner, Elisabetha Rosina Haasis, ledig | Familien-Register S. 255 (?)"
+      },
+      "unleserlich": {
+       "wert": "Zweite und dritte Zeile der Elternspalte (Nachname/Herkunft der Mutter); Berufsangaben der Taufzeugen; Seitenzahl des Familienregisters (255 oder 285)."
+      }
+     }
+    },
+    {
+     "lfd_nr": "5",
+     "jahr": 1808,
+     "felder": {
+      "tauf_datum": {
+       "wert": "19 MAR 1808",
+       "kb": "d. 19.ten Merz"
+      },
+      "tauf_ort": {
+       "wert": "Haberschlacht"
+      },
+      "geburt_datum": {
+       "wert": "17 MAR 1808",
+       "kb": "d. 17.ten Merz",
+       "notiz": "Monatswort schwer zu lesen; die Chronologie der Seite entscheidet für März."
+      },
+      "geburt_zeit": {
+       "wert": "abends 7 Uhr",
+       "kb": "abends 7. Uhr"
+      },
+      "geburt_ort": {
+       "wert": "Haberschlacht"
+      },
+      "kind_vorname": {
+       "wert": "Christiana Elisabetha"
+      },
+      "kind_geschlecht": {
+       "wert": "w",
+       "notiz": "aus den Vornamen erschlossen"
+      },
+      "vater_name": {
+       "wert": "Georg Jacob Roth",
+       "notiz": "Elternehe F991 über Vornamen beider Eltern, oo 6 AUG 1806"
+      },
+      "vater_beruf": {
+       "wert": "Bürger und Weingärtner",
+       "kb": "B. und Weingärtner"
+      },
+      "vater_ort": {
+       "wert": "Haberschlacht"
+      },
+      "vater_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
+      },
+      "mutter_name": {
+       "wert": "Maria Barbara",
+       "notiz": "Elternehe F991 über Vornamen beider Eltern, oo 6 AUG 1806"
+      },
+      "mutter_ort": {
+       "wert": "von Hausen bei Brackenheim",
+       "kb": "von Hausen bei Brackenheim",
+       "notiz": "Herkunftsangabe der Mutter; Ortsname aus dem Umfeld erschlossen (Hausen an der Zaber liegt bei Brackenheim)."
+      },
+      "mutter_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
+      },
+      "mutter_geborene": {
+       "wert": "Waigner",
+       "kb": "geb. Waignerin",
+       "notiz": "Lesung unsicher; möglich auch 'Waiblin'/'Wagnerin'."
+      },
+      "mutter_herkunft": {
+       "wert": "bei Brackenheim",
+       "notiz": "der Ortsname vor 'bei Bracken…' ist nicht lesbar; die Formel lautet 'von ⟨Ort⟩ bei Bracken[heim]'"
+      },
+      "paten": {
+       "wert": "Jacob Waigner, B. u. …; Elisabetha, des Jacob Schmid, B. u. Bauer, …; Jacob Roth …",
+       "notiz": "Vier Zeilen Taufzeugen, davon nur einzelne Namen sicher."
+      },
+      "taufender": {
+       "wert": "M. Duvernoy",
+       "kb": "H. M. Duvernoy"
+      },
+      "sterbe_datum": {
+       "wert": "18 NOV 1868",
+       "notiz": "aus dem Randvermerk „† Haberschlacht 18. 9ber 1868“; ob der Vermerk dem Täufling gilt, sagt nur das Bild"
+      },
+      "randvermerk": {
+       "wert": "† Haberschlacht 18. 9ber 1868",
+       "notiz": "Späterer Vermerk in anderer Tinte; '9ber' = November."
+      },
+      "volltext": {
+       "wert": "5. | Christiana Elisabetha | Georg Jacob Roth, B. und Weingärtner evangelischer Religion und Maria Barbara geb. Waignerin von Hausen bei Brackenheim, evangelischer Religion | Haberschlacht || d. 17.ten Merz abends 7. Uhr | Haberschlacht d. 19.ten Merz | H. M. Duvernoy | Jacob Waigner … Elisabetha … Jacob Schmid … Jacob Roth … | Familien-Register S. 201"
+      },
+      "unleserlich": {
+       "wert": "Taufzeugen-Spalte weitgehend (vier Zeilen mit Namen, Berufen und Verwandtschaftsangaben); Geburtsname der Mutter."
+      }
+     }
+    },
+    {
+     "lfd_nr": "6",
+     "jahr": 1808,
+     "felder": {
+      "tauf_datum": {
+       "wert": "30 MAR 1808",
+       "kb": "d. 30.ten Mert",
+       "notiz": "Das Monatswort steht hier größer und deutlicher als in den Einträgen 4 und 5 und bestätigt März für die ganze Seite."
+      },
+      "tauf_ort": {
+       "wert": "Haberschlacht"
+      },
+      "geburt_datum": {
+       "wert": "28 MAR 1808",
+       "kb": "d. 28.ten Merz"
+      },
+      "geburt_zeit": {
+       "wert": "früh 7 Uhr",
+       "kb": "früh 7. Uhr"
+      },
+      "geburt_ort": {
+       "wert": "Schafhaus",
+       "kb": "Schafhaus, … Oberamts",
+       "notiz": "Die Spalte 'Ort der Geburt' nennt in drei Zeilen einen Hof mit Amtsangabe; nur die dritte Zeile 'Oberamts' ist sicher, der Amtsort nicht lesbar."
+      },
+      "kind_vorname": {
+       "wert": "Friedrich Christian"
+      },
+      "kind_geschlecht": {
+       "wert": "m",
+       "notiz": "aus den Vornamen erschlossen"
+      },
+      "vater_name": {
+       "wert": "Daniel Schweiger",
+       "notiz": "kein Treffer im Bestand"
+      },
+      "vater_beruf": {
+       "wert": "Bürger",
+       "kb": "Bürger in Weiler …",
+       "notiz": "Dazu eine zweite Angabe zum Schafhaus, nicht sicher lesbar."
+      },
+      "vater_ort": {
+       "wert": "Weiler",
+       "kb": "Bürger in Weiler, …dorfer Oberamts",
+       "notiz": "Der Ortsname 'Weiler' ist lesbar, die folgende Amtsangabe über den Zeilenumbruch hinweg nicht."
+      },
+      "vater_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
+      },
+      "mutter_name": {
+       "wert": "Regina",
+       "notiz": "kein Treffer im Bestand"
+      },
+      "mutter_ort": {
+       "wert": "von hier",
+       "kb": "von hier",
+       "notiz": "gemeint ist Haberschlacht"
+      },
+      "mutter_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
+      },
+      "mutter_geborene": {
+       "wert": "Kürs",
+       "kb": "geb. Kürsin",
+       "notiz": "Lesung sehr unsicher."
+      },
+      "mutter_herkunft": {
+       "wert": "von hier"
+      },
+      "paten": {
+       "wert": "Gottfried Bäuerle, B. u. Schäfer; Friedrich …, B. u. Bauer von hier; Dorothea, Heinrich …s Eheleute",
+       "notiz": "Vier Zeilen Taufzeugen, überwiegend nicht sicher zu entziffern."
+      },
+      "taufender": {
+       "wert": "M. Duvernoy",
+       "kb": "H. M. Duvernoy"
+      },
+      "sterbe_datum": {
+       "wert": "4 APR 1808",
+       "notiz": "aus dem Randvermerk „† 4.te April 1808“; ob der Vermerk dem Täufling gilt, sagt nur das Bild"
+      },
+      "randvermerk": {
+       "wert": "† 4.te April 1808",
+       "notiz": "Späterer Vermerk unter dem Taufnamen, mit Kreuz beginnend. Vor dem Datum steht ein weiteres Zeichen, gelesen als '18'; möglich ist auch die Lesung '† 18. April 1808'."
+      },
+      "volltext": {
+       "wert": "6. | Friedrich Christian | Daniel Schweiger, Bürger in Weiler …dorfer Oberamts, … Schafhaus in … evangelischer Religion und Regina geb. Kürsin von hier, evangelischer Religion | Schafhaus, … Oberamts || d. 28.ten Merz früh 7. Uhr | Haberschlacht d. 30.ten Mert | H. M. Duvernoy | Gottfried Bäuerle, B. u. Schäfer … Friedrich …, B. u. Bauer von hier … Dorothea, Heinrich …s Eheleute",
+       "notiz": "Die Seitenzahl des Familienregisters ist bei diesem Eintrag leer."
+      },
+      "unleserlich": {
+       "wert": "Nachname des Vaters; Amtsangabe nach 'Weiler'; Ortsangabe in der Spalte 'Ort der Geburt' (Zeile 2); Geburtsname der Mutter; Taufzeugen-Spalte überwiegend."
+      }
+     }
+    }
+   ]
+  },
   "1184798-00361": {
    "eintraege": [
     {
      "lfd_nr": "7",
      "jahr": 1808,
      "felder": {
+      "tauf_datum": {
+       "wert": "8 APR 1808",
+       "kb": "d. 8.ten April"
+      },
+      "tauf_ort": {
+       "wert": "Haberschlacht"
+      },
+      "geburt_datum": {
+       "wert": "7 APR 1808",
+       "kb": "d. 7.ten April"
+      },
+      "geburt_zeit": {
+       "wert": "früh 1 Uhr",
+       "kb": "früh 1. Uhr"
+      },
+      "geburt_ort": {
+       "wert": "Haberschlacht"
+      },
       "kind_vorname": {
-       "wert": "Christina Friderika"
+       "wert": "Christiana Friederika",
+       "notiz": "Der erste Name kann auch 'Christina' lauten."
+      },
+      "kind_geschlecht": {
+       "wert": "w",
+       "notiz": "aus den Vornamen erschlossen"
       },
       "vater_name": {
-       "wert": "Kröneck",
-       "notiz": "Ehe-Anker F1186, oo 20.02.1803"
+       "wert": "Jacob Friedrich Kröner",
+       "notiz": "2 mögliche Elternehen — Entscheidung nötig"
       },
       "vater_beruf": {
-       "wert": "Bürger und Schneider"
+       "wert": "Bürger und Schneider",
+       "kb": "B. u. Schneider"
+      },
+      "vater_ort": {
+       "wert": "Haberschlacht",
+       "kb": "in Haberschlacht"
+      },
+      "vater_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
       },
       "mutter_name": {
-       "wert": "Mauch",
-       "kb": "Mauchin",
-       "notiz": "OFB I2857 Maria Magdalena Mauch"
+       "wert": "Maria Magdalena",
+       "notiz": "2 mögliche Elternehen — Entscheidung nötig"
       },
-      "mutter_herkunft": {
+      "mutter_ort": {
        "wert": "Neipperg",
-       "notiz": "OFB BIRT 10.04.1781 Neipperg"
+       "kb": "von Neipperg",
+       "notiz": "Herkunftsort der Mutter; Neipperg liegt unmittelbar bei Haberschlacht."
+      },
+      "mutter_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
+      },
+      "mutter_geborene": {
+       "wert": "Maus",
+       "kb": "geb. Mausin",
+       "notiz": "Lesung unsicher."
+      },
+      "paten": {
+       "wert": "… Krauser, ledig; Johann … Keller; … B. u. Metzger zu Brackenheim; Johann Georg Hartmann von hier; Christina, Friedrich … B. u. Metzger, Eheleute",
+       "notiz": "Fünf Zeilen Taufzeugen, nur einzelne Namen und Berufe zu entziffern."
+      },
+      "taufender": {
+       "wert": "M. Duvernoy",
+       "kb": "H. M. Duvernoy"
+      },
+      "volltext": {
+       "wert": "7. | Christiana Friederika | Jacob Friedrich Kröner, B. u. Schneider in Haberschlacht, evangelischer Religion und Maria Magdalena geb. Mausin von Neipperg, evangelischer Religion | Haberschlacht || d. 7.ten April früh 1. Uhr | Haberschlacht d. 8.ten April | H. M. Duvernoy | … | Familien-Register S. 150"
+      },
+      "unleserlich": {
+       "wert": "Taufzeugen-Spalte weitgehend; Nachname des Vaters; Geburtsname der Mutter."
       }
      }
     },
@@ -35,20 +569,78 @@
      "lfd_nr": "8",
      "jahr": 1808,
      "felder": {
+      "tauf_datum": {
+       "wert": "11 MAY 1808",
+       "kb": "d. 11.ten May"
+      },
+      "tauf_ort": {
+       "wert": "Haberschlacht"
+      },
+      "geburt_datum": {
+       "wert": "10 MAY 1808",
+       "kb": "d. 10.ten May"
+      },
+      "geburt_zeit": {
+       "wert": "nachts 1 Uhr",
+       "kb": "Nachts 1. Uhr"
+      },
+      "geburt_ort": {
+       "wert": "Haberschlacht"
+      },
       "kind_vorname": {
        "wert": "Johannes"
       },
+      "kind_geschlecht": {
+       "wert": "m",
+       "notiz": "aus dem Vornamen erschlossen"
+      },
       "vater_name": {
-       "wert": "Brudi",
-       "notiz": "Ehe-Anker F-oo 19.09.1798, ueber Vornamen der Frau"
+       "wert": "Daniel Brandt",
+       "notiz": "kein Treffer im Bestand"
       },
       "vater_beruf": {
-       "wert": "Bürger und Schuhmacher"
+       "wert": "Bürger und Schuhmacher",
+       "kb": "Bürger und Schuhmacher",
+       "notiz": "über den Zeilenumbruch getrennt geschrieben: 'Schuhma-cher'"
+      },
+      "vater_ort": {
+       "wert": "Haberschlacht",
+       "kb": "in Haberschlacht"
+      },
+      "vater_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
       },
       "mutter_name": {
-       "wert": "Schock",
-       "kb": "Schockin",
-       "notiz": "OFB Felicitas Heinrika Schock"
+       "wert": "Felicitas Friderika",
+       "notiz": "kein Treffer im Bestand"
+      },
+      "mutter_ort": {
+       "wert": "Haberschlacht",
+       "kb": "von Haberschlacht"
+      },
+      "mutter_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
+      },
+      "mutter_geborene": {
+       "wert": "Schordis",
+       "kb": "geb. Schordis",
+       "notiz": "Lesung sehr unsicher."
+      },
+      "paten": {
+       "wert": "David Haisch, B. u. Bauer von hier; Johannes Hartmann, B. u. Wagner, und dessen Ehefrau Magdalena",
+       "notiz": "Nachname des ersten Zeugen unsicher."
+      },
+      "taufender": {
+       "wert": "M. Duvernoy",
+       "kb": "H. M. Duvernoy"
+      },
+      "volltext": {
+       "wert": "8. | Johannes | Daniel Brandt, Bürger und Schuhmacher in Haberschlacht, evangelischer Religion und Felicitas Friderika geb. Schordis von Haberschlacht evangelischer Religion | Haberschlacht || d. 10.ten May Nachts 1. Uhr | Haberschlacht d. 11.ten May | H. M. Duvernoy | David Haisch, B. u. Bauer von hier. Johannes Hartmann, B. u. Wagner und dessen Ehefrau Magdalena | Familien-Register S. 38"
+      },
+      "unleserlich": {
+       "wert": "Geburtsname der Mutter; Nachname des Vaters nur unsicher."
       }
      }
     },
@@ -56,20 +648,80 @@
      "lfd_nr": "9",
      "jahr": 1808,
      "felder": {
-      "kind_vorname": {
-       "wert": "Christina Sophia"
+      "tauf_datum": {
+       "wert": "12 MAY 1808",
+       "kb": "d. 12.ten May",
+       "notiz": "Tageszahl unsicher — gelesen wie das Geburtsdatum, möglich auch der 13."
       },
-      "vater_name": {
-       "wert": "Hartmann",
-       "notiz": "unehelich, als Vater genannt; kein Individuum im OFB"
+      "tauf_ort": {
+       "wert": "Haberschlacht"
+      },
+      "geburt_datum": {
+       "wert": "12 MAY 1808",
+       "kb": "d. 12.ten May"
+      },
+      "geburt_zeit": {
+       "wert": "mittags 12 Uhr",
+       "kb": "Mittags 12. Uhr"
+      },
+      "geburt_ort": {
+       "wert": "Haberschlacht"
+      },
+      "kind_vorname": {
+       "wert": "Christina Dorothea"
+      },
+      "kind_geschlecht": {
+       "wert": "w",
+       "notiz": "aus den Vornamen erschlossen"
       },
       "mutter_name": {
-       "wert": "Käser",
-       "kb": "Käsers",
-       "notiz": "OFB I3478 Charlotta Barbara Käser, ~31.12.1784"
+       "wert": "Charlotta Barbara Käser",
+       "notiz": "nur der Muttername kommt im Bestand vor — Elternehe fehlt"
+      },
+      "mutter_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
+      },
+      "mutter_stand": {
+       "wert": "ledig",
+       "notiz": "Nicht wörtlich im Eintrag; folgt aus 'unehelich' und daraus, dass die Mutter als 'eheliche Tochter' ihres Vaters geführt wird."
+      },
+      "mutter_herkunft": {
+       "wert": "Georg Käser, Schulmeister von Haberschlacht",
+       "kb": "H. Georg Käsers, Schulmeisters von Haberschlacht eheliche Tochter",
+       "notiz": "Nachname unsicher. Der Schulmeister der Jahre 1808 ff. heißt nach Eintrag 3 und 12 Josias Balthasar Löffler — hier ist offenbar ein anderer, älterer Schulmeister gemeint."
+      },
+      "unehelich": {
+       "wert": "unehelich",
+       "kb": "unehelich",
+       "notiz": "In der Namensspalte unter dem Taufnamen vermerkt; die Elternspalte nennt keinen Ehemann, sondern die Mutter als Tochter ihres Vaters."
+      },
+      "vater_angeblich": {
+       "wert": "Johann Georg Hartmann von Haberschlacht",
+       "kb": "Vater: Johann Georg Hartmann von Haberschlacht laut Protokoll d. … 1808 und Militairprotokoll 11. Merz 1809",
+       "notiz": "Als Angabe protokolliert, nicht als Tatsache. Das Tagesdatum des ersten Protokolls ist nicht lesbar."
+      },
+      "paten": {
+       "wert": "H. Joh. Adam Roth, Bürgermeister; Isabella Maria, H. Leonhard Wolffs, Gerichtsverwandten, Ehefrau; Joh. Christian Beutelin von Haberschlacht, ledig",
+       "notiz": "Leonhard Wolff als Gerichtsverwandter ist durch Eintrag 10 derselben Seite bestätigt; die übrigen Angaben sind unsicher."
+      },
+      "taufender": {
+       "wert": "M. Duvernoy",
+       "kb": "H. M. Duvernoy"
+      },
+      "sterbe_datum": {
+       "wert": "22 MAR 1810",
+       "notiz": "aus dem Randvermerk „starb d. 22. Merz 1810“; ob der Vermerk dem Täufling gilt, sagt nur das Bild"
       },
       "randvermerk": {
-       "wert": "gestorben 22. März 1810"
+       "wert": "starb d. 22. Merz 1810",
+       "notiz": "Späterer Vermerk in der Namensspalte."
+      },
+      "volltext": {
+       "wert": "9. | Christina Dorothea | unehelich | starb d. 22. Merz 1810. || Charlotta Barbara Käsers, H. Georg Käsers Schulmeisters von Haberschlacht eheliche Tochter evangelischer Religion. Vater: Johann Georg Hartmann von Haberschlacht laut Protokoll d. … 1808 und Militairprotokoll 11. Merz 1809 | Haberschlacht || d. 12.ten May Mittags 12. Uhr | Haberschlacht d. 12.ten May | H. M. Duvernoy | H. Joh. Adam Roth, Bürgermeister … Isabella Maria, H. Leonhard Wolffs … Joh. Christian Beutelin von Haberschlacht, ledig | Familien-Register S. 445 (?)"
+      },
+      "unleserlich": {
+       "wert": "Nachname der Mutter und ihres Vaters; Tagesdatum des ersten Protokolls; Berufsangaben in der Taufzeugen-Spalte; Seitenzahl des Familienregisters nur unsicher (445 oder 115)."
       }
      }
     },
@@ -77,20 +729,78 @@
      "lfd_nr": "10",
      "jahr": 1808,
      "felder": {
+      "tauf_datum": {
+       "wert": "16 MAY 1808",
+       "kb": "d. 16.ten May"
+      },
+      "tauf_ort": {
+       "wert": "Haberschlacht"
+      },
+      "geburt_datum": {
+       "wert": "14 MAY 1808",
+       "kb": "d. 14.ten May"
+      },
+      "geburt_zeit": {
+       "wert": "nachts 11 Uhr",
+       "kb": "Nachts 11. Uhr"
+      },
+      "geburt_ort": {
+       "wert": "Haberschlacht"
+      },
       "kind_vorname": {
        "wert": "Georg Christian"
       },
+      "kind_geschlecht": {
+       "wert": "m",
+       "notiz": "aus den Vornamen erschlossen"
+      },
       "vater_name": {
-       "wert": "Wolff",
-       "notiz": "OFB I2650 Joh. Leonhard Wolff"
+       "wert": "Leonhard Wolff",
+       "kb": "H. Leonhard Wolff",
+       "notiz": "nur der Vatername kommt im Bestand vor — Elternehe fehlt"
       },
       "vater_beruf": {
-       "wert": "Gerichtsverwandter und Bauer"
+       "wert": "Gerichtsverwandter und Bauer",
+       "kb": "Gerichtsverwandter und Baur"
+      },
+      "vater_ort": {
+       "wert": "Haberschlacht",
+       "kb": "in Haberschlacht"
+      },
+      "vater_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
       },
       "mutter_name": {
-       "wert": "Käser",
-       "kb": "Käserin",
-       "notiz": "2. Ehe; Vornamen Maria Juditha entscheiden"
+       "wert": "Friderika Maria",
+       "notiz": "nur der Vatername kommt im Bestand vor — Elternehe fehlt"
+      },
+      "mutter_ort": {
+       "wert": "Haberschlacht",
+       "kb": "von Haberschlacht"
+      },
+      "mutter_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
+      },
+      "mutter_geborene": {
+       "wert": "Kräß",
+       "kb": "geb. Kräßin",
+       "notiz": "Lesung sehr unsicher."
+      },
+      "paten": {
+       "wert": "H. Joh. Georg Käser, Schultheiß von hier; H. Tobias Laux, Gerichtsschreiber zu Stetten am Heuchelberg; Christina, H. Leonhard … Eheleute",
+       "notiz": "'Stetten am Heuchelberg' ist gut lesbar; die Namen sind unsicher."
+      },
+      "taufender": {
+       "wert": "M. Duvernoy",
+       "kb": "H. M. Duvernoy"
+      },
+      "volltext": {
+       "wert": "10. | Georg Christian | H. Leonhard Wolff, Gerichtsverwandter und Baur in Haberschlacht evangelischer Religion, und Friderika Maria geb. Kräßin von Haberschlacht, evangelischer Religion | Haberschlacht || d. 14.ten May Nachts 11. Uhr | Haberschlacht d. 16.ten May | H. M. Duvernoy | H. Joh. Georg Käser, Schultheiß von hier. H. Tobias Laux, Gerichtsschreiber zu Stetten am Heuchelberg. Christina, H. Leonhard … Eheleute | Familien-Register S. 262"
+      },
+      "unleserlich": {
+       "wert": "Geburtsname der Mutter; die dritte und vierte Zeile der Taufzeugen-Spalte."
       }
      }
     },
@@ -98,23 +808,85 @@
      "lfd_nr": "11",
      "jahr": 1808,
      "felder": {
+      "tauf_datum": {
+       "wert": "18 MAY 1808",
+       "kb": "d. 18.ten May"
+      },
+      "tauf_ort": {
+       "wert": "Haberschlacht"
+      },
+      "geburt_datum": {
+       "wert": "16 MAY 1808",
+       "kb": "d. 16.ten May"
+      },
+      "geburt_zeit": {
+       "wert": "früh 1 Uhr",
+       "kb": "früh 1. Uhr"
+      },
+      "geburt_ort": {
+       "wert": "Haberschlacht"
+      },
       "kind_vorname": {
        "wert": "Johannes"
       },
+      "kind_geschlecht": {
+       "wert": "m",
+       "notiz": "aus dem Vornamen erschlossen"
+      },
       "vater_name": {
-       "wert": "Faller",
-       "notiz": "Ehe-Anker F1149, oo 14.02.1798"
+       "wert": "Johannes Faller",
+       "notiz": "Elternehe F927 über Vornamen beider Eltern, oo 14 FEB 1798"
       },
       "vater_beruf": {
-       "wert": "Bürger und Weingärtner"
+       "wert": "Bürger und Weingärtner",
+       "kb": "B. u. Weingärtner"
+      },
+      "vater_ort": {
+       "wert": "Haberschlacht",
+       "kb": "in Haberschlacht"
+      },
+      "vater_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
       },
       "mutter_name": {
-       "wert": "Maier",
-       "kb": "Maierin",
-       "notiz": "OFB I2800 Rosina Dorothea Maier"
+       "wert": "Rosina Dorothea",
+       "notiz": "Elternehe F927 über Vornamen beider Eltern, oo 14 FEB 1798"
+      },
+      "mutter_ort": {
+       "wert": "Haberschlacht",
+       "kb": "von Haberschlacht"
+      },
+      "mutter_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
+      },
+      "mutter_geborene": {
+       "wert": "Maur",
+       "kb": "geb. Maurin",
+       "notiz": "Lesung unsicher; möglich auch 'Mauer'/'Maurer'."
+      },
+      "paten": {
+       "wert": "Martin Hartmann, B. u. Bauer; Johannes Faller, B. u. Weingärtner; Dorothea, Joh. Albrecht …, B. u. Bauern, Eheleute",
+       "notiz": "Der Nachname des dritten Zeugen ist nicht zu entziffern."
+      },
+      "taufender": {
+       "wert": "M. Duvernoy",
+       "kb": "H. M. Duvernoy"
+      },
+      "sterbe_datum": {
+       "wert": "12 JUL 1861",
+       "notiz": "aus dem Randvermerk „† 12. Jul. 1861“; ob der Vermerk dem Täufling gilt, sagt nur das Bild"
       },
       "randvermerk": {
-       "wert": "gestorben 12. Juli 1861"
+       "wert": "† 12. Jul. 1861",
+       "notiz": "Späterer Vermerk in anderer Tinte unter dem Taufnamen; hinter der Jahreszahl steht noch ein kurzes, nicht lesbares Wort."
+      },
+      "volltext": {
+       "wert": "11. | Johannes | † 12 Jul. 1861 … || Johannes Faller, B. u. Weingärtner in Haberschlacht evangelischer Religion und Rosina Dorothea, geb. Maurin von Haberschlacht evangelischer Religion | Haberschlacht || d. 16.ten May früh 1. Uhr | Haberschlacht d. 18.ten May | H. M. Duvernoy | Martin Hartmann B. u. Bauer. Johannes Faller B. u. Weingärtner. Dorothea, Joh. Albrecht … B. u. Bauern Eheleute | Familien-Register S. 69"
+      },
+      "unleserlich": {
+       "wert": "Nachname des dritten Taufzeugen; Zusatz hinter dem Sterbejahr im Randvermerk."
       }
      }
     },
@@ -122,17 +894,564 @@
      "lfd_nr": "12",
      "jahr": 1808,
      "felder": {
+      "tauf_datum": {
+       "wert": "22 MAY 1808",
+       "kb": "d. 22.ten May",
+       "notiz": "Das Monatswort in der Taufspalte weicht in der Form vom 'May' der Vorzeilen ab; es könnte auch 'Juny' heißen."
+      },
+      "tauf_ort": {
+       "wert": "Haberschlacht"
+      },
+      "geburt_datum": {
+       "wert": "20 MAY 1808",
+       "kb": "d. 20.ten May",
+       "notiz": "Monatswort nicht ganz sicher; die Chronologie der Seite (16. May davor) stützt May."
+      },
+      "geburt_zeit": {
+       "wert": "nachts 10 Uhr",
+       "kb": "Nachts 10. Uhr"
+      },
+      "geburt_ort": {
+       "wert": "Haberschlacht"
+      },
       "kind_vorname": {
        "wert": "Johann Georg"
       },
+      "kind_geschlecht": {
+       "wert": "m",
+       "notiz": "aus den Vornamen erschlossen"
+      },
       "vater_name": {
-       "wert": "Felger",
-       "notiz": "Ehe-Anker F1071, oo 1792"
+       "wert": "Christian Andreas Selger",
+       "notiz": "kein Treffer im Bestand"
+      },
+      "vater_beruf": {
+       "wert": "Bürger und Bader",
+       "kb": "Bürg. u. Bad.",
+       "notiz": "Im Buch abgekürzt; ausgeschrieben in Eintrag 6 des Jahrgangs 1809 (Seite 00364): 'Bürgers u. Baders'."
+      },
+      "vater_ort": {
+       "wert": "Haberschlacht",
+       "kb": "in Haberschlacht"
+      },
+      "vater_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
       },
       "mutter_name": {
-       "wert": "Koch",
-       "kb": "Kochin",
-       "notiz": "OFB I3542 Juditha Catharina Koch"
+       "wert": "Catharina Friderika",
+       "notiz": "kein Treffer im Bestand"
+      },
+      "mutter_ort": {
+       "wert": "Haberschlacht",
+       "kb": "von Haberschlacht"
+      },
+      "mutter_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
+      },
+      "mutter_geborene": {
+       "wert": "Ross",
+       "kb": "geb. Rossin",
+       "notiz": "Dieselbe Form steht bei Eintrag 3 der Seite 00359; das stützt die Lesung."
+      },
+      "paten": {
+       "wert": "H. Schulmeister Josias Balthasar Löffler; Johann Georg …; Regina, Friedrich Heißers, Bauern von hier, …; Catharina Kirschbein, ledig; Margaretha … von Brackenheim",
+       "notiz": "Der Schulmeister Josias Balthasar Löffler ist hier gut lesbar und bestätigt die Lesung des Vaters von Eintrag 3 auf Seite 00359."
+      },
+      "taufender": {
+       "wert": "M. Duvernoy",
+       "kb": "H. M. Duvernoy"
+      },
+      "volltext": {
+       "wert": "12. | Johann Georg | Christian Andreas Selger, Bürg. u. Bad. in Haberschlacht evangelischer Religion, Catharina Friderika, geb. Rossin von Haberschlacht evangelischer Religion | Haberschlacht || d. 20.ten May Nachts 10. Uhr | Haberschlacht d. 22.ten May | H. M. Duvernoy | H. Schulmeister Josias Balthasar Löffler … Johann Georg … Regina, Friedrich Heißers Bauern von hier … Catharina Kirschbein, ledig … Margaretha … von Brackenheim | Familien-Register S. 78"
+      },
+      "unleserlich": {
+       "wert": "Nachname des Vaters; Taufzeugen-Spalte ab Zeile 3 überwiegend; Monatswort in der Taufspalte."
+      }
+     }
+    }
+   ]
+  },
+  "1184798-00362": {
+   "eintraege": [
+    {
+     "lfd_nr": "13",
+     "jahr": 1808,
+     "felder": {
+      "tauf_datum": {
+       "wert": "10 JUN 1808",
+       "kb": "10. Juny"
+      },
+      "tauf_ort": {
+       "wert": "Haberschlacht"
+      },
+      "geburt_datum": {
+       "wert": "8 JUN 1808",
+       "kb": "8. Juny"
+      },
+      "geburt_zeit": {
+       "wert": "abends 6 Uhr",
+       "kb": "abends 6. Uhr"
+      },
+      "geburt_ort": {
+       "wert": "Haberschlacht"
+      },
+      "kind_vorname": {
+       "wert": "Georg Friedrich"
+      },
+      "kind_geschlecht": {
+       "wert": "m",
+       "notiz": "aus den Vornamen erschlossen"
+      },
+      "vater_name": {
+       "wert": "Georg Adam Schäfer",
+       "notiz": "nur der Vatername kommt im Bestand vor — Elternehe fehlt"
+      },
+      "vater_beruf": {
+       "wert": "Bürger und Weingärtner",
+       "kb": "Bürger u. Weingärtner"
+      },
+      "vater_ort": {
+       "wert": "Haberschlacht",
+       "kb": "in Haberschlacht"
+      },
+      "vater_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
+      },
+      "mutter_name": {
+       "wert": "Maria Barbara",
+       "notiz": "nur der Vatername kommt im Bestand vor — Elternehe fehlt"
+      },
+      "mutter_ort": {
+       "wert": "Haberschlacht",
+       "kb": "von Haberschlacht"
+      },
+      "mutter_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
+      },
+      "mutter_geborene": {
+       "wert": "Roth",
+       "kb": "geb. Roth",
+       "notiz": "Kurzes Wort, unsicher — gelesen als 'Roth', möglich auch 'Dörr'/'Löhr'. Roth ist im Ort häufig; das ist kein Beleg."
+      },
+      "paten": {
+       "wert": "Friedrich Roth, Bürger u. Weingärtner; Maria Barbara …, Wittwe; Johann …, ledig",
+       "notiz": "Nur der erste Zeuge ist sicher zu lesen."
+      },
+      "taufender": {
+       "wert": "M. Duvernoy",
+       "kb": "H. M. Duvernoy"
+      },
+      "sterbe_datum": {
+       "wert": "29 AUG 1835",
+       "notiz": "aus dem Randvermerk „† 29. Aug. 1835“; ob der Vermerk dem Täufling gilt, sagt nur das Bild"
+      },
+      "randvermerk": {
+       "wert": "† 29. Aug. 1835",
+       "notiz": "Späterer Vermerk in anderer Tinte unter dem Taufnamen."
+      },
+      "volltext": {
+       "wert": "13. | Georg Friedrich | † 29. Aug. 1835. || Georg Adam Schäfer, Bürger u. Weingärtner in Haberschlacht evangelischer Religion, und Maria Barbara geb. Roth, evangelischer Religion, von Haberschlacht | Haberschlacht || 8. Juny abends 6. Uhr | Haberschlacht 10. Juny | H. M. Duvernoy | Friedrich Roth, Bürger u. Weingärtner. Maria Barbara … Wittwe. Johann … ledig | Familien-Register S. 213"
+      },
+      "unleserlich": {
+       "wert": "Geburtsname der Mutter; Taufzeugen-Spalte ab Zeile 2; Seitenzahl des Familienregisters nur unsicher (213 oder 218)."
+      }
+     }
+    },
+    {
+     "lfd_nr": "14",
+     "jahr": 1808,
+     "felder": {
+      "tauf_datum": {
+       "wert": "10 JUL 1808",
+       "kb": "10. Julÿ"
+      },
+      "tauf_ort": {
+       "wert": "Haberschlacht"
+      },
+      "geburt_datum": {
+       "wert": "8 JUL 1808",
+       "kb": "8. Julÿ"
+      },
+      "geburt_zeit": {
+       "wert": "früh 8 Uhr",
+       "kb": "früh 8. Uhr"
+      },
+      "geburt_ort": {
+       "wert": "Haberschlacht"
+      },
+      "kind_vorname": {
+       "wert": "Immanuel"
+      },
+      "kind_geschlecht": {
+       "wert": "m",
+       "notiz": "aus dem Vornamen erschlossen"
+      },
+      "vater_name": {
+       "wert": "Georg Martin Hartmann",
+       "notiz": "Elternehe F1046 über Vornamen beider Eltern — kein Datum, das die Familie zeitlich einordnet"
+      },
+      "vater_beruf": {
+       "wert": "Bürger und Bauer",
+       "kb": "Bürger u. Baur"
+      },
+      "vater_ort": {
+       "wert": "Haberschlacht",
+       "kb": "in Haberschlacht"
+      },
+      "vater_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
+      },
+      "mutter_name": {
+       "wert": "Barbara Margaretha",
+       "notiz": "Elternehe F1046 über Vornamen beider Eltern — kein Datum, das die Familie zeitlich einordnet"
+      },
+      "mutter_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
+      },
+      "mutter_geborene": {
+       "wert": "Häfner",
+       "kb": "geb. Häfnerin",
+       "notiz": "Lesung unsicher."
+      },
+      "paten": {
+       "wert": "Johann Georg Hettler, Bürger u. …; Elisabetha, … Ehefrau; Friedrich Hettler, Rathmann …; Dorothea Elisabetha Hettler",
+       "notiz": "Sechs Zeilen Taufzeugen, überwiegend nicht sicher zu entziffern; der wiederkehrende Nachname ist unsicher."
+      },
+      "taufender": {
+       "wert": "M. Duvernoy",
+       "kb": "H. M. Duvernoy"
+      },
+      "volltext": {
+       "wert": "14. | Immanuel | Georg Martin Hartmann, Bürger und Baur in Haberschlacht evangelischer Religion u. Barbara Margaretha geb. Häfnerin, des … aus … evangelischer Religion | Haberschlacht || 8. Julÿ früh 8. Uhr | Haberschlacht 10. Julÿ | H. M. Duvernoy | Johann Georg Hettler, Bürger u. … | Familien-Register S. 126"
+      },
+      "unleserlich": {
+       "wert": "Herkunftsangabe der Mutter (Beruf und Ort ihres Vaters); Taufzeugen-Spalte überwiegend."
+      }
+     }
+    },
+    {
+     "lfd_nr": "15",
+     "jahr": 1808,
+     "felder": {
+      "tauf_datum": {
+       "wert": "19 JUL 1808",
+       "kb": "19. Julÿ"
+      },
+      "tauf_ort": {
+       "wert": "Haberschlacht"
+      },
+      "geburt_datum": {
+       "wert": "18 JUL 1808",
+       "kb": "18. Julÿ"
+      },
+      "geburt_zeit": {
+       "wert": "früh 8 Uhr",
+       "kb": "früh 8. Uhr"
+      },
+      "geburt_ort": {
+       "wert": "Haberschlacht"
+      },
+      "kind_vorname": {
+       "wert": "Johann Leonhard"
+      },
+      "kind_geschlecht": {
+       "wert": "m",
+       "notiz": "aus den Vornamen erschlossen"
+      },
+      "vater_name": {
+       "wert": "Johannes Weißhaupt",
+       "notiz": "kein Treffer im Bestand"
+      },
+      "vater_beruf": {
+       "wert": "Bürger und Weingärtner",
+       "kb": "Bürger u. Weingärtner"
+      },
+      "vater_ort": {
+       "wert": "Haberschlacht",
+       "kb": "in Haberschlacht"
+      },
+      "vater_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
+      },
+      "mutter_name": {
+       "wert": "Christiana",
+       "notiz": "kein Treffer im Bestand"
+      },
+      "mutter_ort": {
+       "wert": "Haberschlacht",
+       "kb": "von Haberschlacht"
+      },
+      "mutter_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
+      },
+      "mutter_geborene": {
+       "wert": "Zeyß",
+       "kb": "geb. Zeyßen",
+       "notiz": "Lesung sehr unsicher."
+      },
+      "paten": {
+       "wert": "H. Leonhard Wolff, Gerichtsverwandter; Johann Christian …, ledig; Gottliebin, Jacob … des Wagners, Ehefrau",
+       "notiz": "Leonhard Wolff ist durch die Einträge 9 und 10 der Vorseite gestützt; die übrigen Zeilen sind unsicher."
+      },
+      "taufender": {
+       "wert": "M. Duvernoy",
+       "kb": "H. M. Duvernoy"
+      },
+      "volltext": {
+       "wert": "15. | Johann Leonhard | Johannes Weißhaupt, Bürger u. Weingärtner in Haberschlacht evangelischer Religion, und Christiana, geb. Zeyßen von Haberschlacht evangelischer Religion | Haberschlacht || 18. Julÿ früh 8. Uhr | Haberschlacht 19. Julÿ | H. M. Duvernoy | H. Leonhard Wolff, Gerichts… u. Johann Christian … ledig. Gottliebin, Jacob … Wagners … Eheleute | Familien-Register S. 257"
+      },
+      "unleserlich": {
+       "wert": "Nachname des Vaters (im Buch korrigiert); Geburtsname der Mutter; Taufzeugen-Spalte ab Zeile 2."
+      }
+     }
+    },
+    {
+     "lfd_nr": "16",
+     "jahr": 1808,
+     "felder": {
+      "tauf_datum": {
+       "wert": "1 SEP 1808",
+       "kb": "1. Septemb."
+      },
+      "tauf_ort": {
+       "wert": "Haberschlacht"
+      },
+      "geburt_datum": {
+       "wert": "30 AUG 1808",
+       "kb": "30. August"
+      },
+      "geburt_zeit": {
+       "wert": "nachts 9 Uhr",
+       "kb": "Nachts 9. Uhr"
+      },
+      "geburt_ort": {
+       "wert": "Haberschlacht"
+      },
+      "kind_vorname": {
+       "wert": "Georg Friedrich"
+      },
+      "kind_geschlecht": {
+       "wert": "m",
+       "notiz": "aus den Vornamen erschlossen"
+      },
+      "vater_name": {
+       "wert": "Johann Adam Dürr",
+       "kb": "H. Johann Adam Dürr",
+       "notiz": "nur der Vatername kommt im Bestand vor — Elternehe fehlt"
+      },
+      "vater_beruf": {
+       "wert": "Gerichtsschultheiß und Bauer",
+       "kb": "Gerichtsschultheiß u. Baur",
+       "notiz": "Das Amtswort ist nicht sicher zu lesen; möglich auch 'Gerichtsverwandter'."
+      },
+      "vater_ort": {
+       "wert": "Haberschlacht",
+       "kb": "in Haberschlacht"
+      },
+      "vater_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
+      },
+      "mutter_name": {
+       "wert": "Christiana",
+       "notiz": "nur der Vatername kommt im Bestand vor — Elternehe fehlt"
+      },
+      "mutter_ort": {
+       "wert": "Haberschlacht",
+       "kb": "von Haberschlacht"
+      },
+      "mutter_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
+      },
+      "mutter_geborene": {
+       "wert": "Hartmann",
+       "kb": "geb. Hartmann",
+       "notiz": "Hartmann kommt auf diesen Seiten mehrfach vor; die Lesung bleibt gleichwohl unsicher."
+      },
+      "paten": {
+       "wert": "Michael Dürr, Bürger u. Baur zu Ochsenburg; Martin Waigold, Bürger u. Weingärtner von hier; Catharina, Friedrich Götzen, Bürgers u. Bauern von hier, Ehefrau",
+       "notiz": "Ortsangabe 'Ochsenburg' unsicher; die Nachnamen sind unsicher."
+      },
+      "taufender": {
+       "wert": "M. Duvernoy",
+       "kb": "H. M. Duvernoy"
+      },
+      "volltext": {
+       "wert": "16. | Georg Friedrich | H. Johann Adam Dürr, Gerichtsschultheiß u. Baur in Haberschlacht evangelischer Religion u. Christiana geb. Hartmann von Haberschlacht evangelischer Religion | Haberschlacht || 30. August Nachts 9. Uhr | Haberschlacht 1. Septemb. | H. M. Duvernoy | Michael Dürr, Bürger u. Baur zu Ochsenburg. Martin Waigold, Bürger u. Weingärtner von hier. Catharina, Friedrich Götzen … Ehefrau | Familien-Register S. 19"
+      },
+      "unleserlich": {
+       "wert": "Amtsbezeichnung des Vaters; Nachnamen der Taufzeugen."
+      }
+     }
+    },
+    {
+     "lfd_nr": "17",
+     "jahr": 1808,
+     "felder": {
+      "tauf_datum": {
+       "wert": "4 SEP 1808",
+       "kb": "4. Septemb."
+      },
+      "tauf_ort": {
+       "wert": "Haberschlacht"
+      },
+      "geburt_datum": {
+       "wert": "2 SEP 1808",
+       "kb": "2. September",
+       "notiz": "Die Tageszahl ist nicht sicher zu lesen (2. oder 3.). Die Taufe am 4. September und die Taufe des Vorgängereintrags am 1. September grenzen sie ein."
+      },
+      "geburt_zeit": {
+       "wert": "früh 6 Uhr",
+       "kb": "früh 6. Uhr"
+      },
+      "geburt_ort": {
+       "wert": "Haberschlacht"
+      },
+      "kind_vorname": {
+       "wert": "Georg Jacob"
+      },
+      "kind_geschlecht": {
+       "wert": "m",
+       "notiz": "aus den Vornamen erschlossen"
+      },
+      "vater_name": {
+       "wert": "Georg Jacob Rüthmann",
+       "notiz": "kein Treffer im Bestand"
+      },
+      "vater_beruf": {
+       "wert": "Bürger und Weingärtner",
+       "kb": "Bürger u. Weingärtner"
+      },
+      "vater_ort": {
+       "wert": "Haberschlacht",
+       "kb": "in Haberschlacht"
+      },
+      "vater_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
+      },
+      "mutter_name": {
+       "wert": "Apollonia",
+       "notiz": "kein Treffer im Bestand"
+      },
+      "mutter_ort": {
+       "wert": "Zaberfeld",
+       "kb": "von Zaberfeld"
+      },
+      "mutter_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
+      },
+      "mutter_geborene": {
+       "wert": "Bäz",
+       "kb": "geb. Bäzin",
+       "notiz": "Lesung unsicher; kanonisch käme auch 'Betz' in Frage."
+      },
+      "paten": {
+       "wert": "Matthias Mörling von Schwaigern, ledig; Johann Michael Maier, Bürger und Baur in …; Dorothea, H. Jacob Roth von hier, Ehefrau",
+       "notiz": "'von Schwaigern' ist gut lesbar; die Nachnamen sind unsicher."
+      },
+      "taufender": {
+       "wert": "M. Duvernoy",
+       "kb": "H. M. Duvernoy"
+      },
+      "volltext": {
+       "wert": "17. | Georg Jacob | Georg Jacob Rüthmann, Bürger u. Weingärtner in Haberschlacht evangelischer Religion und Apollonia geb. Bäzin von Zaberfeld evangelischer Religion | Haberschlacht || 2. September früh 6. Uhr | Haberschlacht 4. Septemb. | H. M. Duvernoy | Matthias Mörling von Schwaigern, ledig. Johann Michael Maier, Bürger und Baur in … Dorothea, H. Jacob Roth von hier Ehefrau | Familien-Register S. 149"
+      },
+      "unleserlich": {
+       "wert": "Nachname des Vaters; Tageszahl der Geburt; Wohnort des zweiten Taufzeugen."
+      }
+     }
+    },
+    {
+     "lfd_nr": "18",
+     "jahr": 1808,
+     "felder": {
+      "tauf_datum": {
+       "wert": "11 NOV 1808",
+       "kb": "11. Novemb."
+      },
+      "tauf_ort": {
+       "wert": "Haberschlacht"
+      },
+      "geburt_datum": {
+       "wert": "7 NOV 1808",
+       "kb": "7. Novemb."
+      },
+      "geburt_zeit": {
+       "wert": "nachmittags 4 Uhr",
+       "kb": "Nachmittags 4. Uhr"
+      },
+      "geburt_ort": {
+       "wert": "Haberschlacht"
+      },
+      "kind_vorname": {
+       "wert": "Jacob Tobias"
+      },
+      "kind_geschlecht": {
+       "wert": "m",
+       "notiz": "aus den Vornamen erschlossen"
+      },
+      "vater_name": {
+       "wert": "Johann Michael Rittershaus",
+       "notiz": "Elternehe F1065 über Vornamen beider Eltern — kein Datum, das die Familie zeitlich einordnet"
+      },
+      "vater_beruf": {
+       "wert": "Bürger und Bauer",
+       "kb": "Bürger u. Baur"
+      },
+      "vater_ort": {
+       "wert": "Haberschlacht",
+       "kb": "in Haberschlacht"
+      },
+      "vater_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
+      },
+      "mutter_name": {
+       "wert": "Maria Barbara",
+       "notiz": "Elternehe F1065 über Vornamen beider Eltern — kein Datum, das die Familie zeitlich einordnet"
+      },
+      "mutter_ort": {
+       "wert": "Stetten",
+       "kb": "von Stetten",
+       "notiz": "Vermutlich Stetten am Heuchelberg, das in Eintrag 10 der Vorseite ausgeschrieben steht."
+      },
+      "mutter_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
+      },
+      "mutter_geborene": {
+       "wert": "Rub",
+       "kb": "geb. Rubin",
+       "notiz": "Lesung sehr unsicher."
+      },
+      "paten": {
+       "wert": "H. Ludwig Friedrich Ceßler, Bürger u. Schuster in Stetten; Leonhard Weißkopf, ledig; Juliana, Jacob Friedrich …, Bürgers u. Bauern, Ehefrau",
+       "notiz": "Nachnamen unsicher."
+      },
+      "taufender": {
+       "wert": "M. Duvernoy",
+       "kb": "H. M. Duvernoy"
+      },
+      "randvermerk": {
+       "wert": "1827. cum parentibus nach Rosenthal",
+       "notiz": "Späterer Vermerk in der Namensspalte: Auswanderung 1827 mit den Eltern nach Rosenthal — kein Sterbevermerk."
+      },
+      "volltext": {
+       "wert": "18. | Jacob Tobias | 1827. cum parent. nach Rosenthal || Johann Michael Rittershaus, Bürger u. Baur in Haberschlacht evangelischer Religion, und Maria Barbara, geb. Rubin von Stetten, evangelischer Religion | Haberschlacht || 7. Novemb. Nachmittags 4. Uhr | Haberschlacht 11. Novemb. | H. M. Duvernoy | H. Ludwig Friedrich Ceßler, Bürger u. Schuster in Stetten. Leonhard Weißkopf, ledig. Juliana, Jacob Friedrich … Ehefrau | Familien-Register S. 160"
+      },
+      "unleserlich": {
+       "wert": "Nachname des Vaters; Geburtsname der Mutter; Nachnamen der Taufzeugen."
       }
      }
     }
@@ -144,20 +1463,77 @@
      "lfd_nr": "1",
      "jahr": 1809,
      "felder": {
-      "kind_vorname": {
-       "wert": "Johann Philipp"
+      "tauf_datum": {
+       "wert": "JAN 1809",
+       "kb": "d. … Januar",
+       "notiz": "Tageszahl nicht sicher lesbar."
       },
-      "vater_name": {
-       "notiz": "unehelich; Register nennt einen unbekannten Burschen"
+      "tauf_ort": {
+       "wert": "Haberschlacht"
+      },
+      "geburt_datum": {
+       "wert": "JAN 1809",
+       "kb": "… Januar",
+       "notiz": "Die Tageszahl ist von einem Tintenklecks verdeckt. Der Eintrag steht vor dem 19. Januar (Eintrag 2), liegt also in der ersten Januarhälfte."
+      },
+      "geburt_zeit": {
+       "wert": "nachts 11 Uhr",
+       "kb": "Nachts 11. Uhr"
+      },
+      "geburt_ort": {
+       "wert": "Haberschlacht"
+      },
+      "kind_vorname": {
+       "wert": "Josias Philipp"
+      },
+      "kind_geschlecht": {
+       "wert": "m",
+       "notiz": "aus den Vornamen erschlossen"
       },
       "mutter_name": {
-       "wert": "Löffler",
-       "kb": "Löfflerin",
-       "notiz": "OFB I3690 Charlotta Friderica Löffler, ~10.03.1788"
+       "wert": "Charlotta Friderika Löffler",
+       "kb": "Charlotta Friderika Löfflerin",
+       "notiz": "nur der Muttername kommt im Bestand vor — Elternehe fehlt"
+      },
+      "mutter_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
+      },
+      "mutter_stand": {
+       "wert": "ledig",
+       "notiz": "Nicht wörtlich; folgt aus 'unehel.' und daraus, dass sie als 'eheliche Tochter' ihres Vaters geführt wird."
       },
       "mutter_herkunft": {
-       "wert": "Haberschlacht",
-       "notiz": "Vater H. Joh. Balthasar Löffler, Schulmeister (I2611)"
+       "wert": "Josias Balthasar Löffler, Schulmeister dahier",
+       "kb": "H. Josias Balthasar Löfflers, Schulmeisters dahier eheliche Tochter"
+      },
+      "unehelich": {
+       "wert": "unehelich",
+       "kb": "unehel.",
+       "notiz": "In der Namensspalte unter dem Taufnamen vermerkt; die Elternspalte nennt keinen Ehemann."
+      },
+      "vater_angeblich": {
+       "wert": "ein gewesener Bursche vom Mäurhof",
+       "kb": "gibt als Vater an einen gewesenen Burschen vom Mäurhof in … laut Prot. 19. December 1808",
+       "notiz": "Das Buch nennt keinen Namen, nur die Stellung. Hof- und Ortsname sind nicht sicher zu entziffern; der Ort endet auf '-bach'."
+      },
+      "paten": {
+       "wert": "Christoph Balthasar Löffler, ledig; Juliana Weißhaupt, ledig; Regina Christiana …, ledig",
+       "notiz": "Der Nachname der dritten Patin ist nicht zu entziffern."
+      },
+      "taufender": {
+       "wert": "M. Duvernoy",
+       "kb": "H. M. Duvernoy"
+      },
+      "randvermerk": {
+       "wert": "1846 nach Amerika ausgewandert. — … Johann Conrad Krieß … dieses Kind angenommen und für ehel. …",
+       "notiz": "Zwei spätere Vermerke in der Namensspalte: oben die Auswanderung 1846, links daneben in kleiner Schrift ein Legitimationsvermerk, der einen Johann Conrad Krieß nennt. Der Wortlaut des Legitimationsvermerks ist nur bruchstückhaft lesbar — kein Sterbevermerk."
+      },
+      "volltext": {
+       "wert": "1. | Josias Philipp | unehel. | 1846 nach Amerika ausgewandert. | … Johann Conrad Krieß … dieses Kind angenommen und für ehel. … || Charlotta Friderika Löfflerin, H. Josias Balthasar Löfflers, Schulmeisters dahier eheliche Tochter evangelischer Religion. Gibt als Vater an einen gewesenen Burschen vom Mäurhof in … laut Prot. 19. December 1808 | Haberschlacht || … Januar Nachts 11. Uhr | Haberschlacht d. … Januar | H. M. Duvernoy | Christoph Balthasar Löffler, ledig. Juliana Weißhaupt, ledig. Regina Christiana …, ledig | Familien-Register S. 181"
+      },
+      "unleserlich": {
+       "wert": "Tageszahl von Geburt und Taufe (Tintenklecks); Hof- und Ortsname beim angegebenen Vater; Wortlaut des Legitimationsvermerks am Rand; Nachname der dritten Patin."
       }
      }
     },
@@ -165,20 +1541,77 @@
      "lfd_nr": "2",
      "jahr": 1809,
      "felder": {
+      "tauf_datum": {
+       "wert": "20 JAN 1809",
+       "kb": "20. Januar"
+      },
+      "tauf_ort": {
+       "wert": "Haberschlacht"
+      },
+      "geburt_datum": {
+       "wert": "19 JAN 1809",
+       "kb": "19. Januar"
+      },
+      "geburt_zeit": {
+       "wert": "früh 9 Uhr",
+       "kb": "früh 9. Uhr"
+      },
+      "geburt_ort": {
+       "wert": "Haberschlacht"
+      },
       "kind_vorname": {
        "wert": "Johann Jacob"
       },
+      "kind_geschlecht": {
+       "wert": "m",
+       "notiz": "aus den Vornamen erschlossen"
+      },
       "vater_name": {
-       "wert": "Faller",
-       "notiz": "Ehe-Anker F1185, oo 17.11.1802"
+       "wert": "Jacob Friedrich Faller",
+       "notiz": "2 mögliche Elternehen — Entscheidung nötig"
       },
       "vater_beruf": {
-       "wert": "Bürger und Weingärtner"
+       "wert": "Bürger und Weingärtner",
+       "kb": "B. und Weingärtner"
+      },
+      "vater_ort": {
+       "wert": "Haberschlacht",
+       "kb": "in Haberschlacht"
+      },
+      "vater_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
       },
       "mutter_name": {
-       "wert": "Löbich",
-       "kb": "Löbichin",
-       "notiz": "OFB I2855 Anna Magdalena Löbich"
+       "wert": "Anna Magdalena",
+       "notiz": "2 mögliche Elternehen — Entscheidung nötig"
+      },
+      "mutter_ort": {
+       "wert": "Haberschlacht",
+       "kb": "von Haberschlacht"
+      },
+      "mutter_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
+      },
+      "mutter_geborene": {
+       "wert": "Schöll",
+       "kb": "geb. Schöllin",
+       "notiz": "Lesung sehr unsicher."
+      },
+      "paten": {
+       "wert": "Leonhard …, B. u. Weingärtner; Gottliebin, Wilhelm Jacob …, Ehefrau; Barbara Gottliebin …",
+       "notiz": "Nachnamen nicht zu entziffern."
+      },
+      "taufender": {
+       "wert": "M. Duvernoy",
+       "kb": "H. M. Duvernoy"
+      },
+      "volltext": {
+       "wert": "2. | Johann Jacob | Jacob Friedrich Faller, B. und Weingärtner in Haberschlacht evangelischer Religion und Anna Magdalena, geb. Schöllin von Haberschlacht evangelischer Religion | Haberschlacht || 19. Januar früh 9. Uhr | Haberschlacht 20. Januar | H. M. Duvernoy | Leonhard … B. u. Weingärtner. Gottliebin, Wilhelm Jacob … Barbara Gottliebin … | Familien-Register S. 88"
+      },
+      "unleserlich": {
+       "wert": "Geburtsname der Mutter; Nachnamen der Taufzeugen."
       }
      }
     },
@@ -186,23 +1619,87 @@
      "lfd_nr": "3",
      "jahr": 1809,
      "felder": {
+      "tauf_datum": {
+       "wert": "25 JAN 1809",
+       "kb": "25. Januar"
+      },
+      "tauf_ort": {
+       "wert": "Haberschlacht"
+      },
+      "geburt_datum": {
+       "wert": "22 JAN 1809",
+       "kb": "22. Januar"
+      },
+      "geburt_zeit": {
+       "wert": "früh 3 Uhr",
+       "kb": "früh 3. Uhr"
+      },
+      "geburt_ort": {
+       "wert": "Haberschlacht"
+      },
       "kind_vorname": {
        "wert": "Christina Magdalena"
       },
+      "kind_geschlecht": {
+       "wert": "w",
+       "notiz": "aus den Vornamen erschlossen"
+      },
       "vater_name": {
-       "wert": "Koch",
-       "notiz": "Beruf Wirt+Gerichtsverwandter, oo 31.01.1796"
+       "wert": "Johann Adam Roth",
+       "kb": "H. Johann Adam Roth",
+       "notiz": "Elternehe F906 über Vornamen beider Eltern, oo 31 JAN 1796"
       },
       "vater_beruf": {
-       "wert": "Gerichtsverwandter und Wirt"
+       "wert": "Gerichtsverwandter und Schultheiß",
+       "kb": "Gerichts… u. Schulth.",
+       "notiz": "Beide Amtswörter sind abgekürzt und nicht sicher zu lesen; 'Schultheiß' wird durch die Patenangabe in Eintrag 5 gestützt."
+      },
+      "vater_ort": {
+       "wert": "Haberschlacht",
+       "kb": "in Haberschlacht"
+      },
+      "vater_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
       },
       "mutter_name": {
-       "wert": "Käser",
-       "kb": "Käsers",
-       "notiz": "OFB I2765 Margaretha Christina Dorothea Käser"
+       "wert": "Margaretha Christina Dorothea",
+       "notiz": "Elternehe F906 über Vornamen beider Eltern, oo 31 JAN 1796"
+      },
+      "mutter_ort": {
+       "wert": "Haberschlacht",
+       "kb": "von Haberschlacht"
+      },
+      "mutter_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
+      },
+      "mutter_geborene": {
+       "wert": "Buchler",
+       "kb": "geb. Buchlerin",
+       "notiz": "Lesung sehr unsicher."
+      },
+      "paten": {
+       "wert": "H. Friedrich Richter, B. u. Ackermann; Christina …, H. Schultheißen Ehefrau; Christina, Friedrich …bachs, Bauern zu Großgartach, Ehefrau; Charlotta …, ledig",
+       "notiz": "Sechs Zeilen Taufzeugen; nur 'Großgartach' und einzelne Vornamen sind sicher."
+      },
+      "taufender": {
+       "wert": "M. Duvernoy",
+       "kb": "H. M. Duvernoy"
+      },
+      "sterbe_datum": {
+       "wert": "8 JAN 1812",
+       "notiz": "aus dem Randvermerk „† 8.ter Januar 1812“; ob der Vermerk dem Täufling gilt, sagt nur das Bild"
       },
       "randvermerk": {
-       "wert": "gestorben 1812"
+       "wert": "† 8.ter Januar 1812",
+       "notiz": "Späterer Vermerk unter dem Taufnamen."
+      },
+      "volltext": {
+       "wert": "3. | Christina Magdalena | † 8.ter Januar 1812. || H. Johann Adam Roth, Gerichts… u. Schulth. in Haberschlacht evangelischer Religion und Margaretha Christina Dorothea geb. Buchlerin von Haberschlacht evangelischer Religion | Haberschlacht || 22. Januar früh 3. Uhr | Haberschlacht 25. Januar | H. M. Duvernoy | H. Friedrich Richter B. u. Ackermann … Christina … Ehefrau … Christina, Friedrich …bachs, Bauern zu Großgartach Ehefrau … Charlotta …, ledig | Familien-Register S. 161"
+      },
+      "unleserlich": {
+       "wert": "Amtsbezeichnungen des Vaters; Geburtsname der Mutter; Taufzeugen-Spalte überwiegend."
       }
      }
     },
@@ -210,20 +1707,77 @@
      "lfd_nr": "4",
      "jahr": 1809,
      "felder": {
+      "tauf_datum": {
+       "wert": "4 MAR 1809",
+       "kb": "4. Mart."
+      },
+      "tauf_ort": {
+       "wert": "Haberschlacht"
+      },
+      "geburt_datum": {
+       "wert": "2 MAR 1809",
+       "kb": "2. Mart."
+      },
+      "geburt_zeit": {
+       "wert": "abends 6 Uhr",
+       "kb": "Abends 6. Uhr"
+      },
+      "geburt_ort": {
+       "wert": "Haberschlacht"
+      },
       "kind_vorname": {
        "wert": "Georg Tobias"
       },
+      "kind_geschlecht": {
+       "wert": "m",
+       "notiz": "aus den Vornamen erschlossen"
+      },
       "vater_name": {
-       "wert": "Gloß",
-       "notiz": "Ehe-Anker F1134, oo 21.06.1796"
+       "wert": "Georg Friedrich Gloß",
+       "notiz": "nur der Vatername kommt im Bestand vor — Elternehe fehlt"
       },
       "vater_beruf": {
-       "wert": "Bürger und Weingärtner"
+       "wert": "Bürger und Weingärtner",
+       "kb": "B. u. Weingärtner"
+      },
+      "vater_ort": {
+       "wert": "Haberschlacht",
+       "kb": "in Haberschlacht"
+      },
+      "vater_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
       },
       "mutter_name": {
-       "wert": "Bierle",
-       "kb": "Bührlin",
-       "notiz": "OFB I3037 Eva Rosina Bierle, _KB_NAME Bührlen"
+       "wert": "Anna Rosina",
+       "notiz": "nur der Vatername kommt im Bestand vor — Elternehe fehlt"
+      },
+      "mutter_ort": {
+       "wert": "Haberschlacht",
+       "kb": "von Haberschlacht"
+      },
+      "mutter_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
+      },
+      "mutter_geborene": {
+       "wert": "Dürr",
+       "kb": "geb. Dürrlin",
+       "notiz": "Der Name Dürr kommt in Eintrag 2 des Jahrgangs 1808 (Seite 00359) vor; das stützt die Lesung."
+      },
+      "paten": {
+       "wert": "H. Johann Adam Roth, Gerichts… u. Schätzungsleger; Georg Michael Gloß, B. u. Schmid; … Ehefrau Maria Sara",
+       "notiz": "Das zweite Amtswort beim ersten Paten ist unsicher."
+      },
+      "taufender": {
+       "wert": "M. Duvernoy",
+       "kb": "H. M. Duvernoy"
+      },
+      "volltext": {
+       "wert": "4. | Georg Tobias | Georg Friedrich Gloß, B. u. Weingärtner in Haberschlacht evangelischer Religion und Anna Rosina, geb. Dürrlin von Haberschlacht evangelischer Religion | Haberschlacht || 2. Mart. Abends 6. Uhr | Haberschlacht 4. Mart. | H. M. Duvernoy | H. Johann Adam Roth, Gerichts… u. Schätzungsleger. Georg Michael Gloß, B. u. Schmid … Ehefrau Maria Sara | Familien-Register S. 29"
+      },
+      "unleserlich": {
+       "wert": "Amtsbezeichnung des ersten Paten; dritte Patenzeile."
       }
      }
     },
@@ -231,24 +1785,78 @@
      "lfd_nr": "5",
      "jahr": 1809,
      "felder": {
+      "tauf_datum": {
+       "wert": "28 APR 1809",
+       "kb": "28. Aprl."
+      },
+      "tauf_ort": {
+       "wert": "Haberschlacht"
+      },
+      "geburt_datum": {
+       "wert": "25 APR 1809",
+       "kb": "25. April"
+      },
+      "geburt_zeit": {
+       "wert": "früh 7 Uhr",
+       "kb": "früh 7. Uhr"
+      },
+      "geburt_ort": {
+       "wert": "Haberschlacht"
+      },
       "kind_vorname": {
        "wert": "Christoph Adam"
       },
+      "kind_geschlecht": {
+       "wert": "m",
+       "notiz": "aus den Vornamen erschlossen"
+      },
       "vater_name": {
-       "wert": "Koch",
-       "notiz": "OFB I3558 Christoph Friedrich Koch"
+       "wert": "Friedrich Christoph Roth",
+       "notiz": "Elternehe F1058 über Vornamen beider Eltern — kein Datum, das die Familie zeitlich einordnet"
       },
       "vater_beruf": {
-       "wert": "Bürger und Weingärtner"
+       "wert": "Bürger und Weingärtner",
+       "kb": "B. u. Weingärtner"
+      },
+      "vater_ort": {
+       "wert": "Haberschlacht",
+       "kb": "in Haberschlacht"
+      },
+      "vater_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
       },
       "mutter_name": {
-       "wert": "Müller",
-       "kb": "Müllerin",
-       "notiz": "OFB I3559 Sibilla Magdalena Müller"
+       "wert": "Sibilla Magdalena",
+       "notiz": "Elternehe F1058 über Vornamen beider Eltern — kein Datum, das die Familie zeitlich einordnet"
       },
-      "mutter_herkunft": {
+      "mutter_ort": {
        "wert": "Hohenstein",
-       "notiz": "OFB _NOTE_TAUFE 'von Hohenstein'"
+       "kb": "von Hohenstein",
+       "notiz": "Ortsname unsicher; derselbe Ort steht bei den Paten noch einmal."
+      },
+      "mutter_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
+      },
+      "mutter_geborene": {
+       "wert": "Müller",
+       "kb": "geb. Müllerin",
+       "notiz": "Gestützt durch den ersten Paten 'Christoph Müller, Bruder'."
+      },
+      "paten": {
+       "wert": "Christoph Müller, Bruder, von Hohenstein; H. Adam Roth, Schultheiß; Frau Charlotta, H. Jacob …, Kronenwirths in Stetten, Ehefrau",
+       "notiz": "'Kronenwirth in Stetten' ist gut lesbar; der Nachname des Kronenwirts nicht."
+      },
+      "taufender": {
+       "wert": "M. Duvernoy",
+       "kb": "H. M. Duvernoy"
+      },
+      "volltext": {
+       "wert": "5. | Christoph Adam | Friedrich Christoph Roth, B. u. Weingärtner in Haberschlacht evangelischer Religion u. Sibilla Magdalena, geb. Müllerin von Hohenstein evangelischer Religion | Haberschlacht || 25. April früh 7. Uhr | Haberschlacht 28. Aprl. | H. M. Duvernoy | Christoph Müller Bruder von Hohenstein. H. Adam Roth Schultheiß. Fr. Charlotta, H. Jacob … Kronenwirths in Stetten Ehefrau | Familien-Register S. 164"
+      },
+      "unleserlich": {
+       "wert": "Herkunftsort der Mutter nur unsicher; Nachname des Kronenwirts in Stetten."
       }
      }
     }
@@ -260,24 +1868,82 @@
      "lfd_nr": "6",
      "jahr": 1809,
      "felder": {
+      "tauf_datum": {
+       "wert": "18 JUN 1809",
+       "kb": "d. 18.ten Juny"
+      },
+      "tauf_ort": {
+       "wert": "Haberschlacht"
+      },
+      "geburt_datum": {
+       "wert": "16 JUN 1809",
+       "kb": "16.ter Juny"
+      },
+      "geburt_zeit": {
+       "wert": "früh 4 Uhr",
+       "kb": "früh 4. Uhr"
+      },
+      "geburt_ort": {
+       "wert": "Haberschlacht"
+      },
       "kind_vorname": {
        "wert": "Christiana"
       },
+      "kind_geschlecht": {
+       "wert": "w",
+       "notiz": "aus dem Vornamen erschlossen"
+      },
       "vater_name": {
-       "wert": "Greiner",
-       "notiz": "Ehe-Anker F1055, oo 09.03.1791"
+       "wert": "Johannes Griner",
+       "notiz": "kein Treffer im Bestand"
       },
       "vater_beruf": {
-       "wert": "Bürger und Weber"
+       "wert": "Bürger und Weber",
+       "kb": "Bürger und Weber",
+       "notiz": "Bestätigt durch Eintrag 16 dieses Jahrgangs (Seite 00365)."
+      },
+      "vater_ort": {
+       "wert": "Haberschlacht",
+       "kb": "in Haberschlacht"
+      },
+      "vater_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
       },
       "mutter_name": {
-       "wert": "Koch",
-       "kb": "Kochin",
-       "notiz": "OFB I2660 Christiana Dorothea Koch"
+       "wert": "Christiana Dorothea",
+       "notiz": "kein Treffer im Bestand"
+      },
+      "mutter_ort": {
+       "wert": "Haberschlacht",
+       "kb": "von Haberschlacht"
+      },
+      "mutter_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
+      },
+      "mutter_geborene": {
+       "wert": "Ros",
+       "kb": "geb. Rosin",
+       "notiz": "Lesung sehr unsicher."
+      },
+      "paten": {
+       "wert": "H. Johann Balthasar Löffler, Schulmeister; Maria Friderika, H. Leonhard Wolffs Ehefrau; Friderika Catharina, Andreas Selgers, Bürgers u. Baders, Ehefrau",
+       "notiz": "'Andreas Selger, Bürger und Bader' deckt sich mit Eintrag 12 des Jahrgangs 1808 (Seite 00361) und bestätigt beide Lesungen. Beim Schulmeister steht hier 'Johann', in den Einträgen 1808/3 und 1809/1 dagegen 'Josias' — eine der beiden Lesungen ist falsch."
+      },
+      "taufender": {
+       "wert": "M. Duvernoy",
+       "kb": "H. M. Duvernoy"
       },
       "randvermerk": {
-       "wert": "1817 nach Polen",
-       "notiz": "OFB I2660 _NOTE_TAUFE 'nach Polen verzogen'"
+       "wert": "1817. cum parentibus nach Palau",
+       "notiz": "Späterer Vermerk in der Namensspalte: Auswanderung 1817 mit den Eltern. Der Zielort ist nicht sicher zu entziffern — gelesen als 'Palau'. Kein Sterbevermerk."
+      },
+      "volltext": {
+       "wert": "6. | Christiana | 1817. cum parend. nach Palau || Johannes Griner, Bürger und Weber in Haberschlacht, evangelischer Religion, und Christiana Dorothea, geb. Rosin von Haberschlacht, evangelischer Religion | Haberschlacht || 16.ter Juny früh 4. Uhr | Haberschlacht d. 18.ten Juny | H. M. Duvernoy | H. Johann Balthasar Löffler, Schulmeister. Maria Friderika, H. Leonhard Wolffs … Ehefrau. Friderika Catharina, Andreas Selgers, Bürgers u. Baders Ehefrau | Familien-Register S. 110"
+      },
+      "unleserlich": {
+       "wert": "Nachname des Vaters; Geburtsname der Mutter; Zielort des Auswanderungsvermerks."
       }
      }
     },
@@ -285,19 +1951,65 @@
      "lfd_nr": "7",
      "jahr": 1809,
      "felder": {
-      "kind_vorname": {
-       "wert": "Totgeborener Knabe"
+      "geburt_datum": {
+       "wert": "3 JUL 1809",
+       "kb": "3.ter Julÿ"
+      },
+      "geburt_zeit": {
+       "wert": "früh 6 Uhr",
+       "kb": "früh 6. Uhr"
+      },
+      "geburt_ort": {
+       "wert": "Haberschlacht"
+      },
+      "kind_geschlecht": {
+       "wert": "w",
+       "notiz": "aus 'Mägdlein' erschlossen"
+      },
+      "totgeburt": {
+       "wert": "totgeboren",
+       "kb": "Todtgebornes Mägdlein.",
+       "notiz": "Statt eines Taufnamens steht in der Namensspalte nur diese Angabe."
       },
       "vater_name": {
-       "wert": "Häberlen",
-       "notiz": "Beruf Schneidermeister + Vorname, oo 17.02.1795"
+       "wert": "Johannes Gabelt",
+       "notiz": "kein Treffer im Bestand"
       },
       "vater_beruf": {
-       "wert": "Bürger und Schneider"
+       "wert": "Bürger und Schmied",
+       "kb": "Bürger und Schmied"
+      },
+      "vater_ort": {
+       "wert": "Haberschlacht",
+       "kb": "in Haberschlacht"
+      },
+      "vater_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
       },
       "mutter_name": {
-       "wert": "Rembold",
-       "notiz": "OFB I2746 Eleonora Catharina Rembold, Vorname 1x im OFB"
+       "wert": "Leonora Catharina",
+       "notiz": "kein Treffer im Bestand"
+      },
+      "mutter_ort": {
+       "wert": "Hausen",
+       "kb": "aus Hausen",
+       "notiz": "Ortsangabe unsicher."
+      },
+      "mutter_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
+      },
+      "mutter_geborene": {
+       "wert": "Grumbold",
+       "kb": "geb. Grumboldz",
+       "notiz": "Lesung sehr unsicher."
+      },
+      "volltext": {
+       "wert": "7. | Todtgebornes Mägdlein | Johannes Gabelt, Bürger und Schmied in Haberschlacht evangelischer Religion und Leonora Catharina, geb. Grumboldz aus Hausen evangelischer Religion | Haberschlacht || 3.ter Julÿ früh 6. Uhr | — | — | — | Familien-Register S. 120"
+      },
+      "unleserlich": {
+       "wert": "Nachname des Vaters; Geburtsname und Herkunftsort der Mutter. Die Spalten für Ort und Tag der Taufe, den taufenden Geistlichen und die Taufzeugen sind mit Strichen gefüllt — bei der Totgeburt fand keine Taufe statt."
       }
      }
     },
@@ -305,26 +2017,84 @@
      "lfd_nr": "8",
      "jahr": 1809,
      "felder": {
-      "kind_vorname": {
-       "wert": "Magdalena"
+      "tauf_datum": {
+       "wert": "22 AUG 1809",
+       "kb": "22. August",
+       "notiz": "Taufe am Geburtstag — Nottaufe."
+      },
+      "tauf_ort": {
+       "wert": "Haberschlacht",
+       "kb": "Haberschlacht, …",
+       "notiz": "Zwischen Ortsnamen und Datum steht ein weiteres, nicht sicher lesbares Wort (evtl. 'im Hause')."
+      },
+      "geburt_datum": {
+       "wert": "22 AUG 1809",
+       "kb": "22. Aug."
+      },
+      "geburt_zeit": {
+       "wert": "nachts 11 Uhr",
+       "kb": "Nachts 11. Uhr"
+      },
+      "geburt_ort": {
+       "wert": "Haberschlacht"
+      },
+      "kind_geschlecht": {
+       "wert": "w",
+       "notiz": "aus 'Mägdlein' erschlossen"
+      },
+      "totgeburt": {
+       "wert": "Nottaufe",
+       "kb": "Jähgetauftes Mägdlein.",
+       "notiz": "Statt eines Taufnamens steht in der Namensspalte nur diese Angabe. Die Taufe verrichtete nicht der Pfarrer, sondern die Hebamme — und das Kind starb noch am Geburtstag."
       },
       "vater_name": {
-       "wert": "Dürr",
-       "notiz": "Ehe-Anker F1228, oo 23.11.1807"
+       "wert": "Georg Jacob Dürr",
+       "notiz": "Elternehe F997 über Vornamen beider Eltern, oo 23 NOV 1807"
       },
       "vater_beruf": {
-       "wert": "Bürger und Weingärtner"
+       "wert": "Bürger und Weingärtner",
+       "kb": "Bürger und Weingärtner"
+      },
+      "vater_ort": {
+       "wert": "auf dem Magenheimer Hof",
+       "kb": "auf dem Magenheimer Hof",
+       "notiz": "Derselbe Hofname wie in Eintrag 2 des Jahrgangs 1808; die Wiederholung stützt die Lesung."
+      },
+      "vater_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
       },
       "mutter_name": {
-       "wert": "Frey",
-       "kb": "Freyin",
-       "notiz": "OFB I1307 Rosina Margaretha Frey"
+       "wert": "Rosina Margaretha",
+       "notiz": "Elternehe F997 über Vornamen beider Eltern, oo 23 NOV 1807"
       },
-      "mutter_herkunft": {
-       "wert": "Magenheimer Hof"
+      "mutter_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
+      },
+      "mutter_geborene": {
+       "wert": "Sinner",
+       "kb": "geb. Sinerin",
+       "notiz": "Dieselbe Form wie in Eintrag 2 des Jahrgangs 1808; beide Male unsicher."
+      },
+      "taufender": {
+       "wert": "Maria Anna Baur, Hebamme",
+       "kb": "Hebamme Maria Anna Baur",
+       "notiz": "Die Spalte 'Wer die Tauf-Handlung verrichtete' nennt hier die Hebamme statt des Pfarrers."
+      },
+      "sterbe_datum": {
+       "wert": "22 AUG 1809",
+       "notiz": "aus dem Randvermerk „† 22. August 1809“; ob der Vermerk dem Täufling gilt, sagt nur das Bild"
       },
       "randvermerk": {
-       "wert": "gestorben 23. August 1809"
+       "wert": "† 22. August 1809",
+       "notiz": "Späterer Vermerk unter der Namensspalte; das Kind starb am Tag der Geburt."
+      },
+      "volltext": {
+       "wert": "8. | Jähgetauftes Mägdlein | † 22. August 1809. || Georg Jacob Dürr, Bürger und Weingärtner in Haberschlacht evangelischer Religion und Rosina Margaretha, geb. Sinerin auf dem Magenheimer Hof, evangelischer Religion | Haberschlacht || 22. Aug. Nachts 11. Uhr | Haberschlacht … 22. August | Hebamme Maria Anna Baur | — | Familien-Register S. 50"
+      },
+      "unleserlich": {
+       "wert": "Zusatzwort in der Spalte 'Ort und Tag der Taufe'; Geburtsname der Mutter. Die Spalte der Taufzeugen ist leer."
       }
      }
     },
@@ -332,22 +2102,78 @@
      "lfd_nr": "9",
      "jahr": 1809,
      "felder": {
+      "tauf_datum": {
+       "wert": "10 SEP 1809",
+       "kb": "10. Sept."
+      },
+      "tauf_ort": {
+       "wert": "Haberschlacht"
+      },
+      "geburt_datum": {
+       "wert": "9 SEP 1809",
+       "kb": "9. Septemb."
+      },
+      "geburt_zeit": {
+       "wert": "früh 2 Uhr",
+       "kb": "früh 2. Uhr"
+      },
+      "geburt_ort": {
+       "wert": "Haberschlacht"
+      },
       "kind_vorname": {
        "wert": "Georg Conrad"
       },
+      "kind_geschlecht": {
+       "wert": "m",
+       "notiz": "aus den Vornamen erschlossen"
+      },
       "vater_name": {
-       "wert": "Maier",
-       "notiz": "Ehe-Anker F1193, oo 02.05.1804"
+       "wert": "Philipp Jacob Maier",
+       "notiz": "Elternehe F965 über Vornamen beider Eltern, oo 2 MAY 1804"
       },
       "vater_beruf": {
-       "wert": "Bürger und Weingärtner"
+       "wert": "Bürger und Weingärtner",
+       "kb": "Bürger und Weingärtner"
+      },
+      "vater_ort": {
+       "wert": "Haberschlacht",
+       "kb": "von Haberschlacht"
+      },
+      "vater_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
       },
       "mutter_name": {
-       "wert": "Haidinger",
-       "notiz": "OFB I2868 Catharina Juliana Haidinger"
+       "wert": "Catharina Juliana",
+       "notiz": "Elternehe F965 über Vornamen beider Eltern, oo 2 MAY 1804"
       },
-      "mutter_herkunft": {
-       "wert": "Michelbach"
+      "mutter_ort": {
+       "wert": "Michelbach",
+       "kb": "von Michelbach",
+       "notiz": "Der Ort kehrt in der Patenspalte wieder ('Daniel Fischer, Bauer von Michelbach')."
+      },
+      "mutter_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
+      },
+      "mutter_geborene": {
+       "wert": "Haidinger",
+       "kb": "geb. Haidingerin",
+       "notiz": "Lesung unsicher."
+      },
+      "paten": {
+       "wert": "Georg Jacob Hartmann, B. u. Weingärtner; Daniel Fischer, Bauer von Michelbach; Johann Michael Möß, Bäcker; Agnes Dorothea, Johann Michael Möß, B. u. Wagners, Ehefrau",
+       "notiz": "Die letzte Zeile deckt sich mit Eintrag 1 des Jahrgangs 1808 (Seite 00359): 'Johann Michael Möß, B. u. Wagner' und 'Agnes Dorothea'. Das bestätigt dort Nachname und Beruf."
+      },
+      "taufender": {
+       "wert": "M. Duvernoy",
+       "kb": "H. M. Duvernoy"
+      },
+      "volltext": {
+       "wert": "9. | Georg Conrad | Philipp Jacob Maier, Bürger und Weingärtner von Haberschlacht evangelischer Religion und Catharina Juliana geb. Haidingerin von Michelbach evangelischer Religion | Haberschlacht || 9. Septemb. früh 2. Uhr | Haberschlacht 10. Sept. | H. M. Duvernoy | Georg Jacob Hartmann, B. u. Weingärtner. Daniel Fischer, Bauer von Michelbach. Johann Michael Möß, Bäcker … Agnes Dorothea, Johann Michael Möß, B. u. Wagners Ehefrau | Familien-Register S. 108"
+      },
+      "unleserlich": {
+       "wert": "Mittlere Zeilen der Taufzeugen-Spalte (Beruf/Verwandtschaftsangabe beim dritten Zeugen)."
       }
      }
     },
@@ -355,23 +2181,83 @@
      "lfd_nr": "10",
      "jahr": 1809,
      "felder": {
+      "tauf_datum": {
+       "wert": "10 SEP 1809",
+       "kb": "10. Sept.",
+       "notiz": "Derselbe Tauftag wie bei Eintrag 9."
+      },
+      "tauf_ort": {
+       "wert": "Haberschlacht"
+      },
+      "geburt_datum": {
+       "wert": "8 SEP 1809",
+       "kb": "8. Septemb.",
+       "notiz": "Liegt einen Tag vor der Geburt von Eintrag 9 — kein Widerspruch: beide Kinder wurden am selben Tag, dem 10. September, getauft, und das Register ordnet nach dem Tauftag. Eintrag 11 folgt mit der Taufe am 22. September."
+      },
+      "geburt_zeit": {
+       "wert": "nachts 11 Uhr",
+       "kb": "Nachts 11. Uhr"
+      },
+      "geburt_ort": {
+       "wert": "Haberschlacht"
+      },
       "kind_vorname": {
        "wert": "Carolina Friderika"
       },
+      "kind_geschlecht": {
+       "wert": "w",
+       "notiz": "aus den Vornamen erschlossen"
+      },
       "vater_name": {
-       "wert": "Felger",
-       "notiz": "dieselbe Familie wie 00361 Nr. 12"
+       "wert": "Christian Andreas Selger",
+       "notiz": "kein Treffer im Bestand"
       },
       "vater_beruf": {
-       "wert": "Bürger und Weingärtner"
+       "wert": "Bürger und Weingärtner",
+       "kb": "Bürger u. Weingärtner",
+       "notiz": "1808 wird derselbe Mann als 'Bürg. u. Bad[er]' geführt, in Eintrag 6 dieser Seite ebenfalls als Bader — hier steht Weingärtner."
+      },
+      "vater_ort": {
+       "wert": "Haberschlacht",
+       "kb": "in Haberschlacht"
+      },
+      "vater_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
       },
       "mutter_name": {
-       "wert": "Koch",
-       "kb": "Kochin",
-       "notiz": "OFB I3542; 2. unabhaengige Lesung, richtig"
+       "wert": "Catharina Friderika",
+       "notiz": "kein Treffer im Bestand"
+      },
+      "mutter_ort": {
+       "wert": "Haberschlacht",
+       "kb": "von Haberschlacht"
+      },
+      "mutter_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
+      },
+      "paten": {
+       "wert": "H. Schulmeister Jos. Balthasar Löfflers Sohn Georg …, abwesend; Regina, H. Friedrich …, Bäckers, Ehefrau; Carolina …, ledig, abwesend — an deren Stelle stand die Mutter",
+       "notiz": "Sechs Zeilen, überwiegend nicht zu entziffern. Bemerkenswert ist der Zusatz, dass abwesende Paten vertreten wurden."
+      },
+      "taufender": {
+       "wert": "M. Duvernoy",
+       "kb": "H. M. Duvernoy"
+      },
+      "sterbe_datum": {
+       "wert": "2 OCT 1809",
+       "notiz": "aus dem Randvermerk „† d. 2. Oct. 1809“; ob der Vermerk dem Täufling gilt, sagt nur das Bild"
       },
       "randvermerk": {
-       "wert": "gestorben 2. Oktober 1809"
+       "wert": "† d. 2. Oct. 1809",
+       "notiz": "Späterer Vermerk unter dem Taufnamen."
+      },
+      "volltext": {
+       "wert": "10. | Carolina Friderika | † d. 2. Oct. 1809. || Christian Andreas Selger, Bürger u. Weingärtner in Haberschlacht, evangelischer Religion und Catharina Friderika, dessen Ehefrau, evangelischer Religion von Haberschlacht | Haberschlacht || 8. Septemb. Nachts 11. Uhr | Haberschlacht 10. Sept. | H. M. Duvernoy | H. Schulmeister Jos. Balthasar Löfflers Sohn Georg … abwesend. Regina, H. Friedrich … Bäck. Ehefrau. Carolina … ledig, abwesend, an deren Stelle hierbei ist Mutter | Familien-Register: keine Zahl eingetragen"
+      },
+      "unleserlich": {
+       "wert": "Taufzeugen-Spalte überwiegend; die Spalte des Familienregisters ist leer bzw. nicht lesbar."
       }
      }
     }
@@ -383,23 +2269,76 @@
      "lfd_nr": "11",
      "jahr": 1809,
      "felder": {
+      "tauf_datum": {
+       "wert": "22 SEP 1809",
+       "kb": "22. Sept."
+      },
+      "tauf_ort": {
+       "wert": "Haberschlacht"
+      },
+      "geburt_datum": {
+       "wert": "20 SEP 1809",
+       "kb": "20. September"
+      },
+      "geburt_zeit": {
+       "wert": "früh 7 Uhr",
+       "kb": "früh 7. Uhr"
+      },
+      "geburt_ort": {
+       "wert": "Haberschlacht"
+      },
       "kind_vorname": {
        "wert": "Catharina Magdalena"
       },
+      "kind_geschlecht": {
+       "wert": "w",
+       "notiz": "aus den Vornamen erschlossen"
+      },
       "vater_name": {
-       "wert": "Schmidt",
-       "notiz": "OFB I3985 Jakob Friedrich Schmidt"
+       "wert": "Jacob Friedrich Schmidt",
+       "notiz": "Elternehe F1098 über Vornamen beider Eltern — kein Datum, das die Familie zeitlich einordnet"
       },
       "vater_beruf": {
-       "wert": "Bürger und Weingärtner"
+       "wert": "Bürger und Weingärtner",
+       "kb": "Bürger u. Weingärtner"
+      },
+      "vater_ort": {
+       "wert": "Haberschlacht",
+       "kb": "in Haberschlacht"
+      },
+      "vater_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
       },
       "mutter_name": {
-       "wert": "Trefz",
-       "notiz": "OFB I3986 Maria Margaretha Trefz"
+       "wert": "Maria Margaretha",
+       "notiz": "Elternehe F1098 über Vornamen beider Eltern — kein Datum, das die Familie zeitlich einordnet"
       },
-      "mutter_herkunft": {
-       "wert": "Kirchheim am Neckar",
-       "notiz": "ungeprueft"
+      "mutter_ort": {
+       "wert": "Nordheim",
+       "kb": "aus Nordheim",
+       "notiz": "Derselbe Ort steht in der Patenspalte ('Christian Schmidt … aus Nordheim')."
+      },
+      "mutter_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
+      },
+      "paten": {
+       "wert": "Christian Schmidt, Baur, aus Nordheim; Agnes Barbara, Christian Schneiders, Bauers, Ehefrau"
+      },
+      "taufender": {
+       "wert": "M. Duvernoy",
+       "kb": "H. M. Duvernoy"
+      },
+      "randvermerk": {
+       "wert": "1817. cum parentibus nach Neuzern",
+       "notiz": "Späterer Vermerk in der Namensspalte: Auswanderung 1817 mit den Eltern; der Zielort ist nicht sicher zu entziffern. Vergleiche Eintrag 6 dieses Jahrgangs, wo 1817 dieselbe Formel steht. Kein Sterbevermerk."
+      },
+      "volltext": {
+       "wert": "11. | Catharina Magdalena | 1817. cum. parent. nach Neuzern || Jacob Friedrich Schmidt, Bürger u. Weingärtner in Haberschlacht evangelischer Religion und Maria Margaretha, geb. … aus Nordheim evangelischer Religion | Haberschlacht || 20. September früh 7. Uhr | Haberschlacht 22. Sept. | H. M. Duvernoy | Christian Schmidt, Baur … aus Nordheim. Agnes Barbara, Christian Schneiders, Bauers … Ehefrau | Familien-Register S. 219"
+      },
+      "unleserlich": {
+       "wert": "Laufende Nummer (Spalte abgeschnitten); Geburtsname der Mutter; Zielort des Auswanderungsvermerks; Seitenzahl des Familienregisters nur unsicher (219 oder 249)."
       }
      }
     },
@@ -407,23 +2346,85 @@
      "lfd_nr": "12",
      "jahr": 1809,
      "felder": {
+      "tauf_datum": {
+       "wert": "1 OCT 1809",
+       "kb": "1. October"
+      },
+      "tauf_ort": {
+       "wert": "Haberschlacht"
+      },
+      "geburt_datum": {
+       "wert": "30 SEP 1809",
+       "kb": "30. Sept."
+      },
+      "geburt_zeit": {
+       "wert": "vormittags 11 Uhr",
+       "kb": "Vormittags 11. Uhr"
+      },
+      "geburt_ort": {
+       "wert": "Haberschlacht"
+      },
       "kind_vorname": {
        "wert": "Johann Friedrich"
       },
+      "kind_geschlecht": {
+       "wert": "m",
+       "notiz": "aus den Vornamen erschlossen"
+      },
       "vater_name": {
-       "wert": "Fißler",
-       "notiz": "OFB I3460, einziger Joh. Leonhard Fissler"
+       "wert": "Johann Leonhard Fißler",
+       "notiz": "nur der Vatername kommt im Bestand vor — Elternehe fehlt"
       },
       "vater_beruf": {
-       "wert": "Bürger und Weingärtner"
+       "wert": "Bürger und Weingärtner",
+       "kb": "Bürger u. Weingärtner"
+      },
+      "vater_ort": {
+       "wert": "Haberschlacht",
+       "kb": "in Haberschlacht"
+      },
+      "vater_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
       },
       "mutter_name": {
-       "wert": "Löbich",
-       "kb": "Löbichs",
-       "notiz": "klar gelesen, aber KEINE Ehe im OFB — Heirat wohl 1808"
+       "wert": "Susanna Catharina",
+       "notiz": "nur der Vatername kommt im Bestand vor — Elternehe fehlt"
+      },
+      "mutter_ort": {
+       "wert": "Haberschlacht",
+       "kb": "von Haberschlacht"
+      },
+      "mutter_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
+      },
+      "mutter_geborene": {
+       "wert": "Weis",
+       "kb": "geb. Weisin",
+       "notiz": "Lesung sehr unsicher."
+      },
+      "paten": {
+       "wert": "Johannes Hartmann, B. u. Weingärtner; Andreas …, ledig; Christina Dorothea …, ledig",
+       "notiz": "Die Nachnamen des zweiten und dritten Paten sind nicht sicher zu lesen."
+      },
+      "taufender": {
+       "wert": "M. Duvernoy",
+       "kb": "H. M. Duvernoy"
+      },
+      "sterbe_datum": {
+       "wert": "19 JAN 1810",
+       "notiz": "aus dem Randvermerk „† 19. Januar 1810“; ob der Vermerk dem Täufling gilt, sagt nur das Bild"
       },
       "randvermerk": {
-       "wert": "gestorben 19. Januar 1810"
+       "wert": "† 19. Januar 1810",
+       "notiz": "Späterer Vermerk unter dem Taufnamen."
+      },
+      "volltext": {
+       "wert": "12. | Johann Friedrich | † 19. Januar 1810. || Johann Leonhard Fißler, Bürger u. Weingärtner in Haberschlacht evangelischer Religion u. Susanna Catharina geb. Weisin von Haberschlacht evangelischer Religion | Haberschlacht || 30. Sept. Vormittags 11. Uhr | Haberschlacht 1. October | H. M. Duvernoy | Johannes Hartmann, B. u. Weingärtner. Andreas …, ledig. Christina Dorothea …, ledig | Familien-Register S. 91"
+      },
+      "unleserlich": {
+       "wert": "Laufende Nummer (Spalte abgeschnitten); Nachname des Vaters; Geburtsname der Mutter; Nachnamen des zweiten und dritten Paten."
       }
      }
     },
@@ -431,22 +2432,86 @@
      "lfd_nr": "13",
      "jahr": 1809,
      "felder": {
+      "tauf_datum": {
+       "wert": "11 OCT 1809",
+       "kb": "11. October"
+      },
+      "tauf_ort": {
+       "wert": "Haberschlacht"
+      },
+      "geburt_datum": {
+       "wert": "9 OCT 1809",
+       "kb": "9. Octobr."
+      },
+      "geburt_zeit": {
+       "wert": "früh 4 Uhr",
+       "kb": "früh 4. Uhr"
+      },
+      "geburt_ort": {
+       "wert": "Haberschlacht"
+      },
       "kind_vorname": {
        "wert": "Johann Philipp"
       },
+      "kind_geschlecht": {
+       "wert": "m",
+       "notiz": "aus den Vornamen erschlossen"
+      },
       "vater_name": {
-       "wert": "Kröneck",
-       "notiz": "Ehe-Anker F1162, oo 25.02.1800"
+       "wert": "Philipp Tobias Kroner",
+       "notiz": "kein Treffer im Bestand"
       },
       "vater_beruf": {
-       "wert": "Bürger und Weingärtner"
+       "wert": "Bürger und Weingärtner",
+       "kb": "Bürger u. Weingärtner"
+      },
+      "vater_ort": {
+       "wert": "Haberschlacht",
+       "kb": "in Haberschlacht"
+      },
+      "vater_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
       },
       "mutter_name": {
-       "wert": "Fackler",
-       "notiz": "OFB I2821 Elisabetha Fackler"
+       "wert": "Dorothea Elisabetha",
+       "notiz": "kein Treffer im Bestand"
+      },
+      "mutter_ort": {
+       "wert": "Güglingen",
+       "kb": "des Güglingers",
+       "notiz": "Die Herkunftsangabe nach dem Geburtsnamen ist unklar formuliert; 'Güglingen' kehrt in der Patenspalte wieder ('Baur zu Güglingen')."
+      },
+      "mutter_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
+      },
+      "mutter_geborene": {
+       "wert": "Bartlein",
+       "kb": "geb. Bartlein",
+       "notiz": "Lesung sehr unsicher."
+      },
+      "paten": {
+       "wert": "Christoph Reinhardt, Bürger u. Baur zu Güglingen; H. Christoph …, Gerichts…; Christiana …, Eheleute",
+       "notiz": "Nur 'Baur zu Güglingen' ist sicher."
+      },
+      "taufender": {
+       "kb": "H. M. …, Vicarius an dessen Stelle, aus … am Heuchelberg",
+       "notiz": "Als einziger Eintrag dieser sieben Seiten NICHT von M. Duvernoy getauft, sondern von einem Vertreter — die Spalte nennt drei Zeilen mit 'Vicarius an dessen Stelle' und einem Ort am Heuchelberg. Der Name des Vertreters ist nicht zu entziffern."
+      },
+      "sterbe_datum": {
+       "wert": "19 NOV 1810",
+       "notiz": "aus dem Randvermerk „† d. 19.te Nov. 1810“; ob der Vermerk dem Täufling gilt, sagt nur das Bild"
       },
       "randvermerk": {
-       "wert": "gestorben 1810"
+       "wert": "† d. 19.te Nov. 1810",
+       "notiz": "Späterer Vermerk unter dem Taufnamen."
+      },
+      "volltext": {
+       "wert": "13. | Johann Philipp | † d. 19.te Nov. 1810. || Philipp Tobias Kroner, Bürger u. Weingärtner in Haberschlacht evangelischer Religion u. Dorothea Elisabetha geb. Bartlein des Güglingers evangelischer Religion | Haberschlacht || 9. Octobr. früh 4. Uhr | Haberschlacht 11. October | H. M. …, Vicarius an dessen Stelle, aus … am Heuchelberg | Christoph Reinhardt, Bürger u. Baur zu Güglingen. H. Christoph …, Gerichts… Christiana … Eheleute | Familien-Register S. 208"
+      },
+      "unleserlich": {
+       "wert": "Laufende Nummer (Spalte abgeschnitten); Nachname des Vaters; Geburtsname und Herkunft der Mutter; Name des vertretenden Geistlichen; Taufzeugen-Spalte überwiegend; Seitenzahl des Familienregisters nur unsicher (208 oder 268)."
       }
      }
     },
@@ -454,23 +2519,85 @@
      "lfd_nr": "14",
      "jahr": 1809,
      "felder": {
+      "tauf_datum": {
+       "wert": "20 OCT 1809",
+       "kb": "20. Oct."
+      },
+      "tauf_ort": {
+       "wert": "Haberschlacht"
+      },
+      "geburt_datum": {
+       "wert": "18 OCT 1809",
+       "kb": "18. Octobr."
+      },
+      "geburt_zeit": {
+       "wert": "nachts 5 Uhr",
+       "kb": "Nachts 5. Uhr"
+      },
+      "geburt_ort": {
+       "wert": "Haberschlacht"
+      },
       "kind_vorname": {
        "wert": "Georg Adam"
       },
+      "kind_geschlecht": {
+       "wert": "m",
+       "notiz": "aus den Vornamen erschlossen"
+      },
       "vater_name": {
-       "wert": "Götz",
-       "notiz": "Beruf Ratsverwandter + Vornamen der Frau, oo 13.08.1793"
+       "wert": "Johann Adam Schöz",
+       "notiz": "2 mögliche Elternehen — Entscheidung nötig"
       },
       "vater_beruf": {
-       "wert": "Ratsverwandter und Bauer"
+       "wert": "Rathsverwandter und Bauer",
+       "kb": "Rathsverwandter u. Baur"
+      },
+      "vater_ort": {
+       "wert": "Haberschlacht",
+       "kb": "in Haberschlacht"
+      },
+      "vater_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
       },
       "mutter_name": {
-       "wert": "Bierle",
-       "kb": "Bierlens",
-       "notiz": "OFB I3035 Maria Agnes Bierle"
+       "wert": "Maria Agnes",
+       "notiz": "2 mögliche Elternehen — Entscheidung nötig"
+      },
+      "mutter_ort": {
+       "wert": "Haberschlacht",
+       "kb": "von Haberschlacht"
+      },
+      "mutter_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
+      },
+      "mutter_geborene": {
+       "wert": "Bährle",
+       "kb": "geb. Bährle",
+       "notiz": "Lesung sehr unsicher."
+      },
+      "paten": {
+       "wert": "Michael Selger, Bürger u. Baur von hier, und dessen Ehefrau Magdalena Catharina; Friedrich Gloß, Bürger u. Weingärtner",
+       "notiz": "'Selger' und 'Gloß' sind durch die Einträge 12/1808 bzw. 4/1809 gestützt."
+      },
+      "taufender": {
+       "wert": "M. Duvernoy",
+       "kb": "H. M. Duvernoy"
+      },
+      "sterbe_datum": {
+       "wert": "2 MAY 1875",
+       "notiz": "aus dem Randvermerk „† 2. May 1875“; ob der Vermerk dem Täufling gilt, sagt nur das Bild"
       },
       "randvermerk": {
-       "wert": "gestorben 2. Mai 1815"
+       "wert": "† 2. May 1875",
+       "notiz": "Späterer Vermerk in anderer Tinte unter dem Taufnamen; das Kind wurde 65 Jahre alt."
+      },
+      "volltext": {
+       "wert": "14. | Georg Adam | † 2. May 1875. || Johann Adam Schöz, Rathsverwandter u. Baur in Haberschlacht evangelischer Religion u. Maria Agnes, geb. Bährle von Haberschlacht evangelischer Religion | Haberschlacht || 18. Octobr. Nachts 5. Uhr | Haberschlacht 20. Oct. | H. M. Duvernoy | Michael Selger, Bürger u. Baur von hier und dessen Ehefrau Magdalena Catharina. Friedrich Gloß, Bür. u. Weingärtner | Familien-Register S. 123"
+      },
+      "unleserlich": {
+       "wert": "Laufende Nummer (Spalte abgeschnitten); Nachname des Vaters; Geburtsname der Mutter."
       }
      }
     },
@@ -478,23 +2605,81 @@
      "lfd_nr": "15",
      "jahr": 1809,
      "felder": {
+      "tauf_datum": {
+       "wert": "8 NOV 1809",
+       "kb": "8. Nov."
+      },
+      "tauf_ort": {
+       "wert": "Haberschlacht"
+      },
+      "geburt_datum": {
+       "wert": "7 NOV 1809",
+       "kb": "7. Nov."
+      },
+      "geburt_zeit": {
+       "wert": "früh 2 Uhr",
+       "kb": "früh 2. Uhr"
+      },
+      "geburt_ort": {
+       "wert": "Haberschlacht"
+      },
       "kind_vorname": {
        "wert": "Maria Christiana"
       },
+      "kind_geschlecht": {
+       "wert": "w",
+       "notiz": "aus den Vornamen erschlossen"
+      },
       "vater_name": {
-       "wert": "Weissert",
-       "notiz": "OFB I2844s Mann Joh. Georg Weyssert, oo 26.01.1802"
+       "wert": "Johann Georg Weißhardt",
+       "notiz": "Elternehe F952 über Vornamen beider Eltern, oo 26 JAN 1802"
       },
       "vater_beruf": {
-       "wert": "Bürger und Bauer"
+       "wert": "Bürger und Bauer",
+       "kb": "Bürger u. Baur"
+      },
+      "vater_ort": {
+       "wert": "Haberschlacht",
+       "kb": "in Haberschlacht"
+      },
+      "vater_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
       },
       "mutter_name": {
-       "wert": "Löbich",
-       "kb": "Löbichs",
-       "notiz": "OFB I2844 Anna Maria Löbich"
+       "wert": "Anna Maria",
+       "notiz": "Elternehe F952 über Vornamen beider Eltern, oo 26 JAN 1802"
+      },
+      "mutter_ort": {
+       "wert": "Haberschlacht",
+       "kb": "von Haberschlacht"
+      },
+      "mutter_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
+      },
+      "mutter_geborene": {
+       "wert": "Löbritz",
+       "kb": "geb. Löbritz",
+       "notiz": "Lesung sehr unsicher."
+      },
+      "paten": {
+       "wert": "Conrad Haiß, B. u. Baur; Maria Magdalena …, ledig; Christiana Weißhardts, ledig",
+       "notiz": "Nachnamen unsicher."
+      },
+      "taufender": {
+       "wert": "M. Duvernoy",
+       "kb": "H. M. Duvernoy"
       },
       "randvermerk": {
-       "wert": "nach Großgartach verzogen, Oktober 1814"
+       "wert": "cum parentibus nach Großgartach gezogen im Oct. 1814",
+       "notiz": "Späterer Vermerk in der Namensspalte: Wegzug 1814 mit den Eltern. Großgartach wird auch in Eintrag 3 dieses Jahrgangs genannt. Kein Sterbevermerk."
+      },
+      "volltext": {
+       "wert": "15. | Maria Christiana | cum parentibus nach Großgartach gezogen im Oct. 1814. || Johann Georg Weißhardt, Bürger u. Baur in Haberschlacht evangelischer Religion u. Anna Maria geb. Löbritz von Haberschlacht evangelischer Religion | Haberschlacht || 7. Nov. früh 2. Uhr | Haberschlacht 8. Nov. | H. M. Duvernoy | Conrad Haiß, B. u. Baur. Maria Magdalena …, ledig. Christiana Weißhardts, ledig | Familien-Register S. 252"
+      },
+      "unleserlich": {
+       "wert": "Laufende Nummer (Spalte abgeschnitten); Geburtsname der Mutter; Nachnamen der Paten; Seitenzahl des Familienregisters nur unsicher (252 oder 254)."
       }
      }
     },
@@ -502,22 +2687,86 @@
      "lfd_nr": "16",
      "jahr": 1809,
      "felder": {
+      "tauf_datum": {
+       "wert": "19 NOV 1809",
+       "kb": "19. Nov."
+      },
+      "tauf_ort": {
+       "wert": "Haberschlacht"
+      },
+      "geburt_datum": {
+       "wert": "17 NOV 1809",
+       "kb": "17. Nov."
+      },
+      "geburt_zeit": {
+       "wert": "abends 7 Uhr",
+       "kb": "abends 7. Uhr"
+      },
+      "geburt_ort": {
+       "wert": "Haberschlacht"
+      },
       "kind_vorname": {
        "wert": "Andreas"
       },
+      "kind_geschlecht": {
+       "wert": "m",
+       "notiz": "aus dem Vornamen erschlossen"
+      },
       "vater_name": {
-       "wert": "Steeb",
-       "notiz": "Beruf Weber + Frau Trefz, oo 16.11.1790"
+       "wert": "Andreas Weeb",
+       "notiz": "kein Treffer im Bestand"
       },
       "vater_beruf": {
-       "wert": "Bürger und Weber"
+       "wert": "Bürger und Weber",
+       "kb": "Bürger u. Weber"
+      },
+      "vater_ort": {
+       "wert": "Haberschlacht",
+       "kb": "in Haberschlacht"
+      },
+      "vater_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
       },
       "mutter_name": {
-       "wert": "Trefz",
-       "notiz": "OFB Dorothea Catharina Trefz"
+       "wert": "Catharina Dorothea",
+       "notiz": "kein Treffer im Bestand"
+      },
+      "mutter_ort": {
+       "wert": "Haberschlacht",
+       "kb": "von Haberschlacht"
+      },
+      "mutter_religion": {
+       "wert": "evangelisch",
+       "kb": "evangelischer Religion"
+      },
+      "mutter_geborene": {
+       "wert": "Fritsch",
+       "kb": "geb. Fritsch",
+       "notiz": "Lesung sehr unsicher."
+      },
+      "paten": {
+       "wert": "H. Christoph Richard …; Johannes Griner, B. u. Weber; Christiana Margaretha, Friedrich … Wolffs, B. u. Weingärtners, Ehefrau",
+       "notiz": "'Johannes Griner, B. u. Weber' deckt sich mit dem Vater von Eintrag 6 dieses Jahrgangs und stützt dort Name und Beruf."
+      },
+      "taufender": {
+       "wert": "M. Duvernoy",
+       "kb": "H. M. Duvernoy",
+       "notiz": "Dieselbe Abkürzung wie sonst, hier flüchtiger geschrieben."
+      },
+      "sterbe_datum": {
+       "wert": "31 MAR 1832",
+       "notiz": "aus dem Randvermerk „† 31. März 1832“; ob der Vermerk dem Täufling gilt, sagt nur das Bild"
       },
       "randvermerk": {
-       "wert": "gestorben 31. März 1832"
+       "wert": "† 31. März 1832",
+       "notiz": "Späterer Vermerk in anderer Tinte unter dem Taufnamen."
+      },
+      "volltext": {
+       "wert": "16. | Andreas | † 31. März 1832. || Andreas Weeb, Bürger u. Weber in Haberschlacht evangelischer Religion und Catharina Dorothea geb. Fritsch von Haberschlacht evangelischer Religion | Haberschlacht || 17. Nov. abends 7. Uhr | Haberschlacht 19. Nov. | H. M. Duvernoy | H. Christoph Richard … Johannes Griner, B. u. Weber. Christiana Margaretha, Friedrich … Wolffs, B. u. Weingärtners Ehefrau | Familien-Register S. 288"
+      },
+      "unleserlich": {
+       "wert": "Laufende Nummer (Spalte abgeschnitten); Nachname des Vaters; Geburtsname der Mutter; Nachname des ersten und dritten Paten; Seitenzahl des Familienregisters nur unsicher (288 oder 233)."
       }
      }
     }

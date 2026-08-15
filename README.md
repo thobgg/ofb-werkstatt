@@ -166,7 +166,7 @@ Fragen direkt am Eintrag („steht da Möß oder Wöß?"):
 
 ![Korrigieren](doku/screenshots/korrigieren.jpg)
 
-*Bildstreifen: Taufregister Haberschlacht 1808, Digitalisat via Archion.*
+*Bildstreifen: Taufregister Haberschlacht 1808, Digitalisat via Ancestry.*
 
 ## Das Sprachmodell ist Voraussetzung
 
@@ -241,7 +241,7 @@ Scans von Archion, Ancestry und ähnlichen Diensten **dürfen nicht
 weiterverbreitet werden**. `bilder/` und `daten/` sind deshalb von der
 Versionsverwaltung ausgenommen und gehören in kein öffentliches Repo.
 Einzelne Ausschnitte mit Quellenangabe — wie der Bildstreifen oben im
-Einblick — sind von den Archion-Bedingungen gedeckt.
+Einblick — sind von den Nutzungsbedingungen gedeckt.
 
 ## Sprache
 

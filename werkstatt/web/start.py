@@ -166,6 +166,11 @@ function ansichtEinrichtung(){
   <div style="margin:1.2rem 0 .3rem"><b>Welche Register, und wo liegen die
    Scans?</b></div>
   <div class=dim style="font-size:.86rem;margin-bottom:.5rem">
+   ${(S.einrichtung||[]).some(r=>r.beispiel)?`<b style=color:#8fe3b4>Fünfzehn
+    Beispielseiten liegen bei</b> — je fünf aus Tauf-, Ehe- und
+    Sterberegister Haberschlacht 1808/09. Die Ordner stehen schon da; wer
+    eigene Bücher hat, trägt stattdessen deren Ordner ein. Herkunft in
+    <code>demo/QUELLE.md</code>.<br>`:''}
    Ankreuzen, was Sie bearbeiten wollen; die Ordner werden angelegt. Ein
    Register ohne Bilder wird nie vorgeschlagen, also stört es auch nicht,
    wenn Sie eines zu viel ankreuzen. Ein Pfad ohne <code>/</code> am Anfang

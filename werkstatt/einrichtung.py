@@ -109,9 +109,20 @@ def feldvorschlag():
 
 
 def vorschlag():
-    """Was die Einrichtung anbietet, wenn sie nichts weiß."""
-    return [dict(art=art,
-                 titel=(konfig.register(art) or {}).get("titel", art),
-                 ordner=(konfig.register(art) or {}).get(
-                     "ordner", f"bilder/{art}"))
-            for art in konfig.register()]
+    """Was die Einrichtung anbietet, wenn sie nichts weiß.
+
+    Liegen die Beispielseiten bei, werden ihre Ordner vorgeschlagen — dann
+    hat ein frisch ausgepacktes Projekt vom ersten Klick an etwas zu tun.
+    Wer eigene Bücher hat, trägt deren Ordner ein; die Beispiele bleiben
+    unberührt.
+    """
+    z = []
+    for art in konfig.register():
+        r = konfig.register(art) or {}
+        beispiel = konfig.WURZEL / "demo" / "bilder" / art
+        hat = beispiel.is_dir() and any(beispiel.glob("*.jpg"))
+        z.append(dict(art=art, titel=r.get("titel", art),
+                      ordner=(f"demo/bilder/{art}" if hat
+                              else r.get("ordner", f"bilder/{art}")),
+                      beispiel=hat))
+    return z

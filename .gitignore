@@ -3,6 +3,13 @@
 # werden. Erfasste Daten und GEDCOM-Bestaende bleiben ebenfalls lokal.
 bilder/**
 !bilder/**/LIESMICH.txt
+# Ausnahme: die fuenfzehn Beispielseiten. Ohne Bilder laesst sich die
+# Werkstatt nicht ausprobieren — im Forum hiess es, sie "konnte noch nicht
+# getestet werden". Die Buecher sind von 1808/09 und gemeinfrei; § 68 UrhG
+# stellt seit 2021 auch originalgetreue Reproduktionen gemeinfreier Werke
+# frei. Herkunft und Zitation stehen in demo/QUELLE.md.
+!demo/
+!demo/**
 daten/**
 !daten/.gitkeep
 # Ausnahme: Sollwerte der Rastermessung. Reine Pixelkoordinaten — keine
