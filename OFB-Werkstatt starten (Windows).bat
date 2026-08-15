@@ -6,6 +6,17 @@ setlocal
 cd /d "%~dp0"
 title OFB-Werkstatt
 
+if not exist "start.py" (
+  echo.
+  echo   Hier fehlt start.py - diese Datei liegt nicht im Projektordner.
+  echo   Haeufigster Grund: Das ZIP wurde nur angeschaut, nicht ausgepackt.
+  echo   Bitte im Explorer Rechtsklick auf das ZIP, "Alle extrahieren",
+  echo   und die Startdatei im ausgepackten Ordner anklicken.
+  echo.
+  pause
+  exit /b 1
+)
+
 where py >nul 2>&1 && (set PY=py) || (set PY=python)
 %PY% --version >nul 2>&1
 if errorlevel 1 (

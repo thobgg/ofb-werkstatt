@@ -1,0 +1,15 @@
+# Zeilenenden festnageln. Die Windows-Startdatei lag mit Unix-Enden im
+# Repo; cmd.exe verschluckt sich daran an den Klammerbloecken und schliesst
+# das Fenster sofort wieder - ein kurzes Flackern, sonst nichts. Gemessen
+# auf Windows 11, aus dem ZIP von GitHub.
+* text=auto
+
+*.bat        text eol=crlf
+*.cmd        text eol=crlf
+*.command    text eol=lf
+*.sh         text eol=lf
+
+*.jpg  binary
+*.jpeg binary
+*.png  binary
+*.ged  text eol=lf
