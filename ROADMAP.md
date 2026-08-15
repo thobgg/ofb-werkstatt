@@ -1,6 +1,6 @@
 # Roadmap
 
-Abgeglichen am 6. August 2026 mit dem Stand im README. Die konzeptionellen
+Abgeglichen am 15. August 2026 mit dem Stand im README. Die konzeptionellen
 Grundlagen stehen in `doku/ansatz.md` und `doku/verknuepfung.md`; der jeweils
 letzte Arbeitsstand in `doku/naechste-sitzung.md`.
 
@@ -66,6 +66,20 @@ alle drei Register.
   Familienanbindung; Bestandsprüfung nach Vorbild von Gramps und Ahnenblatt.
 - **Bildsichtung** – `seiten.py`: Lücken, Auflösung, Dubletten relativ zum
   Median. Zeilenraster-Messung: 22/22 Linien bei ±40 px (`messung.py`).
+- **Elternzeilen zerlegen** – Ehe- und Sterberegister führen die Eltern in
+  einer Zeile mit Beruf, Ort und „weiland" darin. `personenzeile.py` trennt
+  das; gemessen an 142 Zeilen der Demo: 142 Namen, 74 Orte, 63 Berufe, 34
+  Sterbevermerke, 25 Geburtsnamen, kein Fall mit Beruf oder Ort im Namen.
+  Erst dadurch sind die Eltern der Brautleute Personen, gegen die der
+  Abgleich etwas finden kann.
+- **Normalform nachrechnen** – `normalform.py` prüft, was das Modell an den
+  Namen still normalisiert (771 von 885 Kirchenbuchformen weichen ab).
+  Vier Urteile: belegt, regelhaft, frei, widerspruch. Ändert nichts,
+  markiert nur.
+- **Probelauf** – `werkstatt/probelauf.py` baut aus `git ls-files` einen
+  Klon, startet ihn und fährt den ganzen Durchlauf; meldet jede Abweichung
+  von den Zahlen der README. Damit ist die Demo nicht mehr davon abhängig,
+  was zufällig auf dem Rechner des Autors liegt.
 
 ## Offen – Reihenfolge
 
@@ -73,6 +87,10 @@ alle drei Register.
 Ein Eintrag zur Zeit statt der ganzen Runde auf einer Seite.
 
 ### 2. Kaskaden für Ehe und Tod anschließen
+*Teilweise erledigt:* Der Elternehe-Anker aus `taufe_pruefen` ist zu
+`paar_pruefen` verallgemeinert und greift für die Elternpaare beider
+Register. Was fehlt, sind die registereigenen Anker – Ehegatte beim
+Sterbeeintrag, Proklamation bei der Ehe.
 `kaskade_tod.py` liegt fertig vor (59,8 % Treffer gemessen gegen
 `kirchenbuch.db`, siehe `doku/verknuepfung.md`), ist aber nicht an den
 Durchlauf angeschlossen – der Abgleich rankt bei Ehe und Tod bisher nur
