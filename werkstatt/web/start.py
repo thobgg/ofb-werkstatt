@@ -452,7 +452,9 @@ function ansichtLesen(){
    <label class=dim>Quelle</label>
    <select id=q onchange=quelleGewaehlt()>
     ${S.claude_code
-      ?`<option value=datei>Claude Code – über Ihr Abo, kein API-Schlüssel</option>`:''}
+      ?`<option value=datei>Claude Code – über Ihr Abo, kein API-Schlüssel</option>`
+      :`<option value=datei disabled>Claude Code – nicht gefunden, siehe
+         claude.com/download</option>`}
     <option value=api>API – braucht ANTHROPIC_API_KEY</option>
     ${S.register.some(x=>x.offen_test)
       ?`<option value=testdaten>Testdaten – zum Ausprobieren, kostet nichts</option>`:''}
