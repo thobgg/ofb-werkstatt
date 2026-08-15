@@ -256,14 +256,33 @@ def taufe_pruefen(con, e, bestand):
     Deshalb trägt er auch, wenn ihr Name falsch gelesen wurde – im Pilotlauf
     fand er vier Fälle, in denen der *Vater*name falsch war.
     """
-    pers, nach, fam, beleg, gr = bestand
-    fid_v, v = _feld(con, e["id"], "vater_name")
-    fid_m, m = _feld(con, e["id"], "mutter_name")
     fid_k, _ = _feld(con, e["id"], "kind_vorname")
     _setze(con, fid_k, None, "grau", None, "neu")      # Kind ist immer neu
     _randvermerk_auswerten(con, e)
+    return paar_pruefen(con, e, bestand, "vater_name", "mutter_name",
+                        e["jahr"])
 
-    jahr = e["jahr"]
+
+def paar_pruefen(con, e, bestand, vfeld, mfeld, jahr):
+    """Ein Elternpaar gegen den Bestand halten.
+
+    Herausgelöst aus `taufe_pruefen`, weil derselbe Anker auch für Ehe-
+    und Sterbeeinträge trägt: Dort steht unter *Eltern* je eine Zeile für
+    Vater und Mutter, und wenn deren Ehe im Bestand steht, ist der
+    Bräutigam als ihr Kind angebunden. Vorher galt das nur für Taufen –
+    die Eltern der Brautleute waren gar keine Personen.
+
+    `jahr` ist das Jahr, in dem dieses Paar ein Kind bekommen haben soll:
+    bei der Taufe das Taufjahr, bei der Ehe das Geburtsjahr des
+    Brautleuts. Fehlt es, prüft `_plausibel` nur noch, ob überhaupt ein
+    Datum die Familie einordnet.
+    """
+    pers, nach, fam, beleg, gr = bestand
+    fid_v, v = _feld(con, e["id"], vfeld)
+    fid_m, m = _feld(con, e["id"], mfeld)
+    if fid_v is None and fid_m is None:
+        return "grau"
+
     moeglich = []
     for f in _paare(pers, fam, v, m):
         ok, datiert = _plausibel(pers, f, jahr, gr)
@@ -326,14 +345,36 @@ def taufe_pruefen(con, e, bestand):
     return "rot"
 
 
+def _jahr_fuer(con, e, rolle):
+    """Geburtsjahr der Person, deren Eltern gerade geprüft werden."""
+    for feld in (f"{rolle}_geburt_datum", f"{rolle}_geburt_jahr"):
+        _, w = _feld(con, e["id"], feld)
+        if w:
+            m = re.search(r"\b(1[5-9]\d\d)\b", str(w))
+            if m:
+                return int(m.group(1))
+    return None
+
+
 def allgemein_pruefen(con, e, bestand, art):
     """Für Register ohne eigene Kaskade: Namen ranken, nie bestätigen.
 
     Ein Nachname allein genügt nie – `Johannes Bierle` hätte sonst auf
     `Carl Heinrich Bierle` gezeigt. Deshalb gibt es hier kein Grün.
+
+    Für die Elternpaare gilt das nicht: Dort trägt derselbe Anker wie beim
+    Taufregister, weil zwei Vornamen plus gemeinsame Familie geprüft
+    werden und nicht ein Nachname allein.
     """
+    from . import katalog
     pers, nach, fam, beleg, gr = bestand
     farbe = "rot"
+    rang = {"grau": 0, "rot": 1, "gelb": 2, "gruen": 3}
+    for kindrolle, (vr, mr) in (katalog.bauplan(art, con).get("kinder") or []):
+        f = paar_pruefen(con, e, bestand, f"{vr}_name", f"{mr}_name",
+                         _jahr_fuer(con, e, kindrolle))
+        if rang.get(f, 0) > rang.get(farbe, 0):
+            farbe = f
     for rolle in konfig.personen_rollen(art):
         fid, w = _feld(con, e["id"], f"{rolle}_name")
         if fid is None:

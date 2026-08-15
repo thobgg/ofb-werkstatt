@@ -331,7 +331,15 @@ def lauf(runde_id):
     # Abgleichen, was da ist – auch wenn noch Seiten fehlen. Bei der Quelle
     # 'datei' kann das Lesen über mehrere Sitzungen gehen; solange dürfen die
     # schon gelesenen Einträge nicht grau liegen bleiben.
-    from . import abgleich
+    # Elternzeilen zerlegen, bevor abgeglichen wird: Ehe- und
+    # Sterberegister führen die Eltern in einer einzigen Zeile mit Beruf
+    # und Ort darin. Erst zerlegt sind sie Personen, gegen die der
+    # Abgleich überhaupt etwas finden kann.
+    from . import abgleich, personenzeile
+    r = con.execute("SELECT register FROM runde WHERE id=?",
+                    (runde_id,)).fetchone()
+    if r:
+        personenzeile.ergaenze(con, r["register"], runde_id=runde_id)
     abgleich.runde_pruefen(con, runde_id)
 
     if offen:

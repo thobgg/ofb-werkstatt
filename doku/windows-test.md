@@ -100,7 +100,7 @@ Was dabei herauskommen soll, wenn alles läuft:
 |---|---|
 | Einträge | 81 auf dreizehn Seiten (Taufe 23, Ehe 19, Tod 39) |
 | grün | 10 Felder, alle über die Elternehe im Bestand |
-| Ausgabe | rund 48 kB, 150 Personen, 46 Familien |
+| Ausgabe | rund 68 kB, 284 Personen, 116 Familien |
 | Leerlauf | ohne eigene Änderung zeichengleich zur Vorlage |
 
 Die Zahlen weichen ab, wenn nur ein Teil bestätigt wurde – das ist kein

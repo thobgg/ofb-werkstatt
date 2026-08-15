@@ -68,13 +68,19 @@ def werte(con, eintrag_id):
 
 
 def rollenfeld(felder, rolle):
-    """Das Namensfeld einer Rolle finden (vater -> vater_name)."""
-    for name, f in felder.items():
-        if f["rolle"] == rolle:
-            return name, f
+    """Das Namensfeld einer Rolle finden (vater -> vater_name).
+
+    Erst die gebauten Namen, dann erst die Suche über die Rolle. Anders
+    herum gewinnt, was zufällig zuerst in der Tabelle steht – bei
+    `braut_vater` war das `braut_vater_beruf`, und der Beruf wurde zum
+    Namen der Person.
+    """
     for kandidat in (f"{rolle}_name", f"{rolle}_vorname", rolle):
         if kandidat in felder:
             return kandidat, felder[kandidat]
+    for name, f in felder.items():
+        if f["rolle"] == rolle:
+            return name, f
     return None, None
 
 
@@ -145,6 +151,7 @@ def uebernimm(con, art, schreib=False, runde_id=None, marke=None):
     if plan:
         plan = dict(plan, personen=plan["personen"],
                     familie=plan["paar"], kind=plan["kind"],
+                    paare=plan.get("paare"), kinder=plan.get("kinder"),
                     ereignis=[(e["tag"], e["datum"], e["ort"], e["traeger"])
                               for e in plan["ereignis"]])
     else:
@@ -204,9 +211,15 @@ def uebernimm(con, art, schreib=False, runde_id=None, marke=None):
                 pid[rolle] = -1                 # Platzhalter im Probelauf
             z["personen_neu"] += 1
 
-        fam = None
-        if plan.get("familie"):
-            a, b = plan["familie"]
+        # Mehrere Paare je Eintrag. Beim Taufeintrag ist es eines, beim
+        # Eheeintrag sind es drei: das Brautpaar und die beiden
+        # Elternpaare. Vorher kannte der Bauplan genau eines, und die
+        # Eltern der Brautleute wurden zu Personen ohne Familie - der
+        # Elternehe-Anker lief bei Eheeintraegen deshalb ins Leere.
+        familien = {}
+        paare = plan.get("paare") or (
+            [plan["familie"]] if plan.get("familie") else [])
+        for a, b in paare:
             if pid.get(a) or pid.get(b):
                 # Erst suchen, dann anlegen. Der Elternehe-Anker findet die
                 # Familie ja gerade – sie danach ein zweites Mal anzulegen
@@ -221,27 +234,35 @@ def uebernimm(con, art, schreib=False, runde_id=None, marke=None):
                         "SELECT id FROM familie WHERE mann=? AND frau=?",
                         (pid[a], pid[b])).fetchone()
                 if da:
-                    fam = da["id"]
+                    familien[(a, b)] = da["id"]
                     z["familien_gefunden"] += 1
                 elif schreib:
                     cur = con.execute(
                         "INSERT INTO familie (mann, frau, herkunft) VALUES (?,?,?)",
                         (pid.get(a), pid.get(b), hid))
-                    fam = cur.lastrowid
+                    familien[(a, b)] = cur.lastrowid
                     journal.notiere(
-                        con, "neu_familie", ziel=str(fam),
+                        con, "neu_familie", ziel=str(cur.lastrowid),
                         daten=dict(mann=pid.get(a), frau=pid.get(b)),
                         quelle=f"{art} {e['bild']} Nr. {e['nr']}",
                         beleg="keine gemeinsame Familie im Bestand")
                     z["familien"] += 1
                 else:
-                    fam = -1
+                    familien[(a, b)] = -1
                     z["familien"] += 1
 
-        if plan.get("kind") and fam and pid.get(plan["kind"]):
-            if schreib and fam > 0 and pid[plan["kind"]] > 0:
+        # Die Familie des Eintrags selbst - an ihr haengen die Ereignisse.
+        fam = familien.get(tuple(plan["familie"])) if plan.get("familie") else None
+
+        for kindrolle, paar in (plan.get("kinder") or (
+                [(plan["kind"], plan["familie"])]
+                if plan.get("kind") and plan.get("familie") else [])):
+            f2 = familien.get(tuple(paar))
+            if not (f2 and pid.get(kindrolle)):
+                continue
+            if schreib and f2 > 0 and pid[kindrolle] > 0:
                 con.execute("INSERT OR IGNORE INTO kind (familie, person) VALUES (?,?)",
-                            (fam, pid[plan["kind"]]))
+                            (f2, pid[kindrolle]))
             z["kinder"] += 1
 
         for art_e, feld_dat, feld_ort, traeger in plan["ereignis"]:

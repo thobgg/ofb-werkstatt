@@ -118,15 +118,19 @@ def lauf(behalten=False):
     try:
         n = _klon(ordner)
         print(f"Klon: {n} Dateien in {ordner}")
+        # In eine Datei, nicht in eine Pipe: Niemand liest hier mit, und
+        # eine volle Pipe blockiert den Server nach etwa 64 KB. Genau das
+        # ist passiert - der Lauf brach mit "Remote end closed connection"
+        # ab, und die eigentliche Meldung stand im Puffer, den niemand
+        # geleert hat.
+        log = ordner / "server.log"
         server = subprocess.Popen(
             [sys.executable, "start.py", "--port", str(port), "--kein-browser"],
-            cwd=ordner, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+            cwd=ordner, stdout=log.open("w"), stderr=subprocess.STDOUT,
             text=True)
         if not _warte(port):
-            aus = ""
-            if server.poll() is not None:
-                aus = server.communicate()[0]
-            raise SystemExit(f"Der Klon startet nicht.\n{aus}")
+            raise SystemExit("Der Klon startet nicht.\n"
+                             + log.read_text(encoding="utf-8")[-4000:])
         m = Maske(port)
         print(f"laeuft auf 127.0.0.1:{port}\n")
 
@@ -208,6 +212,15 @@ def lauf(behalten=False):
                 server.wait(10)
             except subprocess.TimeoutExpired:
                 server.kill()
+        # Was der Server gemeldet hat, gehoert zum Ergebnis. Ein Lauf,
+        # der Zahlen liefert und dabei Ausnahmen wirft, ist nicht gruen.
+        log = ordner / "server.log"
+        if log.exists():
+            meldungen = [z for z in log.read_text(encoding="utf-8").split("\n")
+                         if "Traceback" in z or "Error" in z or "Exception" in z]
+            if meldungen:
+                print(f"\nDer Server hat {len(meldungen)} Ausnahme(n) "
+                      f"gemeldet, erste:\n  {meldungen[0][:200]}")
         if behalten:
             print(f"\nKlon bleibt stehen: {ordner}")
         else:

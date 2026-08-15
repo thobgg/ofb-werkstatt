@@ -96,6 +96,8 @@ def person(r, titel, *, geburt=False, eltern=False, stand=True):
                       "genaues."),
         ]
     if eltern:
+        # Die Zeile, wie sie im Buch steht: ein Stück, mit Beruf und Ort
+        # darin. Sie bleibt die Quelle und wird nicht ersetzt.
         z += [
             f(f"{r}_vater", r, "name", kb=True, ziel=None,
               ziel_kb="_KB_ELTERN", titel=f"{titel}: Vater",
@@ -104,6 +106,27 @@ def person(r, titel, *, geburt=False, eltern=False, stand=True):
               ziel_kb="_KB_ELTERN", titel=f"{titel}: Mutter",
               hinweis="Auch der Geburtsname, wenn genannt („geborene …“)."),
         ]
+        # Und daneben die zerlegte Fassung. Ohne sie ist der Vater der
+        # Braut kein Mensch, sondern eine Zeichenkette: kein Personensatz,
+        # kein Ort, kein Beruf – und damit auch kein Treffer im Bestand.
+        # Gemessen an der Demo: 19 Eheeinträge, null verknüpfte Personen,
+        # null gefundene Familien, obwohl die Eltern vor 1808 geheiratet
+        # haben und im Bestand stehen. Gefüllt wird das aus der Zeile
+        # darüber (personenzeile.py), zu sehen und zu ändern in der Maske.
+        for wer, gross in (("vater", "Vater"), ("mutter", "Mutter")):
+            e = f"{r}_{wer}"
+            z += [
+                f(f"{e}_name", e, "name", kb=True, ziel="NAME",
+                  ziel_kb="_KB_NAME", titel=f"{titel}: {gross}, Name",
+                  hinweis="Aus der Elternzeile zerlegt. Ändern ändert nur "
+                          "die Auslegung, nicht die Zeile im Buch."),
+                f(f"{e}_beruf", e, "text", kb=True, ziel="OCCU",
+                  ziel_kb="_BERUF_KB", titel=f"{titel}: {gross}, Beruf"),
+                f(f"{e}_ort", e, "ort", kb=True, ziel="RESI",
+                  ziel_kb="_NOTE_ORT", titel=f"{titel}: {gross}, Wohnort"),
+            ]
+            if wer == "mutter":
+                z += geborene(e, f"{titel}: Mutter")
     return z
 
 
@@ -618,5 +641,21 @@ def bauplan(art, con=None):
         if x.kb and x.ziel_kb:
             merkmal.append(dict(feld=x.name, tag=x.ziel_kb, kb=True,
                                 traeger=x.traeger))
-    return dict(personen=rollen(art, con), paar=PAAR.get(art),
-                kind=KIND.get(art), ereignis=ereignis, merkmal=merkmal)
+    # Paare und Kindbeziehungen. Bisher stand hier genau ein Paar je
+    # Aktart – bei der Ehe das Brautpaar. Die Eltern der Brautleute
+    # blieben damit Personen ohne Familie, und die Elternehe, der stärkste
+    # Anker des Verfahrens, konnte für Eheeinträge gar nicht greifen.
+    # Jede Rolle, die ein `_vater_name` und ein `_mutter_name` hat, ist
+    # jetzt ein weiteres Paar, und die Rolle selbst dessen Kind.
+    namen = {x.name for x in fs}
+    r = rollen(art, con)
+    paare = [PAAR[art]] if PAAR.get(art) else []
+    kinder = [(KIND[art], PAAR[art])] if KIND.get(art) and PAAR.get(art) else []
+    for rolle in r:
+        v, m = f"{rolle}_vater", f"{rolle}_mutter"
+        if f"{v}_name" in namen and f"{m}_name" in namen:
+            paare.append((v, m))
+            kinder.append((rolle, (v, m)))
+    return dict(personen=r, paar=PAAR.get(art), kind=KIND.get(art),
+                paare=paare, kinder=kinder,
+                ereignis=ereignis, merkmal=merkmal)
