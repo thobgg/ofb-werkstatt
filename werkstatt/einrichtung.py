@@ -108,6 +108,17 @@ def feldvorschlag():
     return z
 
 
+def beispielbestand():
+    """Der mitgelieferte Bestandsauszug, falls vorhanden.
+
+    Ohne ihn zeigt die Demo den Nullstart: alles gelb, der Elternehe-Anker
+    unsichtbar. Gemessen an denselben Seiten — ohne Auszug null grün, mit
+    Auszug sechzehn.
+    """
+    p = konfig.WURZEL / "demo" / "bestand.ged"
+    return str(p) if p.exists() else None
+
+
 def vorschlag():
     """Was die Einrichtung anbietet, wenn sie nichts weiß.
 

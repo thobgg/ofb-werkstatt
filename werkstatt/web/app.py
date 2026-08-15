@@ -357,6 +357,24 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json({"fehler": f"{type(e).__name__}: {e}"}, 400)
             # Die Bildordner anlegen, damit der erste Blick nicht auf
             # "Ordner fehlt" faellt — leer ist kein Fehler, fehlend schon.
+            # Den Beispielbestand einlesen, wenn gewuenscht. Ohne ihn
+            # bleibt in der Demo alles gelb, und der Anker — der Kern des
+            # Verfahrens — ist nicht zu sehen.
+            if d.get("bestand"):
+                b = einrichtung.beispielbestand()
+                if b:
+                    con = db.verbinde()
+                    try:
+                        import_gedcom.importiere(b, con, still=True)
+                        con.execute(
+                            "UPDATE herkunft SET gilt='beleg', name=? "
+                            "WHERE art='gedcom' AND datei=?",
+                            ("Auszug OFB Haberschlacht (Beispiel)",
+                             Path(b).name))
+                        con.commit()
+                        db.kontext_anwenden(con)
+                    finally:
+                        con.close()
             # Die abgewaehlten Felder gleich beim Anlegen festhalten. Wer
             # sie erst nach der ersten Runde abschaltet, hat sie schon
             # gelesen und muss die Werte einzeln wieder loswerden.
@@ -604,6 +622,7 @@ class Handler(BaseHTTPRequestHandler):
                 eingerichtet=einrichtung.eingerichtet(),
                 einrichtung=einrichtung.vorschlag(),
                 felder=einrichtung.feldvorschlag(),
+                beispielbestand=einrichtung.beispielbestand(),
                 dubletten=dubletten.gemeldet(con),
                 perioden=perioden.gemeldet(con),
                 haende={a: perioden.haende(con, a)
@@ -688,6 +707,7 @@ class Handler(BaseHTTPRequestHandler):
                 eingerichtet=einrichtung.eingerichtet(),
                 einrichtung=einrichtung.vorschlag(),
                 felder=einrichtung.feldvorschlag(),
+                beispielbestand=einrichtung.beispielbestand(),
                 dubletten=dubletten.gemeldet(con),
                 perioden=perioden.gemeldet(con),
                 haende={a: perioden.haende(con, a)

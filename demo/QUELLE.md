@@ -38,6 +38,16 @@ Beim Einrichten eines Projekts stehen diese Ordner als Vorschlag da. Wer
 eigene Bücher hat, trägt stattdessen deren Ordner ein — die Beispielseiten
 werden dann nicht angefasst.
 
+## Der Bestandsauszug
+
+`bestand.ged` enthält 23 Personen und 12 Familien aus dem
+Ortsfamilienbuch Haberschlacht 1659–1807 — genau die, die der Abgleich auf
+den Beispielseiten trifft. Geschnitten mit `python3 -m werkstatt.auszug`,
+die Records stehen wörtlich wie im Original.
+
+Ohne ihn bleibt alles gelb: Es gibt nichts, wogegen geprüft werden könnte.
+Mit ihm werden auf denselben Seiten 16 Felder grün.
+
 Dazu passen die Rohlesungen in `daten/pilot.json`: 34 Einträge aus sechs
 Taufregisterseiten, so wie ein Modell sie gelesen hat, vor jeder Korrektur.
 Damit läuft der ganze Durchlauf ohne API-Schlüssel — Quelle *Testdaten*.

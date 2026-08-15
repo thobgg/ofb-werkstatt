@@ -229,28 +229,32 @@ Nicht dabei ist die geprüfte Wahrheit. Die von Hand geprüften
 Personenverweise bleiben zurück, damit der Abgleich sie selbst
 wiederfinden muss.
 
-**Der Anker bleibt in der Demo unsichtbar**, und das hat einen
-strukturellen Grund: Die beiliegenden Eheseiten sind Trauungen von 1808,
-die Eltern der 1808 getauften Kinder haben aber vorher geheiratet. Wer die
-Ehen liest und übergibt, bekommt 38 Personen und 19 Familien in den
-Bestand — und die Taufen finden darin trotzdem nichts. Gemessen: 0 grün.
+**Ein kleiner Bestand liegt bei**, sonst bliebe der Kern unsichtbar. Der
+Elternehe-Anker trägt nur, wenn der Bestand die Zeit *vor* den Taufen
+abdeckt — und die beiliegenden Eheseiten sind Trauungen von 1808, während
+die Eltern der 1808 getauften Kinder vorher geheiratet haben. Wer nur sie
+liest und übergibt, bekommt 38 Personen in den Bestand und trotzdem null
+grün.
 
-Das ist keine Schwäche des Verfahrens, sondern seine Voraussetzung. Der
-Elternehe-Anker trägt, wenn der Bestand die Zeit *vor* den Taufen abdeckt
-— aus einem vorhandenen Ortsfamilienbuch oder aus eigenen früheren
-Jahrgängen. Mit dem kuratierten Bestand Haberschlachts (4.111 Personen bis
-1807) findet derselbe Abgleich auf denselben Seiten 21 grüne Felder.
+`demo/bestand.ged` schließt die Lücke: 23 Personen und 12 Familien, 15 kB,
+genau die, die zu den Beispielseiten gehören. Damit werden auf denselben
+Seiten **16 Felder grün** — und der Beleg steht daneben:
 
-Was sich mit den Beispielen also prüfen lässt:
+    Nr 1  vater_name   Elternehe F3 über Vornamen beider Eltern, oo 26 NOV 1800
+
+Die Einrichtung bietet den Auszug beim Anlegen an; wer ihn weglässt, sieht
+den Nullstart, und der ist genauso richtig, nur langsamer.
+
+Was sich damit prüfen lässt:
 
 | | |
 |---|---|
 | Läuft der Durchlauf durch? | ja — lesen, korrigieren, übergeben, GEDCOM |
+| Wann wird etwas grün, wann nicht? | ja — mit und ohne Auszug vergleichbar |
 | Liest ein anderes Programm das Ergebnis? | ja — exportieren und in Gramps o. ä. importieren |
 | Überleben die eigenen Tags den Wechsel? | ja, prüfbar — sie werden dort zu Notizen |
 | Wie gut liest die Maschine? | nur mit eigenem Zugang, über *nochmal lesen* |
-| Wann wird etwas grün? | **nicht** — dafür braucht es einen Bestand aus früherer Zeit |
-| Ist die Fortschreibung verlustfrei? | **nicht** — der Leerlauftest braucht eine Vorlage |
+| Ist die Fortschreibung verlustfrei? | **nicht** — der Leerlauftest braucht die volle Vorlage |
 
 Herkunft und Zitation der Beispielseiten stehen in `demo/QUELLE.md`.
 

@@ -201,6 +201,16 @@ function ansichtEinrichtung(){
     </div>
    </details>`).join('')}
 
+  ${S.beispielbestand?`<div style="margin:1.2rem 0 .3rem">
+    <label style=cursor:pointer><input type=checkbox id=ebestand checked>
+     <b>Beispielbestand einlesen</b></label>
+    <div class=dim style="font-size:.86rem;margin-top:.2rem">
+     23 Personen und 12 Familien aus einem Ortsfamilienbuch — genau die,
+     die zu den Beispielseiten gehören. Ohne sie bleibt alles gelb: Es gibt
+     nichts, wogegen geprüft werden könnte. Mit ihnen werden auf denselben
+     Seiten 16 Felder grün, weil die Elternehe im Bestand steht.</div>
+   </div>`:''}
+
   <div class=reihe style="margin-top:1.1rem">
    <button class=ja onclick=einrichten(this)>Projekt anlegen</button>
    <span class=dim id=ehinweis>Geschrieben wird eine Datei
@@ -230,8 +240,10 @@ async function einrichten(btn){
  const aus={};
  document.querySelectorAll('.efeld').forEach(c=>{ if(!c.checked){
    (aus[c.dataset.art]=aus[c.dataset.art]||[]).push(c.dataset.name); }});
+ const bst=document.getElementById('ebestand');
  const a=await (await fetch('/api/einrichten',{method:'POST',
-   body:JSON.stringify({gemeinde:gem, register:reg, felder_aus:aus})})).json();
+   body:JSON.stringify({gemeinde:gem, register:reg, felder_aus:aus,
+                        bestand:!!(bst&&bst.checked)})})).json();
  if(a.fehler){btn.disabled=false; h.textContent=a.fehler; return;}
  location.href='/';
 }
