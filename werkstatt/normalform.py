@@ -190,19 +190,25 @@ def markiere(con, runde_id=None, still=True):
         wo, par = "e.runde=?", [runde_id]
     z = {}
     n = 0
-    for f in con.execute(
+    # Erst alles lesen, dann schreiben. Ein offener Cursor ueber `feld`,
+    # waehrend in dieselbe Tabelle geschrieben wird, haelt die Sperre die
+    # ganze Schleife lang - und die Maske, die nebenher einen Eintrag
+    # speichert, lief in "database is locked". Aufgefallen im Probelauf,
+    # der beim Bestaetigen genau das tut.
+    zeilen = con.execute(
             f"SELECT f.id, f.eintrag_id, f.name, f.kb_form, "
             f"       COALESCE(f.korrigiert, f.gelesen) w "
             f"FROM feld f JOIN eintrag e ON e.id=f.eintrag_id "
-            f"WHERE {wo} AND f.kb_form IS NOT NULL", par):
+            f"WHERE {wo} AND f.kb_form IS NOT NULL", par).fetchall()
+    volltexte = {r["eintrag_id"]: r["v"] for r in con.execute(
+        f"SELECT f.eintrag_id, COALESCE(f.korrigiert, f.gelesen) v "
+        f"FROM feld f JOIN eintrag e ON e.id=f.eintrag_id "
+        f"WHERE {wo} AND f.name='volltext'", par)}
+    for f in zeilen:
         if not (f["name"].endswith("_name") or f["name"].endswith("_geborene")):
             continue
-        vt = con.execute(
-            "SELECT COALESCE(korrigiert, gelesen) v FROM feld "
-            "WHERE eintrag_id=? AND name='volltext'",
-            (f["eintrag_id"],)).fetchone()
-        urteil, grund = pruefe(f["w"], f["kb_form"], vt["v"] if vt else None,
-                               paare, bekannt)
+        urteil, grund = pruefe(f["w"], f["kb_form"],
+                               volltexte.get(f["eintrag_id"]), paare, bekannt)
         if not urteil:
             continue
         z[urteil] = z.get(urteil, 0) + 1

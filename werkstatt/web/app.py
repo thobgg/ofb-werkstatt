@@ -824,6 +824,13 @@ class Handler(BaseHTTPRequestHandler):
                              seite=(e["seite"] if "seite" in e.keys()
                                     else None),
                              kopf=(e["kopf"] if "kopf" in e.keys() else None),
+                             # "Zeilenraster unsicher" stand bisher nur in
+                             # der Datenbank. Der Streifen sieht dann
+                             # trotzdem ordentlich aus - er ist ja gleich
+                             # hoch geschnitten -, und niemand konnte
+                             # wissen, dass die Grenzen geraten sind.
+                             bemerkung=(e["bemerkung"]
+                                        if "bemerkung" in e.keys() else None),
                              spalten=spalten.setdefault(
                                  (e["register"], e["bild"]),
                                  perioden.zur_seite(con, e["register"],

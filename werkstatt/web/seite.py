@@ -24,6 +24,8 @@ main{padding:1rem;max-width:1500px;margin:0 auto}
    "ihrer" Spalte - dafuer braeuchte es das Spaltenraster, und das traegt
    die Messung nicht. In Leserichtung aufgezaehlt helfen sie trotzdem:
    Bei blassem Druck steht hier, was die Spalte ueberhaupt verlangt. */
+.warnung{padding:.4rem .9rem;background:#2c2113;color:#f0d089;
+ font-size:.82rem;border-top:1px solid #4a3a13}
 .spalten{display:flex;flex-wrap:wrap;gap:.3rem;padding:.35rem .9rem;
  background:#161a20;border-top:1px solid #262b34}
 .spalten span{font-size:.72rem;color:#8b93a3;background:#1d222a;
@@ -253,6 +255,9 @@ function karte(e,k){
      title="dieselbe Zeile ein zweites Mal lesen lassen und vergleichen"
      >nochmal lesen</button>
    <span class=zaehler>${liste?esc(e.status):`Eintrag ${k+1} von ${daten.length}`}</span></div>
+  ${e.bemerkung?`<div class=warnung>⚠ ${esc(e.bemerkung)} – die
+    Zeilengrenzen sind hier nicht gemessen, sondern gleichmäßig geteilt.
+    Der Streifen kann zu früh oder zu spät anfangen.</div>`:''}
   ${e.spalten&&e.spalten.length?`<div class=spalten title="die gedruckten
     Überschriften dieses Formulars, einmal je Formularperiode gelesen"
     >${e.spalten.map(s=>`<span>${esc(s)}</span>`).join('')}</div>`:''}
