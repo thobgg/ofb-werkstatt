@@ -1,0 +1,4 @@
+# OFB-Werkstatt braucht Python 3.11 oder neuer (tomllib) und zwei Pakete.
+#     python3 -m pip install -r requirements.txt
+Pillow>=9.0      # Seitenbilder oeffnen, drehen, zuschneiden
+numpy>=1.21      # Zeilenerkennung im Seitenbild (werkstatt/raster.py)

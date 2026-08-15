@@ -2,7 +2,7 @@
 """Rastererkennung gegen die Sollwerte messen.
 
 Die Sollwerte in `daten/soll_zeilen.json` sind aus den von Hand geschnittenen
-Eintragsstreifen zurueckgewonnen, nicht direkt abgelesen — ihre eigene
+Eintragsstreifen zurueckgewonnen, nicht direkt abgelesen – ihre eigene
 Genauigkeit liegt bei etwa +-40 px. Deshalb werden mehrere Toleranzen
 ausgewiesen statt einer einzigen Zahl.
 
@@ -13,7 +13,7 @@ Getrennt gezaehlt wird, was das Verfahren leisten kann:
 
 Die vierte Zahl je Seite ist das **Ende der Erfassung**, nicht die
 Papierkante: auf 00363 und 00364 laeuft die Tabelle darunter leer bis zum
-Papierende weiter. Sie taugt deshalb nur als untere Schranke — die erkannte
+Papierende weiter. Sie taugt deshalb nur als untere Schranke – die erkannte
 Papierkante muss darunter liegen, sonst waere das Formular abgeschnitten.
 
 Ueberzaehlige Vorschlaege werden mitgezaehlt: falsche Linien kosten
@@ -37,7 +37,7 @@ def treffer(gefunden, sollwerte, tol):
 
 
 def main():
-    d = json.loads(SOLL.read_text())
+    d = json.loads(SOLL.read_text(encoding="utf-8"))
     ges = {t: [0, 0] for t in TOLERANZEN}
     schranke = [0, 0]
     ueberzaehlig = 0
@@ -45,7 +45,7 @@ def main():
     for nr, s in sorted(d["seiten"].items()):
         bild = BILDER / s["bild"]
         if not bild.exists():
-            print(f"{nr}: Bild fehlt — uebersprungen")
+            print(f"{nr}: Bild fehlt – uebersprungen")
             continue
         v = raster.vorschlag(bild)
         gef = v["zeilen"]

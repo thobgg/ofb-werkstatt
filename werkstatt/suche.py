@@ -34,7 +34,7 @@ def falte(s):
 
 @lru_cache(maxsize=1)
 def klassen():
-    return json.loads(KLASSEN.read_text()) if KLASSEN.exists() else {}
+    return json.loads(KLASSEN.read_text(encoding="utf-8")) if KLASSEN.exists() else {}
 
 
 @lru_cache(maxsize=1)
@@ -48,7 +48,7 @@ def inventar():
         "SELECT surn AS a, surn_kanon AS b FROM person WHERE surn IS NOT NULL"))
     quellen += list(con.execute(
         "SELECT wert AS a, NULL AS b FROM namensform WHERE art='surn'"))
-    # Wörter ohne Person — eingelesene Namenslisten, Ortsverzeichnisse,
+    # Wörter ohne Person – eingelesene Namenslisten, Ortsverzeichnisse,
     # abgetippte Register. Sie ranken mit, bestätigen aber nie: ihre
     # Herkunft ist immer `vokabular`, und die Ampel liest den Rang, nicht
     # diese Liste. `offen` zählt dazu, weil eine Spalte ohne erkennbare
@@ -232,7 +232,7 @@ def anbindung(vater=None, mutter=None):
         return dict(art="neu_pruefen", familie=None,
                     weitere=[kurz(f) for f in sorted(vf | mf)],
                     hinweis="beide Eltern gefunden, aber KEINE gemeinsame "
-                            "Familie — neue Ehe oder falsche Zuordnung?")
+                            "Familie – neue Ehe oder falsche Zuordnung?")
     if vater or mutter:
         return dict(art="neu", familie=None,
                     weitere=[kurz(f) for f in sorted(vf | mf)],
@@ -242,7 +242,7 @@ def anbindung(vater=None, mutter=None):
 
 
 def herkunft(person):
-    """Eltern einer Person — zur Kontrolle gegen die Vaterangabe im Register."""
+    """Eltern einer Person – zur Kontrolle gegen die Vaterangabe im Register."""
     fam, fams, famc = familien()
     raus = []
     for fid in famc.get(person or "", []):
@@ -257,7 +257,7 @@ def frisch():
     """Alle gemerkten Listen wegwerfen.
 
     Inventar, Klassen, Personen und Familien werden einmal gelesen und
-    behalten — das ist im Betrieb richtig, denn sie ändern sich nur beim
+    behalten – das ist im Betrieb richtig, denn sie ändern sich nur beim
     Import. Genau dann muss aber jemand Bescheid sagen, sonst rankt der
     laufende Server bis zum Neustart nach dem alten Stand und die frisch
     eingelesene Quelle wirkt scheinbar nicht.

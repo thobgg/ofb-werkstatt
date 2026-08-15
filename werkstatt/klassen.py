@@ -6,7 +6,7 @@ Der transitive Abschluss (Union-Find) liefert Klassen zusammengehoeriger Namen.
 
 Die Relation ist NICHT wirklich transitiv: eine einzelne Fehlzuordnung
 (z.B. 'Bührle -> Müller', 1 Beleg) verschmilzt zwei fremde Familien.
-Genau deshalb ist der Abschluss ein Fehlerdetektor — verdaechtig sind
+Genau deshalb ist der Abschluss ein Fehlerdetektor – verdaechtig sind
 Klassen, die nur an einer schwachen Kante (wenige Belege) haengen.
 
 Aufruf:
@@ -31,7 +31,7 @@ EXPORT = ROOT / "daten" / "namensklassen.json"
 
 # Aufnahmeregel fuer eine Kante, datengetrieben aus dem Graubereich bestimmt:
 #   sicher   ab Naehe 0.65 (Neck->Beck, Keßer->Käser, Rohr->Rorer ...)
-#   knapp    0.60-0.65 nur mit >=2 Belegen — dort kollidieren
+#   knapp    0.60-0.65 nur mit >=2 Belegen – dort kollidieren
 #            Bierle->Buehrlen (richtig, 5 Belege) und
 #            Schneider->Fischer (falsch, 1 Beleg) bei identischer Naehe 0.62
 #   darunter immer Fehlzuordnung (Buehrle->Mueller 0.50, Hermann->Maier 0.33)
@@ -123,7 +123,7 @@ def main():
 
     if verworfen and not a.name and not a.bruecken:
         print("Verworfene Kanten (Fehlzuordnung, Wiederheirat oder "
-              "Namenswechsel — keine Schreibvariante):")
+              "Namenswechsel – keine Schreibvariante):")
         for x, y, n, s in sorted(verworfen, key=lambda t: -t[2]):
             print(f"   {x} -> {y}   {n} Beleg(e), Naehe {s:.2f}")
         print()
@@ -161,7 +161,7 @@ def main():
             haupt = max(gruppe, key=lambda n: haeufig.get(n, 0))
             for n in gruppe:
                 raus[n] = haupt
-        EXPORT.write_text(json.dumps(raus, ensure_ascii=False, indent=1, sort_keys=True))
+        EXPORT.write_text(json.dumps(raus, ensure_ascii=False, indent=1, sort_keys=True), encoding="utf-8")
         print(f"{len(raus)} Schreibungen in {len({v for v in raus.values()})} Klassen "
               f"-> {EXPORT.relative_to(ROOT)}")
         return

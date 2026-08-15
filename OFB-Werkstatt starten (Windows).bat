@@ -24,6 +24,12 @@ if errorlevel 1 (
   %PY% -m pip install --quiet Pillow
 )
 
+%PY% -c "import numpy" >nul 2>&1
+if errorlevel 1 (
+  echo   numpy fehlt - wird jetzt geholt ...
+  %PY% -m pip install --quiet numpy
+)
+
 where claude >nul 2>&1
 if errorlevel 1 (
   echo.

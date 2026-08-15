@@ -2,7 +2,7 @@
 """Sollwerte aus von Hand geschnittenen Eintragsstreifen zurueckgewinnen.
 
 Wer eine Seite von Hand in Eintragsstreifen zerlegt hat, besitzt damit bereits
-abgelesene Zeilengrenzen — sie stecken in den Streifen. Dieses Skript sucht
+abgelesene Zeilengrenzen – sie stecken in den Streifen. Dieses Skript sucht
 jeden Streifen per Kreuzkorrelation im vollen Seitenscan wieder und leitet
 aus den Fundstellen die Grenzen ab.
 
@@ -10,12 +10,12 @@ aus den Fundstellen die Grenzen ab.
 
 **Genauigkeit.** Nur so gut wie der Schnitt. Wurden die Streifen grosszuegig
 um den *Text* geschnitten statt an den Linien, betraegt der Versatz zur
-tatsaechlichen gedruckten Linie bis zu 45 px — gemessen an den vier
+tatsaechlichen gedruckten Linie bis zu 45 px – gemessen an den vier
 Taufregisterseiten. Fuer eine strengere Messung muessen die Grenzen von Hand
 abgelesen und in `daten/soll_zeilen.json` nachgetragen werden.
 
 Die erste und letzte Grenze je Seite sind Schnittkanten, keine Linien: die
-letzte ist das **Ende der Erfassung**, nicht die Papierkante — unter dem
+letzte ist das **Ende der Erfassung**, nicht die Papierkante – unter dem
 letzten beschriebenen Eintrag laeuft die Tabelle oft leer weiter.
 
     python3 -m werkstatt.soll_streifen bilder/taufe scans/zeilen \
@@ -68,7 +68,7 @@ def finde(seiten_ordner, streifen_ordner, muster, seitenname, mindestguete=0.85)
         k, (kb, kh) = _grau(s, SKALA)
         y, x, guete = kreuzkorrelation(g, k)
         if guete < mindestguete:
-            print(f"  {s.name}: Guete {guete:.2f} zu niedrig — uebersprungen")
+            print(f"  {s.name}: Guete {guete:.2f} zu niedrig – uebersprungen")
             continue
         fund.setdefault(nr, []).append(
             dict(eintrag=eintrag, y0=y * SKALA, y1=y * SKALA + kh,
@@ -111,7 +111,7 @@ def main():
     n = sum(len(v["linien"]) for v in s.values())
     print(f"\n{len(s)} Seiten, {n} Linien, {len(s)} Enden der Erfassung")
     Path(a.ziel).write_text(json.dumps(dict(seiten=s), indent=2,
-                                       ensure_ascii=False) + "\n")
+                                       ensure_ascii=False) + "\n", encoding="utf-8")
     print(f"-> {a.ziel}  (Herkunfts- und Genauigkeitshinweise von Hand ergaenzen)")
 
 

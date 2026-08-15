@@ -35,6 +35,15 @@
 1 MAP
 2 LATI N48.978775
 2 LONG E8.988931
+0 @S35@ SOUR
+1 TITL KB Haberschlacht Taufen 1747-1807
+1 ABBR KB Haberschlacht Taufen 1747-1807
+0 @S36@ SOUR
+1 TITL KB Haberschlacht Heiraten 1747-1807
+1 ABBR KB Haberschlacht Heiraten 1747-1807
+0 @S37@ SOUR
+1 TITL KB Haberschlacht Begräbnisse 1747-1807
+1 ABBR KB Haberschlacht Begräbnisse 1747-1807
 0 @I1307@ INDI
 1 RIN AB:I1307
 1 _UID 76EC05CA70744388B63E3F8AC96A7D63B0AB
@@ -44,7 +53,6 @@
 2 _KB_NAME Rosina Margaretha /Frey/
 2 _RUFNAME Margaretha
 1 SEX F
-1 FAMC @F472@
 1 FAMS @F1228@
 1 _CREA
 2 DATE 23 JUN 2025
@@ -70,7 +78,6 @@
 2 _KB_NAME Anna Maria /Mayerle/
 1 SEX F
 1 _NOTE_HEIRAT ehelich, ledige Tochter
-1 FAMC @F1081@
 1 _UID 26854D75053C45DA8FDE2A7A73B27C63E2A3
 1 NAME Anna Maria /Maier/
 2 SURN Maier
@@ -134,7 +141,6 @@
 3 PAGE Taufe 1803/3
 2 _BERUF_KB Gerichtsverwandter
 1 _NOTE_HEIRAT ehelich, lediger Sohn
-1 FAMC @F853@
 1 FAMS @F1126@
 0 @I2765@ INDI
 1 RIN AB:I643
@@ -146,7 +152,6 @@
 2 _KB_NAME Margaretha Christina Dorothea /Käser/
 1 SEX F
 1 _NOTE_HEIRAT ehelich, ledige Tochter
-1 FAMC @F1127@
 1 FAMS @F1126@
 1 _UID 696A0F7072BC4AE5A93FFA419AF31BD14B0F
 1 NAME Margaretha Christina Dorothea /Keßer/
@@ -180,7 +185,6 @@
 1 SEX M
 1 _NOTE_HEIRAT ehelicher Sohn
 1 FAMS @F1149@
-1 FAMC @F1263@
 1 _UID D2A94ED803684F2F900D107393C9778E0B39
 1 CHR
 2 DATE 16 MAY 1771
@@ -235,7 +239,6 @@
 2 _KB_NAME Johann Michael /Möß/
 1 SEX M
 1 _NOTE_HEIRAT ehelicher Sohn
-1 FAMC @F1172@
 1 FAMS @F1171@
 1 OCCU Maurer
 2 DATE 26 NOV 1800
@@ -259,7 +262,6 @@
 2 _KB_NAME Johann Georg /Weyssert/
 1 SEX M
 1 _NOTE_HEIRAT ehelich, lediger Sohn
-1 FAMC @F1179@
 1 FAMS @F1178@
 0 @I2844@ INDI
 1 RIN AB:I722
@@ -271,7 +273,6 @@
 1 SEX F
 1 _NOTE_HEIRAT ehelich, ledige Tochter
 1 FAMS @F1178@
-1 FAMC @F811@
 1 _UID CBA21ED3FA134322BB2CD4ABE980ADDB2796
 1 _NOTE_TAUFE 1814 nach Großgartach gezogen
 1 CHR
@@ -299,7 +300,6 @@
 1 _NOTE_HEIRAT Witwer
 1 FAMS @F1193@
 1 FAMS @F1387@
-1 FAMC @F1557@
 1 _UID D752B90F12D94066B5189209A32CA82384CC
 1 CHR
 2 DATE 5 MAR 1770
@@ -338,7 +338,6 @@
 2 _KB_NAME Catharina Juliana /Haidinger/
 1 SEX F
 1 _NOTE_HEIRAT eheliche Tochter
-1 FAMC @F1194@
 1 FAMS @F1193@
 0 @I2912@ INDI
 1 RIN AB:I790
@@ -349,7 +348,6 @@
 2 _KB_NAME Georg Jakob /Roth/
 1 SEX M
 1 _NOTE_HEIRAT ehelich, lediger Sohn
-1 FAMC @F1222@
 1 FAMS @F1221@
 0 @I2913@ INDI
 1 RIN AB:I791
@@ -360,7 +358,6 @@
 2 _KB_NAME Maria Barbara /Staiger/
 1 SEX F
 1 _NOTE_HEIRAT eheliche Tochter
-1 FAMC @F1223@
 1 FAMS @F1221@
 0 @I3136@ INDI
 1 RIN AB:I1018
@@ -371,7 +368,6 @@
 2 _KB_NAME Georg Jacob /Dürr/
 2 _KB_NAME Georg Jakob /Dürr/
 1 SEX M
-1 FAMC @F1699@
 1 FAMS @F1228@
 1 _UID 5F814AD219114CB9942E4C291A1ABC6BBDA5
 1 _NOTE_HEIRAT ehelicher Sohn
@@ -424,7 +420,6 @@
 1 FAMS @F1171@
 1 _UID 1021FBA2F7EA4D03984460E3A153D3CCB1DC
 1 _NOTE_HEIRAT eheliche Tochter
-1 FAMC @F949@
 1 CHR
 2 DATE 15 MAY 1780
 2 PLAC Haberschlacht
@@ -534,9 +529,6 @@
 0 @F1126@ FAM
 1 HUSB @I2764@
 1 WIFE @I2765@
-1 CHIL @I3552@
-1 CHIL @I3553@
-1 CHIL @I3554@
 1 MARR
 2 DATE 31 JAN 1796
 2 PLAC Haberschlacht
@@ -553,10 +545,6 @@
 0 @F1149@ FAM
 1 HUSB @I2799@
 1 WIFE @I2800@
-1 CHIL @I3209@
-1 CHIL @I3213@
-1 CHIL @I3214@
-1 CHIL @I3218@
 1 MARR
 2 DATE 14 FEB 1798
 2 PLAC Haberschlacht
@@ -585,8 +573,6 @@
 3 PAGE Trauung 1800/6
 2 NOTE 26.11.1800 Joh: Michael Möß, des Maurer Handwercks, weil. Joh. Michael Moß, B. u. Weingärtners in Horrheim, Vaihinger Oberamts ehl. Sohn, u. Agnes Dorothea, weil. Balthasar Kauffmanns Gerichts­ver­wandten allhier ehl. Tochter. Cop. allhier Mittw
 3 CONC ochs den 26. Novbr.
-1 CHIL @I3777@
-1 CHIL @I3778@
 0 @F1178@ FAM
 1 HUSB @I2843@
 1 WIFE @I2844@
@@ -606,7 +592,6 @@
 0 @F1193@ FAM
 1 HUSB @I2867@
 1 WIFE @I2868@
-1 CHIL @I3742@
 1 MARR
 2 DATE 2 MAY 1804
 2 PLAC Haberschlacht
@@ -654,26 +639,18 @@
 0 @F1289@ FAM
 1 HUSB @I3389@
 1 WIFE @I3390@
-1 CHIL @I3391@
 0 @F1309@ FAM
 1 HUSB @I3558@
 1 WIFE @I3559@
-1 CHIL @I3560@
 0 @F1319@ FAM
 1 HUSB @I3609@
 1 WIFE @I3610@
-1 CHIL @I3611@
-1 CHIL @I3615@
 0 @F1367@ FAM
 1 HUSB @I3985@
 1 WIFE @I3986@
-1 CHIL @I3987@
 0 @F1387@ FAM
 1 HUSB @I2867@
 1 WIFE @I2696@
-1 CHIL @I3733@
-1 CHIL @I3735@
-1 CHIL @I3736@
 1 MARR
 2 PLAC Haberschlacht
 3 _LOC @L1@

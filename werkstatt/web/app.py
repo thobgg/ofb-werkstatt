@@ -10,14 +10,15 @@ Eine Seite je Kopfhaltung des Durchlaufs:
     /lesen          Tranche planen und lesen lassen, mit Fortschritt
     /korrektur      die Maske, eingeschränkt auf die gerade gelesene Runde
     /uebergabe      Probelauf zeigen, auf zweiten Klick schreiben
-    /ausgabe        GEDCOM — Fortschreibung oder Neuausgabe
+    /ausgabe        GEDCOM – Fortschreibung oder Neuausgabe
     /einstellungen  Reihenfolge, Seitenzahl, Bildordner, Autopilot
 
 Der Zustand liegt in der Datenbank, nicht im Prozess: Der Läufer arbeitet
 im Hintergrund weiter, wenn das Browserfenster zugeht, und ein Abbruch
 hinterlässt einen lesbaren Zustand statt eines Rätsels.
 
-Läuft nur auf 127.0.0.1, keine Abhängigkeiten außer der Standardbibliothek.
+Läuft nur auf 127.0.0.1; der Webteil kommt aus der Standardbibliothek,
+für Bildvorschauen wird Pillow gebraucht.
 Beenden mit Strg-C.
 """
 import argparse
@@ -161,7 +162,7 @@ class Handler(BaseHTTPRequestHandler):
                         max_tokens=int(einstellungen.wert(
                             con, "ki.max_tokens", 8000)),
                         batch=einstellungen.wert(con, "ki.batch", "0") == "1",
-                        # Nie den Schlüssel selbst ausliefern — nur ob einer da ist.
+                        # Nie den Schlüssel selbst ausliefern – nur ob einer da ist.
                         schluessel=bool(os.environ.get("ANTHROPIC_API_KEY")),
                         cli=vorlage.bereitschaft(),
                         verbrauch=self._verbrauch(con, modell)),
@@ -214,7 +215,7 @@ class Handler(BaseHTTPRequestHandler):
             })
         if pfad == "/api/anbindung":
             # person.id ist ganzzahlig; aus der URL kommt Text. Ohne die
-            # Wandlung greift keine Zuordnung in suche.familien() — sie
+            # Wandlung greift keine Zuordnung in suche.familien() – sie
             # schlüge stillschweigend fehl statt zu melden.
             v, m = self._zahl("vater"), self._zahl("mutter")
             d = suche.anbindung(v, m)
@@ -224,14 +225,14 @@ class Handler(BaseHTTPRequestHandler):
         if pfad.startswith("/bild/"):
             rel = urllib.parse.unquote(pfad[len("/bild/"):])
             # Nicht `resolve()`: Die Scans liegen ueblicherweise als
-            # Symlink im Projekt und in Wirklichkeit woanders — auf einer
+            # Symlink im Projekt und in Wirklichkeit woanders – auf einer
             # zweiten Platte, im Archivordner. `resolve()` folgt dem Link,
             # und die Herkunftspruefung schlaegt dann fehl. Die volle Seite
             # kam so nie an; die Seitenschau blieb weiss, und es sah nach
             # einem Problem der Bildgroesse aus.
             #
             # Geprueft wird deshalb der Pfad *ohne* Linkaufloesung, nur
-            # normalisiert — das haelt `../` genauso ab, laesst aber
+            # normalisiert – das haelt `../` genauso ab, laesst aber
             # Symlinks zu, die der Bearbeiter selbst gelegt hat.
             import os
             ziel = Path(os.path.normpath(str(ROOT / rel)))
@@ -240,7 +241,7 @@ class Handler(BaseHTTPRequestHandler):
             typ = ("image/jpeg" if ziel.suffix.lower() in (".jpg", ".jpeg")
                    else "image/png")
             # Die vollen Aufnahmen sind 24 Megapixel. Roh ausgeliefert
-            # friert der Browser ein — beim ersten Versuch blieb die
+            # friert der Browser ein – beim ersten Versuch blieb die
             # Seitenschau weiss und die Bildaufnahme lief in die
             # Zeitgrenze. Also verkleinert, und das Ergebnis gemerkt.
             k = self._zahl("kante")
@@ -269,7 +270,7 @@ class Handler(BaseHTTPRequestHandler):
             finally:
                 con.close()
         if pfad == "/api/beenden":
-            # Erst antworten, dann abschalten — sonst bekommt der Browser
+            # Erst antworten, dann abschalten – sonst bekommt der Browser
             # keine Bestaetigung mehr und zeigt einen Verbindungsfehler,
             # wo alles richtig gelaufen ist. `shutdown()` muss aus einem
             # anderen Faden kommen: Es wartet auf das Ende der Schleife,
@@ -356,10 +357,10 @@ class Handler(BaseHTTPRequestHandler):
             except Exception as e:
                 return self._json({"fehler": f"{type(e).__name__}: {e}"}, 400)
             # Die Bildordner anlegen, damit der erste Blick nicht auf
-            # "Ordner fehlt" faellt — leer ist kein Fehler, fehlend schon.
+            # "Ordner fehlt" faellt – leer ist kein Fehler, fehlend schon.
             # Den Beispielbestand einlesen, wenn gewuenscht. Ohne ihn
-            # bleibt in der Demo alles gelb, und der Anker — der Kern des
-            # Verfahrens — ist nicht zu sehen.
+            # bleibt in der Demo alles gelb, und der Anker – der Kern des
+            # Verfahrens – ist nicht zu sehen.
             if d.get("bestand"):
                 b = einrichtung.beispielbestand()
                 if b:
@@ -435,7 +436,7 @@ class Handler(BaseHTTPRequestHandler):
                 if not re.fullmatch(r"[a-z0-9_]{2,40}", name):
                     return self._json({"fehler": (
                         "Feldname: nur Kleinbuchstaben, Ziffern und "
-                        "Unterstrich — er wird zum Schlüssel in der "
+                        "Unterstrich – er wird zum Schlüssel in der "
                         "Datenbank und im Leseauftrag.")}, 400)
                 katalog.setze(con, art, name,
                               **{k: v for k, v in d.items()
@@ -509,7 +510,7 @@ class Handler(BaseHTTPRequestHandler):
                 suche.frisch()
                 # Was schon gelesen und noch nicht bestätigt ist, bekommt
                 # die neue Quelle nachträglich zu sehen. Bestätigte
-                # Einträge bleiben unberührt — eine Entscheidung des
+                # Einträge bleiben unberührt – eine Entscheidung des
                 # Bearbeiters darf ein Import nicht überschreiben.
                 z = abgleich.runde_pruefen(con, nur_offen=True)
                 return self._json(dict(ok=True, herkunft=hid, neu_geprueft=z))
@@ -535,7 +536,7 @@ class Handler(BaseHTTPRequestHandler):
                     return self._json(
                         {"fehler": "Die eigene Erfassung bleibt"}, 400)
                 # Eine Quelle, an der schon Entscheidungen haengen, darf
-                # nicht verschwinden — sonst zeigen bestaetigte Felder ins
+                # nicht verschwinden – sonst zeigen bestaetigte Felder ins
                 # Leere und die Uebergabe faende die Person nicht mehr.
                 haengt = con.execute(
                     "SELECT count(*) FROM feld f JOIN person p ON p.id=f.person "
@@ -578,7 +579,7 @@ class Handler(BaseHTTPRequestHandler):
 
     # ------------------------------------------------------------- Daten
     def ueber(self):
-        """Was die Über-Seite zeigt — Stand aus der Datenbank, nicht aus Text.
+        """Was die Über-Seite zeigt – Stand aus der Datenbank, nicht aus Text.
 
         Zahlenstände gehören in die Datenbank, nicht in Markdown, sonst
         veralten sie unbemerkt (Regel aus doku/landkarte.md). Das gilt für
@@ -613,7 +614,7 @@ class Handler(BaseHTTPRequestHandler):
                       "neu anlegen, als GEDCOM ausgeben.",
                 lizenz="MIT", autor="Thomas Bugge",
                 fassung=fassung,
-                gemeinde=konfig.konfig().get("gemeinde", {}).get("name", "—"),
+                gemeinde=konfig.konfig().get("gemeinde", {}).get("name", "–"),
                 bestand=stand,
                 quellen=quellen,
                 doku=doku,
@@ -635,7 +636,7 @@ class Handler(BaseHTTPRequestHandler):
             con.close()
 
     def _aufwand(self, con):
-        """Wie viel Arbeit die Eintraege gemacht haben — je Register.
+        """Wie viel Arbeit die Eintraege gemacht haben – je Register.
 
         Der ehrlichere Massstab als eine Trefferquote: Eine Quote misst
         das Buch, diese Zahlen messen das Werkzeug. Sie fallen beim
@@ -662,7 +663,7 @@ class Handler(BaseHTTPRequestHandler):
         return z
 
     def _verbrauch(self, con, modell):
-        """Was bisher tatsächlich verbraucht wurde — aus den Aufträgen.
+        """Was bisher tatsächlich verbraucht wurde – aus den Aufträgen.
 
         Geschätzte Kosten stehen in jeder Doku; gemessene nirgends. Die
         Auftragstabelle zählt die Token ohnehin mit, also wird hier
@@ -681,7 +682,7 @@ class Handler(BaseHTTPRequestHandler):
                 continue
             # Ueber die API rechnen wir aus Token und Preisliste, ueber die
             # Sitzung meldet `claude -p` den Betrag selbst. Beides ist
-            # gemessen, keins geschaetzt — aber nur der erste wird auch
+            # gemessen, keins geschaetzt – aber nur der erste wird auch
             # berechnet. Der zweite sagt, was derselbe Lauf gekostet haette.
             d = r["d"] or (lesen.kosten(modell, r["e"], r["a"]) or 0.0)
             z.append(dict(
@@ -714,7 +715,7 @@ class Handler(BaseHTTPRequestHandler):
                     "FROM herkunft h ORDER BY h.gilt, h.id"):
                 quellen.append(dict(h))
             # Eingetragen heisst nicht eingelesen. Eine Quelle, die in
-            # konfig.toml steht und nie importiert wurde, wirkt nicht — und
+            # konfig.toml steht und nie importiert wurde, wirkt nicht – und
             # das sah man bisher nirgends, weil die Tabelle nur zeigt, was
             # schon in der Datenbank liegt.
             drin = {Path(q["datei"] or "").name for q in quellen}
@@ -728,7 +729,7 @@ class Handler(BaseHTTPRequestHandler):
                        for q in konfig.kontext()
                        if q["datei"] and Path(q["datei"]).name not in drin]
             return dict(
-                gemeinde=k.get("name", "—"),
+                gemeinde=k.get("name", "–"),
                 register=_runde.stand(con),
                 quellen=quellen,
                 quellen_fehlend=fehlend,
@@ -747,7 +748,7 @@ class Handler(BaseHTTPRequestHandler):
                 fortschritt=_runde.fortschritt(con, r["id"]) if r else None,
                 vorlage=(vorlage.stand(con, r["id"])
                          if r and r["quelle"] == "datei" else None),
-                # Nur anbieten, wenn auch angemeldet — ein installiertes,
+                # Nur anbieten, wenn auch angemeldet – ein installiertes,
                 # aber unangemeldetes Claude Code liest keine Seite. None
                 # heisst "nicht feststellbar" und zaehlt als anbieten.
                 claude_code=vorlage.bereitschaft()["angemeldet"] is not False,
@@ -777,7 +778,7 @@ class Handler(BaseHTTPRequestHandler):
                           "SELECT * FROM feld WHERE eintrag_id=? "
                           "ORDER BY reihe, id", (e["id"],))]
             # Felder ohne Zeile ergaenzen. Eine Zeile entsteht nur, wenn
-            # das Modell das Feld geliefert hat — was es nicht liefert,
+            # das Modell das Feld geliefert hat – was es nicht liefert,
             # hatte in der Maske keinen Ort, und der Mädchenname liess sich
             # nicht nachtragen, obwohl die Aktkarte ihn fuehrt.
             da = {f["name"] for f in felder}
@@ -834,7 +835,7 @@ class Handler(BaseHTTPRequestHandler):
                 if not row:
                     # Erst beim Schreiben entstehen: Wer ein Feld
                     # nachtraegt, das die Lesung nicht geliefert hat, soll
-                    # es eintragen koennen — nicht ins Leere tippen.
+                    # es eintragen koennen – nicht ins Leere tippen.
                     con.execute(
                         "INSERT OR IGNORE INTO feld (eintrag_id, name, reihe) "
                         "VALUES (?,?,99)", (d["id"], name))
@@ -858,7 +859,7 @@ class Handler(BaseHTTPRequestHandler):
                 if pers is not None:
                     sql += ", person=?"
                     par.append(int(pers) if str(pers).strip().isdigit() else None)
-                # Was ein Mensch bestätigt hat, ist grün — unabhängig davon,
+                # Was ein Mensch bestätigt hat, ist grün – unabhängig davon,
                 # was der Abgleich vorher gefunden hat.
                 if d.get("bestaetigt"):
                     sql += ", ampel='gruen'"
@@ -877,11 +878,11 @@ def main():
     ap.add_argument("--port", type=int, default=8765)
     a = ap.parse_args()
     if not DB.exists():
-        print("daten/erfassung.sqlite fehlt — erst python3 -m werkstatt.db --init")
+        print("daten/erfassung.sqlite fehlt – erst python3 -m werkstatt.db --init")
         return
     # Threading, damit ein langsamer Aufruf nicht die ganze Oberflaeche
     # anhaelt. Gemessen ist das Laden der Bildstreifen *nicht* das Problem
-    # — 20 Streifen brauchen ueber die Loopback-Schnittstelle 20 ms, ob
+    # – 20 Streifen brauchen ueber die Loopback-Schnittstelle 20 ms, ob
     # nacheinander oder parallel. Es geht um die wenigen Aufrufe, die
     # wirklich dauern: das erste Verkleinern einer 24-MP-Seite (0,4 s) und
     # der GEDCOM-Probelauf. Waehrend die liefen, stand alles still.
@@ -896,9 +897,9 @@ def main():
     except KeyboardInterrupt:
         print("\nbeendet")
     else:
-        # serve_forever kehrt nur zurueck, wenn shutdown() gerufen wurde —
+        # serve_forever kehrt nur zurueck, wenn shutdown() gerufen wurde –
         # also ueber den Knopf in der Oberflaeche.
-        print("beendet — über die Werkstatt geschlossen")
+        print("beendet – über die Werkstatt geschlossen")
     finally:
         srv.server_close()
 

@@ -15,7 +15,7 @@ zusammen gelesen, zusammen korrigiert und zusammen übergeben werden.
 
 **Die Reihenfolge Ehen → Taufen → Tode ist Bedingung, nicht Empfehlung.**
 Der Elternehe-Anker trägt im Taufjahr 1808 noch 94 %, 1813 noch 53 %, 1820
-nur 18 % — es sei denn, die Ehen ab 1808 sind vorher übergeben, dann wächst
+nur 18 % – es sei denn, die Ehen ab 1808 sind vorher übergeben, dann wächst
 er mit. Wer die Taufen vorzieht, prüft sie später ein zweites Mal. Deshalb
 schlägt `vorschlag()` das nächste Register selbst vor, und eine neue Runde
 beginnt erst, wenn die vorige übergeben ist.
@@ -37,7 +37,7 @@ def jetzt():
 
 # ----------------------------------------------------------------- Planung
 def register_reihe(con=None):
-    """Registerreihenfolge — aus den Einstellungen, sonst wie in konfig.toml."""
+    """Registerreihenfolge – aus den Einstellungen, sonst wie in konfig.toml."""
     if con is None:
         return list(konfig.register())
     return einstellungen.reihenfolge(con)
@@ -51,19 +51,28 @@ def gelesene_bilder(con, register):
 def offene_bilder(con, register, quelle="api"):
     """Bilder dieses Registers, die noch nicht gelesen sind.
 
-    Bei `quelle=testdaten` zählt nur, was die Testquelle abdeckt — sonst
+    Bei `quelle=testdaten` zählt nur, was die Testquelle abdeckt – sonst
     plante die Werkstatt zwanzig Seiten und läse vier.
     """
     schon = gelesene_bilder(con, register)
     if quelle == "testdaten":
         alle = testdaten.seiten(register)
+        # Nur Seiten, zu denen auch ein Bild daliegt. Die Testquelle deckt
+        # mehr Seiten ab, als die Demo an Bildern mitbringt; ohne diesen
+        # Schnitt bekommt der Betrachter Eintraege ohne Streifen und ohne
+        # ganze Seite – also genau das, was die Werkstatt zeigen soll,
+        # nicht. Liegt gar kein Bild da, bleibt es bei der vollen Liste:
+        # lesen laesst sich die Quelle auch ohne Bilder.
+        da = {f.stem for f in seiten.bilder(einstellungen.ordner(con, register))}
+        if da:
+            alle = [b for b in alle if b in da]
     else:
-        # 'api' und 'datei' lesen beide aus dem Bilderordner — der Unterschied
+        # 'api' und 'datei' lesen beide aus dem Bilderordner – der Unterschied
         # ist nur, wer die Seite anschaut.
         alle = [f.stem for f in seiten.bilder(einstellungen.ordner(con, register))]
     # Bestaetigte Dubletten gar nicht erst einplanen. Zwei Aufnahmen
     # derselben Buchoeffnung kosten sonst zweimal und liefern jeden
-    # Eintrag doppelt in den Bestand — gemessen an 00359/00360.
+    # Eintrag doppelt in den Bestand – gemessen an 00359/00360.
     from . import dubletten
     weg = dubletten.uebersprungene(con)
     return [b for b in alle if b not in schon and b not in weg]
@@ -77,7 +86,7 @@ def offene_runde(con):
 
 
 def vorschlag(con, quelle="api"):
-    """Welches Register als Nächstes — und warum.
+    """Welches Register als Nächstes – und warum.
 
     Der Vorschlag zählt immer den **Bilderbestand**, nicht die gewählte
     Quelle. Sonst meldet die Werkstatt „alle Seiten gelesen", während 148
@@ -95,11 +104,11 @@ def vorschlag(con, quelle="api"):
         reg = reihe[(start + i) % len(reihe)]
         rest = offene_bilder(con, reg, "api")
         if rest:
-            grund = ("erste Runde — Ehen zuerst, sie bauen den Anker"
+            grund = ("erste Runde – Ehen zuerst, sie bauen den Anker"
                      if not letzte and reg == reihe[0]
                      else f"{len(rest)} Seiten offen")
             if quelle == "testdaten" and not offene_bilder(con, reg, "testdaten"):
-                grund += " — die Testquelle ist erschöpft, dafür braucht es die API"
+                grund += " – die Testquelle ist erschöpft, dafür braucht es die API"
             return dict(register=reg, runde=None, grund=grund, offen=len(rest))
     return dict(register=None, runde=None, grund="alle Seiten gelesen")
 
@@ -110,7 +119,7 @@ def plane(con, register, anzahl=None, quelle="api"):
     if offen:
         raise SystemExit(
             f"Runde {offen['nr']} ({offen['register']}) steht noch auf "
-            f"'{offen['stand']}' — erst abschließen.")
+            f"'{offen['stand']}' – erst abschließen.")
     bilder = offene_bilder(con, register, quelle)[:anzahl]
     if not bilder:
         raise SystemExit(f"keine ungelesenen Seiten in {register} "
@@ -136,7 +145,7 @@ def _rolle(art, feldname):
     """Welches Feld trägt den Namen welcher Person.
 
     Rolle heißt hier: *dieses Feld ist die Person*, nicht bloß eine
-    Angabe über sie. `vater_name` trägt den Vater, `vater_beruf` nicht —
+    Angabe über sie. `vater_name` trägt den Vater, `vater_beruf` nicht –
     sonst stünde jedes Berufsfeld in der Maske als Personenentscheidung.
     """
     from . import katalog
@@ -151,7 +160,7 @@ def _rolle(art, feldname):
 
 
 def speichere(con, art, bild, ergebnis, runde_id=None, hid=None):
-    """Gelesene Einträge festhalten — für beide Quellen derselbe Weg."""
+    """Gelesene Einträge festhalten – für beide Quellen derselbe Weg."""
     reihen = {n: i for i, n in enumerate(konfig.felder(art, con))}
     n_e = n_f = 0
     for e in ergebnis.get("eintraege", []):
@@ -175,8 +184,8 @@ def speichere(con, art, bild, ergebnis, runde_id=None, hid=None):
             # Eine zweite Lesung derselben Seite muss die erste ersetzen.
             # `INSERT OR IGNORE` liess sie stillschweigend fallen: Die Seite
             # wurde neu gelesen, in der Maske stand weiter die alte Fassung,
-            # und die neu hinzugekommenen Felder — Taufdatum, Paten,
-            # Volltext — fehlten schlicht. Aufgefallen ist es erst, weil ein
+            # und die neu hinzugekommenen Felder – Taufdatum, Paten,
+            # Volltext – fehlten schlicht. Aufgefallen ist es erst, weil ein
             # Mensch das Taufdatum vermisste.
             #
             # Was ein Mensch angefasst hat, bleibt: `korrigiert` und die
@@ -191,7 +200,7 @@ def speichere(con, art, bild, ergebnis, runde_id=None, hid=None):
                 " reihe=excluded.reihe "
                 # Nicht `entscheidung IS NULL` pruefen: Die Spalte steht per
                 # Vorgabe auf 'offen' und wird vom Abgleich gesetzt, ist
-                # also nie leer — die Bedingung blockierte jede
+                # also nie leer – die Bedingung blockierte jede
                 # Aktualisierung. Der ehrliche Marker fuer Menschenarbeit
                 # ist `korrigiert` und der bestaetigte Eintrag.
                 "WHERE feld.korrigiert IS NULL AND EXISTS ("
@@ -205,7 +214,7 @@ def speichere(con, art, bild, ergebnis, runde_id=None, hid=None):
 
 
 def _bildpfad(con, art, bild):
-    """Die Datei zu einem Bildnamen — Endung offen, entpackte PDFs eingeschlossen."""
+    """Die Datei zu einem Bildnamen – Endung offen, entpackte PDFs eingeschlossen."""
     for f in seiten.bilder(einstellungen.ordner(con, art)):
         if f.stem == bild:
             return f
@@ -213,7 +222,7 @@ def _bildpfad(con, art, bild):
 
 
 def lauf(runde_id):
-    """Der Läufer. Eigene Verbindung — er arbeitet in einem eigenen Thread."""
+    """Der Läufer. Eigene Verbindung – er arbeitet in einem eigenen Thread."""
     con = db.verbinde()
     r = con.execute("SELECT * FROM runde WHERE id=?", (runde_id,)).fetchone()
     a = con.execute("SELECT * FROM auftrag WHERE runde=? AND art='lesen' "
@@ -269,7 +278,7 @@ def lauf(runde_id):
                 pfad = _bildpfad(con, art, bild)
                 erg, nutzung = lesen.lies_seite(pfad, art, schluessel, con)
             n_e, n_f = speichere(con, art, bild, erg, runde_id, hid)
-            # Streifen gleich mitschneiden — der Bearbeiter braucht sie beim
+            # Streifen gleich mitschneiden – der Bearbeiter braucht sie beim
             # Korrigieren, und sie kosten nichts als eine halbe Sekunde CPU.
             # Das Modell hat die Zuordnung schon geliefert: wie viele Einträge
             # und in welcher Reihenfolge. Mehr braucht das Abzählen nicht.
@@ -292,7 +301,7 @@ def lauf(runde_id):
         except FileNotFoundError as e:
             # Bei der Quelle 'datei' heisst eine fehlende Antwort nur: noch
             # nicht gelesen. Das ist kein Fehler, sondern der Normalzustand,
-            # bis die Sitzung durch ist — die Seite bleibt wartend und der
+            # bis die Sitzung durch ist – die Seite bleibt wartend und der
             # Lauf laesst sich beliebig oft wiederholen.
             con.execute("UPDATE auftrag_seite SET stand='wartet', meldung=? "
                         "WHERE id=?", (str(e)[:400], s["id"]))
@@ -319,7 +328,7 @@ def lauf(runde_id):
     offen = con.execute(
         "SELECT count(*) FROM auftrag_seite WHERE auftrag=? AND stand='wartet'",
         (aid,)).fetchone()[0]
-    # Abgleichen, was da ist — auch wenn noch Seiten fehlen. Bei der Quelle
+    # Abgleichen, was da ist – auch wenn noch Seiten fehlen. Bei der Quelle
     # 'datei' kann das Lesen über mehrere Sitzungen gehen; solange dürfen die
     # schon gelesenen Einträge nicht grau liegen bleiben.
     from . import abgleich
@@ -343,7 +352,7 @@ LAEUFER = {}
 
 
 def starte(runde_id):
-    """Läufer im Hintergrund — der Browser darf zugemacht werden."""
+    """Läufer im Hintergrund – der Browser darf zugemacht werden."""
     t = LAEUFER.get(runde_id)
     if t and t.is_alive():
         return False
@@ -358,7 +367,7 @@ def starte(runde_id):
 def uebergib(con, runde_id, schreib=False):
     """Bestätigte Einträge dieser Runde werden zum Bestand.
 
-    Erst danach kann die nächste Tranche gegen sie ankern — das ist der
+    Erst danach kann die nächste Tranche gegen sie ankern – das ist der
     ganze Sinn der Reihenfolge Ehen → Taufen → Tode. Ohne diesen Schritt
     ist der Registerwechsel wirkungslos.
     """
@@ -373,14 +382,14 @@ def uebergib(con, runde_id, schreib=False):
                     (jetzt(), runde_id))
         con.commit()
         # Sofort, nicht am Ende. Wer ein Ortsfamilienbuch für eine andere
-        # Zeit hat, arbeitet in einer Kopie davon — zwei getrennt
+        # Zeit hat, arbeitet in einer Kopie davon – zwei getrennt
         # gewachsene Bestände hinterher zu verschmelzen ist die Arbeit, die
         # niemand mehr sauber hinbekommt. Siehe ausgabe.arbeitskopie().
         from . import ausgabe
         try:
             z["arbeitskopie"] = ausgabe.arbeitskopie(con)["datei"]
         except Exception as e:
-            # Eine gescheiterte Kopie darf die Übergabe nicht zurücknehmen —
+            # Eine gescheiterte Kopie darf die Übergabe nicht zurücknehmen –
             # die Daten liegen in der Datenbank, die Datei ist ihr Abbild.
             z["arbeitskopie_fehler"] = f"{type(e).__name__}: {e}"
     return z
@@ -389,7 +398,7 @@ def uebergib(con, runde_id, schreib=False):
 def verwerfen(con, runde_id):
     """Eine Runde rückstandslos zurücknehmen.
 
-    Nötig, damit sich derselbe Durchlauf wiederholen lässt — zum Prüfen, zum
+    Nötig, damit sich derselbe Durchlauf wiederholen lässt – zum Prüfen, zum
     Vorführen, und wenn eine Runde mit falschen Einstellungen lief. Gelöscht
     wird nur, was diese Runde erzeugt hat: ihre Einträge und die Personen und
     Familien ihrer Übergabe. Der eingelesene Bestand bleibt unberührt.
@@ -405,7 +414,7 @@ def verwerfen(con, runde_id):
         "SELECT count(*) FROM eintrag WHERE runde=?", (runde_id,)).fetchone()[0]
     # Reihenfolge ist hier nicht Geschmack, sondern Bedingung: `feld.person`
     # zeigt auf Personen. Wer die Personen zuerst löscht, läuft in einen
-    # Fremdschlüsselfehler — und zwar erst dann, wenn der Abgleich nach der
+    # Fremdschlüsselfehler – und zwar erst dann, wenn der Abgleich nach der
     # Übergabe noch einmal lief und auf die eigenen Neuanlagen zeigte.
     con.execute("DELETE FROM eintrag WHERE runde=?", (runde_id,))
     con.execute("DELETE FROM auftrag WHERE runde=?", (runde_id,))
@@ -463,7 +472,7 @@ def fortschritt(con, runde_id):
 
 
 def stand(con):
-    """Was der Startbildschirm zeigt — echte Zahlen, keine Vermutungen."""
+    """Was der Startbildschirm zeigt – echte Zahlen, keine Vermutungen."""
     raus = []
     for art in register_reihe(con):
         ordner = einstellungen.ordner(con, art)
@@ -509,7 +518,7 @@ def main():
         print(("geschrieben: " if a.schreib else "Probelauf: ")
               + " · ".join(f"{k} {v}" for k, v in z.items()))
         if not a.schreib:
-            print("(nichts geschrieben — mit --schreib übernehmen)")
+            print("(nichts geschrieben – mit --schreib übernehmen)")
         return
 
     if a.plane:
@@ -532,7 +541,7 @@ def main():
               f"{z['gelesen']:3} gelesen · {z['eintraege']:4} Einträge · "
               f"{z['bestaetigt']:4} bestätigt")
     v = vorschlag(con)
-    print(f"\n  nächster Schritt: {v['register'] or '—'}  ({v['grund']})")
+    print(f"\n  nächster Schritt: {v['register'] or '–'}  ({v['grund']})")
     r = offene_runde(con)
     if r:
         print(f"  offene Runde {r['nr']}: {r['register']}, Stand {r['stand']}")

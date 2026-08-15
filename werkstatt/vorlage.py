@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Lesen über eine Sitzung statt über die API — ohne zweite Rechnung.
+"""Lesen über eine Sitzung statt über die API – ohne zweite Rechnung.
 
     python3 -m werkstatt.vorlage --lege-vor 3
     python3 -m werkstatt.vorlage --stand 3
@@ -16,7 +16,7 @@ Ordner, eine Sitzung liest sie, die Werkstatt nimmt die Antworten wieder auf.
 Der Unterschied zur API ist Handarbeit, nicht Qualität: ein Sitzungswechsel
 je Tranche statt eines Knopfdrucks, und keine Batch-Ersparnis, weil es
 nichts einzureichen gibt. Das Ergebnis läuft durch dieselbe `speichere()`
-wie alles andere — Abgleich, Ampel und Übergabe merken keinen Unterschied.
+wie alles andere – Abgleich, Ampel und Übergabe merken keinen Unterschied.
 """
 import argparse
 import json
@@ -28,7 +28,7 @@ from . import bloecke, db, einstellungen, katalog, konfig, lesen, seiten
 
 ORDNER = Path("ausgabe") / "lesen"
 
-ANLEITUNG = """# Lesen für Runde {nr} — {titel}
+ANLEITUNG = """# Lesen für Runde {nr} – {titel}
 
 {anzahl} Seiten aus `{bilder}`.
 
@@ -44,12 +44,12 @@ Zu jeder Seite steht in `seiten.json`:
     kopf    die gedruckten Spaltenüberschriften, je Buchseite ein Bild
     zeilen  je Eintragszeile die Blöcke, links und rechts vom Bund
 
-**Sieh zuerst den Kopf an.** Er sagt, welche Spalte was bedeutet — bei
+**Sieh zuerst den Kopf an.** Er sagt, welche Spalte was bedeutet – bei
 diesem Formular neun Stück, vier links und fünf rechts. Danach je Zeile
 beide Blöcke, und zwar **beide zusammen**: Sie sind derselbe Eintrag, nur
 diesseits und jenseits des Bundes. Der rechte Block trägt Geburtszeit,
 Tauftag, den taufenden Geistlichen, die Paten und den Verweis ins
-Familienregister — Angaben, die in der linken Hälfte schlicht nicht
+Familienregister – Angaben, die in der linken Hälfte schlicht nicht
 vorkommen.
 
 Die ganze Seite (`datei`) ist zusätzlich da, für den Überblick und für
@@ -57,13 +57,13 @@ Zweifelsfälle. **Zum Lesen taugt sie nicht**: 5679 px breit, auf
 Anzeigegröße heruntergerechnet bleiben je Spalte gut hundert Pixel.
 
 Steht bei einer Seite `hinweis` statt `zeilen`, hat die Zeilenerkennung
-versagt — dann die ganze Seite lesen und das im Feld `unleserlich`
+versagt – dann die ganze Seite lesen und das im Feld `unleserlich`
 vermerken.
 
 Eine Zeile ohne Eintrag (leeres Formular am Seitenende) wird
 übersprungen, nicht als leerer Eintrag geliefert.
 
-Der Systemprompt steht in `prompt.txt` — er enthält die Regeln und, falls
+Der Systemprompt steht in `prompt.txt` – er enthält die Regeln und, falls
 schon Korrekturen vorliegen, die belegten Fehllesungen dieser Hand.
 
 ## Form der Antwort
@@ -96,7 +96,7 @@ abweicht. `notiz` nur bei Unsicherheit oder Besonderheit.
 
 ## Die eine Regel, auf die es ankommt
 
-**Was lesbar ist, gehört ins Feld — auch wenn der Rest es nicht ist.**
+**Was lesbar ist, gehört ins Feld – auch wenn der Rest es nicht ist.**
 
 Bei den Eltern steht im Register regelmäßig „Rosina Margaretha, geb.
 ⟨Gekritzel⟩". Die Vornamen sind klar, der Mädchenname nicht. Dann:
@@ -108,7 +108,7 @@ Bei den Eltern steht im Register regelmäßig „Rosina Margaretha, geb.
               "notiz": "Vornamen Rosina Margaretha klar, Nachname nicht"
 
 Der Grund: Der Abgleich sucht die **Elternehe** im Bestand und leitet den
-Nachnamen daraus ab. Er trägt über die Vornamen von Vater *und* Mutter —
+Nachnamen daraus ab. Er trägt über die Vornamen von Vater *und* Mutter –
 gerade weil die Nachnamen das unzuverlässigste Feld sind. Ein `null`
 verschenkt genau die Angabe, die den Treffer bringt.
 
@@ -158,7 +158,7 @@ def lege_vor(con, runde_id, still=False):
     # Blöcke statt der ganzen Seite. Eine Doppelseite dieses Bandes ist
     # 5679 px breit; wer sie als ein Bild anschaut, bekommt sie
     # heruntergerechnet und liest die schmalen rechten Spalten nicht mehr.
-    # Siehe bloecke.py — dort steht die Messung dazu.
+    # Siehe bloecke.py – dort steht die Messung dazu.
     liste = []
     for b in bilder:
         d = dateien.get(b, "")
@@ -198,11 +198,11 @@ def lege_vor(con, runde_id, still=False):
 
 
 def lies_seite(runde_nr, bild):
-    """Eine abgelegte Antwort aufnehmen — Form wie bei API und Testdaten."""
+    """Eine abgelegte Antwort aufnehmen – Form wie bei API und Testdaten."""
     p = ordner(runde_nr) / "antwort" / f"{bild}.json"
     if not p.exists():
         raise FileNotFoundError(
-            f"noch keine Antwort für {bild} — erwartet in "
+            f"noch keine Antwort für {bild} – erwartet in "
             f"{p.relative_to(konfig.WURZEL)}")
     d = json.loads(p.read_text(encoding="utf-8"))
     if "eintraege" not in d:
@@ -242,7 +242,7 @@ Die Regeln stehen in prompt.txt, die Seiten in seiten.json. Schreibe für
 jede Seite eine Datei antwort/<bild>.json in der dort beschriebenen Form.
 
 Arbeite die Seiten der Reihe nach ab und schreibe jede Antwort sofort, bevor
-du die nächste Seite ansiehst — dann geht bei einem Abbruch nichts verloren.
+du die nächste Seite ansiehst – dann geht bei einem Abbruch nichts verloren.
 Seiten, für die schon eine Antwort liegt, überspringst du."""
 
 
@@ -297,12 +297,12 @@ def bereitschaft(neu=False):
     except Exception as e:
         # Die Werkstatt haengt hier an einer fremden Ausgabe. Aendert eine
         # kuenftige Version von Claude Code deren Form, darf das die Quelle
-        # nicht verschwinden lassen — dann waere ein funktionierender Weg aus
+        # nicht verschwinden lassen – dann waere ein funktionierender Weg aus
         # der Oberflaeche heraus nicht mehr erreichbar. Also im Zweifel
         # anbieten und den Zweifel danebenschreiben.
         d["angemeldet"] = None
         d["meldung"] = (f"Anmeldestand nicht lesbar ({e}). Lesen wird trotzdem "
-                        "angeboten — ob es klappt, zeigt der erste Versuch.")
+                        "angeboten – ob es klappt, zeigt der erste Versuch.")
     _BEREIT.clear(), _BEREIT.update(d)
     return d
 
@@ -324,7 +324,7 @@ def anmelden():
     """Ein Fenster mit `claude auth login` öffnen.
 
     Die Anmeldung ist ein Gespräch: sie schickt in den Browser und wartet
-    auf die Rückmeldung. Das braucht ein richtiges Fenster — deshalb wird
+    auf die Rückmeldung. Das braucht ein richtiges Fenster – deshalb wird
     eines geöffnet, statt den Befehl blind im Hintergrund zu starten.
     Die Werkstatt sieht dabei nichts von dem, was dort eingegeben wird;
     sie fragt hinterher nur `claude auth status` ab.
@@ -347,14 +347,14 @@ def anmelden():
     if sys.platform == "darwin":
         skript = konfig.WURZEL / "daten" / "anmelden.command"
         skript.parent.mkdir(parents=True, exist_ok=True)
-        skript.write_text(f'#!/bin/sh\n"{w}" auth login --claudeai\n')
+        skript.write_text(f'#!/bin/sh\n"{w}" auth login --claudeai\n', encoding="utf-8")
         skript.chmod(0o755)
         subprocess.Popen(["open", "-a", "Terminal", str(skript)])
         return dict(ok=True, meldung="Ein Fenster ist aufgegangen.")
     # Nach der Anmeldung stehen bleiben, sonst ist die Meldung schneller
     # weg als lesbar.
     innen = ["sh", "-c", f'"{w}" auth login --claudeai; echo; '
-             'echo "Fertig — dieses Fenster kann zu."; read x']
+             'echo "Fertig – dieses Fenster kann zu."; read x']
     for name, bau in _FENSTER:
         p = shutil.which(name)
         if not p:
@@ -376,7 +376,7 @@ def lesen_lassen(con, runde_id, still=False, zeitlimit=3600):
 
     Die Werkstatt hält dabei **keine Anmeldedaten**. Sie ruft nur das
     Programm auf, das der Bearbeiter ohnehin auf seinem Rechner hat und das
-    unter seinem eigenen Zugang läuft — mit Pro- oder Max-Abonnement also
+    unter seinem eigenen Zugang läuft – mit Pro- oder Max-Abonnement also
     ohne API-Schlüssel und ohne zweite Rechnung.
 
     Ein Benutzername-und-Passwort-Feld in der Werkstatt gäbe es dafür nicht:
@@ -387,7 +387,7 @@ def lesen_lassen(con, runde_id, still=False, zeitlimit=3600):
     w = werkzeug()
     if not w:
         return dict(ok=False, meldung=(
-            "claude nicht gefunden — entweder Claude Code installieren "
+            "claude nicht gefunden – entweder Claude Code installieren "
             "oder die Seiten von Hand in einer Sitzung lesen lassen"))
     ziel, _ = lege_vor(con, runde_id, still=True)
     if not still:
@@ -396,13 +396,13 @@ def lesen_lassen(con, runde_id, still=False, zeitlimit=3600):
               "einen API-Schlüssel.")
     # Die Sitzung laeuft im Rundenordner, die Scans liegen aber im
     # Bilderverzeichnis. Ohne --add-dir sieht sie die Seiten nicht und
-    # meldet trotzdem Erfolg — sie hat ja nichts falsch gemacht, nur nichts
+    # meldet trotzdem Erfolg – sie hat ja nichts falsch gemacht, nur nichts
     # zu tun gehabt. Deshalb beide Verzeichnisse freigeben.
     art = con.execute("SELECT register FROM runde WHERE id=?",
                       (runde_id,)).fetchone()["register"]
     bilder = einstellungen.ordner(con, art)
     # Die Bilder liegen oft als Symlink im Projekt und in Wirklichkeit
-    # woanders — auf einer zweiten Platte, im Archivordner. Die Sitzung
+    # woanders – auf einer zweiten Platte, im Archivordner. Die Sitzung
     # sieht dann einen Verweis, den sie nicht verfolgen darf, und meldet
     # ehrlich, dass sie nichts lesen konnte. Also auch die Ziele freigeben.
     ordner = {str(bilder), str(konfig.WURZEL)}
@@ -414,7 +414,7 @@ def lesen_lassen(con, runde_id, still=False, zeitlimit=3600):
         frei += ["--add-dir", o]
     try:
         # --output-format json, damit der Lauf sich beziffern laesst. Fuer
-        # den Bearbeiter faellt keine Rechnung an — er zahlt sein Abo.
+        # den Bearbeiter faellt keine Rechnung an – er zahlt sein Abo.
         # Aber wer sich fragt, ob sich die Werkstatt lohnt, braucht eine
         # Zahl, und geschaetzte stehen schon genug herum.
         p = subprocess.run(
@@ -473,7 +473,7 @@ def main():
     con = db.verbinde()
     if a.lesen_lassen:
         d = lesen_lassen(con, a.lesen_lassen)
-        print(f"  {'fertig' if d['ok'] else 'abgebrochen'} — "
+        print(f"  {'fertig' if d['ok'] else 'abgebrochen'} – "
               f"{d.get('fertig', 0)}/{d.get('gesamt', 0)} Seiten beantwortet")
         if not d["ok"]:
             print("  " + str(d.get("meldung") or d.get("fehler", ""))[:300])
@@ -483,7 +483,7 @@ def main():
         s = stand(con, a.stand)
         if not s:
             raise SystemExit("keine solche Runde")
-        print(f"  {s['ordner']}  —  {s['fertig']}/{s['gesamt']} beantwortet")
+        print(f"  {s['ordner']}  –  {s['fertig']}/{s['gesamt']} beantwortet")
         for x in s["seiten"]:
             zeichen = "✓" if x["da"] else "·"
             n = (f"{x['eintraege']} Einträge" if x["eintraege"] > 0

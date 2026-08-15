@@ -1,23 +1,23 @@
 # Windows 11: einmal von vorn
 
-Was hier geprüft wird, ist nicht die Transkription, sondern der Einstieg —
+Was hier geprüft wird, ist nicht die Transkription, sondern der Einstieg –
 also genau das, was ein fremder Nutzer beim ersten Start erlebt. Scans und
 Datenbank braucht es dafür nicht; ein frisch geklontes Projekt startet als
 Nullstart mit „Musterhausen" und leeren Registern.
 
 Vor jedem Schritt steht, was passieren muss. Weicht etwas ab, ist das das
-Ergebnis — bitte den Wortlaut notieren, nicht sinngemäß.
+Ergebnis – bitte den Wortlaut notieren, nicht sinngemäß.
 
 ## 1. Python
 
 Von `python.org/downloads` holen. Beim Installieren **„Add python.exe to
-PATH" ankreuzen** — ohne das findet nachher nichts das Programm.
+PATH" ankreuzen** – ohne das findet nachher nichts das Programm.
 
 Prüfen, in der Eingabeaufforderung (Windows-Taste, `cmd`, Enter):
 
     py --version
 
-→ eine Versionsnummer ab 3.10.
+→ eine Versionsnummer ab 3.11.
 
 ## 2. Das Projekt holen
 
@@ -32,7 +32,7 @@ Mit Git:
 ## 3. Claude Code
 
 Von `claude.com/download` das Windows-Installationsprogramm.
-**Nicht anmelden** — die Anmeldung ist ja der Prüfgegenstand.
+**Nicht anmelden** – die Anmeldung ist ja der Prüfgegenstand.
 
 Prüfen:
 
@@ -49,7 +49,7 @@ Im Explorer in den Projektordner, Doppelklick auf
     OFB-Werkstatt starten (Windows).bat
 
 → Ein schwarzes Fenster geht auf, holt bei Bedarf Pillow, und der Browser
-öffnet `http://127.0.0.1:8765`. Das schwarze Fenster **bleibt offen** — das
+öffnet `http://127.0.0.1:8765`. Das schwarze Fenster **bleibt offen** – das
 ist der Server.
 
 Geht der Browser nicht auf: Adresse von Hand eingeben. Schließt sich das
@@ -63,7 +63,7 @@ Dort muss stehen: *Claude Code ist installiert, aber nicht angemeldet* und
 darunter der Knopf **Jetzt anmelden**.
 
 - Steht dort „nicht installiert", obwohl Schritt 3 geklappt hat, findet die
-  Werkstatt das Programm nicht — der interessanteste Fehlerfall.
+  Werkstatt das Programm nicht – der interessanteste Fehlerfall.
 - Steht dort eine grüne Zeile mit Konto, war doch schon eine Anmeldung da.
 
 Knopf drücken. Erwartet:
@@ -72,7 +72,7 @@ Knopf drücken. Erwartet:
 2. der Browser fragt nach dem Konto
 3. **ohne Neuladen** wird aus dem Knopf eine grüne Zeile mit Konto und Abo
 
-Schritt 3 ist der eigentliche Test — Fenster und Browser hängen an Windows,
+Schritt 3 ist der eigentliche Test – Fenster und Browser hängen an Windows,
 das Umschalten hängt an der Werkstatt.
 
 ## 6. Noch zwei Handgriffe, wenn Zeit ist
@@ -88,5 +88,5 @@ die Korrekturmaske zeigt Einträge.
 ## Was zurückkommen soll
 
 Je Schritt: geklappt oder nicht, und bei „nicht" der Wortlaut. Besonders
-Schritt 5 — dort ist ungetesteter Code, alles davor ist gewöhnliche
+Schritt 5 – dort ist ungetesteter Code, alles davor ist gewöhnliche
 Installation.
