@@ -223,11 +223,36 @@ Zu sehen ist dabei, worauf es ankommt: der Bildstreifen je Eintrag mit
 dem gedruckten Spaltenkopf darüber, der Knopf *ganze Seite* mit der
 markierten Zeile, die Ampel, die Aktkarte, die Formularperioden.
 
-Nicht dabei ist die geprüfte Wahrheit. Die 39 von Hand geprüften
+### Was die Beispiele zeigen — und was nicht
+
+Nicht dabei ist die geprüfte Wahrheit. Die von Hand geprüften
 Personenverweise bleiben zurück, damit der Abgleich sie selbst
-wiederfinden muss. Ohne eingelesenen Bestand bleibt deshalb alles gelb —
-gelesen, aber nichts bestätigt es. Herkunft und Zitation der
-Beispielseiten stehen in `demo/QUELLE.md`.
+wiederfinden muss.
+
+**Der Anker bleibt in der Demo unsichtbar**, und das hat einen
+strukturellen Grund: Die beiliegenden Eheseiten sind Trauungen von 1808,
+die Eltern der 1808 getauften Kinder haben aber vorher geheiratet. Wer die
+Ehen liest und übergibt, bekommt 38 Personen und 19 Familien in den
+Bestand — und die Taufen finden darin trotzdem nichts. Gemessen: 0 grün.
+
+Das ist keine Schwäche des Verfahrens, sondern seine Voraussetzung. Der
+Elternehe-Anker trägt, wenn der Bestand die Zeit *vor* den Taufen abdeckt
+— aus einem vorhandenen Ortsfamilienbuch oder aus eigenen früheren
+Jahrgängen. Mit dem kuratierten Bestand Haberschlachts (4.111 Personen bis
+1807) findet derselbe Abgleich auf denselben Seiten 21 grüne Felder.
+
+Was sich mit den Beispielen also prüfen lässt:
+
+| | |
+|---|---|
+| Läuft der Durchlauf durch? | ja — lesen, korrigieren, übergeben, GEDCOM |
+| Liest ein anderes Programm das Ergebnis? | ja — exportieren und in Gramps o. ä. importieren |
+| Überleben die eigenen Tags den Wechsel? | ja, prüfbar — sie werden dort zu Notizen |
+| Wie gut liest die Maschine? | nur mit eigenem Zugang, über *nochmal lesen* |
+| Wann wird etwas grün? | **nicht** — dafür braucht es einen Bestand aus früherer Zeit |
+| Ist die Fortschreibung verlustfrei? | **nicht** — der Leerlauftest braucht eine Vorlage |
+
+Herkunft und Zitation der Beispielseiten stehen in `demo/QUELLE.md`.
 
 Läuft unter Linux, Windows und macOS — gebraucht wird nur Python (ab 3.10),
 alles Weitere holt das Startskript selbst:
