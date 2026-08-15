@@ -455,16 +455,31 @@ function fortschrittKarte(){
 
 function quelleGewaehlt(){
  const reg=document.getElementById('reg');
- const o=reg.options[reg.selectedIndex];
  const q=document.getElementById('q').value;
+ // Die Reihenfolge beginnt mit den Ehen, die Testdaten decken aber nur
+ // das Taufregister. Wer beim Ausprobieren auf "Lesen starten" drueckt,
+ // lief damit vor die Wand — und das war der erste Klick, den ein Fremder
+ // ueberhaupt tut. Also auf ein Register umstellen, das die Quelle kennt.
+ let umgestellt=null;
+ if(q==='testdaten' && !+reg.options[reg.selectedIndex].dataset.test){
+  const passt=[...reg.options].find(x=>+x.dataset.test>0);
+  if(passt){ umgestellt=reg.options[reg.selectedIndex].text.split(' —')[0];
+             reg.value=passt.value; }
+ }
+ const o=reg.options[reg.selectedIndex];
  const rest=+(q==='testdaten'?o.dataset.test:o.dataset.api);
  const anz=document.getElementById('anz');
  anz.max=Math.max(1,rest);
  if(+anz.value>rest) anz.value=Math.max(1,rest);
- document.getElementById('hinweis').textContent = rest
-  ? `${rest} Seite(n) verfügbar aus dieser Quelle.`
+ const hin=document.getElementById('hinweis');
+ hin.textContent = rest
+  ? (umgestellt
+     ? `Die Testdaten decken nur das ${o.text.split(' —')[0]} ab — von `
+       + `${umgestellt} umgestellt. ${rest} Seite(n) verfügbar.`
+     : `${rest} Seite(n) verfügbar aus dieser Quelle.`)
   : (q==='testdaten'
-     ? 'Die Testquelle deckt dieses Register nicht ab — dafür braucht es die API.'
+     ? 'Die Testdaten decken kein Register ab, in dem noch etwas offen ist '
+       + '— für die übrigen braucht es Claude Code oder die API.'
      : 'Keine ungelesenen Bilder in diesem Register.');
  document.querySelector('#app button.ja').disabled = !rest;
 }
