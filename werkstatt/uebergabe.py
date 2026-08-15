@@ -97,8 +97,25 @@ def person_anlegen(con, hid, vorname, nachname, kb=None, sex=None):
 
 
 def teile_namen(wert):
-    """'Johann Georg Kröneck' -> ('Johann Georg', 'Kröneck')."""
-    t = (wert or "").split()
+    """'Johann Georg Kröneck' -> ('Johann Georg', 'Kröneck').
+
+    Das letzte Wort als Nachnamen zu nehmen geht bei dieser Bevölkerung
+    meistens gut und bei `Hans von der Au` oder `Anna Maria Vogt Wittwe`
+    eben nicht. Wer es genau weiß, klammert den Nachnamen wie in GEDCOM:
+
+        Johann Michael /von der Au/   -> ('Johann Michael', 'von der Au')
+
+    Die Maske zeigt die Teilung mit, damit niemand raten muss, was in der
+    Ausgabe landet.
+    """
+    w = (wert or "").strip()
+    if "/" in w:
+        vor, _, rest = w.partition("/")
+        nach, _, hinten = rest.partition("/")
+        vor = " ".join((vor + " " + hinten).split())
+        nach = " ".join(nach.split())
+        return vor or None, nach or None
+    t = w.split()
     if not t:
         return None, None
     return (" ".join(t[:-1]) or None, t[-1]) if len(t) > 1 else (None, t[0])

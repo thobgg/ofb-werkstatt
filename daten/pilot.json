@@ -8697,5 +8697,45 @@
     }
    ]
   }
- }
+ },
+ "spalten": {
+  "taufe": [
+   "Zahl der Gebornen",
+   "Taufnamen des Kindes",
+   "Eltern",
+   "Ort der Geburt",
+   "Zeit der Geburt",
+   "Ort und Tag der Taufe",
+   "Wer die Tauf-Handlung verrichtete",
+   "Tauf-Zeugen",
+   "Seitenzahl des Familien-Registers"
+  ],
+  "ehe": [
+   "Zahl der Trauungen",
+   "Namen des Bräutigams und der Braut",
+   "Stand, Charakter, Profession, Aufenthalts-Ort, Religion",
+   "Eltern",
+   "Ledig, geschieden oder verwittwet, in beiden letzten Fällen auch der Name des geschiedenen oder gestorbenen Gatten",
+   "Geboren wann und wo?",
+   "Datum der königl. Erlaubniß zum Heirathen, wo diese erfordert wird",
+   "Ort und Zeit der Proclamation",
+   "Ort und Zeit der Copulation",
+   "Geistlicher, der die Trauung verrichtete",
+   "Dispensationen",
+   "Seitenzahl des Familien-Registers"
+  ],
+  "tod": [
+   "Zahl der Gestorbenen",
+   "Namen der Gestorbenen",
+   "Stand, Charakter, bisheriger Aufenthalts-Ort, Religion",
+   "Eltern",
+   "Ehegatten",
+   "Alter",
+   "Krankheit oder zufällige Todesart",
+   "Ort und Zeit des Todes",
+   "Ort und Zeit der Beerdigung",
+   "Seitenzahl des Familien-Registers"
+  ]
+ },
+ "spalten_herkunft": "Von den gedruckten Kopfzeilen der beiliegenden Seiten abgeschrieben, nicht vom Modell gelesen."
 }

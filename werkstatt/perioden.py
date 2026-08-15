@@ -231,6 +231,40 @@ def merke(con, register, abschnitte):
     con.commit()
 
 
+def aus_testdaten(con, register):
+    """Die Spaltenüberschriften der Beispielseiten übernehmen.
+
+    Sonst bliebe die Kopfzeile in der Demo leer: Das Segmentieren fragt
+    das Modell, und die Demo läuft ohne Schlüssel. Die Überschriften
+    liegen deshalb in `daten/pilot.json`, von den beiliegenden Seiten
+    abgeschrieben. Übernommen wird nur, was noch keine Periode hat – ein
+    echter Lauf überschreibt das nie.
+    """
+    from . import testdaten
+    lege_an(con)
+    if con.execute("SELECT 1 FROM periode WHERE register=? LIMIT 1",
+                   (register,)).fetchone():
+        return 0
+    d = testdaten._datei() or {}
+    spalten = (d.get("spalten") or {}).get(register)
+    bilder = testdaten.seiten(register)
+    if not spalten or not bilder:
+        return 0
+    merke(con, register, [dict(von=bilder[0], bis=bilder[-1],
+                               seiten=len(bilder), spalten=spalten)])
+    return len(spalten)
+
+
+def zur_seite(con, register, bild):
+    """Die Spaltenüberschriften, die für diese Seite gelten."""
+    lege_an(con)
+    r = con.execute(
+        "SELECT spalten FROM periode WHERE register=? AND von_bild<=? "
+        "AND (bis_bild IS NULL OR bis_bild>=?) ORDER BY von_bild DESC LIMIT 1",
+        (register, bild, bild)).fetchone()
+    return json.loads(r["spalten"] or "[]") if r else []
+
+
 def gemeldet(con, register=None):
     lege_an(con)
     q = "SELECT * FROM periode"

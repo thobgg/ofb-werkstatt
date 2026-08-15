@@ -391,6 +391,19 @@ class Handler(BaseHTTPRequestHandler):
                 if r.get("ordner"):
                     (o if o.is_absolute() else ROOT / o).mkdir(
                         parents=True, exist_ok=True)
+            # Die Spaltenueberschriften der Beispielseiten uebernehmen,
+            # damit die Kopfzeile in der Maske nicht leer bleibt. Das
+            # Segmentieren fragt sonst das Modell, und die Demo laeuft
+            # ohne Schluessel.
+            con = db.verbinde()
+            try:
+                for r in d.get("register") or []:
+                    if r.get("art"):
+                        perioden.aus_testdaten(con, r["art"])
+            except Exception:
+                pass
+            finally:
+                con.close()
             return self._json(dict(ok=True))
         if pfad == "/api/perioden":
             d = self._rumpf()
@@ -761,13 +774,23 @@ class Handler(BaseHTTPRequestHandler):
     def eintraege(self, runde_id=None, nur=""):
         con = verbinde()
         raus = []
+        spalten = {}                 # je Seite einmal nachschlagen, nicht je Eintrag
         wo, par = "1=1", []
         if runde_id:
             wo, par = "runde=?", [runde_id]
         for e in con.execute(
                 f"SELECT * FROM eintrag WHERE {wo} ORDER BY register, bild, "
                 "CAST(nr AS INTEGER), nr", par):
-            felder = [dict(name=f["name"],
+            # Der Titel kommt aus der Aktkarte. Ohne ihn stand in der Maske
+            # `braeutigam_beruf` – klein, mit Unterstrichen, und der
+            # Bearbeiter musste sich den Feldnamen des Programms merken.
+            def titel(n):
+                x = katalog.feld(e["register"], n)
+                if x and x.titel:
+                    return x.titel
+                return " ".join(w.capitalize() for w in n.split("_"))
+
+            felder = [dict(name=f["name"], titel=titel(f["name"]),
                            wert=f["korrigiert"] if f["korrigiert"] is not None
                            else f["gelesen"],
                            kb_form=f["kb_form"], beleg=f["beleg"],
@@ -785,7 +808,8 @@ class Handler(BaseHTTPRequestHandler):
             for name in konfig.felder(e["register"], con):
                 if name not in da:
                     felder.append(dict(
-                        name=name, wert=None, kb_form=None, beleg=None,
+                        name=name, titel=titel(name), wert=None,
+                        kb_form=None, beleg=None,
                         person=None, status="gelesen", ampel="grau",
                         zuversicht=None, rolle=_runde._rolle(e["register"],
                                                              name),
@@ -800,6 +824,10 @@ class Handler(BaseHTTPRequestHandler):
                              seite=(e["seite"] if "seite" in e.keys()
                                     else None),
                              kopf=(e["kopf"] if "kopf" in e.keys() else None),
+                             spalten=spalten.setdefault(
+                                 (e["register"], e["bild"]),
+                                 perioden.zur_seite(con, e["register"],
+                                                    e["bild"])),
                              runde=e["runde"], felder=felder))
         con.close()
         return raus

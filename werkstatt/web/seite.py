@@ -20,6 +20,16 @@ main{padding:1rem;max-width:1500px;margin:0 auto}
  align-items:center;font-size:.9rem}
 .kopf .q{font-weight:600}
 .bildbox{overflow-x:auto;background:#fff;cursor:zoom-in;position:relative}
+/* Die gedruckten Spaltenueberschriften als Text. Sie stehen nicht ueber
+   "ihrer" Spalte - dafuer braeuchte es das Spaltenraster, und das traegt
+   die Messung nicht. In Leserichtung aufgezaehlt helfen sie trotzdem:
+   Bei blassem Druck steht hier, was die Spalte ueberhaupt verlangt. */
+.spalten{display:flex;flex-wrap:wrap;gap:.3rem;padding:.35rem .9rem;
+ background:#161a20;border-top:1px solid #262b34}
+.spalten span{font-size:.72rem;color:#8b93a3;background:#1d222a;
+ border-radius:3px;padding:.1rem .4rem}
+.spalten span:nth-child(odd){color:#a7b0c0}
+
 /* Vergroessert bekommt der Kasten eine feste Hoehe, sonst waechst er ins
    Endlose und es gibt gar nichts zu verschieben – nur eine sehr lange
    Seite. */
@@ -41,6 +51,10 @@ main{padding:1rem;max-width:1500px;margin:0 auto}
  align-items:center;padding:.4rem .9rem;border-bottom:1px solid #23272f}
 .person.aktiv{background:#182031}
 .feldbox{position:relative}
+/* Vorname fett, Nachname dahinter - so, wie die Ausgabe es trennt. */
+.teilung{display:block;font-size:.72rem;color:#7d8798;padding:.15rem .1rem 0;
+ white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.teilung b{color:#9aa3b2;font-weight:600}
 .vorschlag{position:absolute;top:100%;left:0;right:0;z-index:20;background:#20242c;
  border:1px solid #3a424f;border-radius:0 0 8px 8px;max-height:17rem;overflow:auto;
  box-shadow:0 8px 22px #0008}
@@ -239,6 +253,9 @@ function karte(e,k){
      title="dieselbe Zeile ein zweites Mal lesen lassen und vergleichen"
      >nochmal lesen</button>
    <span class=zaehler>${liste?esc(e.status):`Eintrag ${k+1} von ${daten.length}`}</span></div>
+  ${e.spalten&&e.spalten.length?`<div class=spalten title="die gedruckten
+    Überschriften dieses Formulars, einmal je Formularperiode gelesen"
+    >${e.spalten.map(s=>`<span>${esc(s)}</span>`).join('')}</div>`:''}
   ${e.ausschnitt?`<div class=bildbox onpointerdown="greifen(event,this)">
     ${e.kopf?`<img class=kopfband src="/bild/${encodeURI(e.kopf)}"
       loading=lazy alt="Spaltenüberschriften">`:''}
@@ -248,7 +265,7 @@ function karte(e,k){
     ${still.map(f=>`<span><i class="pkt gruen"></i> ${esc(f.rolle)}
       <b>${esc(f.wert||'')}</b></span>`).join('')}</div>`:''}
   ${rest.length?`<div class=still><span class=dim>gelesen:</span>
-    ${rest.map(f=>`<span>${esc(f.name.replace(/_/g,' '))}
+    ${rest.map(f=>`<span>${esc(f.titel||f.name.replace(/_/g,' '))}
       <b>${esc(String(f.wert).slice(0,40))}</b></span>`).join('')}</div>`:''}
   ${frage.map(f=>zeilePerson(e,f)).join('')}
   <div class=anbind data-anbind><span class=lbl>Familie</span>
@@ -351,6 +368,34 @@ async function beenden(){
 // Buchoeffnung – in einer Formel, die dieselbe Hand zehnmal geschrieben
 // hat. Der Streifen allein nimmt diese Eichung weg; das ist keine
 // Schoenheitsfrage, sondern die Regel „Kontext ist Teil der Information".
+// Wie der Name in die Ausgabe geht. Das Register schreibt ihn in einem
+// Stueck, GEDCOM trennt Vor- und Nachnamen, und geraten wird dabei nach
+// dem letzten Wort. Das geht bei "Johann Georg Kröneck" gut und bei
+// "Hans von der Au" schief - deshalb steht die Teilung sichtbar unter dem
+// Feld, und wer es besser weiss, klammert den Nachnamen: /von der Au/.
+function teileName(wert){
+  const w = (wert||'').trim();
+  if(!w) return null;
+  if(w.includes('/')){
+    const i = w.indexOf('/'), r = w.slice(i+1), j = r.indexOf('/');
+    const nach = (j<0?r:r.slice(0,j)).trim();
+    const vor = (w.slice(0,i) + ' ' + (j<0?'':r.slice(j+1))).trim();
+    return {vor, nach};
+  }
+  const t = w.split(/\s+/);
+  return t.length>1 ? {vor:t.slice(0,-1).join(' '), nach:t[t.length-1]}
+                    : {vor:'', nach:t[0]};
+}
+function teilungText(wert){
+  const t = teileName(wert);
+  if(!t) return '';
+  return `<b>${esc(t.vor||'–')}</b> · ${esc(t.nach||'–')}`;
+}
+function teilung(inp){
+  const z = inp.parentElement.querySelector('.teilung');
+  if(z) z.innerHTML = teilungText(inp.value);
+}
+
 // Klicken vergroessert, Ziehen verschiebt. Beides an einem Zeiger, also
 // entscheidet die zurueckgelegte Strecke: unter fuenf Pixeln war es ein
 // Klick. Vorher liess sich der vergroesserte Streifen nur ueber die
@@ -497,9 +542,11 @@ function zeilePerson(e,f){
   <span class=rolle><i class="pkt ${esc(f.ampel||'grau')}"></i> ${esc(f.rolle)}</span>
   <span class=feldbox><input data-feld="${esc(f.name)}" value="${esc(f.wert||'')}"
    autocomplete=off
-   oninput="this.classList.add('geaendert');vorschlagen(this)"
+   oninput="this.classList.add('geaendert');vorschlagen(this);teilung(this)"
    onkeydown="navVorschlag(event,this)"
-   onblur="setTimeout(()=>schliesse(this),180)"></span>
+   onblur="setTimeout(()=>schliesse(this),180)">
+   ${f.name.endsWith('_name')||f.name==='verstorbener_name'
+     ?`<span class=teilung>${teilungText(f.wert)}</span>`:''}</span>
   <span>${v==='neu'?`<span class=neu>● wird neu angelegt</span>`:treffer}</span>
   <span class=knopf>
    <button class="${v==='verknuepft'?'ja an':''}" title="übernehmen (Enter)"
