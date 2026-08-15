@@ -159,10 +159,13 @@ ihrem Rang — nur was *bestätigen* darf, macht grün:
 
 ![Einstellungen](doku/screenshots/einstellungen.jpg)
 
-Die Korrekturmaske, ein Eintrag zur Zeit: oben der Bildstreifen des
-Originaleintrags, darunter was der Abgleich gesichert hat, was gelesen wurde,
-und die Felder, die eine Entscheidung brauchen. Das Nachfragen-Feld stellt
-Fragen direkt am Eintrag („steht da Möß oder Wöß?"):
+Die Korrekturmaske, ein Eintrag zur Zeit. Oben der gedruckte Spaltenkopf
+und darunter, auf dieselbe Breite geschnitten, die Zeile des Originals —
+über beide Buchseiten hinweg, denn ein Eintrag läuft über den Bund. Dann
+was der Abgleich gesichert hat, was gelesen wurde, und die Felder, die
+eine Entscheidung brauchen. *Ganze Seite* zeigt die Buchöffnung mit
+markierter Zeile, *nochmal lesen* liest dieselbe Zeile ein zweites Mal und
+stellt die Unterschiede gegenüber:
 
 ![Korrigieren](doku/screenshots/korrigieren.jpg)
 
