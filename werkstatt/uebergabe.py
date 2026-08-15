@@ -127,6 +127,47 @@ def teile_namen(wert):
     return (" ".join(t[:-1]) or None, t[-1]) if len(t) > 1 else (None, t[0])
 
 
+def _voller_name(wert):
+    """Vergleichsform eines Namens: gefaltet, ohne die GEDCOM-Schrägstriche."""
+    from .suche import falte
+    return " ".join(falte(str(wert or "").replace("/", " ")).split())
+
+
+def _eigene_familie(con, name_v, name_m):
+    """Ein Elternpaar, das **diese Erfassung** schon angelegt hat.
+
+    Warum das nötig ist: Seit die Elternzeilen zerlegt werden, bekommt
+    jeder Ehe- und Sterbeeintrag eigene Elternpersonen. Zwei Geschwister
+    in derselben Runde legten damit dieselben Eltern zweimal an, und ein
+    Vater, der in vier Einträgen vorkommt, stand viermal im Bestand.
+
+    Warum die Regel eng ist: Verglichen werden **beide** Namen vollständig
+    und nur unter dem, was die Erfassung selbst geschrieben hat. Gegen den
+    gewachsenen Bestand darf hier nichts zusammengeführt werden – das ist
+    Sache des Abgleichs, der Datum und Ort prüft. `Roth` kommt dort
+    59-mal vor; ein Namensvergleich hätte jeden davon bestätigt.
+
+    Verglichen wird der **ganze** Name, nicht Vor- und Nachname getrennt.
+    Grund: Steht bei der Mutter nur „Regina“, macht `teile_namen` daraus
+    einen Nachnamen ohne Vornamen – und eine Suche über den Vornamen fand
+    dasselbe Paar viermal nicht wieder. Gemessen: vier Familien für
+    Daniel Delinger und Regina, wo eine gehört.
+    """
+    a, b = _voller_name(name_v), _voller_name(name_m)
+    if not (a and b):
+        return None
+    for r in con.execute(
+            "SELECT f.id, f.mann, f.frau, pm.name nm, pf.name nf "
+            "FROM familie f "
+            "JOIN person pm ON pm.id=f.mann "
+            "JOIN person pf ON pf.id=f.frau "
+            "JOIN herkunft h ON h.id=f.herkunft "
+            "WHERE h.art='erfassung'"):
+        if _voller_name(r["nm"]) == a and _voller_name(r["nf"]) == b:
+            return dict(id=r["id"], mann=r["mann"], frau=r["frau"])
+    return None
+
+
 def namensteile(felder, rolle):
     """Vor- und Nachname einer Rolle. Der Nachname darf fehlen.
 
@@ -165,7 +206,7 @@ def uebernimm(con, art, schreib=False, runde_id=None, marke=None):
                          "aus bestätigter Erfassung", gilt="beleg")
     z = dict(eintraege=0, personen_neu=0, personen_verknuepft=0,
              familien=0, familien_gefunden=0, nachname_geerbt=0,
-             ereignisse=0, kinder=0, merkmale=0)
+             ereignisse=0, kinder=0, merkmale=0, dubletten_vermieden=0)
 
     wo = "register=? AND status='bestaetigt'"
     par = [art]
@@ -186,7 +227,26 @@ def uebernimm(con, art, schreib=False, runde_id=None, marke=None):
         if plan.get("familie"):
             erbe = namensteile(felder, plan["familie"][0])[1]
 
+        # Elternpaare, die diese Erfassung schon angelegt hat, wieder
+        # verwenden statt neu anzulegen. Muss vor der Personenschleife
+        # stehen: Danach waeren die Dubletten schon geschrieben.
+        schon, schon_fam = {}, {}
+        for kindrolle, (vr, mr) in (plan.get("kinder") or []):
+            if vr in schon:
+                continue
+            _, fv = rollenfeld(felder, vr)
+            _, fm = rollenfeld(felder, mr)
+            da = _eigene_familie(con, (fv or {}).get("wert"),
+                                 (fm or {}).get("wert"))
+            if da:
+                schon[vr], schon[mr] = da["mann"], da["frau"]
+                schon_fam[(vr, mr)] = da["id"]
+
         for rolle in plan["personen"]:
+            if rolle in schon:
+                pid[rolle] = schon[rolle]
+                z["dubletten_vermieden"] += 1
+                continue
             name, f = rollenfeld(felder, rolle)
             if not f or not f["wert"]:
                 continue
@@ -220,6 +280,9 @@ def uebernimm(con, art, schreib=False, runde_id=None, marke=None):
         paare = plan.get("paare") or (
             [plan["familie"]] if plan.get("familie") else [])
         for a, b in paare:
+            if (a, b) in schon_fam:
+                familien[(a, b)] = schon_fam[(a, b)]
+                continue
             if pid.get(a) or pid.get(b):
                 # Erst suchen, dann anlegen. Der Elternehe-Anker findet die
                 # Familie ja gerade – sie danach ein zweites Mal anzulegen
