@@ -1,0 +1,189 @@
+{
+ "datei": "1184798-00359.jpg",
+ "groesse": [
+  5679,
+  4447
+ ],
+ "falz": 3068,
+ "zeilen": [
+  1156,
+  1568,
+  1984,
+  2412,
+  2828,
+  3148,
+  3916
+ ],
+ "haelften": [
+  [
+   1172,
+   3036
+  ],
+  [
+   3100,
+   4884
+  ]
+ ],
+ "bloecke": [
+  {
+   "zeile": 1,
+   "teile": [
+    {
+     "datei": "demo/bilder/taufe/bloecke/1184798-00359/zeile01_links.jpg",
+     "x": 1142,
+     "y": 1126,
+     "w": 1924,
+     "h": 472,
+     "seite": "links"
+    },
+    {
+     "datei": "demo/bilder/taufe/bloecke/1184798-00359/zeile01_rechts.jpg",
+     "x": 3070,
+     "y": 1126,
+     "w": 1844,
+     "h": 472,
+     "seite": "rechts"
+    }
+   ]
+  },
+  {
+   "zeile": 2,
+   "teile": [
+    {
+     "datei": "demo/bilder/taufe/bloecke/1184798-00359/zeile02_links.jpg",
+     "x": 1142,
+     "y": 1538,
+     "w": 1924,
+     "h": 476,
+     "seite": "links"
+    },
+    {
+     "datei": "demo/bilder/taufe/bloecke/1184798-00359/zeile02_rechts.jpg",
+     "x": 3070,
+     "y": 1538,
+     "w": 1844,
+     "h": 476,
+     "seite": "rechts"
+    }
+   ]
+  },
+  {
+   "zeile": 3,
+   "teile": [
+    {
+     "datei": "demo/bilder/taufe/bloecke/1184798-00359/zeile03_links.jpg",
+     "x": 1142,
+     "y": 1954,
+     "w": 1924,
+     "h": 488,
+     "seite": "links"
+    },
+    {
+     "datei": "demo/bilder/taufe/bloecke/1184798-00359/zeile03_rechts.jpg",
+     "x": 3070,
+     "y": 1954,
+     "w": 1844,
+     "h": 488,
+     "seite": "rechts"
+    }
+   ]
+  },
+  {
+   "zeile": 4,
+   "teile": [
+    {
+     "datei": "demo/bilder/taufe/bloecke/1184798-00359/zeile04_links.jpg",
+     "x": 1142,
+     "y": 2382,
+     "w": 1924,
+     "h": 476,
+     "seite": "links"
+    },
+    {
+     "datei": "demo/bilder/taufe/bloecke/1184798-00359/zeile04_rechts.jpg",
+     "x": 3070,
+     "y": 2382,
+     "w": 1844,
+     "h": 476,
+     "seite": "rechts"
+    }
+   ]
+  },
+  {
+   "zeile": 5,
+   "teile": [
+    {
+     "datei": "demo/bilder/taufe/bloecke/1184798-00359/zeile05_links.jpg",
+     "x": 1142,
+     "y": 2798,
+     "w": 1924,
+     "h": 380,
+     "seite": "links"
+    },
+    {
+     "datei": "demo/bilder/taufe/bloecke/1184798-00359/zeile05_rechts.jpg",
+     "x": 3070,
+     "y": 2798,
+     "w": 1844,
+     "h": 380,
+     "seite": "rechts"
+    }
+   ]
+  },
+  {
+   "zeile": 6,
+   "teile": [
+    {
+     "datei": "demo/bilder/taufe/bloecke/1184798-00359/zeile06_links.jpg",
+     "x": 1142,
+     "y": 3118,
+     "w": 1924,
+     "h": 828,
+     "seite": "links"
+    },
+    {
+     "datei": "demo/bilder/taufe/bloecke/1184798-00359/zeile06_rechts.jpg",
+     "x": 3070,
+     "y": 3118,
+     "w": 1844,
+     "h": 828,
+     "seite": "rechts"
+    }
+   ]
+  }
+ ],
+ "kopf": [
+  {
+   "datei": "demo/bilder/taufe/bloecke/1184798-00359/kopf_links.jpg",
+   "x": 1142,
+   "y": 580,
+   "w": 1924,
+   "h": 606,
+   "seite": "links"
+  },
+  {
+   "datei": "demo/bilder/taufe/bloecke/1184798-00359/kopf_rechts.jpg",
+   "x": 3070,
+   "y": 580,
+   "w": 1844,
+   "h": 606,
+   "seite": "rechts"
+  }
+ ],
+ "spalten": [
+  [
+   1172,
+   1196,
+   1300,
+   1668,
+   2720
+  ],
+  [
+   3364,
+   3656,
+   3952,
+   4764,
+   4860
+  ]
+ ]
+}

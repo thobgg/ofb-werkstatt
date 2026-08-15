@@ -203,11 +203,61 @@ def lies_seite(pfad, art, schluessel, con=None, kontext=None, trocken=False):
     if kontext:
         inhalt.append({"type": "text", "text":
                        "Vorige Seite endet mit: " + kontext})
-    inhalt.append(bild_teil(pfad, kante))
-    inhalt.append({"type": "text", "text":
-                   f"Transkribiere alle Einträge dieser Seite ({art})."})
+    inhalt += _seitenteile(pfad, art, kante)
     text, nutzung = frage(inhalt, sys_prompt, schluessel, modell, marken)
     return json_aus(text), nutzung
+
+
+def _seitenteile(pfad, art, kante):
+    """Was von einer Seite an das Modell geht: Blöcke, nicht die Seite.
+
+    Die ganze Aufnahme ist rund 5700 px breit und trägt neun Spalten. Auf
+    2576 px verkleinert bleiben je Spalte gut zweihundert Pixel, und die
+    schmalen rechten Spalten kommen unlesbar an. Gemessen an Seite 00359:
+    Die Lesung füllte die vier linken Spalten und notierte zu allen fünf
+    rechten „im vorliegenden Bildausschnitt nicht enthalten" — falsch, sie
+    standen im selben Bild.
+
+    Der Weg über die Sitzung war deshalb schon umgestellt; dieser hier
+    nicht, und er hätte billig, aber falsch gelesen: 0,12 $ je Seite für
+    vier von neun Spalten.
+
+    Teurer ist es trotzdem nicht sehr. Gerechnet für eine Eheseite:
+    ganze Seite 6.900 Bildtoken, achtzehn Blöcke 20.500 — 0,12 gegen
+    0,24 $ je Seite, und mit der Batch-API die Hälfte davon. Zum
+    Vergleich: der Weg über die Sitzung kostet gemessen 2,25 $.
+    """
+    from . import bloecke
+    try:
+        z = bloecke.schneide(pfad, still=True)
+    except Exception:
+        z = {}
+    if not z.get("bloecke"):
+        # Ohne Raster bleibt nur die ganze Seite — mit dem Vermerk, dass
+        # die schmalen Spalten dann unsicher sind.
+        return [bild_teil(pfad, kante),
+                {"type": "text", "text":
+                 f"Transkribiere alle Einträge dieser Seite ({art}). "
+                 "Achtung: Das Zeilenraster ließ sich nicht erkennen, du "
+                 "siehst die ganze Seite verkleinert. Was du in schmalen "
+                 "Spalten nicht sicher liest, gehört ins Feld "
+                 "`unleserlich`, nicht ins Feld."}]
+
+    teile = []
+    if z.get("kopf"):
+        teile.append({"type": "text", "text":
+                      "Zuerst der gedruckte Spaltenkopf dieser Seite — er "
+                      "sagt, welche Spalte was bedeutet:"})
+        teile += [bild_teil(k["datei"], kante) for k in z["kopf"]]
+    teile.append({"type": "text", "text":
+                  f"Nun die Einträge, je Zeile ein oder zwei Bilder (links "
+                  f"und rechts vom Bund derselben Zeile — sie gehören "
+                  f"zusammen). Transkribiere jede Zeile als einen Eintrag "
+                  f"({art})."})
+    for b in z["bloecke"]:
+        teile.append({"type": "text", "text": f"— Zeile {b['zeile']} —"})
+        teile += [bild_teil(t["datei"], kante) for t in b["teile"]]
+    return teile
 
 
 def kosten(modell, ein, aus, batch=False):
