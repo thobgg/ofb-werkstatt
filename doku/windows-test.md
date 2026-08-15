@@ -44,9 +44,10 @@ In diesem Ordner doppelt anklicken:
 
     OFB-Werkstatt starten (Windows).bat
 
-Ein schwarzes Fenster geht auf. Es prüft der Reihe nach, was fehlt, holt
-bei Bedarf die beiden Zusatzpakete (Pillow und numpy, zusammen etwa 30 MB)
-und öffnet dann den Browser auf `http://127.0.0.1:8765`.
+Ein schwarzes Fenster geht auf. Beim allerersten Mal steht dort „Es fehlt
+noch etwas, das hole ich" und es lädt zwei Zusatzpakete (Pillow und numpy,
+zusammen etwa 30 MB) – das dauert eine halbe Minute. Danach öffnet der
+Browser `http://127.0.0.1:8765`.
 
 **Das schwarze Fenster bleibt offen** – das ist das Programm. Wer es
 schließt, schaltet die Werkstatt ab. Zum Beenden gibt es in der Maske

@@ -29,17 +29,7 @@ if errorlevel 1 (
   exit /b 1
 )
 
-%PY% -c "import PIL" >nul 2>&1
-if errorlevel 1 (
-  echo   Bildbibliothek Pillow fehlt - wird jetzt geholt ...
-  %PY% -m pip install --quiet Pillow
-)
-
-%PY% -c "import numpy" >nul 2>&1
-if errorlevel 1 (
-  echo   numpy fehlt - wird jetzt geholt ...
-  %PY% -m pip install --quiet numpy
-)
+rem Fehlende Pakete holt start.py selbst und sagt dabei, was es tut.
 
 where claude >nul 2>&1
 if errorlevel 1 (

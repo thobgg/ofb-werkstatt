@@ -320,10 +320,11 @@ alles Weitere holt das Startskript selbst:
 
 Beides endet auf `http://127.0.0.1:8765` im Browser.
 
-Zwei Fremdpakete, beide in `requirements.txt`: **Pillow** schneidet die
-Seitenbilder, **numpy** findet darin die Zeilen. Die Startskripte holen sie
-bei Bedarf; von Hand geht `python3 -m pip install -r requirements.txt`.
-Der Rest ist Standardbibliothek, der Webserver ist `http.server`.
+Zwei Fremdpakete: **Pillow** schneidet die Seitenbilder, **numpy** findet
+darin die Zeilen. Beide holt `start.py` beim ersten Start selbst und sagt
+dabei, was es tut; von Hand geht `python3 -m pip install -r
+requirements.txt`. Der Rest ist Standardbibliothek, der Webserver ist
+`http.server`.
 
 Python 3.11 ist keine Willkür: Die Konfiguration wird mit `tomllib` gelesen,
 und das kam erst mit 3.11. Ältere Fassungen halten wir nicht offen, dafür

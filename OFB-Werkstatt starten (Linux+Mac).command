@@ -8,15 +8,7 @@
 set -e
 cd "$(dirname "$0")"
 
-python3 -c 'import PIL' 2>/dev/null || {
-  echo "Bildbibliothek Pillow fehlt – wird geholt ..."
-  python3 -m pip install --quiet Pillow
-}
-
-python3 -c 'import numpy' 2>/dev/null || {
-  echo "numpy fehlt – wird geholt ..."
-  python3 -m pip install --quiet numpy
-}
+# Fehlende Pakete holt start.py selbst und sagt dabei, was es tut.
 
 command -v claude >/dev/null || cat <<'ENDE'
 

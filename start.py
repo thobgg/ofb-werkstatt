@@ -21,21 +21,66 @@ BRAUCHT = [("PIL", "Pillow", "Bilder öffnen und zuschneiden"),
            ("numpy", "numpy", "Zeilen im Seitenbild finden")]
 
 
-def voraussetzungen():
-    """Python-Version und Fremdpakete prüfen, bevor irgendetwas importiert wird."""
+def voraussetzungen(holen=True):
+    """Python-Version und Fremdpakete prüfen, bevor irgendetwas importiert wird.
+
+    Was fehlt, wird selbst nachgeholt. Der Bearbeiter ist Familienforscher
+    und hat nicht vor, sich mit `pip` zu befassen; ein Programm, das mit
+    einer Anweisung an die Eingabeaufforderung abbricht, ist an dieser
+    Stelle nicht fertig. Erst wenn das Nachholen scheitert, steht die
+    Anweisung da – dann aber mit dem Grund.
+    """
     from importlib.util import find_spec
     if sys.version_info < (3, 11):
         v = ".".join(str(x) for x in sys.version_info[:3])
         sys.exit(f"OFB-Werkstatt braucht Python 3.11 oder neuer, hier läuft "
                  f"{v}.\nDie Konfiguration wird mit tomllib gelesen, und das "
-                 f"gibt es erst ab 3.11.")
-    fehlt = [(paket, wofuer) for modul, paket, wofuer in BRAUCHT
-             if find_spec(modul) is None]
-    if fehlt:
-        z = "\n".join(f"  {p:8} {w}" for p, w in fehlt)
-        sys.exit(f"Es fehlen Pakete:\n{z}\n\nHolen mit:\n  "
-                 f"{Path(sys.executable).name} -m pip install "
+                 f"gibt es erst ab 3.11.\nNeuere Fassung: python.org/downloads")
+
+    def fehlende():
+        return [(p, w) for m, p, w in BRAUCHT if find_spec(m) is None]
+
+    fehlt = fehlende()
+    if not fehlt:
+        return
+    namen = [p for p, _ in fehlt]
+    if holen:
+        # flush, weil das Nachholen eine halbe Minute dauert: Der Satz
+        # muss vorher dastehen, sonst sitzt der Bearbeiter vor einem
+        # schwarzen Fenster, das nichts sagt.
+        print("Es fehlt noch etwas, das hole ich:", flush=True)
+        for p, w in fehlt:
+            print(f"  {p:8} {w}", flush=True)
+        print("  (einmalig, etwa 30 MB)\n", flush=True)
+        import subprocess
+        befehl = [sys.executable, "-m", "pip", "install", "--quiet"] + namen
+        e = subprocess.run(befehl, capture_output=True, text=True)
+        if e.returncode and "externally-managed-environment" in (e.stderr or ""):
+            # Debian, Ubuntu und Fedora sperren die Systeminstallation ab.
+            # Wer so ein System fährt, kennt venv – hier steht nur, was
+            # gemeint ist, damit niemand die Fehlermeldung deuten muss.
+            sys.exit("Dieses System lässt keine Pakete neben der eigenen "
+                     "Paketverwaltung zu.\nEntweder\n"
+                     f"  {Path(sys.executable).name} -m venv .venv && "
+                     f".venv/bin/pip install {' '.join(namen)}\n"
+                     "und die Werkstatt danach mit .venv/bin/python starten, "
+                     "oder die Pakete\nüber die Paketverwaltung holen "
+                     "(python3-pil, python3-numpy).")
+        # Ein frisch installiertes Paket findet der schon gefuellte
+        # Zwischenspeicher der Importmaschine sonst nicht.
+        import importlib
+        importlib.invalidate_caches()
+        fehlt = fehlende()
+        if not fehlt:
+            print("Fertig.\n", flush=True)
+            return
+        grund = (e.stderr or e.stdout or "").strip().split("\n")[-1][:300]
+        sys.exit(f"Das Nachholen hat nicht geklappt.\n{grund}\n\n"
+                 f"Von Hand:\n  {Path(sys.executable).name} -m pip install "
                  f"{' '.join(p for p, _ in fehlt)}")
+    z = "\n".join(f"  {p:8} {w}" for p, w in fehlt)
+    sys.exit(f"Es fehlen Pakete:\n{z}\n\nHolen mit:\n  "
+             f"{Path(sys.executable).name} -m pip install {' '.join(namen)}")
 
 
 voraussetzungen()
