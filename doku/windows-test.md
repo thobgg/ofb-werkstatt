@@ -99,8 +99,8 @@ Was dabei herauskommen soll, wenn alles läuft:
 | | |
 |---|---|
 | Einträge | 81 auf dreizehn Seiten (Taufe 23, Ehe 19, Tod 39) |
-| grün | 10 Felder, alle über die Elternehe im Bestand |
-| Ausgabe | rund 64 kB, 244 Personen, 96 Familien |
+| grün | 24 Felder über die Elternehe (Taufe 10, Ehe 6, Tod 8) |
+| Ausgabe | rund 78 kB, 241 Personen, 95 Familien |
 | Leerlauf | ohne eigene Änderung zeichengleich zur Vorlage |
 
 Die Zahlen weichen ab, wenn nur ein Teil bestätigt wurde – das ist kein

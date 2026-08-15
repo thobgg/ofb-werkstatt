@@ -36,7 +36,7 @@ from . import konfig
 
 # Was die README behauptet. Weicht der Lauf ab, wird es gemeldet -
 # entweder stimmt die Zahl nicht mehr, oder es ist etwas kaputt.
-ERWARTET = dict(eintraege=81, gruen=10, ohne_bild=0, tote_zeiger=0,
+ERWARTET = dict(eintraege=81, gruen=24, ohne_bild=0, tote_zeiger=0,
                 leerlauf=True)
 
 

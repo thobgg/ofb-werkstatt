@@ -268,10 +268,11 @@ die Eltern der 1808 getauften Kinder vorher geheiratet haben. Wer nur sie
 liest und übergibt, bekommt 38 Personen in den Bestand und trotzdem null
 grün.
 
-`demo/bestand.ged` schließt die Lücke: 23 Personen, 12 Familien und die
-drei Quellen- und drei Ortsdefinitionen, auf die sie zeigen, 15 kB,
+`demo/bestand.ged` schließt die Lücke: 28 Personen, 15 Familien und die
+Quellen- und Ortsdefinitionen, auf die sie zeigen, 30 kB,
 genau die, die zu den Beispielseiten gehören. Damit werden auf denselben
-Seiten **10 Felder grün** – und der Beleg steht daneben:
+Seiten **24 Felder grün** – in allen drei Registern –, und der Beleg
+steht daneben:
 
     Nr 1  vater_name   Elternehe F3 über Vornamen beider Eltern, oo 26 NOV 1800
 
@@ -287,7 +288,7 @@ Was sich damit prüfen lässt:
 | Liest ein anderes Programm das Ergebnis? | ja – exportieren und in Gramps o. ä. importieren |
 | Überleben die eigenen Tags den Wechsel? | ja, prüfbar – sie werden dort zu Notizen |
 | Wie gut liest die Maschine? | nur mit eigenem Zugang, über *nochmal lesen* |
-| Ist die Fortschreibung verlustfrei? | ja – der Auszug dient als Vorlage, 15.801 Byte zeichengleich |
+| Ist die Fortschreibung verlustfrei? | ja – der Auszug dient als Vorlage, 31.253 Byte zeichengleich |
 | Wie oft liest die Maschine falsch? | **nicht** – dafür fehlt die korrigierte Fassung |
 
 Diese Zahlen sind nachprüfbar, und zwar mit einem Befehl:

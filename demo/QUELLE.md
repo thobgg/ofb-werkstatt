@@ -40,14 +40,18 @@ werden dann nicht angefasst.
 
 ## Der Bestandsauszug
 
-`bestand.ged` enthält 23 Personen, 12 Familien und die drei Quellen- und
-drei Ortsdefinitionen, auf die sie zeigen, aus dem
+`bestand.ged` enthält 28 Personen, 15 Familien und die Quellen- und
+Ortsdefinitionen, auf die sie zeigen, aus dem
 Ortsfamilienbuch Haberschlacht 1659–1807 – genau die, die der Abgleich auf
 den Beispielseiten trifft. Geschnitten mit `python3 -m werkstatt.auszug`,
 die Records stehen wörtlich wie im Original.
 
 Ohne ihn bleibt alles gelb: Es gibt nichts, wogegen geprüft werden könnte.
-Mit ihm werden auf denselben Seiten 10 Felder grün.
+Mit ihm werden auf denselben Seiten 24 Felder grün, und zwar in allen
+drei Registern: Taufe 10, Ehe 6, Tod 8. Der erste Auszug war nur für die
+Taufrunde geschnitten – Ehe und Sterbeeinträge fanden deshalb nichts,
+nicht weil der Anker nicht trüge, sondern weil die Eltern der Brautleute
+im Auszug fehlten.
 
 Dazu passen die Rohlesungen in `daten/pilot.json`: 93 Einträge, so wie ein
 Modell sie gelesen hat, vor jeder Korrektur. Sie decken mehr Seiten ab, als
