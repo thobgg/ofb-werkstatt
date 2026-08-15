@@ -27,14 +27,28 @@ from . import konfig
 
 PILOT = (konfig.WURZEL.parent / "OFB" / "OFB-Haberschlacht"
          / "Transkription-1808" / "daten" / "erfassung.sqlite")
+# Dieselben Lesungen als mitgelieferte Datei. Ohne sie startet ein frisch
+# geklontes Projekt zwar, hat aber nichts zu tun — im Forum hiess es, die
+# Werkstatt "konnte noch nicht getestet werden", und das war der Grund.
+MITGELIEFERT = konfig.WURZEL / "daten" / "pilot.json"
 STREIFEN = PILOT.parent.parent / "scans" / "zeilen"
 ZIEL_STREIFEN = Path("bilder") / "taufe" / "zeilen"
 
 NAME = "Pilotlauf Haberschlacht 1808/09"
 
 
+def _datei():
+    """Die mitgelieferten Lesungen, einmal gelesen."""
+    import json
+    if not MITGELIEFERT.exists():
+        return None
+    if not hasattr(_datei, "z"):
+        _datei.z = json.loads(MITGELIEFERT.read_text(encoding="utf-8"))
+    return _datei.z
+
+
 def vorhanden():
-    return PILOT.exists()
+    return PILOT.exists() or MITGELIEFERT.exists()
 
 
 def _con():
@@ -45,8 +59,13 @@ def _con():
 
 def seiten(register=None):
     """Welche Bilder diese Quelle abdeckt."""
-    if not vorhanden():
-        return []
+    if not PILOT.exists():
+        d = _datei()
+        if not d:
+            return []
+        if register not in (None, d.get("register")):
+            return []
+        return sorted(d.get("seiten", {}))
     p = _con()
     q = "SELECT DISTINCT register, bild FROM eintrag"
     r = [(x["register"], x["bild"]) for x in p.execute(q)]
@@ -59,8 +78,9 @@ def lies_seite(bild):
 
     Rückgabe wie in lesen.lies_seite(): {"eintraege": [{"lfd_nr", "felder"}]}
     """
-    if not vorhanden():
-        return {"eintraege": []}
+    if not PILOT.exists():
+        d = _datei() or {}
+        return d.get("seiten", {}).get(bild, {"eintraege": []})
     p = _con()
     raus = []
     for e in p.execute("SELECT * FROM eintrag WHERE bild=? "

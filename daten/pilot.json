@@ -1,0 +1,527 @@
+{
+ "name": "Pilotlauf Haberschlacht 1808/09",
+ "herkunft": "Taufregister Haberschlacht, Dekanat Brackenheim, 1808/09",
+ "hinweis": "Rohlesungen des Pilotlaufs — was ein Modell aus den Seiten gemacht hat, vor der Korrektur. Die geprüften Personenverweise fehlen bewusst: Der Abgleich soll sie selbst wiederfinden, sonst misst man hinterher nur, dass man sie mitgeliefert hat. Die Scans gehören Archion und dürfen nicht weitergegeben werden; hier liegen nur die Lesungen, keine Bilder.",
+ "register": "taufe",
+ "seiten": {
+  "1184798-00361": {
+   "eintraege": [
+    {
+     "lfd_nr": "7",
+     "jahr": 1808,
+     "felder": {
+      "kind_vorname": {
+       "wert": "Christina Friderika"
+      },
+      "vater_name": {
+       "wert": "Kröneck",
+       "notiz": "Ehe-Anker F1186, oo 20.02.1803"
+      },
+      "vater_beruf": {
+       "wert": "Bürger und Schneider"
+      },
+      "mutter_name": {
+       "wert": "Mauch",
+       "kb": "Mauchin",
+       "notiz": "OFB I2857 Maria Magdalena Mauch"
+      },
+      "mutter_herkunft": {
+       "wert": "Neipperg",
+       "notiz": "OFB BIRT 10.04.1781 Neipperg"
+      }
+     }
+    },
+    {
+     "lfd_nr": "8",
+     "jahr": 1808,
+     "felder": {
+      "kind_vorname": {
+       "wert": "Johannes"
+      },
+      "vater_name": {
+       "wert": "Brudi",
+       "notiz": "Ehe-Anker F-oo 19.09.1798, ueber Vornamen der Frau"
+      },
+      "vater_beruf": {
+       "wert": "Bürger und Schuhmacher"
+      },
+      "mutter_name": {
+       "wert": "Schock",
+       "kb": "Schockin",
+       "notiz": "OFB Felicitas Heinrika Schock"
+      }
+     }
+    },
+    {
+     "lfd_nr": "9",
+     "jahr": 1808,
+     "felder": {
+      "kind_vorname": {
+       "wert": "Christina Sophia"
+      },
+      "vater_name": {
+       "wert": "Hartmann",
+       "notiz": "unehelich, als Vater genannt; kein Individuum im OFB"
+      },
+      "mutter_name": {
+       "wert": "Käser",
+       "kb": "Käsers",
+       "notiz": "OFB I3478 Charlotta Barbara Käser, ~31.12.1784"
+      },
+      "randvermerk": {
+       "wert": "gestorben 22. März 1810"
+      }
+     }
+    },
+    {
+     "lfd_nr": "10",
+     "jahr": 1808,
+     "felder": {
+      "kind_vorname": {
+       "wert": "Georg Christian"
+      },
+      "vater_name": {
+       "wert": "Wolff",
+       "notiz": "OFB I2650 Joh. Leonhard Wolff"
+      },
+      "vater_beruf": {
+       "wert": "Gerichtsverwandter und Bauer"
+      },
+      "mutter_name": {
+       "wert": "Käser",
+       "kb": "Käserin",
+       "notiz": "2. Ehe; Vornamen Maria Juditha entscheiden"
+      }
+     }
+    },
+    {
+     "lfd_nr": "11",
+     "jahr": 1808,
+     "felder": {
+      "kind_vorname": {
+       "wert": "Johannes"
+      },
+      "vater_name": {
+       "wert": "Faller",
+       "notiz": "Ehe-Anker F1149, oo 14.02.1798"
+      },
+      "vater_beruf": {
+       "wert": "Bürger und Weingärtner"
+      },
+      "mutter_name": {
+       "wert": "Maier",
+       "kb": "Maierin",
+       "notiz": "OFB I2800 Rosina Dorothea Maier"
+      },
+      "randvermerk": {
+       "wert": "gestorben 12. Juli 1861"
+      }
+     }
+    },
+    {
+     "lfd_nr": "12",
+     "jahr": 1808,
+     "felder": {
+      "kind_vorname": {
+       "wert": "Johann Georg"
+      },
+      "vater_name": {
+       "wert": "Felger",
+       "notiz": "Ehe-Anker F1071, oo 1792"
+      },
+      "mutter_name": {
+       "wert": "Koch",
+       "kb": "Kochin",
+       "notiz": "OFB I3542 Juditha Catharina Koch"
+      }
+     }
+    }
+   ]
+  },
+  "1184798-00363": {
+   "eintraege": [
+    {
+     "lfd_nr": "1",
+     "jahr": 1809,
+     "felder": {
+      "kind_vorname": {
+       "wert": "Johann Philipp"
+      },
+      "vater_name": {
+       "notiz": "unehelich; Register nennt einen unbekannten Burschen"
+      },
+      "mutter_name": {
+       "wert": "Löffler",
+       "kb": "Löfflerin",
+       "notiz": "OFB I3690 Charlotta Friderica Löffler, ~10.03.1788"
+      },
+      "mutter_herkunft": {
+       "wert": "Haberschlacht",
+       "notiz": "Vater H. Joh. Balthasar Löffler, Schulmeister (I2611)"
+      }
+     }
+    },
+    {
+     "lfd_nr": "2",
+     "jahr": 1809,
+     "felder": {
+      "kind_vorname": {
+       "wert": "Johann Jacob"
+      },
+      "vater_name": {
+       "wert": "Faller",
+       "notiz": "Ehe-Anker F1185, oo 17.11.1802"
+      },
+      "vater_beruf": {
+       "wert": "Bürger und Weingärtner"
+      },
+      "mutter_name": {
+       "wert": "Löbich",
+       "kb": "Löbichin",
+       "notiz": "OFB I2855 Anna Magdalena Löbich"
+      }
+     }
+    },
+    {
+     "lfd_nr": "3",
+     "jahr": 1809,
+     "felder": {
+      "kind_vorname": {
+       "wert": "Christina Magdalena"
+      },
+      "vater_name": {
+       "wert": "Koch",
+       "notiz": "Beruf Wirt+Gerichtsverwandter, oo 31.01.1796"
+      },
+      "vater_beruf": {
+       "wert": "Gerichtsverwandter und Wirt"
+      },
+      "mutter_name": {
+       "wert": "Käser",
+       "kb": "Käsers",
+       "notiz": "OFB I2765 Margaretha Christina Dorothea Käser"
+      },
+      "randvermerk": {
+       "wert": "gestorben 1812"
+      }
+     }
+    },
+    {
+     "lfd_nr": "4",
+     "jahr": 1809,
+     "felder": {
+      "kind_vorname": {
+       "wert": "Georg Tobias"
+      },
+      "vater_name": {
+       "wert": "Gloß",
+       "notiz": "Ehe-Anker F1134, oo 21.06.1796"
+      },
+      "vater_beruf": {
+       "wert": "Bürger und Weingärtner"
+      },
+      "mutter_name": {
+       "wert": "Bierle",
+       "kb": "Bührlin",
+       "notiz": "OFB I3037 Eva Rosina Bierle, _KB_NAME Bührlen"
+      }
+     }
+    },
+    {
+     "lfd_nr": "5",
+     "jahr": 1809,
+     "felder": {
+      "kind_vorname": {
+       "wert": "Christoph Adam"
+      },
+      "vater_name": {
+       "wert": "Koch",
+       "notiz": "OFB I3558 Christoph Friedrich Koch"
+      },
+      "vater_beruf": {
+       "wert": "Bürger und Weingärtner"
+      },
+      "mutter_name": {
+       "wert": "Müller",
+       "kb": "Müllerin",
+       "notiz": "OFB I3559 Sibilla Magdalena Müller"
+      },
+      "mutter_herkunft": {
+       "wert": "Hohenstein",
+       "notiz": "OFB _NOTE_TAUFE 'von Hohenstein'"
+      }
+     }
+    }
+   ]
+  },
+  "1184798-00364": {
+   "eintraege": [
+    {
+     "lfd_nr": "6",
+     "jahr": 1809,
+     "felder": {
+      "kind_vorname": {
+       "wert": "Christiana"
+      },
+      "vater_name": {
+       "wert": "Greiner",
+       "notiz": "Ehe-Anker F1055, oo 09.03.1791"
+      },
+      "vater_beruf": {
+       "wert": "Bürger und Weber"
+      },
+      "mutter_name": {
+       "wert": "Koch",
+       "kb": "Kochin",
+       "notiz": "OFB I2660 Christiana Dorothea Koch"
+      },
+      "randvermerk": {
+       "wert": "1817 nach Polen",
+       "notiz": "OFB I2660 _NOTE_TAUFE 'nach Polen verzogen'"
+      }
+     }
+    },
+    {
+     "lfd_nr": "7",
+     "jahr": 1809,
+     "felder": {
+      "kind_vorname": {
+       "wert": "Totgeborener Knabe"
+      },
+      "vater_name": {
+       "wert": "Häberlen",
+       "notiz": "Beruf Schneidermeister + Vorname, oo 17.02.1795"
+      },
+      "vater_beruf": {
+       "wert": "Bürger und Schneider"
+      },
+      "mutter_name": {
+       "wert": "Rembold",
+       "notiz": "OFB I2746 Eleonora Catharina Rembold, Vorname 1x im OFB"
+      }
+     }
+    },
+    {
+     "lfd_nr": "8",
+     "jahr": 1809,
+     "felder": {
+      "kind_vorname": {
+       "wert": "Magdalena"
+      },
+      "vater_name": {
+       "wert": "Dürr",
+       "notiz": "Ehe-Anker F1228, oo 23.11.1807"
+      },
+      "vater_beruf": {
+       "wert": "Bürger und Weingärtner"
+      },
+      "mutter_name": {
+       "wert": "Frey",
+       "kb": "Freyin",
+       "notiz": "OFB I1307 Rosina Margaretha Frey"
+      },
+      "mutter_herkunft": {
+       "wert": "Magenheimer Hof"
+      },
+      "randvermerk": {
+       "wert": "gestorben 23. August 1809"
+      }
+     }
+    },
+    {
+     "lfd_nr": "9",
+     "jahr": 1809,
+     "felder": {
+      "kind_vorname": {
+       "wert": "Georg Conrad"
+      },
+      "vater_name": {
+       "wert": "Maier",
+       "notiz": "Ehe-Anker F1193, oo 02.05.1804"
+      },
+      "vater_beruf": {
+       "wert": "Bürger und Weingärtner"
+      },
+      "mutter_name": {
+       "wert": "Haidinger",
+       "notiz": "OFB I2868 Catharina Juliana Haidinger"
+      },
+      "mutter_herkunft": {
+       "wert": "Michelbach"
+      }
+     }
+    },
+    {
+     "lfd_nr": "10",
+     "jahr": 1809,
+     "felder": {
+      "kind_vorname": {
+       "wert": "Carolina Friderika"
+      },
+      "vater_name": {
+       "wert": "Felger",
+       "notiz": "dieselbe Familie wie 00361 Nr. 12"
+      },
+      "vater_beruf": {
+       "wert": "Bürger und Weingärtner"
+      },
+      "mutter_name": {
+       "wert": "Koch",
+       "kb": "Kochin",
+       "notiz": "OFB I3542; 2. unabhaengige Lesung, richtig"
+      },
+      "randvermerk": {
+       "wert": "gestorben 2. Oktober 1809"
+      }
+     }
+    }
+   ]
+  },
+  "1184798-00365": {
+   "eintraege": [
+    {
+     "lfd_nr": "11",
+     "jahr": 1809,
+     "felder": {
+      "kind_vorname": {
+       "wert": "Catharina Magdalena"
+      },
+      "vater_name": {
+       "wert": "Schmidt",
+       "notiz": "OFB I3985 Jakob Friedrich Schmidt"
+      },
+      "vater_beruf": {
+       "wert": "Bürger und Weingärtner"
+      },
+      "mutter_name": {
+       "wert": "Trefz",
+       "notiz": "OFB I3986 Maria Margaretha Trefz"
+      },
+      "mutter_herkunft": {
+       "wert": "Kirchheim am Neckar",
+       "notiz": "ungeprueft"
+      }
+     }
+    },
+    {
+     "lfd_nr": "12",
+     "jahr": 1809,
+     "felder": {
+      "kind_vorname": {
+       "wert": "Johann Friedrich"
+      },
+      "vater_name": {
+       "wert": "Fißler",
+       "notiz": "OFB I3460, einziger Joh. Leonhard Fissler"
+      },
+      "vater_beruf": {
+       "wert": "Bürger und Weingärtner"
+      },
+      "mutter_name": {
+       "wert": "Löbich",
+       "kb": "Löbichs",
+       "notiz": "klar gelesen, aber KEINE Ehe im OFB — Heirat wohl 1808"
+      },
+      "randvermerk": {
+       "wert": "gestorben 19. Januar 1810"
+      }
+     }
+    },
+    {
+     "lfd_nr": "13",
+     "jahr": 1809,
+     "felder": {
+      "kind_vorname": {
+       "wert": "Johann Philipp"
+      },
+      "vater_name": {
+       "wert": "Kröneck",
+       "notiz": "Ehe-Anker F1162, oo 25.02.1800"
+      },
+      "vater_beruf": {
+       "wert": "Bürger und Weingärtner"
+      },
+      "mutter_name": {
+       "wert": "Fackler",
+       "notiz": "OFB I2821 Elisabetha Fackler"
+      },
+      "randvermerk": {
+       "wert": "gestorben 1810"
+      }
+     }
+    },
+    {
+     "lfd_nr": "14",
+     "jahr": 1809,
+     "felder": {
+      "kind_vorname": {
+       "wert": "Georg Adam"
+      },
+      "vater_name": {
+       "wert": "Götz",
+       "notiz": "Beruf Ratsverwandter + Vornamen der Frau, oo 13.08.1793"
+      },
+      "vater_beruf": {
+       "wert": "Ratsverwandter und Bauer"
+      },
+      "mutter_name": {
+       "wert": "Bierle",
+       "kb": "Bierlens",
+       "notiz": "OFB I3035 Maria Agnes Bierle"
+      },
+      "randvermerk": {
+       "wert": "gestorben 2. Mai 1815"
+      }
+     }
+    },
+    {
+     "lfd_nr": "15",
+     "jahr": 1809,
+     "felder": {
+      "kind_vorname": {
+       "wert": "Maria Christiana"
+      },
+      "vater_name": {
+       "wert": "Weissert",
+       "notiz": "OFB I2844s Mann Joh. Georg Weyssert, oo 26.01.1802"
+      },
+      "vater_beruf": {
+       "wert": "Bürger und Bauer"
+      },
+      "mutter_name": {
+       "wert": "Löbich",
+       "kb": "Löbichs",
+       "notiz": "OFB I2844 Anna Maria Löbich"
+      },
+      "randvermerk": {
+       "wert": "nach Großgartach verzogen, Oktober 1814"
+      }
+     }
+    },
+    {
+     "lfd_nr": "16",
+     "jahr": 1809,
+     "felder": {
+      "kind_vorname": {
+       "wert": "Andreas"
+      },
+      "vater_name": {
+       "wert": "Steeb",
+       "notiz": "Beruf Weber + Frau Trefz, oo 16.11.1790"
+      },
+      "vater_beruf": {
+       "wert": "Bürger und Weber"
+      },
+      "mutter_name": {
+       "wert": "Trefz",
+       "notiz": "OFB Dorothea Catharina Trefz"
+      },
+      "randvermerk": {
+       "wert": "gestorben 31. März 1832"
+      }
+     }
+    }
+   ]
+  }
+ }
+}

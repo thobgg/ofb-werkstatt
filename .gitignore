@@ -9,6 +9,12 @@ daten/**
 # Personendaten, keine Bildinhalte. Sie muessen mit, sonst ist die Messung
 # in werkstatt/messung.py nicht nachvollziehbar.
 !daten/soll_zeilen.json
+# Ausnahme: die Rohlesungen des Pilotlaufs. Sie machen die Werkstatt zum
+# ersten Mal ohne eigene Buecher ausprobierbar — im Forum hiess es, sie
+# "konnte noch nicht getestet werden", und der Grund war genau das.
+# Es sind Transkriptionen eines Kirchenbuchs von 1808/09: laengst
+# verstorbene Menschen, eigene Arbeit. **Die Scans bleiben draussen.**
+!daten/pilot.json
 ausgabe/
 *.ged
 *.sqlite
