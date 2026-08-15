@@ -10,6 +10,12 @@ bilder/**
 # frei. Herkunft und Zitation stehen in demo/QUELLE.md.
 !demo/
 !demo/**
+# ... aber nicht, was daraus erzeugt wird. Bloecke, Streifen und
+# verkleinerte Ansichten entstehen beim ersten Lauf neu; eingecheckt
+# blaehen sie nur das Repo und veralten beim naechsten Schnitt.
+demo/**/bloecke/
+demo/**/zeilen/
+demo/**/entpackt/
 daten/**
 !daten/.gitkeep
 # Ausnahme: Sollwerte der Rastermessung. Reine Pixelkoordinaten — keine
