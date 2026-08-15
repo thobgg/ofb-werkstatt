@@ -187,6 +187,23 @@ Zwei Teile laufen ganz ohne Modell: die Bestandspflege (Dublettensuche,
 
 ## Ausprobieren
 
+**Fünfzehn Beispielseiten liegen bei** — je fünf aus Tauf-, Ehe- und
+Sterberegister der Pfarrei Haberschlacht, Jahrgänge ab 1808, dazu 34
+Rohlesungen aus sechs Taufregisterseiten, so wie ein Modell sie gelesen
+hat, vor jeder Korrektur. Damit läuft der ganze Durchlauf ohne eigene
+Bücher und ohne API-Schlüssel: einrichten, unter **Lesen** die Quelle
+*Testdaten* wählen, korrigieren, übergeben, GEDCOM ausgeben.
+
+Zu sehen ist dabei, worauf es ankommt: der Bildstreifen je Eintrag mit
+dem gedruckten Spaltenkopf darüber, der Knopf *ganze Seite* mit der
+markierten Zeile, die Ampel, die Aktkarte, die Formularperioden.
+
+Nicht dabei ist die geprüfte Wahrheit. Die 39 von Hand geprüften
+Personenverweise bleiben zurück, damit der Abgleich sie selbst
+wiederfinden muss. Ohne eingelesenen Bestand bleibt deshalb alles gelb —
+gelesen, aber nichts bestätigt es. Herkunft und Zitation der
+Beispielseiten stehen in `demo/QUELLE.md`.
+
 Läuft unter Linux, Windows und macOS — gebraucht wird nur Python (ab 3.10),
 alles Weitere holt das Startskript selbst:
 
