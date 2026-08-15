@@ -335,11 +335,15 @@ def lauf(runde_id):
     # Sterberegister führen die Eltern in einer einzigen Zeile mit Beruf
     # und Ort darin. Erst zerlegt sind sie Personen, gegen die der
     # Abgleich überhaupt etwas finden kann.
-    from . import abgleich, personenzeile
+    from . import abgleich, normalform, personenzeile
     r = con.execute("SELECT register FROM runde WHERE id=?",
                     (runde_id,)).fetchone()
     if r:
         personenzeile.ergaenze(con, r["register"], runde_id=runde_id)
+    # Nachrechnen, was das Modell an den Namen normalisiert hat. Aendert
+    # nichts, vermerkt nur - sonst waere es dasselbe stille Angleichen,
+    # das hier geprueft werden soll.
+    normalform.markiere(con, runde_id)
     abgleich.runde_pruefen(con, runde_id)
 
     if offen:
