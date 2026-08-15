@@ -267,6 +267,28 @@ function ansichtStand(){
     <td class=dim><code>${esc(r.ordner)}</code></td></tr>`).join('')}
  </table></div>
 
+ ${(S.aufwand||[]).length?`
+ <h2>Was die Arbeit gekostet hat</h2>
+ <div class=karte>
+  <table>
+   <tr><th>Register</th><th class=z>Einträge</th><th class=z>Tasten je Eintrag</th>
+       <th class=z>Klicks</th><th class=z>Sekunden</th></tr>
+   ${S.aufwand.map(a=>`<tr>
+     <td>${esc(a.register)}</td>
+     <td class=z>${a.eintraege}</td>
+     <td class=z>${a.tasten_je}</td>
+     <td class=z>${a.klicks_je}</td>
+     <td class=z>${a.sekunden_je}</td></tr>`).join('')}
+  </table>
+  <p class=dim style="font-size:.86rem;margin:.6rem 0 0">
+   Gezählt wird beim Korrigieren, je Eintrag: getippte Zeichen, Klicks,
+   verbrachte Sekunden. Keine Tastenfolgen, kein Inhalt.
+   Das ist der ehrlichere Maßstab als eine Trefferquote — die misst das
+   Buch, diese Zahlen messen das Werkzeug. Bei schwerer Hand wird viel
+   getippt, bei klarer Schrift nur bestätigt; brauchbar ist beides, die
+   Frage ist, wie viel Arbeit übrig bleibt.</p>
+ </div>`:''}
+
  <h2>Kontextquellen — was darf bestätigen</h2>
  ${S.quellen.some(q=>q.gilt==='beleg')?'':`<div class=warn>
    Keine Quelle darf bestätigen. Das ist der <b>Nullstart</b>: Der Abgleich
@@ -770,6 +792,28 @@ async function anmeldenStarten(btn){
 function quellenKarte(){
  const q=(S&&S.quellen)||[];
  return `
+ ${(S.aufwand||[]).length?`
+ <h2>Was die Arbeit gekostet hat</h2>
+ <div class=karte>
+  <table>
+   <tr><th>Register</th><th class=z>Einträge</th><th class=z>Tasten je Eintrag</th>
+       <th class=z>Klicks</th><th class=z>Sekunden</th></tr>
+   ${S.aufwand.map(a=>`<tr>
+     <td>${esc(a.register)}</td>
+     <td class=z>${a.eintraege}</td>
+     <td class=z>${a.tasten_je}</td>
+     <td class=z>${a.klicks_je}</td>
+     <td class=z>${a.sekunden_je}</td></tr>`).join('')}
+  </table>
+  <p class=dim style="font-size:.86rem;margin:.6rem 0 0">
+   Gezählt wird beim Korrigieren, je Eintrag: getippte Zeichen, Klicks,
+   verbrachte Sekunden. Keine Tastenfolgen, kein Inhalt.
+   Das ist der ehrlichere Maßstab als eine Trefferquote — die misst das
+   Buch, diese Zahlen messen das Werkzeug. Bei schwerer Hand wird viel
+   getippt, bei klarer Schrift nur bestätigt; brauchbar ist beides, die
+   Frage ist, wie viel Arbeit übrig bleibt.</p>
+ </div>`:''}
+
  <h2>Kontextquellen — was darf bestätigen</h2>
  <div class=karte>
   <table>

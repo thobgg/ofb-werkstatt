@@ -386,6 +386,25 @@ CREATE TABLE IF NOT EXISTS merkmal (
 );
 CREATE INDEX IF NOT EXISTS ix_merkmal_person ON merkmal(person);
 
+-- ------------------------------------------------------------- Aufwand
+-- Wie viel Arbeit ein Eintrag gemacht hat: Tastendruecke, Klicks,
+-- Sekunden. Das ist der ehrlichere Massstab als eine Trefferquote — die
+-- misst das Buch, nicht das Werkzeug.
+--
+-- Bei schwerer Hand tippt der Bearbeiter viel, bei klarer Schrift
+-- bestaetigt er nur. Beides ist brauchbar; die Frage ist, wie viel Arbeit
+-- uebrig bleibt. Und anders als die Lesequalitaet faellt diese Zahl beim
+-- Arbeiten von selbst an, ohne dass jemand eine geprueft Wahrheit
+-- danebenlegen muesste.
+CREATE TABLE IF NOT EXISTS aufwand (
+  eintrag   INTEGER PRIMARY KEY REFERENCES eintrag(id) ON DELETE CASCADE,
+  tasten    INTEGER NOT NULL DEFAULT 0,   -- Zeichen, die getippt wurden
+  klicks    INTEGER NOT NULL DEFAULT 0,
+  sekunden  INTEGER NOT NULL DEFAULT 0,   -- am Eintrag verbrachte Zeit
+  felder    INTEGER NOT NULL DEFAULT 0,   -- wie viele geaendert wurden
+  beendet   TEXT
+);
+
 -- Bequemer Zugriff auf den geltenden Wert
 CREATE VIEW IF NOT EXISTS wert AS
   SELECT e.register, e.bild, e.nr, e.jahr, f.name, f.rolle,

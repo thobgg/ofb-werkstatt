@@ -150,6 +150,32 @@ const esc=s=>(s??'').toString().replace(/[&<>"]/g,c=>
 
 let runde=null, i=0, liste=false;
 
+// ------------------------------------------------------------- Aufwand
+// Der ehrlichere Massstab als eine Trefferquote: Eine Quote misst das
+// Buch, diese Zahlen messen das Werkzeug. Bei schwerer Hand wird viel
+// getippt, bei klarer Schrift nur bestaetigt — beides brauchbar, die
+// Frage ist, wie viel Arbeit uebrig bleibt.
+//
+// Gezaehlt wird still im Hintergrund und nur je Eintrag: Zeichen, Klicks,
+// Sekunden. Keine Tastenfolgen, kein Inhalt.
+const aufwand = {};
+function zaehle(id, was, n) {
+ if (!id) return;
+ const a = aufwand[id] || (aufwand[id] = {tasten:0, klicks:0, seit:Date.now()});
+ a[was] = (a[was]||0) + (n||1);
+}
+function eintragUnter(el){
+ const e = el && el.closest && el.closest('.eintrag');
+ return e ? +e.dataset.id : null;
+}
+document.addEventListener('keydown', ev => {
+ // Nur Zeichen zaehlen, nicht Umschalt- und Pfeiltasten.
+ if (ev.key && ev.key.length === 1) zaehle(eintragUnter(ev.target), 'tasten');
+}, true);
+document.addEventListener('click', ev => {
+ zaehle(eintragUnter(ev.target), 'klicks');
+}, true);
+
 async function laden(){
  const stand=await (await fetch('/api/stand')).json();
  runde=stand.runde;
@@ -501,9 +527,12 @@ async function fertig(k){
              entscheidung:p?(p.dataset.entscheidung||null):null,
              person:p?(p.dataset.person??undefined):undefined};
  });
+ const a=aufwand[daten[k].id]||{};
  const r=await fetch('/api/speichern',{method:'POST',
   headers:{'content-type':'application/json'},
-  body:JSON.stringify({id:daten[k].id,felder,bestaetigt:true})});
+  body:JSON.stringify({id:daten[k].id,felder,bestaetigt:true,
+   aufwand:{tasten:a.tasten||0, klicks:a.klicks||0,
+            sekunden: a.seit ? Math.round((Date.now()-a.seit)/1000) : 0}})});
  if(!r.ok){alert('Speichern fehlgeschlagen');return}
  daten[k].status='bestaetigt';
  daten[k].felder.forEach(f=>{ if(f.rolle) f.ampel='gruen'; });

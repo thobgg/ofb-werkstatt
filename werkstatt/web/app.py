@@ -623,6 +623,7 @@ class Handler(BaseHTTPRequestHandler):
                 einrichtung=einrichtung.vorschlag(),
                 felder=einrichtung.feldvorschlag(),
                 beispielbestand=einrichtung.beispielbestand(),
+                aufwand=self._aufwand(con),
                 dubletten=dubletten.gemeldet(con),
                 perioden=perioden.gemeldet(con),
                 haende={a: perioden.haende(con, a)
@@ -632,6 +633,33 @@ class Handler(BaseHTTPRequestHandler):
             )
         finally:
             con.close()
+
+    def _aufwand(self, con):
+        """Wie viel Arbeit die Eintraege gemacht haben — je Register.
+
+        Der ehrlichere Massstab als eine Trefferquote: Eine Quote misst
+        das Buch, diese Zahlen messen das Werkzeug. Sie fallen beim
+        Arbeiten an, ohne dass jemand eine geprueft Wahrheit
+        danebenlegen muesste.
+        """
+        try:
+            rows = list(con.execute(
+                "SELECT e.register, count(*) n, "
+                "SUM(a.tasten) t, SUM(a.klicks) k, SUM(a.sekunden) s "
+                "FROM aufwand a JOIN eintrag e ON e.id=a.eintrag "
+                "GROUP BY e.register"))
+        except Exception:
+            return []
+        z = []
+        for r in rows:
+            n = r["n"] or 1
+            z.append(dict(register=r["register"], eintraege=r["n"],
+                          tasten=r["t"] or 0, klicks=r["k"] or 0,
+                          sekunden=r["s"] or 0,
+                          tasten_je=round((r["t"] or 0) / n),
+                          klicks_je=round((r["k"] or 0) / n),
+                          sekunden_je=round((r["s"] or 0) / n)))
+        return z
 
     def _verbrauch(self, con, modell):
         """Was bisher tatsächlich verbraucht wurde — aus den Aufträgen.
@@ -708,6 +736,7 @@ class Handler(BaseHTTPRequestHandler):
                 einrichtung=einrichtung.vorschlag(),
                 felder=einrichtung.feldvorschlag(),
                 beispielbestand=einrichtung.beispielbestand(),
+                aufwand=self._aufwand(con),
                 dubletten=dubletten.gemeldet(con),
                 perioden=perioden.gemeldet(con),
                 haende={a: perioden.haende(con, a)
@@ -778,6 +807,26 @@ class Handler(BaseHTTPRequestHandler):
         d = self._rumpf()
         con = verbinde()
         try:
+            # Wie viel Arbeit dieser Eintrag gemacht hat. Faellt beim
+            # Arbeiten an; niemand muss dafuer etwas tun.
+            a = d.get("aufwand")
+            if a and d.get("bestaetigt"):
+                from datetime import datetime, timezone
+                geaendert = sum(
+                    1 for n, v in (d.get("felder") or {}).items()
+                    if (v.get("wert") or "").strip())
+                con.execute(
+                    "INSERT INTO aufwand (eintrag, tasten, klicks, sekunden, "
+                    "felder, beendet) VALUES (?,?,?,?,?,?) "
+                    "ON CONFLICT(eintrag) DO UPDATE SET "
+                    " tasten=tasten+excluded.tasten, "
+                    " klicks=klicks+excluded.klicks, "
+                    " sekunden=sekunden+excluded.sekunden, "
+                    " felder=excluded.felder, beendet=excluded.beendet",
+                    (d["id"], int(a.get("tasten") or 0),
+                     int(a.get("klicks") or 0), int(a.get("sekunden") or 0),
+                     geaendert,
+                     datetime.now(timezone.utc).isoformat(timespec="seconds")))
             for name, v in d.get("felder", {}).items():
                 row = con.execute(
                     "SELECT id, gelesen, status FROM feld "
