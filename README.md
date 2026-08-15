@@ -213,9 +213,9 @@ Zwei Teile laufen ganz ohne Modell: die Bestandspflege (Dublettensuche,
 ## Ausprobieren
 
 **Fünfzehn Beispielseiten liegen bei** — je fünf aus Tauf-, Ehe- und
-Sterberegister der Pfarrei Haberschlacht, Jahrgänge ab 1808, dazu 34
-Rohlesungen aus sechs Taufregisterseiten, so wie ein Modell sie gelesen
-hat, vor jeder Korrektur. Damit läuft der ganze Durchlauf ohne eigene
+Sterberegister der Pfarrei Haberschlacht, Jahrgänge ab 1808, dazu 93
+Rohlesungen aus fünfzehn Seiten aller drei Register — so wie ein Modell
+sie gelesen hat, vor jeder Korrektur. Damit läuft der ganze Durchlauf ohne eigene
 Bücher und ohne API-Schlüssel: einrichten, unter **Lesen** die Quelle
 *Testdaten* wählen, korrigieren, übergeben, GEDCOM ausgeben.
 

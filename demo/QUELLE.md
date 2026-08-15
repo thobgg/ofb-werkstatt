@@ -48,6 +48,7 @@ die Records stehen wörtlich wie im Original.
 Ohne ihn bleibt alles gelb: Es gibt nichts, wogegen geprüft werden könnte.
 Mit ihm werden auf denselben Seiten 16 Felder grün.
 
-Dazu passen die Rohlesungen in `daten/pilot.json`: 34 Einträge aus sechs
-Taufregisterseiten, so wie ein Modell sie gelesen hat, vor jeder Korrektur.
+Dazu passen die Rohlesungen in `daten/pilot.json`: 93 Einträge aus fünfzehn
+Seiten — Taufe 34, Ehe 20, Tod 39 —, so wie ein Modell sie gelesen hat, vor
+jeder Korrektur.
 Damit läuft der ganze Durchlauf ohne API-Schlüssel — Quelle *Testdaten*.
