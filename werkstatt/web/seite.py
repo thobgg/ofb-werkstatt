@@ -20,7 +20,12 @@ main{padding:1rem;max-width:1500px;margin:0 auto}
  align-items:center;font-size:.9rem}
 .kopf .q{font-weight:600}
 .bildbox{overflow-x:auto;background:#fff;cursor:zoom-in;position:relative}
-.bildbox.gross{cursor:zoom-out}
+/* Vergroessert bekommt der Kasten eine feste Hoehe, sonst waechst er ins
+   Endlose und es gibt gar nichts zu verschieben – nur eine sehr lange
+   Seite. */
+.bildbox.gross{cursor:grab;max-height:70vh;overflow:auto}
+.bildbox.gross.zieht{cursor:grabbing}
+.bildbox.gross img{user-select:none;-webkit-user-drag:none}
 .bildbox img{width:100%;display:block}
 /* Der gedruckte Kopf ueber jedem Streifen, gleich breit geschnitten –
    damit Ueberschrift und Zelle uebereinanderstehen. Ohne ihn sieht man ab
@@ -234,11 +239,11 @@ function karte(e,k){
      title="dieselbe Zeile ein zweites Mal lesen lassen und vergleichen"
      >nochmal lesen</button>
    <span class=zaehler>${liste?esc(e.status):`Eintrag ${k+1} von ${daten.length}`}</span></div>
-  ${e.ausschnitt?`<div class=bildbox onclick="this.classList.toggle('gross')">
+  ${e.ausschnitt?`<div class=bildbox onpointerdown="greifen(event,this)">
     ${e.kopf?`<img class=kopfband src="/bild/${encodeURI(e.kopf)}"
       loading=lazy alt="Spaltenüberschriften">`:''}
     <img src="/bild/${encodeURI(e.ausschnitt)}" loading=lazy alt="">
-    <span class=zh>klicken zum Vergrößern</span></div>`:''}
+    <span class=zh>klicken zum Vergrößern, dann ziehen</span></div>`:''}
   ${still.length?`<div class=still><span class=dim>gesichert:</span>
     ${still.map(f=>`<span><i class="pkt gruen"></i> ${esc(f.rolle)}
       <b>${esc(f.wert||'')}</b></span>`).join('')}</div>`:''}
@@ -346,6 +351,47 @@ async function beenden(){
 // Buchoeffnung – in einer Formel, die dieselbe Hand zehnmal geschrieben
 // hat. Der Streifen allein nimmt diese Eichung weg; das ist keine
 // Schoenheitsfrage, sondern die Regel „Kontext ist Teil der Information".
+// Klicken vergroessert, Ziehen verschiebt. Beides an einem Zeiger, also
+// entscheidet die zurueckgelegte Strecke: unter fuenf Pixeln war es ein
+// Klick. Vorher liess sich der vergroesserte Streifen nur ueber die
+// Bildlaufleiste bewegen, und jeder Versuch, ihn zu fassen, schaltete
+// die Vergroesserung wieder ab.
+function greifen(ev, box){
+  if(ev.button) return;
+  const start = {x:ev.clientX, y:ev.clientY,
+                 l:box.scrollLeft, t:box.scrollTop};
+  let weit = 0;
+  box.setPointerCapture(ev.pointerId);
+  const zieh = e => {
+    const dx = e.clientX - start.x, dy = e.clientY - start.y;
+    weit = Math.max(weit, Math.abs(dx) + Math.abs(dy));
+    if(!box.classList.contains('gross')) return;
+    if(weit > 4) box.classList.add('zieht');
+    box.scrollLeft = start.l - dx;
+    box.scrollTop  = start.t - dy;
+  };
+  const los = e => {
+    box.removeEventListener('pointermove', zieh);
+    box.removeEventListener('pointerup', los);
+    box.removeEventListener('pointercancel', los);
+    box.classList.remove('zieht');
+    if(weit <= 4){
+      const vorher = box.classList.toggle('gross');
+      // Beim Vergroessern dorthin springen, wo geklickt wurde – sonst
+      // steht man am linken Rand und sucht die Stelle wieder.
+      if(vorher){
+        const r = box.getBoundingClientRect();
+        const anteil = (ev.clientX - r.left) / r.width;
+        box.scrollLeft = Math.max(0,
+          anteil * box.scrollWidth - box.clientWidth / 2);
+      }
+    }
+  };
+  box.addEventListener('pointermove', zieh);
+  box.addEventListener('pointerup', los);
+  box.addEventListener('pointercancel', los);
+}
+
 function ganzeSeite(k){
  const e=daten[k]; if(!e||!e.seite) return;
  // x,y,w,h im Original, dahinter die Seitengroesse – die Marke wird

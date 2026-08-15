@@ -111,10 +111,23 @@ def schneide(con, art, bild, nummern, still=True):
             # 0,75 statt 1,4 Zeilenhoehen: Darueber liegt nur noch der
             # Papierrand mit dem Schatten der Buchkante, und der nimmt in
             # der Maske Platz weg, den der Eintrag braucht.
-            k0 = max(0, int(oben - hoehe * 0.75))
+            #
+            # Und nicht ueber die Papierkante hinaus: Gemessen an Bild
+            # 00359 liegt die erste Linie bei y=1156, das Papier beginnt
+            # bei 972, 0,75 Zeilenhoehen waeren 847. Der Kopf bekam so
+            # 125 px schwarze Buchkante mit und wurde in der Maske
+            # entsprechend gestaucht.
+            k0 = max(0, block["y0"], int(oben - hoehe * 0.75))
+            # Ein paar Pixel unter die Linie: Die Ueberschriften stehen
+            # zweizeilig und mit Unterlaengen dicht darueber; genau auf
+            # der Linie geschnitten fehlt die zweite Zeile halb. Weniger
+            # als RAND, weil der erste Streifen dieselbe Linie noch
+            # einmal von oben mitnimmt - sonst steht die Ueberschrift in
+            # der Maske doppelt da.
+            k1 = min(im.size[1], oben + 8)
             if oben - k0 > 20:
                 kp = ziel / f"{bild}_kopf.jpg"
-                im.crop((block["x0"], k0, block["x1"], oben)).save(
+                im.crop((block["x0"], k0, block["x1"], k1)).save(
                     kp, quality=88)
                 kopf = konfig.kurz(kp)
         for nr, (a, e) in zip(nummern, b):
