@@ -70,6 +70,19 @@ def _bestand(con):
     return pers, nach, fam, beleg, einstellungen.grenzen(con)
 
 
+def _nullstart(bestand):
+    """Gibt es überhaupt einen Bestand, gegen den getroffen werden könnte?
+
+    Beim ersten Start ist er leer. „Kein Treffer im Bestand" ist dann
+    zwar wörtlich richtig, aber als **rot** eine Falschmeldung: Rot heißt
+    „die Kandidaten widersprechen sich", und es gab gar keine. Ein neuer
+    Nutzer sieht sonst 44 rote Felder und hält die Werkstatt für kaputt —
+    beim ersten Durchlauf nach dem Klonen genau so passiert.
+    """
+    pers, nach, fam, beleg, gr = bestand
+    return not beleg or not pers
+
+
 # Lebensgrenzen. Bewusst weit — sie sollen Unmögliches ausschließen, nicht
 # Ungewöhnliches. Alles dazwischen entscheidet der Mensch. Änderbar in den
 # Einstellungen; die Werte hier sind nur der Rückfall.
@@ -302,6 +315,12 @@ def taufe_pruefen(con, e, bestand):
         _setze(con, fid_v, None, "gelb" if kv else "rot", grund)
         _setze(con, fid_m, None, "gelb" if km else "rot", grund)
         return "gelb"
+    if _nullstart(bestand):
+        grund = ("Nullstart — es gibt noch keinen Bestand, gegen den "
+                 "geprüft werden könnte. Alles wird vorgelegt.")
+        _setze(con, fid_v, None, "gelb", grund)
+        _setze(con, fid_m, None, "gelb", grund)
+        return "gelb"
     _setze(con, fid_v, None, "rot", "kein Treffer im Bestand")
     _setze(con, fid_m, None, "rot", "kein Treffer im Bestand")
     return "rot"
@@ -327,6 +346,11 @@ def allgemein_pruefen(con, e, bestand, art):
             farbe = "gelb"
         elif k:
             _setze(con, fid, None, "gelb", f"{len(k)} Namensträger im Bestand")
+            farbe = "gelb"
+        elif _nullstart(bestand):
+            _setze(con, fid, None, "gelb",
+                   "Nullstart — es gibt noch keinen Bestand, gegen den "
+                   "geprüft werden könnte. Alles wird vorgelegt.")
             farbe = "gelb"
         else:
             _setze(con, fid, None, "rot", "kein Treffer im Bestand")
