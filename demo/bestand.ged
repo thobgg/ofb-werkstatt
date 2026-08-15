@@ -1,0 +1,688 @@
+0 HEAD
+1 SOUR OFB-Werkstatt
+2 NAME OFB-Werkstatt, Auszug
+1 GEDC
+2 VERS 5.5.1
+2 FORM LINEAGE-LINKED
+1 CHAR UTF-8
+1 NOTE Auszug aus dem Ortsfamilienbuch Haberschlacht 1659-1807 (Thomas Bogenschütz). Nur die Familien, die zu den Beispielseiten in demo/bilder/ gehören.
+0 @L1@ _LOC
+1 ABBR Haberschlacht
+1 _POST 74336
+1 _STAE Baden-Württemberg
+1 _CTRY Deutschland
+1 _GOV HABCHTJN49MC
+1 MAP
+2 LATI N49.095626
+2 LONG E9.035015
+1 NAME Haberschlacht
+0 @L82@ _LOC
+1 ABBR Bissingen
+1 _POST 74321
+1 _STAE Baden-Württemberg
+1 _CTRY Deutschland
+1 _GOV BISGENJN48NW
+1 MAP
+2 LATI N48.947015
+2 LONG E9.099228
+1 NAME Bissingen
+0 @L86@ _LOC
+1 ABBR Horrheim
+1 _STAE Baden-Württemberg
+1 _CTRY Deutschland
+1 _GOV HOREIMJN48LX
+1 NAME Horrheim
+1 MAP
+2 LATI N48.978775
+2 LONG E8.988931
+0 @I1307@ INDI
+1 RIN AB:I1307
+1 _UID 76EC05CA70744388B63E3F8AC96A7D63B0AB
+1 NAME Rosina Margaretha /Frey/
+2 SURN Frey
+2 GIVN Rosina Margaretha
+2 _KB_NAME Rosina Margaretha /Frey/
+2 _RUFNAME Margaretha
+1 SEX F
+1 FAMC @F472@
+1 FAMS @F1228@
+1 _CREA
+2 DATE 23 JUN 2025
+3 TIME 12:34:44
+1 _UID 0A9FF9260D234692B885BBD29C92508DA5AA
+1 _NOTE_HEIRAT ehliche, ledige Tochter, Stieftochter
+1 RESI
+2 DATE 1716
+2 PLAC Bissingen
+3 _LOC @L82@
+3 MAP
+4 LATI N48.947015
+4 LONG E9.099228
+1 CHAN
+2 DATE 17 JAN 2026
+3 TIME 16:24:49
+0 @I2696@ INDI
+1 RIN AB:I574
+1 _UID 8FE8F493402C48C5B475E0BFC2A4FAF392A1
+1 NAME Anna Maria /Faller/
+2 SURN Faller
+2 GIVN Anna Maria
+2 _KB_NAME Anna Maria /Mayerle/
+1 SEX F
+1 _NOTE_HEIRAT ehelich, ledige Tochter
+1 FAMC @F1081@
+1 _UID 26854D75053C45DA8FDE2A7A73B27C63E2A3
+1 NAME Anna Maria /Maier/
+2 SURN Maier
+2 GIVN Anna Maria
+2 _KB_NAME Anna Maria /Maier/
+1 NAME Anna Maria /Maier/
+2 SURN Maier
+2 GIVN Anna Maria
+1 _TODURSACHE Brandfieber
+1 _ALTER_KB 48 Jahre, 8 Monate, 5 Tage
+1 BIRT
+2 DATE CAL 14 MAR 1755
+2 SOUR @S37@
+3 PAGE Begräbnis 1803/7
+1 DEAT
+2 DATE 3 NOV 1803
+2 CAUS Brandfieber
+2 SOUR @S37@
+3 PAGE Begräbnis 1803/7
+2 NOTE 03.11.1803 D. 3. Novbr. Anna Maria, Philipp Jacob Maiers, B. u. Weingärtners allhier Ehefrau, Brandfieber, 48 J. 8 M. 5 Tag.
+1 CHAN
+2 DATE 2 MAY 2026
+3 TIME 13:37:18
+1 FAMS @F1387@
+0 @I2764@ INDI
+1 RIN AB:I642
+1 _UID 06689DDA720F4D79822E606D81C1BD8D3561
+1 NAME Johann Adam Christoph /Koch/
+2 SURN Koch
+2 GIVN Johann Adam Christoph
+2 _KB_NAME Johann Adam Christoph /Koch/
+1 SEX M
+1 OCCU Weingärtner
+2 DATE 15 JAN 1797
+2 PLAC Haberschlacht
+3 _LOC @L1@
+3 MAP
+4 LATI N49.095626
+4 LONG E9.035015
+2 SOUR @S35@
+3 PAGE Taufe 1797/5
+2 _BERUF_KB Weingärtner
+1 OCCU Wirt
+2 DATE 15 MAY 1800
+2 PLAC Haberschlacht
+3 _LOC @L1@
+3 MAP
+4 LATI N49.095626
+4 LONG E9.035015
+2 SOUR @S35@
+3 PAGE Taufe 1800/9
+2 _BERUF_KB Wirt
+1 OCCU Gerichtsverwandter
+2 DATE 22 MAR 1803
+2 PLAC Haberschlacht
+3 _LOC @L1@
+3 MAP
+4 LATI N49.095626
+4 LONG E9.035015
+2 SOUR @S35@
+3 PAGE Taufe 1803/3
+2 _BERUF_KB Gerichtsverwandter
+1 _NOTE_HEIRAT ehelich, lediger Sohn
+1 FAMC @F853@
+1 FAMS @F1126@
+0 @I2765@ INDI
+1 RIN AB:I643
+1 _UID E45386B8FBA34B7C9C5FDABB96479C6D50E6
+1 NAME Margaretha Christina Dorothea /Käser/
+2 SURN Käser
+2 GIVN Margaretha Christina Dorothea
+2 _KB_NAME Margaretha Christina Dorothea /Keßer/
+2 _KB_NAME Margaretha Christina Dorothea /Käser/
+1 SEX F
+1 _NOTE_HEIRAT ehelich, ledige Tochter
+1 FAMC @F1127@
+1 FAMS @F1126@
+1 _UID 696A0F7072BC4AE5A93FFA419AF31BD14B0F
+1 NAME Margaretha Christina Dorothea /Keßer/
+2 SURN Keßer
+2 GIVN Margaretha Christina Dorothea
+1 CHR
+2 DATE 4 MAY 1773
+2 PLAC Haberschlacht
+3 _LOC @L1@
+3 MAP
+4 LATI N49.095626
+4 LONG E9.035015
+2 RELI evangelisch-lutherisch
+2 SOUR @S35@
+3 PAGE Taufe 1773/8
+2 NOTE 04.05.1773 Margaretha Christina Dorothea Georg Käser († 05.03.1814) Christina Beckin
+1 DEAT
+2 DATE 5 MAR 1814
+2 SOUR @S35@
+3 PAGE Taufe 1773/8
+1 CHAN
+2 DATE 3 MAY 2026
+3 TIME 10:28:32
+0 @I2799@ INDI
+1 RIN AB:I677
+1 _UID 062763FC0E5B410FAA2D2D9F6F826C89CED8
+1 NAME Johannes /Faller/
+2 SURN Faller
+2 GIVN Johannes
+2 _KB_NAME Johannes /Faller/
+1 SEX M
+1 _NOTE_HEIRAT ehelicher Sohn
+1 FAMS @F1149@
+1 FAMC @F1263@
+1 _UID D2A94ED803684F2F900D107393C9778E0B39
+1 CHR
+2 DATE 16 MAY 1771
+2 PLAC Haberschlacht
+3 _LOC @L1@
+3 MAP
+4 LATI N49.095626
+4 LONG E9.035015
+2 RELI evangelisch-lutherisch
+2 SOUR @S35@
+3 PAGE Taufe 1771/8
+2 NOTE 16.05.1771 Johannes J. Jacob Faller c. & vinitor († 25.01.1844) Catharina Gözin
+1 OCCU Weingärtner
+2 DATE 17 JUL 1802
+2 PLAC Haberschlacht
+3 _LOC @L1@
+3 MAP
+4 LATI N49.095626
+4 LONG E9.035015
+2 SOUR @S35@
+3 PAGE Taufe 1802/18
+2 _BERUF_KB Weingärtner
+1 DEAT
+2 DATE 25 JAN 1844
+2 SOUR @S35@
+3 PAGE Taufe 1771/7
+1 CHAN
+2 DATE 28 APR 2026
+3 TIME 19:54:39
+0 @I2800@ INDI
+1 RIN AB:I678
+1 _UID 575741FD6AAE430F8632B022747E50CAEC93
+1 NAME Rosina Dorothea /Maier/
+2 SURN Maier
+2 GIVN Rosina Dorothea
+2 _KB_NAME Rosina Dorothea /Maier/
+1 NAME Rosina Dorothea /Maier/
+2 SURN Maier
+2 GIVN Rosina Dorothea
+1 SEX F
+1 _NOTE_HEIRAT eheliche Tochter
+1 FAMS @F1149@
+1 CHAN
+2 DATE 19 JAN 2026
+3 TIME 10:08:58
+0 @I2833@ INDI
+1 RIN AB:I711
+1 _UID E7B3D340A668496282BEBE4F954E16782466
+1 NAME Johann Michael /Möß/
+2 SURN Möß
+2 GIVN Johann Michael
+2 _KB_NAME Johann Michael /Möß/
+1 SEX M
+1 _NOTE_HEIRAT ehelicher Sohn
+1 FAMC @F1172@
+1 FAMS @F1171@
+1 OCCU Maurer
+2 DATE 26 NOV 1800
+2 PLAC Horrheim
+3 _LOC @L86@
+3 MAP
+4 LATI N48.978775
+4 LONG E8.988931
+2 SOUR @S36@
+3 PAGE Trauung 1800/6
+2 _BERUF_KB Maurer
+1 CHAN
+2 DATE 4 MAY 2026
+3 TIME 12:00:20
+0 @I2843@ INDI
+1 RIN AB:I721
+1 _UID 64EEF7354C894F5DA12C39CCA268E5B57500
+1 NAME Johann Georg /Weyssert/
+2 SURN Weyssert
+2 GIVN Johann Georg
+2 _KB_NAME Johann Georg /Weyssert/
+1 SEX M
+1 _NOTE_HEIRAT ehelich, lediger Sohn
+1 FAMC @F1179@
+1 FAMS @F1178@
+0 @I2844@ INDI
+1 RIN AB:I722
+1 _UID 9E69B41550594B86B9F5BD0A2A517923D6F2
+1 NAME Anna Maria /Löbich/
+2 SURN Löbich
+2 GIVN Anna Maria
+2 _KB_NAME Anna Maria /Löbich/
+1 SEX F
+1 _NOTE_HEIRAT ehelich, ledige Tochter
+1 FAMS @F1178@
+1 FAMC @F811@
+1 _UID CBA21ED3FA134322BB2CD4ABE980ADDB2796
+1 _NOTE_TAUFE 1814 nach Großgartach gezogen
+1 CHR
+2 DATE 4 DEC 1777
+2 PLAC Haberschlacht
+3 _LOC @L1@
+3 MAP
+4 LATI N49.095626
+4 LONG E9.035015
+2 RELI evangelisch-lutherisch
+2 SOUR @S35@
+3 PAGE Taufe 1777/16
+2 NOTE 04.12.1777 Anna Maria Jg Johannes Löbich (1814 nach Großgartach gezogen) Anna Maria Schülin von Rommelshaußen
+1 CHAN
+2 DATE 27 APR 2026
+3 TIME 10:46:47
+0 @I2867@ INDI
+1 RIN AB:I745
+1 _UID 049A8583FA9D41E982675D1D5DAEDB17C750
+1 NAME Philipp Jacob /Maier/
+2 SURN Maier
+2 GIVN Philipp Jacob
+2 _KB_NAME Philipp Jacob /Maier/
+1 SEX M
+1 _NOTE_HEIRAT Witwer
+1 FAMS @F1193@
+1 FAMS @F1387@
+1 FAMC @F1557@
+1 _UID D752B90F12D94066B5189209A32CA82384CC
+1 CHR
+2 DATE 5 MAR 1770
+2 PLAC Haberschlacht
+3 _LOC @L1@
+3 MAP
+4 LATI N49.095626
+4 LONG E9.035015
+2 RELI evangelisch-lutherisch
+2 SOUR @S35@
+3 PAGE Taufe 1770/6
+2 NOTE 05.03.1770 Philipp Jacob Ernst Maier civ. & figulus († 07.09.1834) Maria Dorothea Herrmännin
+1 OCCU Weingärtner
+2 DATE 2 MAY 1804
+2 PLAC Haberschlacht
+3 _LOC @L1@
+3 MAP
+4 LATI N49.095626
+4 LONG E9.035015
+2 SOUR @S36@
+3 PAGE Trauung 1804/2
+2 _BERUF_KB Weingärtner
+1 DEAT
+2 DATE 7 SEP 1834
+2 SOUR @S35@
+3 PAGE Taufe 1770/6
+1 CHAN
+2 DATE 2 MAY 2026
+3 TIME 13:42:26
+0 @I2868@ INDI
+1 RIN AB:I746
+1 _UID C8CF6A584ADD46B4B6A5A0634DAABC59E4D1
+1 NAME Catharina Juliana /Haidinger/
+2 SURN Haidinger
+2 GIVN Catharina Juliana
+2 _KB_NAME Catharina Juliana /Haidinger/
+1 SEX F
+1 _NOTE_HEIRAT eheliche Tochter
+1 FAMC @F1194@
+1 FAMS @F1193@
+0 @I2912@ INDI
+1 RIN AB:I790
+1 _UID A46C77C261D04BEC9E435E423F3AD3D95712
+1 NAME Georg Jakob /Roth/
+2 SURN Roth
+2 GIVN Georg Jakob
+2 _KB_NAME Georg Jakob /Roth/
+1 SEX M
+1 _NOTE_HEIRAT ehelich, lediger Sohn
+1 FAMC @F1222@
+1 FAMS @F1221@
+0 @I2913@ INDI
+1 RIN AB:I791
+1 _UID 6B61C6CB151D4CD09E722196F01569B7974F
+1 NAME Maria Barbara /Staiger/
+2 SURN Staiger
+2 GIVN Maria Barbara
+2 _KB_NAME Maria Barbara /Staiger/
+1 SEX F
+1 _NOTE_HEIRAT eheliche Tochter
+1 FAMC @F1223@
+1 FAMS @F1221@
+0 @I3136@ INDI
+1 RIN AB:I1018
+1 _UID 6108EA8F399B47E2A8A302DD6C2781617E3E
+1 NAME Georg Jakob /Dürr/
+2 SURN Dürr
+2 GIVN Georg Jakob
+2 _KB_NAME Georg Jacob /Dürr/
+2 _KB_NAME Georg Jakob /Dürr/
+1 SEX M
+1 FAMC @F1699@
+1 FAMS @F1228@
+1 _UID 5F814AD219114CB9942E4C291A1ABC6BBDA5
+1 _NOTE_HEIRAT ehelicher Sohn
+1 CHR
+2 DATE 14 SEP 1776
+2 PLAC Haberschlacht
+3 _LOC @L1@
+3 MAP
+4 LATI N49.095626
+4 LONG E9.035015
+2 RELI evangelisch-lutherisch
+2 SOUR @S35@
+3 PAGE Taufe 1776/13
+2 NOTE 14.09.1776 Georg Jacob Carl Dürr Weing († 11.03.1814). Dorothea Fallerin 14\. Sept. Abends zwischen 4‑5Uhr hat Eva Catharina Dürrin ein unehliches Knäblein, so nach dem Zeugniß der Hebamme schon über 10 Tag abgestanden gewesen, tod gebohren, wel
+3 CONC ches nach der Ordnung des folgenden Tags bey der Abendglocke in der Stille begraben wurde.
+1 DEAT
+2 DATE 11 MAR 1814
+2 SOUR @S35@
+3 PAGE Taufe 1776/13
+1 CHAN
+2 DATE 16 JAN 2026
+3 TIME 17:40:41
+0 @I3389@ INDI
+1 RIN AB:I1272
+1 _UID F2CF00AB64D2488999F87F51AAE644C26A0A
+1 NAME Georg Martin /Hartmann/
+2 SURN Hartmann
+2 GIVN Georg Martin
+2 _KB_NAME Georg Martin /Hartmann/
+1 SEX M
+1 FAMS @F1289@
+0 @I3390@ INDI
+1 RIN AB:I1273
+1 _UID DEE1B20C6D4A4F2FA32975D99E7631DAEBB6
+1 NAME Barbara Margaretha /Hecker/
+2 SURN Hecker
+2 GIVN Barbara Margaretha
+2 _KB_NAME Barbara Margaretha /Hecker/
+1 SEX F
+1 _NOTE_TAUFE von Kirchheim am Neckar
+1 FAMS @F1289@
+0 @I3506@ INDI
+1 RIN AB:I1389
+1 _UID 8B86635A33C7448A8788F8B2E01CA8C3B61A
+1 NAME Agnes Dorothea /Kaufmann/
+2 SURN Kaufmann
+2 GIVN Agnes Dorothea
+2 _KB_NAME Agnes Dorothea /Kaufmann/
+1 SEX F
+1 FAMS @F1171@
+1 _UID 1021FBA2F7EA4D03984460E3A153D3CCB1DC
+1 _NOTE_HEIRAT eheliche Tochter
+1 FAMC @F949@
+1 CHR
+2 DATE 15 MAY 1780
+2 PLAC Haberschlacht
+3 _LOC @L1@
+3 MAP
+4 LATI N49.095626
+4 LONG E9.035015
+2 RELI evangelisch-lutherisch
+2 SOUR @S35@
+3 PAGE Taufe 1780/10
+2 NOTE 15.05.1780 Agnes Dorothea Balthasar Kauffmann des Gerichts († 03.01.1850) Sabina Catharina Zöllerin
+1 DEAT
+2 DATE 3 JAN 1850
+2 SOUR @S35@
+3 PAGE Taufe 1780/10
+1 CHAN
+2 DATE 4 MAY 2026
+3 TIME 11:59:32
+0 @I3558@ INDI
+1 RIN AB:I1445
+1 _UID 0587AA5CC878496BBEA8BF88109B560539C2
+1 NAME Christoph Friedrich /Koch/
+2 SURN Koch
+2 GIVN Christoph Friedrich
+2 _KB_NAME Christoph Friedrich /Koch/
+1 SEX M
+1 OCCU Weingärtner
+2 DATE 6 FEB 1807
+2 PLAC Haberschlacht
+3 _LOC @L1@
+3 MAP
+4 LATI N49.095626
+4 LONG E9.035015
+2 SOUR @S35@
+3 PAGE Taufe 1807/2
+2 _BERUF_KB Weingärtner
+1 FAMS @F1309@
+0 @I3559@ INDI
+1 RIN AB:I1446
+1 _UID DA0535CB284D41128F148DDC1BB248BB83E6
+1 NAME Sibilla Magdalena /Müller/
+2 SURN Müller
+2 GIVN Sibilla Magdalena
+2 _KB_NAME Sibilla Magdalena /Müller/
+1 NAME Sibilla Magdalena /Müller/
+2 SURN Müller
+2 GIVN Sibilla Magdalena
+1 SEX F
+1 _NOTE_TAUFE von Hohenstein
+1 FAMS @F1309@
+0 @I3609@ INDI
+1 RIN AB:I1496
+1 _UID 22CA63D1187044B6932307579F94A7851570
+1 NAME Johann Michael /Kümmerle/
+2 SURN Kümmerle
+2 GIVN Johann Michael
+2 _KB_NAME Johann Michael /Kümmerle/
+1 SEX M
+1 OCCU Weingärtner
+2 DATE 17 AUG 1803
+2 PLAC Haberschlacht
+3 _LOC @L1@
+3 MAP
+4 LATI N49.095626
+4 LONG E9.035015
+2 SOUR @S35@
+3 PAGE Taufe 1803/7
+2 _BERUF_KB Weingärtner
+1 OCCU Bauer
+2 DATE 11 AUG 1806
+2 PLAC Haberschlacht
+3 _LOC @L1@
+3 MAP
+4 LATI N49.095626
+4 LONG E9.035015
+2 SOUR @S35@
+3 PAGE Taufe 1806/13
+2 _BERUF_KB Bauer
+1 FAMS @F1319@
+0 @I3610@ INDI
+1 RIN AB:I1497
+1 _UID 079CF17C3AE240E2B9324DFB5BAF47DBADAB
+1 NAME Maria Barbara /Rüb/
+2 SURN Rüb
+2 GIVN Maria Barbara
+2 _KB_NAME Maria Barbara /Rüb/
+1 SEX F
+1 FAMS @F1319@
+0 @I3985@ INDI
+1 RIN AB:I1873
+1 _UID D968DA410362464FBD1B018B552A873AFA3A
+1 NAME Jakob Friedrich /Schmidt/
+2 SURN Schmidt
+2 GIVN Jakob Friedrich
+2 _KB_NAME Jakob Friedrich /Schmidt/
+1 SEX M
+1 FAMS @F1367@
+0 @I3986@ INDI
+1 RIN AB:I1874
+1 _UID D724BF507C294533B5C08599A8B747208094
+1 NAME Maria Margaretha /Trefz/
+2 SURN Trefz
+2 GIVN Maria Margaretha
+2 _KB_NAME Maria Margaretha /Trefz/
+1 SEX F
+1 FAMS @F1367@
+0 @F1126@ FAM
+1 HUSB @I2764@
+1 WIFE @I2765@
+1 CHIL @I3552@
+1 CHIL @I3553@
+1 CHIL @I3554@
+1 MARR
+2 DATE 31 JAN 1796
+2 PLAC Haberschlacht
+3 _LOC @L1@
+3 MAP
+4 LATI N49.095626
+4 LONG E9.035015
+2 RELI evangelisch-lutherisch
+2 TYPE RELI
+2 SOUR @S36@
+3 PAGE Trauung 1796/1
+2 NOTE 31.01.1796 Dispensat: Ducali sine proclam. Johann Adam Christoph Koch, weil. Hrn Christoph Heinr: Kochen, hiesigen Zollers und Gerichtsverwandten hinterl. ehel. led. Sohn, und Jgfr Margaretha Christina Dorothea, Hrn Johann Georg Keßers, hiesige
+3 CONC n Schultheißen ehel. led. Tochter. Cop: alhier Dom: Sexages:
+0 @F1149@ FAM
+1 HUSB @I2799@
+1 WIFE @I2800@
+1 CHIL @I3209@
+1 CHIL @I3213@
+1 CHIL @I3214@
+1 CHIL @I3218@
+1 MARR
+2 DATE 14 FEB 1798
+2 PLAC Haberschlacht
+3 _LOC @L1@
+3 MAP
+4 LATI N49.095626
+4 LONG E9.035015
+2 RELI evangelisch-lutherisch
+2 TYPE RELI
+2 SOUR @S36@
+3 PAGE Trauung 1798/1
+2 NOTE 14.02.1798 Johannes Faller, weil. Jacob Fallers, Burg. u. Weingärtners alhier ehel. Sohn, u. Rosina Dorothea, Georg Maiers, Burg. u. Weingärtners alhier ehel. Tochter. Copul. alhier d. 14. Febr. Mit­wochs in der Betstunde.
+0 @F1171@ FAM
+1 HUSB @I2833@
+1 WIFE @I3506@
+1 MARR
+2 DATE 26 NOV 1800
+2 PLAC Haberschlacht
+3 _LOC @L1@
+3 MAP
+4 LATI N49.095626
+4 LONG E9.035015
+2 RELI evangelisch-lutherisch
+2 TYPE RELI
+2 SOUR @S36@
+3 PAGE Trauung 1800/6
+2 NOTE 26.11.1800 Joh: Michael Möß, des Maurer Handwercks, weil. Joh. Michael Moß, B. u. Weingärtners in Horrheim, Vaihinger Oberamts ehl. Sohn, u. Agnes Dorothea, weil. Balthasar Kauffmanns Gerichts­ver­wandten allhier ehl. Tochter. Cop. allhier Mittw
+3 CONC ochs den 26. Novbr.
+1 CHIL @I3777@
+1 CHIL @I3778@
+0 @F1178@ FAM
+1 HUSB @I2843@
+1 WIFE @I2844@
+1 MARR
+2 DATE 26 JAN 1802
+2 PLAC Haberschlacht
+3 _LOC @L1@
+3 MAP
+4 LATI N49.095626
+4 LONG E9.035015
+2 RELI evangelisch-lutherisch
+2 TYPE RELI
+2 SOUR @S36@
+3 PAGE Trauung 1802/1
+2 NOTE 26.01.1802 Johann Georg Weyssert, des Georg Friedrich Weysserts B. u. Weingärtners allhier ehl. led. Sohn, u. Anna Maria, des Johannes Löbichs, B. u. Weingärtners allhier ehl. led. Tochter. Copul. allhier in einer Predigt Dienstags den 26. Janua
+3 CONC r.
+0 @F1193@ FAM
+1 HUSB @I2867@
+1 WIFE @I2868@
+1 CHIL @I3742@
+1 MARR
+2 DATE 2 MAY 1804
+2 PLAC Haberschlacht
+3 _LOC @L1@
+3 MAP
+4 LATI N49.095626
+4 LONG E9.035015
+2 RELI evangelisch-lutherisch
+2 TYPE RELI
+2 SOUR @S36@
+3 PAGE Trauung 1804/2
+2 NOTE 02.05.1804 Philipp Jacob Maier, B. u. Weingärtner allhier, Wittwer, u. Catharina Juliana, weil. Jo­hann Georg Haidingers, B. u. Bäckens in Michelbach, OchsenBurger Amts ehl. Tochter. Mittwochs den 2. Mai in Michelbach.
+0 @F1221@ FAM
+1 HUSB @I2912@
+1 WIFE @I2913@
+1 MARR
+2 DATE 6 AUG 1806
+2 PLAC Haberschlacht
+3 _LOC @L1@
+3 MAP
+4 LATI N49.095626
+4 LONG E9.035015
+2 RELI evangelisch-lutherisch
+2 TYPE RELI
+2 SOUR @S36@
+3 PAGE Trauung 1806/4
+2 NOTE 06.08.1806 Dn. 4. p. Trin. 5. 6.: Georg Jakob Roth weyl. Mart: Rothen, gew. B. u. Weingärtners von hier, nachgelassener ehlich lediger Sohn, und Maria Barbara weyl. Michael Staigers, gew. B. u. Wein­gärtners von Hausen, nachgelassene ehliche Toc
+3 CONC hter. Cop. in Hausen.
+0 @F1228@ FAM
+1 HUSB @I3136@
+1 WIFE @I1307@
+1 MARR
+2 DATE 23 NOV 1807
+2 PLAC Haberschlacht
+3 _LOC @L1@
+3 MAP
+4 LATI N49.095626
+4 LONG E9.035015
+2 RELI evangelisch-lutherisch
+2 TYPE RELI
+2 SOUR @S36@
+3 PAGE Trauung 1807/3
+2 NOTE 23.11.1807 Georg Jakob Dürr, Carl Christof Dürren, B. u. Weingärtners von hier, ehlicher Sohn, u. Rosina Margaretha, weyl. Jakob Freiers, gew. Schäfers auf dem Magenheimer Hof, hinterlassene ehliche u. Georg Michael Gloßen, B. u. Schmids von hie
+3 CONC r, Stieftochter. Mittwoch d. 23sten Nov. hier.
+0 @F1289@ FAM
+1 HUSB @I3389@
+1 WIFE @I3390@
+1 CHIL @I3391@
+0 @F1309@ FAM
+1 HUSB @I3558@
+1 WIFE @I3559@
+1 CHIL @I3560@
+0 @F1319@ FAM
+1 HUSB @I3609@
+1 WIFE @I3610@
+1 CHIL @I3611@
+1 CHIL @I3615@
+0 @F1367@ FAM
+1 HUSB @I3985@
+1 WIFE @I3986@
+1 CHIL @I3987@
+0 @F1387@ FAM
+1 HUSB @I2867@
+1 WIFE @I2696@
+1 CHIL @I3733@
+1 CHIL @I3735@
+1 CHIL @I3736@
+1 MARR
+2 PLAC Haberschlacht
+3 _LOC @L1@
+3 MAP
+4 LATI N49.095626
+4 LONG E9.035015
+2 RELI evangelisch-lutherisch
+2 TYPE RELI
+2 SOUR @S36@
+3 PAGE Trauung 1793/3
+2 NOTE 09.10.1793 Johann Jacob Rennstich, Burger und Kiefer‑Zunffmeister in Brakenheim, Wittwer, und Margaretha, weil. Michael Fallers, Burg. u. Weingärtners dahier hinterl. ehel. Tochter. Cop: alhier d. 9. Oct.
+0 TRLR

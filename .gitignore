@@ -30,6 +30,10 @@ daten/**
 !daten/pilot.json
 ausgabe/
 *.ged
+# ... ausser dem Bestandsauszug fuer die Demo. Ohne ihn bleibt beim
+# Ausprobieren alles gelb, und der Elternehe-Anker — der Kern des
+# Verfahrens — ist nicht zu sehen. 15 kB, Herkunft in demo/QUELLE.md.
+!demo/bestand.ged
 *.sqlite
 *.sqlite3
 
