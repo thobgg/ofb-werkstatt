@@ -101,9 +101,18 @@ details summary{cursor:pointer;color:#8b93a3;font-size:.84rem;padding:.3rem 0}
    ohne Beschriftung und rechts eines mit Platzhalter - und niemand weiss,
    dass links die vereinheitlichte Form gemeint ist und rechts der
    Wortlaut. */
-.zeile.spaltenkopf{padding-bottom:.15rem}
-.zeile.spaltenkopf span{color:#7d8798;font-size:.72rem;
- text-transform:uppercase;letter-spacing:.04em}
+/* Das rechte Feld ist ein Zitat, kein zweiter Wert: schmaler, kursiv,
+   in Serifen und mit Anfuehrungszeichen davor. Eine Ueberschriftzeile
+   ueber den Spalten stand hier zuerst - sie erklaerte richtig und sah aus
+   wie ein Beipackzettel. Die Gestalt sagt dasselbe, ohne es zu sagen. */
+input.kb{background:#0f1116;border-style:dashed;color:#a7b0c0;
+ font-family:Georgia,'Times New Roman',serif;font-style:italic;
+ font-size:.92rem}
+input.kb::placeholder{font-style:italic}
+.zeile .zitat{position:relative}
+.zeile .zitat::before{content:'\201E';position:absolute;left:.3rem;top:.05rem;
+ color:#4a515c;font:1.1rem Georgia,serif}
+.zeile .zitat input{padding-left:1.1rem}
 .fuss{padding:.5rem .9rem;background:#191d24;display:flex;gap:.5rem;align-items:center}
 .zweite{padding:.5rem .9rem;border-bottom:1px solid #23272f;font-size:.88rem}
 .zweite .zkopf{color:#9aa3b2;margin-bottom:.4rem}
@@ -290,11 +299,6 @@ function karte(e,k){
   </div>
   <div class=mehr>
    <div class=nachtrag>
-    ${zeilen(e).length?`<div class="zeile spaltenkopf">
-      <label></label>
-      <span>normalisiert &middot; geht in die Ausgabe</span>
-      <span>wie es im Buch steht</span>
-     </div>`:''}
     ${zeilen(e).map(f=>zeileFeld(f)).join('')}
    </div>
    ${leere(e).length?`<div class=reihe style="margin-top:.3rem">
@@ -543,9 +547,13 @@ function leere(e){ return e.felder.filter(f=>passt(f) && !f.wert && !f.kb_form &
 function zeileFeld(f){
  return `<div class=zeile><label>${esc(beschriftung(f))}</label>
    <input data-feld="${esc(f.name)}" value="${esc(f.wert||'')}"
-    placeholder="normalisiert" oninput="this.classList.add('geaendert')">
-   <input data-kb="${esc(f.name)}" value="${esc(f.kb_form||'')}"
-    placeholder="Kirchenbuchform" oninput="this.classList.add('geaendert')">
+    placeholder="normalisiert"
+    title="Die vereinheitlichte Form – sie geht in die Ausgabe."
+    oninput="this.classList.add('geaendert')">
+   <span class=zitat><input class=kb data-kb="${esc(f.name)}"
+    value="${esc(f.kb_form||'')}" placeholder="wie im Buch"
+    title="Der Wortlaut des Kirchenbuchs. Bleibt daneben stehen und wird nicht normalisiert."
+    oninput="this.classList.add('geaendert')"></span>
   </div>`;
 }
 
