@@ -606,9 +606,15 @@ function zeileFeld(f){
  //   Verweisfeld            links gesperrt: dort stehen später Kennungen
  //                          von Personensätzen, kein Text (Paten, _ASSO)
  //   sonst                  links normalisiert, rechts der Wortlaut
+ // Bei einem Verweisfeld ist links gesperrt - aber der alte Text muss
+ // sichtbar bleiben. Frühere Lesungen haben die Patenzeile dorthin
+ // gelegt; sie einfach auszublenden hiesse, sie zu verlieren. Also
+ // wandert sie nach rechts, wo sie hingehoert, und das kanonische Feld
+ // wird beim Speichern geleert (die Rohlesung bleibt in `gelesen`).
  const links = f.verweis
    ? `<input value="" disabled placeholder="später: Verweise auf Personen"
-        title="Hier stehen künftig Kennungen von Personensätzen (_ASSO). Ein Name wäre eine Kennung, die es nicht gibt.">`
+        title="Hier stehen künftig Kennungen von Personensätzen (_ASSO). Ein Name wäre eine Kennung, die es nicht gibt.">
+      <input type=hidden data-feld="${esc(f.name)}" value="">`
    : `<input data-feld="${esc(f.name)}" value="${esc(f.wert||'')}"
         placeholder="normalisiert"
         title="Die vereinheitlichte Form – sie geht in die Ausgabe."
@@ -629,15 +635,22 @@ function zeileFeld(f){
    ? `<textarea class=kb data-kb="${esc(f.name)}" rows=2
        placeholder="wie im Buch"
        title="Der Wortlaut des Kirchenbuchs. Nur nötig, wenn er von der normalisierten Form abweicht."
-       oninput="this.classList.add('geaendert')">${esc(f.kb_form||'')}</textarea>`
+       oninput="this.classList.add('geaendert')">${esc(f.kb_form||(f.verweis?f.wert:'')||'')}</textarea>`
    : `<input class=kb data-kb="${esc(f.name)}"
-       value="${esc(f.kb_form||'')}" placeholder="wie im Buch"
+       value="${esc(f.kb_form||(f.verweis?f.wert:'')||'')}" placeholder="wie im Buch"
        title="Der Wortlaut des Kirchenbuchs. Nur nötig, wenn er von der normalisierten Form abweicht."
        oninput="this.classList.add('geaendert')">`;
+ // Ein Wort dazu, wenn gerade etwas von links nach rechts rückt -
+ // sonst wundert sich der Bearbeiter, warum sein Text die Spalte
+ // gewechselt hat.
+ const notiz = (f.verweis && f.wert && !f.kb_form)
+   ? `<div class="zeile einzeln"><label></label><span class=dim
+       style="font-size:.76rem">aus dem kanonischen Feld hierher gerückt –
+       dort stehen künftig Verweise auf Personen</span></div>` : '';
  return `<div class=zeile><label>${esc(beschriftung(f))}</label>
    ${links}
    <span class=zitat>${rechts}</span>
-  </div>`;
+  </div>${notiz}`;
 }
 
 // Der Knopf holt genau ein Feld dazu – kein Aufklappen von 35 Zeilen.
