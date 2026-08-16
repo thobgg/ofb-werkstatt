@@ -168,14 +168,29 @@ def _schriftprofil(a, block, sk):
     # einer schmalen Spalte; über 3700 px gemittelt verschwindet er, und
     # die Grenze lief mitten durch ihn hindurch - auf Bild 00359 blieb das
     # "1808." von Eintrag 5 im Streifen von Eintrag 6 stehen.
+    #
+    # Und jeder Abschnitt gegen seinen **eigenen** Ruhepegel: Die
+    # senkrechten Spaltenstriche laufen durch jede Bildzeile, also ist mit
+    # rohem Maximum nie eine Zeile leer. Abgezogen wird, was der Abschnitt
+    # ohnehin dauernd hat.
     n = max(1, schwarz.shape[1] // 16)
-    teile = [schwarz[:, i:i + n].mean(axis=1)
-             for i in range(0, schwarz.shape[1], n)]
-    dunkel = np.max(np.vstack(teile), axis=0) if teile else schwarz.mean(axis=1)
-    # Was gilt als leer? Nicht ein fester Wert, sondern das, was auf
-    # dieser Seite zwischen den Schriftzeilen steht: die untere Hälfte
-    # der Verteilung ist Papier, die obere Schrift.
-    schwelle = float(np.percentile(dunkel, 55)) + 0.004
+    teile = []
+    for i in range(0, schwarz.shape[1], n):
+        s = schwarz[:, i:i + n].mean(axis=1)
+        teile.append(s - np.percentile(s, 20))
+    dunkel = (np.max(np.vstack(teile), axis=0) if teile
+              else schwarz.mean(axis=1))
+    dunkel = np.clip(dunkel, 0, None)
+    # Was gilt als leer? Der Abstand zwischen Papier und Schrift dieser
+    # Seite. Papier ist das ruhigste Zehntel, Schrift das dichteste; leer
+    # heisst: naeher am Papier als ein Zehntel des Wegs zur Schrift.
+    #
+    # Der erste Anlauf nahm das 55. Perzentil - also mitten aus der
+    # Textverteilung. Dünne Oberlaengen zaehlten damit als leer, und der
+    # Schnitt lief quer durch "Georg Jacob Dürr".
+    papier = float(np.percentile(dunkel, 10))
+    schrift = float(np.percentile(dunkel, 92))
+    schwelle = papier + max(0.0015, (schrift - papier) * 0.10)
     return dunkel, schwelle
 
 
@@ -227,7 +242,12 @@ def grenze_verschieben(a, block, sk, linie, hoehe, fenster=0.22):
             lauf = 0
     if letzte is None:
         return linie
-    return int((letzte + laenge / 2 + y0) * sk)
+    # An den **Anfang** der Lücke, nicht in ihre Mitte. In der Mitte lag
+    # der Schnitt regelmässig in den Oberlängen der nächsten Zeile - im
+    # Bogen war "Jacob" und "Georg Jacob Dürr" oben gekappt. Direkt hinter
+    # der letzten Tinte des vorigen Eintrags gehört alles Weitere zum
+    # nächsten, Oberlängen eingeschlossen.
+    return int((letzte + 1 + y0) * sk)
 
 
 def nach_schrift(pfad, grenzen, block):

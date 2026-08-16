@@ -46,12 +46,24 @@ from pathlib import Path
 from . import db, einstellungen, konfig, raster, seiten
 
 ZIEL = "zeilen"       # Unterordner im Bilderordner des Registers
-# Zugabe. Nach oben gar keine: Der Rest des Vorgaengers kam sonst mit -
-# auf Bild 00359 stand ueber Eintrag 6 noch dessen "1808.". Nach unten
-# nur ein Hauch, denn die eigentliche Arbeit macht jetzt
-# zeilenraster.nach_schrift, das die Grenze an die Schrift rueckt.
-RAND_OBEN = 0
-RAND = 10
+# Zugabe oben und unten, als Anteil der Hoehe **dieses** Bandes.
+#
+# Fester Pixelwert ging nicht: Die Zeilenhoehen reichen von 260 px im
+# Sterberegister bis 640 px im Eheregister, und die Handschrift haengt
+# unterschiedlich weit unter die gedruckte Linie - gemessen zwischen 0
+# und 86 px auf drei Seiten.
+#
+# Genau messen ging auch nicht, jedenfalls nicht mit vertretbarem
+# Aufwand: Drei Anlaeufe, die Kante an der Schrift auszurichten, haben
+# entweder den Nachsatz abgeschnitten oder die Oberlaengen der naechsten
+# Zeile. Der Versuch steht als zeilenraster.nach_schrift noch da, wird
+# aber nicht benutzt.
+#
+# Fuer den Zweck des Streifens braucht es die Genauigkeit auch nicht: Er
+# ist das, was der Bearbeiter beim Entscheiden ansieht. Fehlender Text
+# kostet eine Information, ein Stueck vom Nachbarn kostet nichts und
+# hilft beim Einordnen. Also grosszuegig.
+RAND_ANTEIL = 1 / 6
 
 
 def baender(bild, anzahl):
@@ -85,11 +97,6 @@ def baender(bild, anzahl):
     from . import zeilenraster
     grenzen, gemessen, _ = zeilenraster.passe_ein(
         sorted(v["zeilen"]), anzahl, (block["y0"], block["y1"]))
-    # Die gedruckte Linie ist die Grenze des Formulars, nicht die der
-    # Handschrift: "evangelischer Religion" haengt darunter. Deshalb jede
-    # Grenze noch an die Schrift ruecken - gemessen an Bild 00359 wandert
-    # sie dort um 18 bis 50 px nach unten, auf anderen Seiten gar nicht.
-    grenzen = zeilenraster.nach_schrift(bild, grenzen, block)
     baender_ = list(zip(grenzen, grenzen[1:]))
     if gemessen == len(grenzen):
         guete = "passt"
@@ -147,9 +154,10 @@ def schneide(con, art, bild, nummern, still=True):
                 kopf = konfig.kurz(kp)
         for nr, (a, e) in zip(nummern, b):
             p = ziel / f"{bild}_{nr}.jpg"
-            k = (block["x0"], max(0, a - RAND_OBEN),
+            rand = int((e - a) * RAND_ANTEIL)
+            k = (block["x0"], max(0, a - rand),
                  block["x1"] - block["x0"],
-                 min(im.size[1], e + RAND) - max(0, a - RAND_OBEN))
+                 min(im.size[1], e + rand) - max(0, a - rand))
             im.crop((k[0], k[1], k[0] + k[2], k[1] + k[3])).save(p, quality=88)
             # Die Seitengroesse gehoert dazu: Die Maske zeigt die Seite
             # verkleinert und muss die Marke umrechnen. Ohne sie rechnete
