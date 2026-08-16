@@ -29,16 +29,16 @@ Haberschlacht`; daran eicht man die Buchstabenformen.
 
 ## Wenn die Erkennung nicht aufgeht
 
-Gemessen wurden 22 von 22 Zeilenlinien bei ±40 px – aber auf anderen Seiten
-als jeder beliebigen. Auf Bild 00359 fand die linke Buchseite nur eine
-Linie, die rechte sechs; gerettet hat es die Vereinigung. Deshalb drei
-Stufen, und die schwächste sagt es:
+Das Raster wird eingepasst, nicht abgezählt – siehe `zeilenraster.py`. Aus
+den gefundenen Linien entsteht ein fast gleichmäßiges Modell, gemessene
+Linien rasten ein, fehlende werden gerechnet. Die Güte nennt hinterher,
+wie viele Grenzen gemessen sind; nur die gerechneten stehen als Warnung
+in der Maske.
 
-    passt genau       Bänder = Einträge                 -> zuschneiden
-    letzte Linie      Bänder = Einträge - 1             -> Papierkante als
-    fehlt                                                  Abschluss
-    passt nicht       alles andere                      -> gleichmäßig
-                                                           teilen, vermerken
+Gemessen gegen vier von Hand geprüfte Seiten: 22 von 22 Linien auf ±40 px.
+Über die dreizehn Beispielseiten: 10 vollständig gemessen, insgesamt 4
+gerechnete Grenzen. Die Vorgängerfassung teilte 7 von 13 Seiten
+gleichmäßig, obwohl die Linien da waren.
 """
 import argparse
 from pathlib import Path
@@ -68,22 +68,27 @@ def baender(bild, anzahl):
     # fälschlich verbunden einen doppelt so breiten Streifen.
     block = dict(v["seiten"][0])
     block["x1"] = max(s["x1"] for s in v["seiten"])
-    z = sorted(v["zeilen"])
+    block["y0"] = min(s["y0"] for s in v["seiten"])
+    block["y1"] = max(s["y1"] for s in v["seiten"])
 
-    if len(z) - 1 == anzahl:
-        return list(zip(z, z[1:])), block, "passt"
-    if len(z) == anzahl:
-        # Die letzte gefundene Linie ist der obere Rand des letzten Eintrags;
-        # nach unten schließt die Papierkante ab.
-        g = z + [block["y1"]]
-        return list(zip(g, g[1:])), block, "letzte Linie ergänzt"
-
-    # Gleichmäßig teilen. Grob, aber besser als kein Streifen – und der
-    # Vermerk sorgt dafür, dass niemand es für gemessen hält.
-    y0, y1 = (z[0], z[-1]) if len(z) >= 2 else (block["y0"], block["y1"])
-    h = (y1 - y0) / anzahl
-    return ([(int(y0 + i * h), int(y0 + (i + 1) * h)) for i in range(anzahl)],
-            block, f"gleichmäßig geteilt ({len(z)} Linien für {anzahl} Einträge)")
+    # Das Raster wird eingepasst, nicht abgezählt. Die alte Fassung
+    # verlangte, dass die Zahl der gefundenen Linien zur Zahl der
+    # Eintraege passt - sonst teilte sie gleichmaessig. Gemessen ueber die
+    # dreizehn Beispielseiten traf das auf sieben zu, obwohl die Linien
+    # da waren: Doppelt erkannte Striche machten aus 9 noetigen Grenzen
+    # 13 Kandidaten. Siehe zeilenraster.py.
+    from . import zeilenraster
+    grenzen, gemessen, _ = zeilenraster.passe_ein(
+        sorted(v["zeilen"]), anzahl, (block["y0"], block["y1"]))
+    baender_ = list(zip(grenzen, grenzen[1:]))
+    if gemessen == len(grenzen):
+        guete = "passt"
+    elif gemessen >= 2:
+        guete = (f"{len(grenzen) - gemessen} von {len(grenzen)} Grenzen "
+                 f"gerechnet, der Rest gemessen")
+    else:
+        guete = f"gleichmäßig geteilt ({len(v['zeilen'])} Linien gefunden)"
+    return baender_, block, guete
 
 
 def schneide(con, art, bild, nummern, still=True):
@@ -161,9 +166,13 @@ def fuer_bild(con, art, bild, still=True):
         con.execute("UPDATE eintrag SET ausschnitt=?, kasten=?, seite=?, "
                     "kopf=? WHERE register=? AND bild=? AND nr=?",
                     (p, kasten, seite, kopf, art, bild, nr))
-    if guete.startswith("gleichmäßig"):
+    if guete != "passt":
         con.execute("UPDATE eintrag SET bemerkung=? WHERE register=? AND bild=?",
                     (f"Zeilenraster unsicher: {guete}", art, bild))
+    else:
+        con.execute("UPDATE eintrag SET bemerkung=NULL WHERE register=? "
+                    "AND bild=? AND bemerkung LIKE 'Zeilenraster%'",
+                    (art, bild))
     con.commit()
     return len(pfade), guete
 

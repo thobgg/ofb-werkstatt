@@ -107,6 +107,11 @@ schätzen zu lassen ist zweimal gescheitert. Spalten bleiben Handarbeit,
 einmal je Buch – der Rastereditor dafür fehlt. Papierabgrenzung robust
 machen (71 % wo sie gelingt, sonst 0 %).
 
+*Zeilenraster erledigt:* `zeilenraster.py` passt ein Modell ein, statt
+Linien abzuzählen. 22 von 22 Linien auf ±40 px gegen die geprüften
+Seiten; über die dreizehn Beispielseiten 10 vollständig gemessen statt
+vorher 6. Das Spaltenraster bleibt offen.
+
 ### 5. Registernamen aus dem Code lösen
 `uebergabe.BAUPLAN` und die Maske sind auf `ehe`/`taufe`/`tod` und deutsche
 Feldnamen verdrahtet; das Versprechen „Rollen statt Feldnamen" aus
