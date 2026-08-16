@@ -140,6 +140,32 @@ def plane(con, register, anzahl=None, quelle="api"):
     return rid
 
 
+def erneut_lesen(con, runde_id):
+    """Die Seiten einer Runde noch einmal lesen lassen.
+
+    Gebraucht, sobald sich der Leseprompt ändert: Die Aktkarte wird
+    geschärft, aber die Einträge von vorgestern bleiben, wie sie sind -
+    und niemand kommt an sie heran. `lauf()` überspringt Seiten, die auf
+    'fertig' stehen, also muss jemand sie zurücksetzen.
+
+    **Menschenarbeit bleibt.** Das Wiedereinlesen fasst nur Felder an, die
+    niemand angefasst hat: `speichere()` schreibt nur, wo `korrigiert IS
+    NULL` und der Eintrag nicht bestätigt ist. Korrekturen und bestätigte
+    Einträge überstehen es unverändert.
+    """
+    a = con.execute("SELECT id FROM auftrag WHERE runde=? AND art='lesen' "
+                    "ORDER BY id DESC LIMIT 1", (runde_id,)).fetchone()
+    if not a:
+        raise SystemExit(f"kein Leseauftrag für Runde {runde_id}")
+    n = con.execute("UPDATE auftrag_seite SET stand='wartet', meldung=NULL "
+                    "WHERE auftrag=?", (a["id"],)).rowcount
+    con.execute("UPDATE auftrag SET stand='wartet', beendet=NULL WHERE id=?",
+                (a["id"],))
+    con.execute("UPDATE runde SET stand='geplant' WHERE id=?", (runde_id,))
+    con.commit()
+    return n
+
+
 # ------------------------------------------------------------------ Lesen
 def _rolle(art, feldname):
     """Welches Feld trägt den Namen welcher Person.
@@ -195,7 +221,14 @@ def speichere(con, art, bild, ergebnis, runde_id=None, hid=None):
                 "(eintrag_id, name, rolle, gelesen, kb_form, zuversicht, "
                 " beleg, reihe) VALUES (?,?,?,?,?,?,?,?) "
                 "ON CONFLICT(eintrag_id, name) DO UPDATE SET "
-                " gelesen=excluded.gelesen, kb_form=excluded.kb_form, "
+                # Eine vorhandene Kirchenbuchform nicht mit NULL
+                # ueberschreiben: Liefert eine spaetere Lesung keine - weil
+                # das Feld inzwischen ohne kb im Katalog steht oder das
+                # Modell sie weglaesst -, waere der Wortlaut sonst weg.
+                # Gemessen: 42 Felder trugen eine Form, die beim
+                # Wiederlesen verschwunden waere.
+                " gelesen=excluded.gelesen, "
+                " kb_form=COALESCE(excluded.kb_form, feld.kb_form), "
                 " zuversicht=excluded.zuversicht, beleg=excluded.beleg, "
                 " reihe=excluded.reihe "
                 # Nicht `entscheidung IS NULL` pruefen: Die Spalte steht per
@@ -344,6 +377,9 @@ def lauf(runde_id):
     # nichts, vermerkt nur - sonst waere es dasselbe stille Angleichen,
     # das hier geprueft werden soll.
     normalform.markiere(con, runde_id)
+    # Was zweimal dasteht, einmal stehen lassen: zeichengleiche
+    # Kirchenbuchformen und derselbe Ort in Wohnort und Herkunft.
+    normalform.entdoppeln(con, runde_id)
     abgleich.runde_pruefen(con, runde_id)
 
     if offen:

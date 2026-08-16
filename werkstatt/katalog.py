@@ -76,9 +76,11 @@ def person(r, titel, *, geburt=False, eltern=False, stand=True):
                   "„zu Bönnigheim“, mit Amtsangabe. Steht im Buch „N.N. von "
                   "Hausen“ und wohnt die Person am Ort des Eintrags, ist "
                   "das die Herkunft und nicht der Wohnort."),
-        f(f"{r}_religion", r, "text", ziel="RELI",
-          titel=f"{titel}: Religion",
-          hinweis="Nur wenn genannt – meist bei Andersgläubigen."),
+        f(f"{r}_religion", r, "text", kb=True, ziel="RELI",
+          ziel_kb="_KB_RELI", titel=f"{titel}: Religion",
+          hinweis="Kanonisch die Konfession („evangelisch“), im "
+                  "Kirchenbuchfeld der Wortlaut („evangelischer Religion“, "
+                  "„beide evangelisch“). Nur wenn genannt."),
     ]
     if stand:
         z.append(f(f"{r}_stand", r, "text", kb=True, ziel=None,

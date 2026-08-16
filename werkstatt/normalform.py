@@ -182,6 +182,84 @@ def pruefe(wert, kb, volltext=None, paare=(), bekannt=()):
             f"nicht im Volltext")
 
 
+# Feldpaare, bei denen dasselbe zweimal stehen kann. Links das
+# allgemeinere, rechts das speziellere: Steht in beiden dasselbe, bleibt
+# das speziellere - es sagt mehr.
+#
+# Gemessen an Runde 1: Der Ort "von Hausen bei Brackenheim" stand als
+# Wohnort UND als Herkunft der Mutter. Die geschaerften Hinweise haben die
+# Herkunft dazugewonnen, aber den Wohnort nicht geleert; die beiden Felder
+# liegen semantisch zu nah beieinander, als dass eine Anweisung das
+# trennen koennte. Also nachrechnen statt diskutieren.
+DOPPELT = [("vater_ort", "vater_herkunft"),
+           ("mutter_ort", "mutter_herkunft"),
+           ("braut_ort", "braut_herkunft"),
+           ("braeutigam_ort", "braeutigam_herkunft")]
+
+
+def _gleiche_bedeutung(a, b):
+    """Zwei Werte, die dasselbe sagen - auch mit Vorwort davor."""
+    x, y = falte(a or ""), falte(b or "")
+    if not x or not y:
+        return False
+    for w in ("von ", "zu ", "aus ", "in ", "bei "):
+        x = x[len(w):] if x.startswith(w) else x
+        y = y[len(w):] if y.startswith(w) else y
+    return x == y or x in y or y in x
+
+
+def entdoppeln(con, runde_id=None, still=True):
+    """Was zweimal dasteht, einmal stehen lassen.
+
+    Zwei Fälle, beide ohne Modell entscheidbar:
+
+    1. Die Kirchenbuchform ist **zeichengleich** mit der normalisierten -
+       dann sagt sie nichts und wird geleert. Die Uebergabe verwirft sie
+       ohnehin; in der Maske stand sie trotzdem und sah nach Arbeit aus.
+    2. Ein allgemeineres und ein spezielleres Feld tragen **denselben
+       Ort** - dann bleibt das speziellere. Wohnort und Herkunft der
+       Mutter sind der gemessene Fall.
+
+    Geleert wird nur, was das Modell geliefert hat. Ein von Hand
+    eingetragener Wert bleibt, auch wenn er doppelt aussieht - wer ihn
+    getippt hat, wollte ihn.
+    """
+    wo, par = "1=1", []
+    if runde_id:
+        wo, par = "e.runde=?", [runde_id]
+    zeilen = con.execute(
+        f"SELECT f.id, f.eintrag_id, f.name, f.gelesen, f.korrigiert, f.kb_form "
+        f"FROM feld f JOIN eintrag e ON e.id=f.eintrag_id "
+        f"WHERE {wo} AND e.status <> 'bestaetigt'", par).fetchall()
+    je_eintrag = {}
+    for r in zeilen:
+        je_eintrag.setdefault(r["eintrag_id"], {})[r["name"]] = r
+    kb_weg = ort_weg = 0
+    for felder in je_eintrag.values():
+        for r in felder.values():
+            wert = r["korrigiert"] if r["korrigiert"] is not None else r["gelesen"]
+            if (r["kb_form"] and wert
+                    and str(r["kb_form"]).strip() == str(wert).strip()):
+                con.execute("UPDATE feld SET kb_form=NULL WHERE id=?", (r["id"],))
+                kb_weg += 1
+        for allgemein, speziell in DOPPELT:
+            a_, s_ = felder.get(allgemein), felder.get(speziell)
+            if not (a_ and s_) or a_["korrigiert"] is not None:
+                continue
+            if _gleiche_bedeutung(a_["gelesen"], s_["korrigiert"] or s_["gelesen"]):
+                con.execute(
+                    "UPDATE feld SET gelesen=NULL, kb_form=NULL, "
+                    "beleg=COALESCE(beleg || ' · ', '') || ? WHERE id=?",
+                    (f"stand gleichlautend in „{speziell}“ – dort belassen",
+                     a_["id"]))
+                ort_weg += 1
+    con.commit()
+    if not still:
+        print(f"  {kb_weg} zeichengleiche Kirchenbuchformen geleert")
+        print(f"  {ort_weg} doppelte Ortsangaben geleert")
+    return kb_weg, ort_weg
+
+
 def markiere(con, runde_id=None, still=True):
     """Die Felder einer Runde durchrechnen und Widersprueche vermerken."""
     paare, bekannt = belegte_paare(con), bekannte_namen(con)

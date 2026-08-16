@@ -619,7 +619,11 @@ function zeileFeld(f){
         placeholder="normalisiert"
         title="Die vereinheitlichte Form – sie geht in die Ausgabe."
         oninput="this.classList.add('geaendert')">`;
- if(!f.kb) return `<div class="zeile einzeln">
+ // Die rechte Spalte auch dann, wenn die Aktkarte keine vorsieht, aber
+ // eine Form gespeichert ist: 42 Felder trugen einen Wortlaut, den die
+ // Maske verschwieg, weil `kb` im Katalog auf false stand. Nichts
+ // ausblenden, was in den Daten steht.
+ if(!f.kb && !f.kb_form) return `<div class="zeile einzeln">
    <label>${esc(beschriftung(f))}</label>
    ${LANG.includes(f.name)
      ? `<textarea data-feld="${esc(f.name)}" rows=3
