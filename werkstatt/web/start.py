@@ -24,6 +24,15 @@ header a.an{background:#2f6fdd;color:#fff}
 main{padding:1.2rem;max-width:1100px;margin:0 auto}
 h2{font-size:1.05rem;margin:1.6rem 0 .6rem;color:#c3c9d4;font-weight:600}
 h2:first-child{margin-top:0}
+/* Rastereditor: das Seitenbild mit senkrechten Linien darueber. Die
+   Linien sitzen in Prozent, damit sie bei jeder Fensterbreite stimmen. */
+.rasterbild{margin-top:.7rem}
+.rasterflaeche{position:relative;display:inline-block;max-width:100%;
+ background:#fff;cursor:crosshair}
+.rasterflaeche img{display:block;width:100%;height:auto}
+.rl{position:absolute;top:0;bottom:0;width:3px;margin-left:-1px;
+ background:#2f6fdd;opacity:.75;cursor:col-resize}
+.rl:hover{opacity:1;background:#e0b341;width:5px}
 .karte{background:#1b1e24;border:1px solid #2c313a;border-radius:10px;
  padding:.9rem 1.1rem;margin-bottom:.9rem}
 table{width:100%;border-collapse:collapse;font-size:.9rem}
@@ -734,6 +743,7 @@ async function einstellungenHolen(){
 function ansichtFormular(){
  return `
  ${periodenKarte()}
+ ${rasterKarte()}
  ${aktkarten()}`;
 }
 
@@ -923,6 +933,141 @@ function tagMarke(ziel,amt){
  if(!ziel) return '<span class=dim>–</span>';
  return `<code style="color:${AMTFARBE[amt]||'#c3c9d4'}"
    title="${esc((E.tag_amt||{})[amt]||'')}">${esc(ziel)}</code>`;
+}
+
+function rasterKarte(){
+ return `
+ <h2>Spaltenraster – einmal je Buch gezogen</h2>
+ <div class=karte>
+  <p class=dim style="font-size:.86rem;margin:0 0 .7rem">
+   Zeilen wechseln mit jeder Seite: mal sechs Einträge, mal acht. Spalten
+   nicht – das Formular ist gedruckt und steht auf jeder Seite derselben
+   Periode an derselben Stelle, gemessen auf drei Nachkommastellen. Die
+   Werkstatt schlägt die Linien vor; wer sie einmal geraderückt, hat sie
+   für das ganze Buch. Erst damit ist eine <b>einzelne Zelle</b>
+   adressierbar – die Voraussetzung für die Lupe je Feld und für jede
+   Handschrifterkennung, die Text einer Spalte zuordnen soll.</p>
+  <div class=reihe>
+   <label class=dim>Register</label>
+   <select id=rasterreg onchange=rasterLaden()>
+    ${Object.keys(E.aktkarten||{}).map(a=>`<option>${esc(a)}</option>`).join('')}
+   </select>
+   <button onclick=rasterLaden()>Vorschlag holen</button>
+   <button class=ja onclick=rasterSpeichern()>Raster merken</button>
+   <span id=rasterhinweis class=dim style="font-size:.85rem"></span>
+  </div>
+  <div id=rasterbild class=rasterbild></div>
+ </div>`;
+}
+
+// Der Editor. Linien liegen relativ (0..1) in ihrer Buchhaelfte, damit sie
+// fuer jede Seite derselben Periode gelten - Scans sind unterschiedlich
+// beschnitten, die Verhaeltnisse bleiben.
+let RASTER = {haelften: [], geo: null, bild: null};
+
+async function rasterLaden(){
+ const reg = document.getElementById('rasterreg').value;
+ const kasten = document.getElementById('rasterbild');
+ kasten.innerHTML = '<span class=dim>wird gemessen …</span>';
+ const r = await (await fetch('/api/spaltenraster?register='+encodeURIComponent(reg))).json();
+ if(r.fehler){ kasten.innerHTML = '<span class=dim>'+esc(r.fehler)+'</span>'; return; }
+ RASTER.geo = r.geometrie; RASTER.bild = r.bild; RASTER.reg = reg;
+ RASTER.haelften = (r.gespeichert && r.gespeichert.length)
+   ? r.gespeichert.map(h=>h.slice())
+   : (r.vorschlag||[]).map(h=>h.map(e=>e.x));
+ RASTER.gespeichert = !!(r.gespeichert && r.gespeichert.length);
+ RASTER.spalten = r.spalten||[];
+ rasterZeichnen();
+}
+
+function rasterZeichnen(){
+ const kasten = document.getElementById('rasterbild');
+ const g = RASTER.geo;
+ if(!g || !RASTER.bild){ kasten.innerHTML='<span class=dim>kein Bild</span>'; return; }
+ const [bw, bh] = g.groesse;
+ const linien = [];
+ (RASTER.haelften||[]).forEach((hs, hi)=>{
+   const s = g.seiten[hi]; if(!s) return;
+   hs.forEach((x, xi)=>{
+     const px = (s.x0 + x*(s.x1-s.x0))/bw*100;
+     linien.push(`<i class=rl style="left:${px}%" data-h="${hi}" data-i="${xi}"
+       onpointerdown="rasterGreifen(event,${hi},${xi})"
+       ondblclick="rasterWeg(${hi},${xi})"></i>`);
+   });
+ });
+ const zahl = (RASTER.haelften||[]).reduce((n,h)=>n+h.length,0);
+ const soll = RASTER.spalten.length;
+ kasten.innerHTML = `
+  <div class=rasterflaeche onclick=rasterDazu(event)>
+   <img src="/bild/${encodeURI(RASTER.bild)}?kante=1600" alt="">
+   ${linien.join('')}
+  </div>
+  <div class=dim style="font-size:.84rem;margin-top:.4rem">
+   ${zahl} Linien${soll?` für ${soll} gelesene Spalten – ${zahl-2*(RASTER.haelften.length)+RASTER.haelften.length} Trennstriche innen`:''}
+   ${RASTER.gespeichert?' · gespeichert':' · Vorschlag, noch nicht gemerkt'}
+   <br>Ziehen verschiebt, Doppelklick löscht, Klick ins Bild legt eine neue Linie an.
+  </div>`;
+}
+
+function rasterHaelfte(anteil){
+ // In welcher Buchhaelfte liegt ein Klick? Nach den erkannten Bloecken.
+ const g = RASTER.geo, [bw] = g.groesse;
+ let beste = 0, dmin = 1e9;
+ g.seiten.forEach((s, i)=>{
+   const m = ((s.x0+s.x1)/2)/bw;
+   if(Math.abs(anteil-m) < dmin){ dmin = Math.abs(anteil-m); beste = i; }
+ });
+ return beste;
+}
+
+function rasterDazu(ev){
+ if(ev.target.tagName === 'I') return;
+ const r = ev.currentTarget.getBoundingClientRect();
+ const anteil = (ev.clientX - r.left)/r.width;
+ const hi = rasterHaelfte(anteil);
+ const s = RASTER.geo.seiten[hi], [bw] = RASTER.geo.groesse;
+ const x = (anteil*bw - s.x0)/(s.x1 - s.x0);
+ if(x < -0.05 || x > 1.05) return;
+ RASTER.haelften[hi] = (RASTER.haelften[hi]||[]).concat([Math.max(0,Math.min(1,x))]).sort((a,b)=>a-b);
+ RASTER.gespeichert = false;
+ rasterZeichnen();
+}
+
+function rasterWeg(hi, xi){
+ RASTER.haelften[hi].splice(xi,1);
+ RASTER.gespeichert = false;
+ rasterZeichnen();
+}
+
+function rasterGreifen(ev, hi, xi){
+ ev.stopPropagation();
+ const flaeche = ev.target.parentElement;
+ const s = RASTER.geo.seiten[hi], [bw] = RASTER.geo.groesse;
+ const zieh = e => {
+   const r = flaeche.getBoundingClientRect();
+   const anteil = (e.clientX - r.left)/r.width;
+   RASTER.haelften[hi][xi] = Math.max(0, Math.min(1, (anteil*bw - s.x0)/(s.x1 - s.x0)));
+   ev.target.style.left = (anteil*100)+'%';
+ };
+ const los = () => {
+   document.removeEventListener('pointermove', zieh);
+   document.removeEventListener('pointerup', los);
+   RASTER.haelften[hi].sort((a,b)=>a-b);
+   RASTER.gespeichert = false;
+   rasterZeichnen();
+ };
+ document.addEventListener('pointermove', zieh);
+ document.addEventListener('pointerup', los);
+}
+
+async function rasterSpeichern(){
+ const h = document.getElementById('rasterhinweis');
+ const r = await (await fetch('/api/spaltenraster', {method:'POST',
+   headers:{'Content-Type':'application/json'},
+   body: JSON.stringify({register: RASTER.reg, haelften: RASTER.haelften})})).json();
+ h.textContent = r.ok ? `${r.linien} Linien gemerkt – gilt für alle Seiten dieser Periode` : 'ging nicht';
+ RASTER.gespeichert = true;
+ rasterZeichnen();
 }
 
 function periodenKarte(){

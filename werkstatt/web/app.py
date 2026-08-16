@@ -33,6 +33,7 @@ from .seite import SEITE
 from .start import STARTSEITE
 from .. import (abgleich, ausgabe, db, einrichtung, einstellungen,
                 dubletten, gespraech, katalog, nachlesen, perioden,
+                spaltenraster,
                 import_gedcom,
                 import_wortschatz, konfig, lesen,
                 runde as _runde,
@@ -193,6 +194,31 @@ class Handler(BaseHTTPRequestHandler):
             try:
                 rid = self._zahl("runde")
                 return self._json(_runde.fortschritt(con, rid) or {})
+            finally:
+                con.close()
+        if pfad == "/api/spaltenraster":
+            art = (self._frage.get("register") or [""])[0]
+            con = db.verbinde()
+            try:
+                from . import app as _self          # noqa: F401
+                v = spaltenraster.vorschlag(con, art)
+                ordner = einstellungen.ordner(con, art)
+                bilder = seiten.bilder(ordner)
+                erste = bilder[0] if bilder else None
+                geo = None
+                if erste:
+                    from .. import raster as _raster
+                    r = _raster.vorschlag(str(erste))
+                    geo = dict(groesse=r["groesse"], falz=r["falz"],
+                               seiten=[dict(x0=s["x0"], x1=s["x1"],
+                                            y0=s["y0"], y1=s["y1"])
+                                       for s in r["seiten"]])
+                return self._json(dict(
+                    register=art, vorschlag=v.get("haelften", []),
+                    gespeichert=spaltenraster.hole(con, art),
+                    spalten=v.get("spalten") or [],
+                    bild=konfig.kurz(erste) if erste else None,
+                    geometrie=geo, fehler=v.get("fehler")))
             finally:
                 con.close()
         if pfad == "/api/eintraege":
@@ -405,6 +431,15 @@ class Handler(BaseHTTPRequestHandler):
             finally:
                 con.close()
             return self._json(dict(ok=True))
+        if pfad == "/api/spaltenraster":
+            d = self._rumpf()
+            con = db.verbinde()
+            try:
+                n = spaltenraster.merke(con, d["register"],
+                                        d.get("haelften") or [])
+                return self._json({"ok": True, "linien": n})
+            finally:
+                con.close()
         if pfad == "/api/perioden":
             d = self._rumpf()
             con = db.verbinde()
