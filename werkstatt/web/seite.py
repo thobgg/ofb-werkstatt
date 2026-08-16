@@ -97,6 +97,13 @@ button:hover{filter:brightness(1.15)}
 details summary{cursor:pointer;color:#8b93a3;font-size:.84rem;padding:.3rem 0}
 .zeile{display:grid;grid-template-columns:10rem 1fr 1fr;gap:.4rem;padding:.15rem 0}
 .zeile label{color:#8b93a3;font-size:.8rem;align-self:center}
+/* Ueberschrift ueber den zwei Spalten. Ohne sie steht links ein Feld
+   ohne Beschriftung und rechts eines mit Platzhalter - und niemand weiss,
+   dass links die vereinheitlichte Form gemeint ist und rechts der
+   Wortlaut. */
+.zeile.spaltenkopf{padding-bottom:.15rem}
+.zeile.spaltenkopf span{color:#7d8798;font-size:.72rem;
+ text-transform:uppercase;letter-spacing:.04em}
 .fuss{padding:.5rem .9rem;background:#191d24;display:flex;gap:.5rem;align-items:center}
 .zweite{padding:.5rem .9rem;border-bottom:1px solid #23272f;font-size:.88rem}
 .zweite .zkopf{color:#9aa3b2;margin-bottom:.4rem}
@@ -283,6 +290,11 @@ function karte(e,k){
   </div>
   <div class=mehr>
    <div class=nachtrag>
+    ${zeilen(e).length?`<div class="zeile spaltenkopf">
+      <label></label>
+      <span>normalisiert &middot; geht in die Ausgabe</span>
+      <span>wie es im Buch steht</span>
+     </div>`:''}
     ${zeilen(e).map(f=>zeileFeld(f)).join('')}
    </div>
    ${leere(e).length?`<div class=reihe style="margin-top:.3rem">
@@ -531,7 +543,7 @@ function leere(e){ return e.felder.filter(f=>passt(f) && !f.wert && !f.kb_form &
 function zeileFeld(f){
  return `<div class=zeile><label>${esc(beschriftung(f))}</label>
    <input data-feld="${esc(f.name)}" value="${esc(f.wert||'')}"
-    oninput="this.classList.add('geaendert')">
+    placeholder="normalisiert" oninput="this.classList.add('geaendert')">
    <input data-kb="${esc(f.name)}" value="${esc(f.kb_form||'')}"
     placeholder="Kirchenbuchform" oninput="this.classList.add('geaendert')">
   </div>`;
