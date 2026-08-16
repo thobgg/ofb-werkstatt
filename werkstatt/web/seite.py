@@ -270,7 +270,7 @@ function karte(e,k){
     ${still.map(f=>`<span><i class="pkt gruen"></i> ${esc(f.rolle)}
       <b>${esc(f.wert||'')}</b></span>`).join('')}</div>`:''}
   ${rest.length?`<div class=still><span class=dim>gelesen:</span>
-    ${rest.map(f=>`<span>${esc(f.titel||f.name.replace(/_/g,' '))}
+    ${rest.map(f=>`<span>${esc(beschriftung(f))}
       <b>${esc(String(f.wert).slice(0,40))}</b></span>`).join('')}</div>`:''}
   ${frage.map(f=>zeilePerson(e,f)).join('')}
   <div class=anbind data-anbind><span class=lbl>Familie</span>
@@ -292,7 +292,7 @@ function karte(e,k){
               color:#e6e8ec;border-radius:6px;padding:.3rem .5rem;font:inherit">
       <option value="">– welches Feld? –</option>
       ${leere(e).map(f=>`<option value="${esc(f.name)}">${
-        esc(f.name.replace(/_/g,' '))}</option>`).join('')}
+        esc(beschriftung(f))}</option>`).join('')}
      </select>
      <span class=zaehler>${leere(e).length} Felder sind leer</span>
     </div>`:''}
@@ -501,7 +501,7 @@ async function nochmalLesen(k,btn){
   + (anders.length ? `<table class=ztab>
       <tr><th>Feld</th><th>steht da</th><th>zweite Lesung</th></tr>
       ${anders.map(f=>`<tr>
-        <td>${esc(f.name.replace(/_/g,' '))}${f.eigen
+        <td>${esc(beschriftung(f))}${f.eigen
           ?' <span class=dim>(von Ihnen)</span>':''}</td>
         <td>${esc(f.alt)||'<span class=dim>–</span>'}</td>
         <td>${esc(f.neu)||'<span class=dim>–</span>'}</td></tr>`).join('')}
@@ -509,6 +509,16 @@ async function nochmalLesen(k,btn){
 }
 
 function feld(e,n){return e.felder.find(f=>f.name===n)||{}}
+
+// Beschriftung eines Feldes: der Titel aus der Aktkarte, sonst der
+// Feldname mit grossen Anfangsbuchstaben. Vorher stand in der Maske
+// "tauf ort" und "geburt zeit" - der Programmname, klein und mit
+// Unterstrichen, den niemand ausser dem Code kennt.
+function beschriftung(f){
+  if(f.titel) return f.titel;
+  return (f.name||'').split('_')
+    .map(w=>w ? w[0].toUpperCase()+w.slice(1) : w).join(' ');
+}
 
 // Welche Felder in den Nachtragsblock gehoeren: alles, was kein
 // Personenfeld und kein Datum ist. Gefuellte immer, leere erst wenn der
@@ -519,7 +529,7 @@ function zeilen(e){ return e.felder.filter(f=>passt(f) && (f.wert||f.kb_form||f.
 function leere(e){ return e.felder.filter(f=>passt(f) && !f.wert && !f.kb_form && !f.offen); }
 
 function zeileFeld(f){
- return `<div class=zeile><label>${esc(f.name.replace(/_/g,' '))}</label>
+ return `<div class=zeile><label>${esc(beschriftung(f))}</label>
    <input data-feld="${esc(f.name)}" value="${esc(f.wert||'')}"
     oninput="this.classList.add('geaendert')">
    <input data-kb="${esc(f.name)}" value="${esc(f.kb_form||'')}"
