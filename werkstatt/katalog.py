@@ -199,8 +199,11 @@ TAUFE = [
               "Kindsvater Bezichtigten – als Angabe, nicht als Tatsache."),
     f("paten", None, "text", kb=True, ziel="_ASSO", ziel_kb="_GODP",
       titel="Paten",
-      hinweis="Alle, mit Beruf und Ort. Im Bestand doppelt geführt: als "
-              "Verweis (_ASSO + RELA Godparent) und im Wortlaut (_GODP)."),
+      hinweis="Der **Wortlaut** gehört in die Kirchenbuchform – die ganze "
+              "Aufzählung mit Beruf, Ort und Abkürzungen, so wie sie "
+              "dasteht. Kanonisch nur die bereinigten Namen, durch "
+              "Semikolon getrennt. Im Bestand doppelt geführt: als Verweis "
+              "(_ASSO + RELA Godparent) und im Wortlaut (_GODP)."),
     f("taufender", None, "text", ziel="CHR.AGNC", titel="taufender Geistlicher"),
     f("religion", None, "text", ziel="CHR.RELI", titel="Konfession"),
     f("fam_reg", None, "text", ziel="_FAMREG", titel="Seitenzahl des Familienregisters",
