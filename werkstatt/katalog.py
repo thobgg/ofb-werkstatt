@@ -72,7 +72,10 @@ def person(r, titel, *, geburt=False, eltern=False, stand=True):
                   "„Rathsverwandter“, „des Gerichts“, „Wittwer und Bauer“."),
         f(f"{r}_ort", r, "ort", kb=True, ziel="RESI", ziel_kb="_NOTE_ORT",
           titel=f"{titel}: Wohnort",
-          hinweis="Auch „allhier“, „von Bönnigheim“, mit Amtsangabe."),
+          hinweis="Wo die Person **lebt**, nicht wo sie herkommt: „allhier“, "
+                  "„zu Bönnigheim“, mit Amtsangabe. Steht im Buch „N.N. von "
+                  "Hausen“ und wohnt die Person am Ort des Eintrags, ist "
+                  "das die Herkunft und nicht der Wohnort."),
         f(f"{r}_religion", r, "text", ziel="RELI",
           titel=f"{titel}: Religion",
           hinweis="Nur wenn genannt – meist bei Andersgläubigen."),
@@ -188,7 +191,11 @@ TAUFE = [
     *geborene("mutter", "Mutter"),
     f("mutter_herkunft", "mutter", "name", kb=True, ziel=None,
       ziel_kb="_KB_ELTERN", titel="Mutter: Herkunft",
-      hinweis="Vater der Mutter samt Beruf und Ort, wenn genannt."),
+      hinweis="Woher sie stammt – der Ort („von Hausen bei Brackenheim“) "
+              "und, wenn genannt, das Elternhaus („Tochter des Georg Weber "
+              "von Frauenzimmern“). **Nicht** der Wohnort: Die Frau lebt "
+              "beim Mann am Ort des Eintrags. Kanonisch der Ortsname allein "
+              "(„Hausen“), im Kirchenbuchfeld der ganze Wortlaut."),
     f("unehelich", None, "text", ziel="_STAT", ziel_kb="_NOTE_TAUFE",
       titel="unehelich",
       hinweis="„unehelich“, „ledigen Standes“, „vaterloses Kind“. Im "
@@ -201,9 +208,11 @@ TAUFE = [
       titel="Paten",
       hinweis="Der **Wortlaut** gehört in die Kirchenbuchform – die ganze "
               "Aufzählung mit Beruf, Ort und Abkürzungen, so wie sie "
-              "dasteht. Kanonisch nur die bereinigten Namen, durch "
-              "Semikolon getrennt. Im Bestand doppelt geführt: als Verweis "
-              "(_ASSO + RELA Godparent) und im Wortlaut (_GODP)."),
+              "dasteht. Das kanonische Feld bleibt **leer**: Dort stehen "
+              "später Verweise auf Personensätze (_ASSO + RELA Godparent), "
+              "keine Namen als Text. Solange Paten nicht als Personen "
+              "angelegt werden, wäre ein Name dort eine Kennung, die es "
+              "nicht gibt."),
     f("taufender", None, "text", ziel="CHR.AGNC", titel="taufender Geistlicher"),
     f("religion", None, "text", ziel="CHR.RELI", titel="Konfession"),
     f("fam_reg", None, "text", ziel="_FAMREG", titel="Seitenzahl des Familienregisters",
