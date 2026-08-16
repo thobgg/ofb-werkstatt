@@ -98,7 +98,12 @@ def baender(bild, anzahl):
     grenzen, gemessen, _ = zeilenraster.passe_ein(
         sorted(v["zeilen"]), anzahl, (block["y0"], block["y1"]))
     baender_ = list(zip(grenzen, grenzen[1:]))
-    if gemessen == len(grenzen):
+    # Ab wann heisst es "unsicher"? Nicht schon bei einer gerechneten
+    # Grenze von sieben - dann steht die Warnung bei der Haelfte aller
+    # Eintraege, und eine Warnung, die immer da ist, liest niemand.
+    # Gemessen an Runde 1: 17 von 34 Eintraegen trugen sie wegen einer
+    # einzigen gerechneten Grenze.
+    if gemessen >= len(grenzen) - 1:
         guete = "passt"
     elif gemessen >= 2:
         guete = (f"{len(grenzen) - gemessen} von {len(grenzen)} Grenzen "
