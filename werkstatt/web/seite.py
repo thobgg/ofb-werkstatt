@@ -12,14 +12,25 @@ header b{font-size:1rem}
 kbd{background:#2b313b;border:1px solid #3a424f;border-bottom-width:2px;border-radius:4px;
  padding:0 .3rem;font:inherit;font-size:.8rem;color:#c3c9d4}
 main{padding:1rem;max-width:1500px;margin:0 auto}
+/* `clip` statt `hidden`: Beides schneidet an der abgerundeten Ecke ab,
+   aber `hidden` macht den Kasten zum Scrollbereich - und darin klebt
+   nichts mehr. Der Streifen soll kleben. */
 .eintrag{background:#1b1e24;border:1px solid #2c313a;border-radius:10px;
- margin-bottom:1rem;overflow:hidden}
+ margin-bottom:1rem;overflow:clip}
 .eintrag.fokus{border-color:#4b7bec;box-shadow:0 0 0 1px #4b7bec}
 .eintrag.fertig{opacity:.55}
 .kopf{padding:.45rem .9rem;background:#20242c;display:flex;gap:.8rem;
  align-items:center;font-size:.9rem}
 .kopf .q{font-weight:600}
-.bildbox{overflow-x:auto;background:#fff;cursor:zoom-in;position:relative}
+/* Der Streifen bleibt beim Blättern durch die Felder oben stehen -
+   solange dieser Eintrag dran ist. Sonst scrollt genau das weg, wogegen
+   man die Felder prüft. */
+.bildbox{overflow-x:auto;background:#fff;cursor:zoom-in;
+ position:sticky;top:2.9rem;z-index:4;
+ box-shadow:0 6px 12px -8px #000a}
+/* Vergroessert nicht: Dann ist der Kasten 70vh hoch und wuerde die
+   halbe Seite verdecken. */
+.bildbox.gross{position:relative;box-shadow:none}
 /* Die gedruckten Spaltenueberschriften als Text. Sie stehen nicht ueber
    "ihrer" Spalte - dafuer braeuchte es das Spaltenraster, und das traegt
    die Messung nicht. In Leserichtung aufgezaehlt helfen sie trotzdem:
