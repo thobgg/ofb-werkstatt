@@ -168,6 +168,17 @@ def _eigene_familie(con, name_v, name_m):
     return None
 
 
+# Rollen, bei denen ein **einzelnes** Wort der Vorname ist, nicht der
+# Nachname. Beim Taufeintrag steht bei der Mutter oft nur "Christina" -
+# ihr Nachname steht im Geburtsnamen oder ergibt sich vom Vater. Ohne
+# diese Unterscheidung entstand eine Person mit Vornamen None und
+# Nachnamen "Christina", und der Nachname konnte auch nicht mehr geerbt
+# werden. In der Maske war es zu sehen: unter dem Feld stand "– Christina".
+#
+# Beim Braeutigam ist ein einzelnes Wort dagegen fast immer der Nachname.
+NUR_VORNAME = {"kind", "mutter"}
+
+
 def namensteile(felder, rolle):
     """Vor- und Nachname einer Rolle. Der Nachname darf fehlen.
 
@@ -178,6 +189,8 @@ def namensteile(felder, rolle):
     vn = felder.get(f"{rolle}_vorname", {}).get("wert")
     nn = felder.get(f"{rolle}_name", {}).get("wert")
     if nn and not vn:
+        if rolle in NUR_VORNAME and len(nn.split()) == 1 and "/" not in nn:
+            return nn.strip(), None
         vn, nn = teile_namen(nn)
     return vn, nn
 

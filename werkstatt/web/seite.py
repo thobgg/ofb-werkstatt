@@ -378,9 +378,17 @@ async function beenden(){
 // dem letzten Wort. Das geht bei "Johann Georg Kröneck" gut und bei
 // "Hans von der Au" schief - deshalb steht die Teilung sichtbar unter dem
 // Feld, und wer es besser weiss, klammert den Nachnamen: /von der Au/.
-function teileName(wert){
+// `rolle` entscheidet bei einem einzelnen Wort: Bei Kind und Mutter ist
+// es der Vorname (ihr Nachname kommt vom Vater oder aus dem
+// Geburtsnamen), beim Braeutigam der Nachname. Dieselbe Regel wie in
+// uebergabe.NUR_VORNAME - sonst zeigt die Maske etwas anderes an, als
+// hinterher in der Ausgabe steht.
+const NUR_VORNAME = ['kind', 'mutter'];
+function teileName(wert, rolle){
   const w = (wert||'').trim();
   if(!w) return null;
+  if(NUR_VORNAME.includes(rolle) && !w.includes('/') && w.split(/\s+/).length === 1)
+    return {vor: w, nach: ''};
   if(w.includes('/')){
     const i = w.indexOf('/'), r = w.slice(i+1), j = r.indexOf('/');
     const nach = (j<0?r:r.slice(0,j)).trim();
@@ -391,14 +399,14 @@ function teileName(wert){
   return t.length>1 ? {vor:t.slice(0,-1).join(' '), nach:t[t.length-1]}
                     : {vor:'', nach:t[0]};
 }
-function teilungText(wert){
-  const t = teileName(wert);
+function teilungText(wert, rolle){
+  const t = teileName(wert, rolle);
   if(!t) return '';
   return `<b>${esc(t.vor||'–')}</b> · ${esc(t.nach||'–')}`;
 }
 function teilung(inp){
   const z = inp.parentElement.querySelector('.teilung');
-  if(z) z.innerHTML = teilungText(inp.value);
+  if(z) z.innerHTML = teilungText(inp.value, z.dataset.rolle||'');
 }
 
 // Klicken vergroessert, Ziehen verschiebt. Beides an einem Zeiger, also
@@ -551,7 +559,8 @@ function zeilePerson(e,f){
    onkeydown="navVorschlag(event,this)"
    onblur="setTimeout(()=>schliesse(this),180)">
    ${f.name.endsWith('_name')||f.name==='verstorbener_name'
-     ?`<span class=teilung>${teilungText(f.wert)}</span>`:''}</span>
+     ?`<span class=teilung data-rolle="${esc(f.rolle||'')}"
+        >${teilungText(f.wert, f.rolle)}</span>`:''}</span>
   <span>${v==='neu'?`<span class=neu>● wird neu angelegt</span>`:treffer}</span>
   <span class=knopf>
    <button class="${v==='verknuepft'?'ja an':''}" title="übernehmen (Enter)"
