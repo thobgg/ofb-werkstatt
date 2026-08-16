@@ -110,6 +110,11 @@ button:hover{filter:brightness(1.15)}
 .mehr{padding:0 .9rem .7rem}
 details summary{cursor:pointer;color:#8b93a3;font-size:.84rem;padding:.3rem 0}
 .zeile{display:grid;grid-template-columns:10rem 1fr 1fr;gap:.4rem;padding:.15rem 0}
+/* Was keine Kirchenbuchform hat, bekommt die ganze Breite - Volltext und
+   "nicht entzifferbar" sind Notizen, da gibt es nichts zu normalisieren. */
+.zeile.einzeln{grid-template-columns:10rem 1fr}
+.zeile input:disabled{background:#141821;color:#5b6472;border-style:dotted;
+ cursor:not-allowed}
 .zeile label{color:#8b93a3;font-size:.8rem;align-self:center}
 /* Ueberschrift ueber den zwei Spalten. Ohne sie steht links ein Feld
    ohne Beschriftung und rechts eines mit Platzhalter - und niemand weiss,
@@ -578,14 +583,31 @@ function zeilen(e){ return e.felder.filter(f=>passt(f) && (f.wert||f.kb_form||f.
 function leere(e){ return e.felder.filter(f=>passt(f) && !f.wert && !f.kb_form && !f.offen); }
 
 function zeileFeld(f){
- return `<div class=zeile><label>${esc(beschriftung(f))}</label>
+ // Drei Fälle, und die Zeile sieht jedes Mal anders aus:
+ //
+ //   ohne Kirchenbuchform   ein Feld über die ganze Breite (Volltext,
+ //                          "nicht entzifferbar" - da gibt es nichts zu
+ //                          normalisieren)
+ //   Verweisfeld            links gesperrt: dort stehen später Kennungen
+ //                          von Personensätzen, kein Text (Paten, _ASSO)
+ //   sonst                  links normalisiert, rechts der Wortlaut
+ const links = f.verweis
+   ? `<input value="" disabled placeholder="später: Verweise auf Personen"
+        title="Hier stehen künftig Kennungen von Personensätzen (_ASSO). Ein Name wäre eine Kennung, die es nicht gibt.">`
+   : `<input data-feld="${esc(f.name)}" value="${esc(f.wert||'')}"
+        placeholder="normalisiert"
+        title="Die vereinheitlichte Form – sie geht in die Ausgabe."
+        oninput="this.classList.add('geaendert')">`;
+ if(!f.kb) return `<div class="zeile einzeln">
+   <label>${esc(beschriftung(f))}</label>
    <input data-feld="${esc(f.name)}" value="${esc(f.wert||'')}"
-    placeholder="normalisiert"
-    title="Die vereinheitlichte Form – sie geht in die Ausgabe."
     oninput="this.classList.add('geaendert')">
+  </div>`;
+ return `<div class=zeile><label>${esc(beschriftung(f))}</label>
+   ${links}
    <span class=zitat><input class=kb data-kb="${esc(f.name)}"
     value="${esc(f.kb_form||'')}" placeholder="wie im Buch"
-    title="Der Wortlaut des Kirchenbuchs. Bleibt daneben stehen und wird nicht normalisiert."
+    title="Der Wortlaut des Kirchenbuchs. Nur nötig, wenn er von der normalisierten Form abweicht."
     oninput="this.classList.add('geaendert')"></span>
   </div>`;
 }

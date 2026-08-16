@@ -451,11 +451,16 @@ def als_prompt(art, con=None):
     """
     z = [f"Felder der Aktart „{art}“. Gib jedes Feld an, das im Eintrag "
          "vorkommt, und lass die übrigen leer – leer ist eine Aussage, "
-         "Raten ist keine.", ""]
+         "Raten ist keine.",
+         "",
+         "Die Kirchenbuchform nur angeben, wenn sie sich von der "
+         "normalisierten Form **unterscheidet**. Steht dort dasselbe Wort, "
+         "lass sie weg – gemessen an einem Pilotlauf waren 114 von 886 "
+         "Kirchenbuchformen zeichengleich und damit überflüssig.", ""]
     for x in felder(art, con):
         zeile = f"  {x.name:24} {x.titel}"
         if x.kb:
-            zeile += "  [auch Kirchenbuchform angeben]"
+            zeile += "  [Kirchenbuchform, falls abweichend]"
         z.append(zeile)
         if x.hinweis:
             z.append(f"       {x.hinweis}")
@@ -528,6 +533,17 @@ def einstufung(ziel):
     if not tag.startswith("_"):
         return "offiziell" if tag in STANDARD else "unbekannt"
     return "verbreitet" if tag in VERBREITET else "hauseigen"
+
+
+# Ziele, hinter denen ein **Verweis** auf einen Datensatz steht und kein
+# Text. Wer dort einen Namen eintraegt, schreibt eine Kennung hin, die es
+# nicht gibt - deshalb sperrt die Maske das Feld, solange die Werkstatt
+# die Verweise nicht selbst anlegt.
+VERWEIS = {"_ASSO"}
+
+
+def ist_verweis(x):
+    return bool(x.ziel and x.ziel.split(".")[0] in VERWEIS)
 
 
 def uebersicht(art, con=None):

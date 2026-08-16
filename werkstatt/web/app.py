@@ -825,7 +825,16 @@ class Handler(BaseHTTPRequestHandler):
                     return x.titel
                 return " ".join(w.capitalize() for w in n.split("_"))
 
+            def art(n):
+                """Was die Maske ueber das Feld wissen muss."""
+                x = katalog.feld(e["register"], n)
+                if not x:
+                    return dict(kb=True, verweis=False, hinweis=None)
+                return dict(kb=bool(x.kb), verweis=katalog.ist_verweis(x),
+                            hinweis=x.hinweis)
+
             felder = [dict(name=f["name"], titel=titel(f["name"]),
+                           **art(f["name"]),
                            wert=f["korrigiert"] if f["korrigiert"] is not None
                            else f["gelesen"],
                            kb_form=f["kb_form"], beleg=f["beleg"],
@@ -843,7 +852,7 @@ class Handler(BaseHTTPRequestHandler):
             for name in konfig.felder(e["register"], con):
                 if name not in da:
                     felder.append(dict(
-                        name=name, titel=titel(name), wert=None,
+                        name=name, titel=titel(name), **art(name), wert=None,
                         kb_form=None, beleg=None,
                         person=None, status="gelesen", ampel="grau",
                         zuversicht=None, rolle=_runde._rolle(e["register"],
