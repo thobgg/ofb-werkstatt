@@ -925,13 +925,19 @@ class Handler(BaseHTTPRequestHandler):
                     if not row:
                         continue
                 wert = (v.get("wert") or "").strip()
-                kb = (v.get("kb") or "").strip() or None
                 korr = None if wert == (row["gelesen"] or "") else wert
                 status = "bestaetigt" if d.get("bestaetigt") else row["status"]
                 ents = v.get("entscheidung")
                 pers = v.get("person")
-                sql = "UPDATE feld SET korrigiert=?, kb_form=?, status=?"
-                par = [korr, kb, status]
+                # Die Kirchenbuchform nur anfassen, wenn die Maske sie
+                # ueberhaupt geschickt hat. Felder ohne rechte Spalte
+                # schicken keine - und ein `kb: null` loeschte sonst eine
+                # vorhandene Form, die niemand angefasst hat.
+                sql = "UPDATE feld SET korrigiert=?, status=?"
+                par = [korr, status]
+                if "kb" in v and v["kb"] is not None:
+                    sql += ", kb_form=?"
+                    par.append((v.get("kb") or "").strip() or None)
                 if ents:
                     sql += ", entscheidung=?"
                     par.append(ents)

@@ -95,6 +95,14 @@ input{background:#12141a;border:1px solid #333a45;color:#e6e8ec;border-radius:6p
  padding:.32rem .5rem;font:inherit;width:100%}
 input:focus{outline:2px solid #4b7bec;border-color:transparent}
 input.geaendert{border-color:#d4a72c;background:#1e1a10}
+textarea{background:#12141a;border:1px solid #333a45;color:#e6e8ec;
+ border-radius:6px;padding:.32rem .5rem;font:inherit;width:100%;
+ resize:vertical;min-height:3.2rem;line-height:1.45}
+textarea:focus{outline:2px solid #4b7bec;border-color:transparent}
+textarea.geaendert{border-color:#d4a72c;background:#1e1a10}
+textarea.kb{background:#0f1116;border-style:dashed;color:#a7b0c0;
+ font-family:Georgia,'Times New Roman',serif;font-style:italic;
+ font-size:.92rem;padding-left:1.1rem}
 input.gefunden{outline:2px solid #3ecf8e}
 .zufeld{cursor:pointer;border-radius:4px;padding:0 .15rem}
 .zufeld:hover{background:#242a34;color:#e6e8ec}
@@ -582,6 +590,13 @@ function passt(f){ return !f.rolle && !/_datum$/.test(f.name); }
 function zeilen(e){ return e.felder.filter(f=>passt(f) && (f.wert||f.kb_form||f.offen)); }
 function leere(e){ return e.felder.filter(f=>passt(f) && !f.wert && !f.kb_form && !f.offen); }
 
+// Felder, die ganze Sätze aufnehmen. Eine Zeile reicht dafür nicht: Der
+// Volltext eines Eheeintrags ist gut 300 Zeichen lang, und wer ihn in
+// einem Einzeiler prüfen soll, scrollt waagerecht durch seinen eigenen
+// Eintrag.
+const LANG = ['volltext', 'unleserlich', 'randvermerk', 'zeugen', 'paten',
+              'hinterbliebene', 'verwandtschaft', 'proklamation'];
+
 function zeileFeld(f){
  // Drei Fälle, und die Zeile sieht jedes Mal anders aus:
  //
@@ -600,15 +615,28 @@ function zeileFeld(f){
         oninput="this.classList.add('geaendert')">`;
  if(!f.kb) return `<div class="zeile einzeln">
    <label>${esc(beschriftung(f))}</label>
-   <input data-feld="${esc(f.name)}" value="${esc(f.wert||'')}"
-    oninput="this.classList.add('geaendert')">
+   ${LANG.includes(f.name)
+     ? `<textarea data-feld="${esc(f.name)}" rows=3
+         oninput="this.classList.add('geaendert');this.style.height='auto';
+                  this.style.height=this.scrollHeight+'px'"
+        >${esc(f.wert||'')}</textarea>`
+     : `<input data-feld="${esc(f.name)}" value="${esc(f.wert||'')}"
+         oninput="this.classList.add('geaendert')">`}
   </div>`;
+ // Auch rechts mehrzeilig, wo lange Wendungen stehen - die Patenzeile
+ // eines Taufeintrags hat gut 150 Zeichen.
+ const rechts = LANG.includes(f.name)
+   ? `<textarea class=kb data-kb="${esc(f.name)}" rows=2
+       placeholder="wie im Buch"
+       title="Der Wortlaut des Kirchenbuchs. Nur nötig, wenn er von der normalisierten Form abweicht."
+       oninput="this.classList.add('geaendert')">${esc(f.kb_form||'')}</textarea>`
+   : `<input class=kb data-kb="${esc(f.name)}"
+       value="${esc(f.kb_form||'')}" placeholder="wie im Buch"
+       title="Der Wortlaut des Kirchenbuchs. Nur nötig, wenn er von der normalisierten Form abweicht."
+       oninput="this.classList.add('geaendert')">`;
  return `<div class=zeile><label>${esc(beschriftung(f))}</label>
    ${links}
-   <span class=zitat><input class=kb data-kb="${esc(f.name)}"
-    value="${esc(f.kb_form||'')}" placeholder="wie im Buch"
-    title="Der Wortlaut des Kirchenbuchs. Nur nötig, wenn er von der normalisierten Form abweicht."
-    oninput="this.classList.add('geaendert')"></span>
+   <span class=zitat>${rechts}</span>
   </div>`;
 }
 
@@ -712,11 +740,14 @@ async function fertig(k){
  const el=document.querySelector(`.eintrag[data-i="${k}"]`);
  if(!el) return;
  const felder={};
- el.querySelectorAll('input[data-feld]').forEach(inp=>{
+ el.querySelectorAll('input[data-feld], textarea[data-feld]').forEach(inp=>{
   const n=inp.dataset.feld;
-  const kb=el.querySelector(`input[data-kb="${n}"]`);
+  const kb=el.querySelector(`[data-kb="${n}"]`);
   const p=inp.closest('.person');
-  felder[n]={wert:inp.value,kb:kb?kb.value:null,
+  // Kein kb-Feld angezeigt heisst: nichts zu melden. `null` zu schicken
+  // hiesse "loeschen" - und wuerde eine Kirchenbuchform wegwerfen, die
+  // niemand angefasst hat.
+  felder[n]={wert:inp.value,...(kb?{kb:kb.value}:{}),
              entscheidung:p?(p.dataset.entscheidung||null):null,
              person:p?(p.dataset.person??undefined):undefined};
  });
