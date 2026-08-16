@@ -46,7 +46,12 @@ from pathlib import Path
 from . import db, einstellungen, konfig, raster, seiten
 
 ZIEL = "zeilen"       # Unterordner im Bilderordner des Registers
-RAND = 25             # Pixel Zugabe oben und unten, damit nichts abschneidet
+# Zugabe. Nach oben gar keine: Der Rest des Vorgaengers kam sonst mit -
+# auf Bild 00359 stand ueber Eintrag 6 noch dessen "1808.". Nach unten
+# nur ein Hauch, denn die eigentliche Arbeit macht jetzt
+# zeilenraster.nach_schrift, das die Grenze an die Schrift rueckt.
+RAND_OBEN = 0
+RAND = 10
 
 
 def baender(bild, anzahl):
@@ -80,6 +85,11 @@ def baender(bild, anzahl):
     from . import zeilenraster
     grenzen, gemessen, _ = zeilenraster.passe_ein(
         sorted(v["zeilen"]), anzahl, (block["y0"], block["y1"]))
+    # Die gedruckte Linie ist die Grenze des Formulars, nicht die der
+    # Handschrift: "evangelischer Religion" haengt darunter. Deshalb jede
+    # Grenze noch an die Schrift ruecken - gemessen an Bild 00359 wandert
+    # sie dort um 18 bis 50 px nach unten, auf anderen Seiten gar nicht.
+    grenzen = zeilenraster.nach_schrift(bild, grenzen, block)
     baender_ = list(zip(grenzen, grenzen[1:]))
     if gemessen == len(grenzen):
         guete = "passt"
@@ -137,9 +147,9 @@ def schneide(con, art, bild, nummern, still=True):
                 kopf = konfig.kurz(kp)
         for nr, (a, e) in zip(nummern, b):
             p = ziel / f"{bild}_{nr}.jpg"
-            k = (block["x0"], max(0, a - RAND),
+            k = (block["x0"], max(0, a - RAND_OBEN),
                  block["x1"] - block["x0"],
-                 min(im.size[1], e + RAND) - max(0, a - RAND))
+                 min(im.size[1], e + RAND) - max(0, a - RAND_OBEN))
             im.crop((k[0], k[1], k[0] + k[2], k[1] + k[3])).save(p, quality=88)
             # Die Seitengroesse gehoert dazu: Die Maske zeigt die Seite
             # verkleinert und muss die Marke umrechnen. Ohne sie rechnete

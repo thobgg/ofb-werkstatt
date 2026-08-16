@@ -147,6 +147,107 @@ def passe_ein(linien, anzahl, papier, hoehe_vorgabe=None):
     return grenzen, gemessen, b
 
 
+def _schriftprofil(a, block, sk):
+    """Je Bildzeile: wie viel davon ist beschrieben.
+
+    Nicht die gedruckten Linien, sondern die Schrift. Der Papierton wird
+    aus der Aufnahme selbst genommen (`raster.papierniveau`), damit ein
+    heller und ein dunkler Scan gleich behandelt werden.
+    """
+    import numpy as np
+    from . import raster
+    x0, x1 = int(block["x0"] / sk), int(block["x1"] / sk)
+    y0, y1 = int(block["y0"] / sk), int(block["y1"] / sk)
+    aus = a[max(0, y0):max(1, y1), max(0, x0):max(1, x1)]
+    if aus.size == 0:
+        return None, 0.0
+    p = raster.papierniveau(a)
+    schwarz = aus < 0.78 * p
+    # Nicht über die ganze Blattbreite mitteln, sondern die Breite in
+    # Abschnitte teilen und den vollsten nehmen. Ein Randvermerk steht in
+    # einer schmalen Spalte; über 3700 px gemittelt verschwindet er, und
+    # die Grenze lief mitten durch ihn hindurch - auf Bild 00359 blieb das
+    # "1808." von Eintrag 5 im Streifen von Eintrag 6 stehen.
+    n = max(1, schwarz.shape[1] // 16)
+    teile = [schwarz[:, i:i + n].mean(axis=1)
+             for i in range(0, schwarz.shape[1], n)]
+    dunkel = np.max(np.vstack(teile), axis=0) if teile else schwarz.mean(axis=1)
+    # Was gilt als leer? Nicht ein fester Wert, sondern das, was auf
+    # dieser Seite zwischen den Schriftzeilen steht: die untere Hälfte
+    # der Verteilung ist Papier, die obere Schrift.
+    schwelle = float(np.percentile(dunkel, 55)) + 0.004
+    return dunkel, schwelle
+
+
+def grenze_verschieben(a, block, sk, linie, hoehe, fenster=0.22):
+    """Die Grenze dorthin legen, wo das Papier zwischen zwei Einträgen leer ist.
+
+    Die gedruckte Linie ist die Grenze des **Formulars**, nicht die der
+    Handschrift: „evangelischer Religion" hängt darunter, und genau auf
+    der Linie geschnitten fehlt es im Streifen. Umgekehrt ragt manchmal
+    die Oberlänge des nächsten Eintrags herauf.
+
+    Deshalb wird in einem Fenster um die Linie (± ein Fünftel der
+    Eintragshöhe) die **längste zusammenhängende leere Strecke** gesucht;
+    die Grenze kommt in deren Mitte. Kein fester Zuschlag, keine
+    Prozentzahl: Wo viel überhängt, wandert sie weit, wo nichts
+    überhängt, bleibt sie auf der Linie. Ist das Fenster durchgehend
+    beschrieben – zwei Einträge ohne Zwischenraum –, bleibt die Linie
+    stehen, denn dann ist jede Verschiebung geraten.
+    """
+    prof, schwelle = _schriftprofil(a, block, sk)
+    if prof is None:
+        return linie
+    y0 = int(block["y0"] / sk)
+    mitte = int(linie / sk) - y0
+    spanne = max(3, int(hoehe * fenster / sk))
+    # Nur **unterhalb** der Linie suchen. Der erste Anlauf sah auch nach
+    # oben und fand dort regelmässig die breitere Lücke - zwischen der
+    # letzten Textzeile des Eintrags und dem gedruckten Strich. Die Grenze
+    # wanderte dann nach oben, und der Nachsatz unter dem Strich fehlte
+    # erst recht. Nach oben gibt es nichts zu gewinnen: Was ueber der
+    # Linie steht, gehoert ohnehin zu diesem Eintrag.
+    von, bis = mitte, min(len(prof), mitte + spanne)
+    if bis - von < 3:
+        return linie
+    # Die **letzte** leere Strecke im Fenster, nicht die breiteste. Alles
+    # oberhalb gehoert zum vorigen Eintrag - auch sein Randvermerk, der
+    # oft tief steht und durch eine Luecke vom Haupttext getrennt ist. Die
+    # breiteste Luecke lag regelmaessig davor, und dann stand das "1808."
+    # von Eintrag 5 im Streifen von Eintrag 6.
+    letzte, laenge, lauf, start = None, 0, 0, None
+    for i in range(von, bis):
+        if prof[i] <= schwelle:
+            if lauf == 0:
+                start = i
+            lauf += 1
+            if lauf >= 2:
+                letzte, laenge = start, lauf
+        else:
+            lauf = 0
+    if letzte is None:
+        return linie
+    return int((letzte + laenge / 2 + y0) * sk)
+
+
+def nach_schrift(pfad, grenzen, block):
+    """Alle Grenzen einer Seite an die Schrift anpassen.
+
+    Die äußeren beiden bleiben, wo sie sind: oben schließt der Kopf an,
+    unten die Papierkante.
+    """
+    from . import raster
+    a, sk, _ = raster.graustufen(str(pfad))
+    raus = list(grenzen)
+    for i in range(1, len(grenzen) - 1):
+        h = grenzen[i + 1] - grenzen[i - 1]
+        raus[i] = grenze_verschieben(a, block, sk, grenzen[i], h / 2)
+    # Monoton halten, falls zwei Grenzen aufeinander zulaufen.
+    for i in range(1, len(raus)):
+        raus[i] = max(raus[i], raus[i - 1] + 8)
+    return raus
+
+
 def fuer_bild(pfad, anzahl):
     """Zeilenraster einer Seite. Rückgabe (grenzen, gemessen, block)."""
     from . import raster
