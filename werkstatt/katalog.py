@@ -135,6 +135,22 @@ def person(r, titel, *, geburt=False, eltern=False, stand=True):
     return z
 
 
+def datum(name, titel, ziel, traeger=None, hinweis=None):
+    """Ein Datumsfeld mit seiner Kirchenbuchform.
+
+    Das Buch schreibt „d. 17ten Merz", die Ausgabe braucht „17 MAR 1808".
+    Beides gehoert erhalten: Die kanonische Form macht das Datum
+    rechenbar, der Wortlaut ist die Quelle - und er entscheidet, wenn
+    spaeter jemand die Umrechnung anzweifelt. Gemessen an Runde 1 hatten
+    29 von 34 Geburtsdaten eine abweichende Schreibung.
+    """
+    return f(name, None, "datum", kb=True, ziel=ziel, ziel_kb="_KB_DATUM",
+             titel=titel, traeger=traeger,
+             hinweis=hinweis or "Kanonisch als Datum, im Kirchenbuchfeld "
+                                "der Wortlaut („d. 17ten Merz“, „am Tage "
+                                "Johannis“).")
+
+
 def geborene(r, titel):
     """Der Geburtsname – das Feld, das am häufigsten verschenkt wird.
 
@@ -167,16 +183,16 @@ ABSCHLUSS = [
 # ------------------------------------------------------------------ Taufe
 TAUFE = [
     f("lfd_nr", None, "text", titel="laufende Nummer"),
-    f("tauf_datum", None, "datum", ziel="CHR.DATE", titel="Taufdatum",
+    f("tauf_datum", None, "datum", kb=True, ziel="CHR.DATE", ziel_kb="_KB_DATUM", titel="Taufdatum",
       traeger="kind"),
-    f("tauf_ort", None, "ort", ziel="CHR.PLAC", titel="Taufort",
+    f("tauf_ort", None, "ort", kb=True, ziel="CHR.PLAC", ziel_kb="_NOTE_ORT", titel="Taufort",
       traeger="kind"),
-    f("geburt_datum", "kind", "datum", ziel="BIRT.DATE", titel="Geburtsdatum"),
+    f("geburt_datum", "kind", "datum", kb=True, ziel="BIRT.DATE", ziel_kb="_KB_DATUM", titel="Geburtsdatum"),
     f("geburt_zeit", "kind", "text", kb=True, ziel=None, ziel_kb="_NOTE_TAUFE",
       titel="Geburtsstunde",
       hinweis="„nachts um 2 Uhr“ – steht in vielen Formularen als eigene "
               "Spalte."),
-    f("geburt_ort", "kind", "ort", ziel="BIRT.PLAC", titel="Geburtsort"),
+    f("geburt_ort", "kind", "ort", kb=True, ziel="BIRT.PLAC", ziel_kb="_NOTE_ORT", titel="Geburtsort"),
     f("kind_vorname", "kind", "name", kb=True, ziel="GIVN",
       ziel_kb="_KB_NAME", titel="Kind: Vornamen"),
     f("kind_rufname", "kind", "text", ziel="_RUFNAME", titel="Kind: Rufname"),
@@ -215,16 +231,16 @@ TAUFE = [
               "keine Namen als Text. Solange Paten nicht als Personen "
               "angelegt werden, wäre ein Name dort eine Kennung, die es "
               "nicht gibt."),
-    f("taufender", None, "text", ziel="CHR.AGNC", titel="taufender Geistlicher"),
-    f("religion", None, "text", ziel="CHR.RELI", titel="Konfession"),
+    f("taufender", None, "text", kb=True, ziel="CHR.AGNC", ziel_kb="_NOTE_TAUFE", titel="taufender Geistlicher"),
+    f("religion", None, "text", kb=True, ziel="CHR.RELI", ziel_kb="_KB_RELI", titel="Konfession"),
     f("fam_reg", None, "text", ziel="_FAMREG", titel="Seitenzahl des Familienregisters",
       hinweis="Die letzte gedruckte Spalte des Formulars, meist eine blosse "
               "Zahl. Sie verweist auf die Seite im Familienregister, wo "
               "dieselbe Familie mit allen Kindern steht – der stärkste "
               "Anker, den das Buch selbst mitliefert, weil ihn der Pfarrer "
               "gezogen hat und nicht wir."),
-    f("sterbe_datum", "kind", "datum", ziel="DEAT.DATE",
-      titel="Tod des Täuflings",
+    f("sterbe_datum", "kind", "datum", kb=True, ziel="DEAT.DATE",
+      ziel_kb="_KB_DATUM", titel="Tod des Täuflings",
       hinweis="Nicht gelesen, sondern aus dem Randvermerk erschlossen; "
               "siehe randvermerk.py."),
     *ABSCHLUSS,
@@ -237,9 +253,9 @@ EHE = [
     f("proklamation", None, "text", kb=True, ziel=None,
       ziel_kb="_NOTE_HEIRAT", titel="Aufgebote",
       hinweis="Die drei Proklamationen mit Daten, oder der Dispens davon."),
-    f("trauung_datum", None, "datum", ziel="MARR.DATE",
-      titel="Traudatum", traeger="familie"),
-    f("trauung_ort", None, "ort", ziel="MARR.PLAC", titel="Trauort",
+    f("trauung_datum", None, "datum", kb=True, ziel="MARR.DATE",
+      ziel_kb="_KB_DATUM", titel="Traudatum", traeger="familie"),
+    f("trauung_ort", None, "ort", kb=True, ziel="MARR.PLAC", ziel_kb="_NOTE_ORT", titel="Trauort",
       traeger="familie",
       hinweis="Getraut wird oft in der Gemeinde der Braut."),
     *person("braeutigam", "Bräutigam", geburt=True, eltern=True),
@@ -255,11 +271,11 @@ EHE = [
               "Ehe im Bestand zu suchen ist."),
     f("zeugen", None, "text", kb=True, ziel="_ASSO", ziel_kb="_NOTE_HEIRAT",
       titel="Trauzeugen und Beistände"),
-    f("trauender", None, "text", ziel="MARR.AGNC", titel="trauender Geistlicher"),
+    f("trauender", None, "text", kb=True, ziel="MARR.AGNC", ziel_kb="_NOTE_TAUFE", titel="trauender Geistlicher"),
     f("textus", None, "text", ziel="MARR.NOTE", titel="Trauspruch",
       hinweis="„Textus: Prov. XIV. v.1.“ – der Bibelspruch der Traurede. "
               "Steht im Bestand im Volltext der Trauung."),
-    f("religion", None, "text", ziel="MARR.RELI", titel="Konfession"),
+    f("religion", None, "text", kb=True, ziel="MARR.RELI", ziel_kb="_KB_RELI", titel="Konfession"),
     f("fam_reg", None, "text", ziel="_FAMREG", titel="Seitenzahl des Familienregisters",
       hinweis="Die letzte gedruckte Spalte des Formulars, meist eine blosse "
               "Zahl. Sie verweist auf die Seite im Familienregister, wo "
@@ -273,15 +289,15 @@ EHE = [
 # -------------------------------------------------------------------- Tod
 TOD = [
     f("lfd_nr", None, "text", titel="laufende Nummer"),
-    f("sterbe_datum", "verstorbener", "datum", ziel="DEAT.DATE",
-      titel="Sterbedatum"),
+    f("sterbe_datum", "verstorbener", "datum", kb=True, ziel="DEAT.DATE",
+      ziel_kb="_KB_DATUM", titel="Sterbedatum"),
     f("sterbe_zeit", "verstorbener", "text", kb=True, ziel=None,
       ziel_kb="_NOTE_BEGR", titel="Sterbestunde"),
-    f("sterbe_ort", "verstorbener", "ort", ziel="DEAT.PLAC", titel="Sterbeort"),
-    f("begraebnis_datum", "verstorbener", "datum", ziel="BURI.DATE",
-      titel="Begräbnisdatum"),
-    f("begraebnis_ort", "verstorbener", "ort", ziel="BURI.PLAC",
-      titel="Begräbnisort"),
+    f("sterbe_ort", "verstorbener", "ort", kb=True, ziel="DEAT.PLAC", ziel_kb="_NOTE_ORT", titel="Sterbeort"),
+    f("begraebnis_datum", "verstorbener", "datum", kb=True, ziel="BURI.DATE",
+      ziel_kb="_KB_DATUM", titel="Begräbnisdatum"),
+    f("begraebnis_ort", "verstorbener", "ort", kb=True, ziel="BURI.PLAC",
+      ziel_kb="_NOTE_ORT", titel="Begräbnisort"),
     *person("verstorbener", "Verstorbener", geburt=True, eltern=True),
     f("todesursache", "verstorbener", "text", kb=True, ziel="DEAT.CAUS",
       ziel_kb="_TODURSACHE", titel="Todesursache",
@@ -302,13 +318,13 @@ TOD = [
     f("leichenpredigt", None, "text", ziel="BURI.NOTE",
       titel="Leichentext / Predigt",
       hinweis="Bibelstelle der Grabrede, wie beim Trauspruch."),
-    f("beerdigender", None, "text", ziel="BURI.AGNC",
-      titel="beerdigender Geistlicher"),
+    f("beerdigender", None, "text", kb=True, ziel="BURI.AGNC",
+      ziel_kb="_NOTE_TAUFE", titel="beerdigender Geistlicher"),
     f("begraebnisart", None, "text", kb=True, ziel=None, ziel_kb="_NOTE_BEGR",
       titel="Art des Begräbnisses",
       hinweis="„in der Stille“, „ohne Gesang“, „mit ganzer Leichenbegleitung“ "
               "– sagt oft mehr über den Fall als die Todesursache."),
-    f("religion", None, "text", ziel="BURI.RELI", titel="Konfession"),
+    f("religion", None, "text", kb=True, ziel="BURI.RELI", ziel_kb="_KB_RELI", titel="Konfession"),
     f("fam_reg", None, "text", ziel="_FAMREG",
       titel="Seitenzahl des Familienregisters",
       hinweis="Die letzte gedruckte Spalte des Formulars, meist eine blosse "
