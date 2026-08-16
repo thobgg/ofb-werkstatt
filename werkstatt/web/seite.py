@@ -124,6 +124,13 @@ details summary{cursor:pointer;color:#8b93a3;font-size:.84rem;padding:.3rem 0}
 .zeile input:disabled{background:#141821;color:#5b6472;border-style:dotted;
  cursor:not-allowed}
 .zeile label{color:#8b93a3;font-size:.8rem;align-self:center}
+/* Leere Zeilen stehen mit, damit das Formular sich nicht bei jedem
+   Eintrag umbaut - aber sie treten zurueck. */
+.zeile.leerzeile label{opacity:.5}
+.zeile.leerzeile input,.zeile.leerzeile textarea{opacity:.55}
+.zeile.leerzeile:focus-within label,
+.zeile.leerzeile:focus-within input,
+.zeile.leerzeile:focus-within textarea{opacity:1}
 /* Ueberschrift ueber den zwei Spalten. Ohne sie steht links ein Feld
    ohne Beschriftung und rechts eines mit Platzhalter - und niemand weiss,
    dass links die vereinheitlichte Form gemeint ist und rechts der
@@ -260,6 +267,7 @@ async function laden(){
 }
 
 function zeichne(){
+ ZEILENSATZ = null;
  const app=document.getElementById('app');
  if(liste){
   app.innerHTML=daten.map((e,k)=>karte(e,k)).join('');
@@ -587,8 +595,36 @@ function beschriftung(f){
 // Bearbeiter sie ueber "+ Feld" holt – sonst stuenden 16 leere Zeilen da,
 // durch die niemand scrollen will.
 function passt(f){ return !f.rolle && !/_datum$/.test(f.name); }
-function zeilen(e){ return e.felder.filter(f=>passt(f) && (f.wert||f.kb_form||f.offen)); }
-function leere(e){ return e.felder.filter(f=>passt(f) && !f.wert && !f.kb_form && !f.offen); }
+
+// Dieselben Zeilen in jedem Eintrag der Runde - auch die leeren.
+//
+// Vorher zeigte die Maske je Eintrag nur, was gefüllt war. Das spart
+// Platz und macht das Formular bei jedem Eintrag anders: mal steht der
+// Geburtsname da, mal nicht, mal an dritter, mal an fünfter Stelle. Wer
+// 34 Einträge hintereinander durchgeht, kann sich nichts merken und
+// sucht jedes Feld neu.
+//
+// Also: Was in **irgendeinem** Eintrag dieser Runde vorkommt, steht in
+// **jedem**. Das bläht nicht auf - Felder, die in der ganzen Runde nie
+// vorkommen, bleiben draußen und sind über "+ Feld" erreichbar.
+let ZEILENSATZ = null;
+function zeilensatz(){
+  if(ZEILENSATZ) return ZEILENSATZ;
+  const da = new Set();
+  (daten||[]).forEach(e => (e.felder||[]).forEach(f => {
+    if(passt(f) && (f.wert || f.kb_form || f.offen)) da.add(f.name);
+  }));
+  ZEILENSATZ = da;
+  return da;
+}
+function zeilen(e){
+  const da = zeilensatz();
+  return e.felder.filter(f => passt(f) && (da.has(f.name) || f.offen));
+}
+function leere(e){
+  const da = zeilensatz();
+  return e.felder.filter(f => passt(f) && !da.has(f.name) && !f.offen);
+}
 
 // Felder, die ganze Sätze aufnehmen. Eine Zeile reicht dafür nicht: Der
 // Volltext eines Eheeintrags ist gut 300 Zeichen lang, und wer ihn in
@@ -623,7 +659,7 @@ function zeileFeld(f){
  // eine Form gespeichert ist: 42 Felder trugen einen Wortlaut, den die
  // Maske verschwieg, weil `kb` im Katalog auf false stand. Nichts
  // ausblenden, was in den Daten steht.
- if(!f.kb && !f.kb_form) return `<div class="zeile einzeln">
+ if(!f.kb && !f.kb_form) return `<div class="zeile einzeln${f.wert?'':' leerzeile'}">
    <label>${esc(beschriftung(f))}</label>
    ${LANG.includes(f.name)
      ? `<textarea data-feld="${esc(f.name)}" rows=3
@@ -651,7 +687,8 @@ function zeileFeld(f){
    ? `<div class="zeile einzeln"><label></label><span class=dim
        style="font-size:.76rem">aus dem kanonischen Feld hierher gerückt –
        dort stehen künftig Verweise auf Personen</span></div>` : '';
- return `<div class=zeile><label>${esc(beschriftung(f))}</label>
+ return `<div class="zeile${f.wert||f.kb_form?'':' leerzeile'}"
+   ><label>${esc(beschriftung(f))}</label>
    ${links}
    <span class=zitat>${rechts}</span>
   </div>${notiz}`;
