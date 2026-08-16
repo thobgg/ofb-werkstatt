@@ -84,6 +84,9 @@ input{background:#12141a;border:1px solid #333a45;color:#e6e8ec;border-radius:6p
  padding:.32rem .5rem;font:inherit;width:100%}
 input:focus{outline:2px solid #4b7bec;border-color:transparent}
 input.geaendert{border-color:#d4a72c;background:#1e1a10}
+input.gefunden{outline:2px solid #3ecf8e}
+.zufeld{cursor:pointer;border-radius:4px;padding:0 .15rem}
+.zufeld:hover{background:#242a34;color:#e6e8ec}
 .knopf{display:flex;gap:.3rem}
 button{background:#333a45;color:#e6e8ec;border:0;border-radius:6px;padding:.3rem .6rem;
  font:inherit;font-size:.85rem;cursor:pointer}
@@ -255,11 +258,12 @@ function umschalten(){ liste=!liste; zeichne();
  if(!liste) window.scrollTo(0,0); }
 
 function karte(e,k){
- // Was der Abgleich getragen hat, steht still da. Was er nicht trägt,
- // bekommt den Platz – und den Fokus.
- const pers=e.felder.filter(f=>f.rolle);
- const still=pers.filter(f=>f.ampel==='gruen');
- const frage=pers.filter(f=>f.ampel!=='gruen');
+ // Auch was gruen ist, bleibt aenderbar. Vorher stand es nur noch als
+ // Text da, um Platz zu sparen - aber gruen heisst "der Name kommt im
+ // Bestand vor", nicht "der Name ist richtig gelesen". Wer die Lesung
+ // korrigieren wollte, kam nicht heran. Ruhiger dargestellt, ja;
+ // unerreichbar, nein.
+ const frage=e.felder.filter(f=>f.rolle);
  const rest=e.felder.filter(f=>!f.rolle&&f.wert);
  return `<div class="eintrag${liste?'':' fokus'}" data-i=${k} data-id=${e.id}>
   <div class=kopf><span class=q>Nr. ${esc(e.nr)}</span>
@@ -282,11 +286,9 @@ function karte(e,k){
       loading=lazy alt="Spaltenüberschriften">`:''}
     <img src="/bild/${encodeURI(e.ausschnitt)}" loading=lazy alt="">
     <span class=zh>klicken zum Vergrößern, dann ziehen</span></div>`:''}
-  ${still.length?`<div class=still><span class=dim>gesichert:</span>
-    ${still.map(f=>`<span><i class="pkt gruen"></i> ${esc(f.rolle)}
-      <b>${esc(f.wert||'')}</b></span>`).join('')}</div>`:''}
   ${rest.length?`<div class=still><span class=dim>gelesen:</span>
-    ${rest.map(f=>`<span>${esc(beschriftung(f))}
+    ${rest.map(f=>`<span class=zufeld onclick="zumFeld(${e.id},'${esc(f.name)}')"
+      title="anklicken, um es zu ändern">${esc(beschriftung(f))}
       <b>${esc(String(f.wert).slice(0,40))}</b></span>`).join('')}</div>`:''}
   ${frage.map(f=>zeilePerson(e,f)).join('')}
   <div class=anbind data-anbind><span class=lbl>Familie</span>
@@ -524,6 +526,26 @@ async function nochmalLesen(k,btn){
      </table>` : '');
 }
 
+// Aus der Aufzaehlung oben ins Eingabefeld unten springen. Die Zeile
+// "gelesen: ..." nennt Werte, die weiter unten stehen - ohne diesen Weg
+// muss man sie erst suchen.
+function zumFeld(id, name){
+  const karte = document.querySelector(`.eintrag[data-id="${id}"]`);
+  if(!karte) return;
+  let inp = karte.querySelector(`input[data-feld="${name}"]`);
+  if(!inp){
+    const wahl = karte.querySelector('.feldwahl');
+    if(wahl){ wahl.value = name; feldDazu(wahl); }
+    inp = karte.querySelector(`input[data-feld="${name}"]`);
+  }
+  if(inp){
+    inp.scrollIntoView({block:'center', behavior:'smooth'});
+    inp.focus();
+    inp.classList.add('gefunden');
+    setTimeout(()=>inp.classList.remove('gefunden'), 1200);
+  }
+}
+
 function feld(e,n){return e.felder.find(f=>f.name===n)||{}}
 
 // Beschriftung eines Feldes: der Titel aus der Aktkarte, sonst der
@@ -580,7 +602,8 @@ function zeilePerson(e,f){
    ? `<span class=treffer><span class=id>${esc(f.person)}</span>
        <span class=warum>${esc(f.beleg||'')}</span></span>`
    : `<span class=neu>○ ${esc(f.beleg||'kein Treffer')}</span>`;
- return `<div class="person frage" data-feld="${esc(f.name)}"
+ return `<div class="person frage${v==='verknuepft'||f.ampel==='gruen'
+   ?' gruen-zeile':''}" data-feld="${esc(f.name)}"
   ${f.person?`data-person="${esc(f.person)}"`:''}>
   <span class=rolle><i class="pkt ${esc(f.ampel||'grau')}"></i> ${esc(f.rolle)}</span>
   <span class=feldbox><input data-feld="${esc(f.name)}" value="${esc(f.wert||'')}"
