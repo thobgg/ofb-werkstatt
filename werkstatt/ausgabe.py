@@ -363,6 +363,16 @@ def _vorlagenpfad(con, hid):
         p = Path(str(r["notiz"]).split(",")[0])
         if p.exists():
             return p
+        # In der Notiz steht der Pfad vom Einlesen – absolut, mitsamt der
+        # damaligen Wurzel. Zieht das Projekt um (die Vorführinstanz wird
+        # auf einem Rechner gebaut und läuft im Container unter /app),
+        # zeigt er ins Leere, und der Leerlauf meldete „nicht prüfbar",
+        # obwohl die Datei direkt neben der Datenbank lag. Also das
+        # längste Pfadende unter der heutigen Wurzel probieren.
+        for i in range(1, len(p.parts)):
+            k = konfig.WURZEL.joinpath(*p.parts[i:])
+            if k.exists():
+                return k
     for q in konfig.kontext():
         if q["datei"] and Path(q["datei"]).name == r["datei"]:
             p = Path(q["datei"])
