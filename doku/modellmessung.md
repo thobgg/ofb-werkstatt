@@ -101,3 +101,38 @@ liest und Ergebnisse samt Laufzeiten ablegt. Erwartete Kosten unter
 Erst wenn diese Zahlen vorliegen, ist die Frage nach gekaufter oder
 gemieteter Hardware (GEX44 mit 20 GB trägt bis ~32B; zwei RTX 3090 mit
 48 GB tragen 72B) sinnvoll zu beantworten.
+
+## Nachtrag: die großen offenen Modelle auf gemieteter GPU (17. August, abends)
+
+Gemessen auf einer RunPod RTX A6000 (48 GB VRAM, 0,53 USD je Stunde),
+Gesamtkosten des Laufs etwa 3 USD. Gleiche Bilder, gleicher Prompt wie
+oben; die Modelle jeweils in der 4-Bit-Fassung aus der Ollama-Bibliothek.
+
+| Modell | Koch-Zelle | Tempo je Bild | Befund |
+|---|---|---|---|
+| Gemma 3 27B | "St. Illa, v.d. Rofis" | 6-25 s | Bruchstücke, wieder R statt K |
+| Qwen2.5-VL 32B | "Andreas Selgen" + frei Erfundenes ("verst. d. 24. Juli 1808, J. F. Kästner, Pfarrer") | 3-33 s | flüssige Halluzination, gefährlichster Fehlertyp |
+| Qwen2.5-VL 72B | nur Fragezeichen, alle fünf Bilder | 38-114 s | auf 48 GB nicht nutzbar: VRAM randvoll (48,1 von 49,1 GB), Bildverarbeitung liefert Müll |
+
+Erkenntnisse aus dem GPU-Lauf:
+
+1. **Auch die großen offenen Modelle lesen diesen Bestand nicht
+   brauchbar.** Das 32B trifft Fragmente und erfindet den Rest in
+   flüssigem Deutsch; solche Ausgaben sind schlimmer als erkennbares
+   Scheitern, weil sie in der Korrektur durchrutschen können.
+2. **48 GB tragen das 72B nicht.** Die Karte lief mit 48,1 von 49,1 GB
+   randvoll, die Lesungen bestanden aus Ersatzzeichen. Damit ist auch
+   die Frage nach zwei RTX 3090 (gleiche Speicherklasse) für dieses
+   Modell beantwortet. Ob das 72B auf 80 GB brauchbar liest, ist offen;
+   nach dem 32B-Ergebnis ist die Erwartung gedämpft.
+3. **Der R/K-Fehler ist jetzt vierfach belegt**: Claude, Qwen 7B,
+   Gemma 27B und die Erstlesung des Piloten lesen an derselben Stelle
+   R statt K. Kein Modellwechsel ersetzt den Beleg-Abgleich.
+
+**Konsequenz für die Vereinsserver-Frage:** Nach diesem Stand lohnt ein
+GPU-Server (GEX44, 2x RTX 3090 oder Vergleichbares) für das *Lesen*
+nicht - die offenen Modelle liefern keine Qualität, die die
+Korrekturarbeit gegenüber Claude aufwiegen würde. Die Messung hat rund
+3 USD gekostet; die Wiederholung mit künftigen Modellgenerationen
+kostet dasselbe und ist mit dem Paket in `kraken-experiment/gpu-test/`
+jederzeit reproduzierbar.
