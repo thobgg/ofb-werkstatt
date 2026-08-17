@@ -23,6 +23,7 @@ Beenden mit Strg-C.
 """
 import argparse
 import json
+import os
 import re
 import sqlite3
 import urllib.parse
@@ -42,6 +43,56 @@ from .. import (abgleich, ausgabe, db, einrichtung, einstellungen,
 ROOT = konfig.WURZEL
 DB = ROOT / "daten" / "erfassung.sqlite"
 
+# Bedienelemente, die nur am eigenen Rechner Sinn haben. In der
+# Vorführinstanz schneidet `_nur_lokal` sie heraus, bevor die Seite
+# hinausgeht. Ein Knopf, der beim Drücken 403 sagt, wäre schlechter als
+# keiner: Der Besucher hat dann etwas kaputtgemacht, was gar nicht kaputt
+# ist.
+_MARKE = re.compile(r"<!--nur-lokal-->.*?<!--/nur-lokal-->", re.S)
+
+
+def _nur_lokal(html):
+    return _MARKE.sub("", html) if konfig.demo() else html
+
+
+# Was ein Fremder in der Vorführinstanz nicht darf. Zwei Gruende, und sie
+# sind verschieden:
+#
+#   *auf fremde Rechnung handeln* – jeder Aufruf, der Claude anruft. Der
+#   Weg ueber `vorlage.werkzeug()` ist schon zu, aber der endet in einem
+#   Traceback; hier steht stattdessen ein Satz, der den Grund nennt.
+#
+#   *an den Rechner des Betreibers kommen* – `quelle` und `entpacken`
+#   nehmen einen Dateipfad aus dem Aufruf entgegen und lesen ihn,
+#   `einrichten` schreibt konfig.toml und richtet die Bildordner neu aus.
+#   Am eigenen Rechner ist das genau richtig. Hinter einem Proxy ist es
+#   ein Blick in fremde Verzeichnisse.
+#
+# Bewusst *nicht* gesperrt: speichern, feld, dubletten, perioden,
+# uebergib, ausgabe. Das ist die Arbeit, die vorgefuehrt werden soll, und
+# sie fasst nur die Datenbank an - die wird stuendlich zurueckgesetzt.
+GESPERRT = {
+    "/api/beenden": "Der Server lässt sich von hier aus nicht beenden.",
+    "/api/lesen-lassen": "Das Lesen ist abgeschaltet; gezeigt werden die "
+                         "mitgelieferten Lesungen des Pilotlaufs.",
+    "/api/anmelden": "Es wird kein Claude-Konto angemeldet.",
+    "/api/nachlesen": "Das zweite Lesen ruft Claude auf und ist abgeschaltet.",
+    "/api/frage": "Das Gespräch ruft Claude auf und ist abgeschaltet.",
+    "/api/quelle": "Es lassen sich keine Quellen vom Rechner nachladen.",
+    "/api/quelle-weg": "Der mitgelieferte Beispielbestand bleibt stehen.",
+    "/api/entpacken": "Es lassen sich keine PDF vom Rechner entpacken.",
+    "/api/einrichten": "Die Einrichtung steht fest.",
+}
+
+
+# Ein gemeinsames Passwort für die Vorführinstanz, aus der Umgebung.
+# Eigentlich gehört Basic Auth an den Proxy – aber der Reverse Proxy der
+# Synology kann keine, nur IP-Filter. Bevor die Instanz deshalb offen ins
+# Netz geht, prüft sie selbst: ein Passwort, kein Benutzername, keine
+# Verwaltung. Das ist keine Anmeldung im Sinne von „was nicht gebaut
+# wird" – es ist die Tür, hinter der die Eingeladenen unter sich sind.
+_PASSWORT = os.environ.get("OFB_DEMO_PASSWORT", "")
+
 
 def verbinde():
     con = sqlite3.connect(DB, timeout=10)
@@ -52,6 +103,33 @@ def verbinde():
 class Handler(BaseHTTPRequestHandler):
     def log_message(self, *a):
         pass
+
+    def _zutritt(self):
+        """Basic Auth, wenn ein Demo-Passwort gesetzt ist. True = weiter."""
+        if not (konfig.demo() and _PASSWORT):
+            return True
+        import base64
+        import binascii
+        import hmac
+        kopf = self.headers.get("Authorization", "")
+        if kopf.startswith("Basic "):
+            try:
+                _, _, kennwort = (base64.b64decode(kopf[6:])
+                                  .decode("utf-8").partition(":"))
+            except (binascii.Error, UnicodeDecodeError):
+                kennwort = ""
+            # compare_digest, damit sich das Passwort nicht über die
+            # Antwortzeit erraten lässt.
+            if hmac.compare_digest(kennwort, _PASSWORT):
+                return True
+        body = "Zugang nur mit Passwort.".encode("utf-8")
+        self.send_response(401)
+        self.send_header("WWW-Authenticate", 'Basic realm="OFB-Werkstatt"')
+        self.send_header("Content-Type", "text/plain; charset=utf-8")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+        return False
 
     # ------------------------------------------------------------ Technik
     def _send(self, code, typ, body):
@@ -102,10 +180,13 @@ class Handler(BaseHTTPRequestHandler):
 
     # -------------------------------------------------------------- GET
     def do_GET(self):
+        if not self._zutritt():
+            return
         pfad = urllib.parse.urlparse(self.path).path
         if pfad in ("/", "/index.html", "/lesen", "/uebergabe", "/ausgabe",
                     "/formular", "/einstellungen"):
-            return self._send(200, "text/html; charset=utf-8", STARTSEITE)
+            return self._send(200, "text/html; charset=utf-8",
+                              _nur_lokal(STARTSEITE))
         if pfad == "/api/gespraech":
             con = db.verbinde()
             try:
@@ -155,6 +236,7 @@ class Handler(BaseHTTPRequestHandler):
                     tag_amt=katalog.AMT,
                     pdf_werkzeug=bool(seiten.pdf_werkzeug()),
                     ueber=self.ueber(),
+                    demo=konfig.demo(),
                     ki=dict(
                         modell=modell,
                         modelle=lesen.MODELLE,
@@ -163,8 +245,12 @@ class Handler(BaseHTTPRequestHandler):
                         max_tokens=int(einstellungen.wert(
                             con, "ki.max_tokens", 8000)),
                         batch=einstellungen.wert(con, "ki.batch", "0") == "1",
-                        # Nie den Schlüssel selbst ausliefern – nur ob einer da ist.
-                        schluessel=bool(os.environ.get("ANTHROPIC_API_KEY")),
+                        # Nie den Schlüssel selbst ausliefern – nur ob einer
+                        # da ist. In der Vorführinstanz ist keiner da, auch
+                        # wenn einer in der Umgebung stünde: Was gesperrt
+                        # ist, darf die Maske nicht anbieten.
+                        schluessel=(not konfig.demo()
+                                    and bool(os.environ.get("ANTHROPIC_API_KEY"))),
                         cli=vorlage.bereitschaft(),
                         verbrauch=self._verbrauch(con, modell)),
                     eigen=einstellungen.alle(con)))
@@ -186,7 +272,8 @@ class Handler(BaseHTTPRequestHandler):
             finally:
                 con.close()
         if pfad == "/korrektur":
-            return self._send(200, "text/html; charset=utf-8", SEITE)
+            return self._send(200, "text/html; charset=utf-8",
+                              _nur_lokal(SEITE))
         if pfad == "/api/stand":
             return self._json(self.stand())
         if pfad == "/api/fortschritt":
@@ -280,15 +367,27 @@ class Handler(BaseHTTPRequestHandler):
 
     # ------------------------------------------------------------- POST
     def do_POST(self):
+        if not self._zutritt():
+            return
         pfad = urllib.parse.urlparse(self.path).path
+        if konfig.demo() and pfad in GESPERRT:
+            return self._json(
+                {"ok": False, "fehler": "Vorführinstanz: " + GESPERRT[pfad],
+                 "meldung": "Vorführinstanz: " + GESPERRT[pfad]}, 403)
         if pfad == "/api/speichern":
             return self.speichern()
         if pfad == "/api/runde/plane":
             d = self._rumpf()
+            quelle = d.get("quelle", "api")
+            if konfig.demo() and quelle != "testdaten":
+                return self._json(
+                    {"fehler": "Vorführinstanz: Es wird ausschließlich aus "
+                     "den mitgelieferten Lesungen des Pilotlaufs geplant."},
+                    403)
             con = db.verbinde()
             try:
                 rid = _runde.plane(con, d["register"], int(d.get("seiten", 20)),
-                                   d.get("quelle", "api"))
+                                   quelle)
                 _runde.starte(rid)
                 return self._json({"runde": rid})
             except SystemExit as e:
@@ -359,6 +458,17 @@ class Handler(BaseHTTPRequestHandler):
                 con.close()
         if pfad == "/api/einstellungen":
             d = self._rumpf()
+            if konfig.demo() and any(
+                    k.startswith("ordner.") for k in (d.get("werte") or {})):
+                # Die übrigen Einstellungen sind Datenbankwerte und der
+                # stündliche Rücksetzer räumt sie ab. `ordner.*` ist ein
+                # Pfad: Die Blockschneider legen Ausschnitte daraus unter
+                # der Projektwurzel ab, wo `/bild/` sie ausliefert – ein
+                # umgebogener Ordner machte so beliebige Bilder vom
+                # Rechner des Betreibers sichtbar.
+                return self._json(
+                    {"ok": False, "fehler": "Vorführinstanz: Die Bildordner "
+                     "stehen fest."}, 403)
             con = db.verbinde()
             try:
                 for k, v in (d.get("werte") or {}).items():
@@ -800,6 +910,7 @@ class Handler(BaseHTTPRequestHandler):
                 # aber unangemeldetes Claude Code liest keine Seite. None
                 # heisst "nicht feststellbar" und zaehlt als anbieten.
                 claude_code=vorlage.bereitschaft()["angemeldet"] is not False,
+                demo=konfig.demo(),
                 offen=_runde.offen_in_runde(con, r["id"]) if r else None,
                 bestand=db.stand(con),
             )

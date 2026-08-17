@@ -210,7 +210,7 @@ input.kb::placeholder{font-style:italic}
 <span style=flex:1></span>
 <span class=zaehler id=tasten></span>
 <button id=alle onclick=umschalten() title="alle Einträge auf einer Seite">Liste</button>
-<button onclick=beenden() title="Werkstatt beenden">⏻</button>
+<!--nur-lokal--><button onclick=beenden() title="Werkstatt beenden">⏻</button><!--/nur-lokal-->
 </header>
 <div class=fortschritt><i id=bal style=width:0></i></div>
 <main id=app class=leer>lade…</main>

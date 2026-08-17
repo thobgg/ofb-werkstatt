@@ -247,8 +247,16 @@ Seiten, für die schon eine Antwort liegt, überspringst du."""
 
 
 def werkzeug():
-    """Pfad zur Claude-Code-Kommandozeile, falls vorhanden."""
+    """Pfad zur Claude-Code-Kommandozeile, falls vorhanden.
+
+    Unter `OFB_DEMO=1` gibt es keine – und zwar hier, an der einen Stelle,
+    an der alle Aufrufer vorbeikommen: Lesen, Nachlesen, Gespräch,
+    Periodenvorschlag. Eine Sperre je Endpunkt wäre eine Liste, die beim
+    nächsten Endpunkt wieder unvollständig ist.
+    """
     import shutil
+    if konfig.demo():
+        return None
     return shutil.which("claude")
 
 
@@ -279,7 +287,13 @@ def bereitschaft(neu=False):
     d = dict(pfad=w, da=bool(w), version=None, angemeldet=False,
              konto=None, weg=None, abo=None, meldung=None)
     if not w:
-        d["meldung"] = ("Claude Code ist auf diesem Rechner nicht installiert "
+        # Die Meldung muss den Grund nennen. „Nicht installiert" wäre in
+        # der Demo schlicht gelogen und schickt den Besucher auf die
+        # Suche nach einem Fehler, den es nicht gibt.
+        d["meldung"] = ("Vorführinstanz: Das Lesen ist abgeschaltet, gezeigt "
+                        "werden die mitgelieferten Lesungen des Pilotlaufs."
+                        if konfig.demo() else
+                        "Claude Code ist auf diesem Rechner nicht installiert "
                         "(oder nicht im Suchpfad).")
         _BEREIT.clear(), _BEREIT.update(d)
         return d

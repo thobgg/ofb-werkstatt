@@ -21,82 +21,19 @@ Gepruefte Fremdpakete werden **nicht** nachinstalliert: Das Skript nimmt
 das Python, mit dem es aufgerufen wurde. Wer wissen will, ob ein nacktes
 System reicht, ruft es aus einer frischen venv auf.
 """
-import json
 import shutil
-import socket
 import subprocess
 import sys
 import tempfile
 import time
-import urllib.error
-import urllib.request
 from pathlib import Path
 
-from . import konfig
+from .klon import Maske, ausnahmen, baue, frei, warte
 
 # Was die README behauptet. Weicht der Lauf ab, wird es gemeldet -
 # entweder stimmt die Zahl nicht mehr, oder es ist etwas kaputt.
 ERWARTET = dict(eintraege=81, gruen=24, ohne_bild=0, tote_zeiger=0,
                 leerlauf=True)
-
-
-def _frei():
-    s = socket.socket()
-    s.bind(("127.0.0.1", 0))
-    p = s.getsockname()[1]
-    s.close()
-    return p
-
-
-def _klon(ziel):
-    """Nur was im Git liegt - also genau das, was ein Klon bekommt."""
-    dateien = subprocess.run(
-        ["git", "ls-files", "-z"], cwd=konfig.WURZEL,
-        capture_output=True, text=True, check=True).stdout.split("\0")
-    n = 0
-    for f in dateien:
-        if not f:
-            continue
-        q = konfig.WURZEL / f
-        if not q.is_file():
-            continue
-        z = ziel / f
-        z.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(q, z)
-        n += 1
-    return n
-
-
-class Maske:
-    """Die Web-Schnittstelle, wie der Browser sie benutzt."""
-
-    def __init__(self, port):
-        self.b = f"http://127.0.0.1:{port}"
-
-    def __call__(self, pfad, daten=None):
-        r = urllib.request.Request(
-            self.b + pfad, method="POST" if daten is not None else "GET")
-        if daten is not None:
-            r.add_header("Content-Type", "application/json")
-        rumpf = json.dumps(daten).encode() if daten is not None else None
-        try:
-            with urllib.request.urlopen(r, rumpf, timeout=900) as f:
-                return json.loads(f.read())
-        except urllib.error.HTTPError as e:
-            return {"HTTP": e.code, **json.loads(e.read() or b"{}")}
-
-
-def _warte(port, sekunden=30):
-    for _ in range(sekunden * 5):
-        s = socket.socket()
-        s.settimeout(1)
-        try:
-            if s.connect_ex(("127.0.0.1", port)) == 0:
-                return True
-        finally:
-            s.close()
-        time.sleep(0.2)
-    return False
 
 
 def _tote_zeiger(datei):
@@ -113,10 +50,10 @@ def _tote_zeiger(datei):
 
 def lauf(behalten=False):
     ordner = Path(tempfile.mkdtemp(prefix="ofb-probelauf-"))
-    port = _frei()
+    port = frei()
     server = None
     try:
-        n = _klon(ordner)
+        n = baue(ordner)
         print(f"Klon: {n} Dateien in {ordner}")
         # In eine Datei, nicht in eine Pipe: Niemand liest hier mit, und
         # eine volle Pipe blockiert den Server nach etwa 64 KB. Genau das
@@ -128,7 +65,7 @@ def lauf(behalten=False):
             [sys.executable, "start.py", "--port", str(port), "--kein-browser"],
             cwd=ordner, stdout=log.open("w"), stderr=subprocess.STDOUT,
             text=True)
-        if not _warte(port):
+        if not warte(port):
             raise SystemExit("Der Klon startet nicht.\n"
                              + log.read_text(encoding="utf-8")[-4000:])
         m = Maske(port)
@@ -212,15 +149,11 @@ def lauf(behalten=False):
                 server.wait(10)
             except subprocess.TimeoutExpired:
                 server.kill()
-        # Was der Server gemeldet hat, gehoert zum Ergebnis. Ein Lauf,
-        # der Zahlen liefert und dabei Ausnahmen wirft, ist nicht gruen.
-        log = ordner / "server.log"
-        if log.exists():
-            meldungen = [z for z in log.read_text(encoding="utf-8").split("\n")
-                         if "Traceback" in z or "Error" in z or "Exception" in z]
-            if meldungen:
-                print(f"\nDer Server hat {len(meldungen)} Ausnahme(n) "
-                      f"gemeldet, erste:\n  {meldungen[0][:200]}")
+        # Was der Server gemeldet hat, gehoert zum Ergebnis.
+        meldungen = ausnahmen(ordner / "server.log")
+        if meldungen:
+            print(f"\nDer Server hat {len(meldungen)} Ausnahme(n) "
+                  f"gemeldet, erste:\n  {meldungen[0][:200]}")
         if behalten:
             print(f"\nKlon bleibt stehen: {ordner}")
         else:

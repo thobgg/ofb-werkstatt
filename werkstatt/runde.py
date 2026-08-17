@@ -275,11 +275,16 @@ def lauf(runde_id):
     schluessel = None
     if quelle == "api":
         import os
-        schluessel = os.environ.get("ANTHROPIC_API_KEY")
+        # Der Schlüssel *könnte* in der Umgebung stehen, auch wenn er dort
+        # nicht hingehört. In der Vorführinstanz zählt nicht, was da ist,
+        # sondern was erlaubt ist.
+        schluessel = (None if konfig.demo()
+                      else os.environ.get("ANTHROPIC_API_KEY"))
         if not schluessel:
+            grund = ("Vorführinstanz: Lesen über die API ist abgeschaltet"
+                     if konfig.demo() else "ANTHROPIC_API_KEY nicht gesetzt")
             con.execute("UPDATE auftrag SET stand='fehler', meldung=?, "
-                        "beendet=? WHERE id=?",
-                        ("ANTHROPIC_API_KEY nicht gesetzt", jetzt(), aid))
+                        "beendet=? WHERE id=?", (grund, jetzt(), aid))
             con.execute("UPDATE runde SET stand='geplant' WHERE id=?", (runde_id,))
             con.commit()
             return

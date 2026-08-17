@@ -108,8 +108,8 @@ label input[type=radio]{margin-right:.4rem}
  <a href="/formular" data-p="/formular" title="Aktkarten und Formularperioden">Formular</a>
  <span style=flex:1></span><span class=dim id=gem></span>
  <a href="/einstellungen" data-p="/einstellungen" title="Einstellungen">⚙</a>
- <a href="#" onclick="beenden();return false" title="Werkstatt beenden"
-    style="font-size:1.05rem">⏻</a></header>
+ <!--nur-lokal--><a href="#" onclick="beenden();return false" title="Werkstatt beenden"
+    style="font-size:1.05rem">⏻</a><!--/nur-lokal--></header>
 <main id=app class=leer>lade…</main>
 <script>
 const esc=s=>(s??'').toString().replace(/[&<>"]/g,c=>

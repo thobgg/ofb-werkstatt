@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Konfiguration laden. Alles Ortsspezifische steht in konfig.toml,
 nicht im Code – Registerarten, Felder, Vorbelegungen, Bestandsdatei."""
+import os
 import tomllib
 from functools import lru_cache
 from pathlib import Path
@@ -8,6 +9,29 @@ from pathlib import Path
 WURZEL = Path(__file__).resolve().parent.parent
 DATEI = WURZEL / "konfig.toml"
 LOKAL = WURZEL / "konfig.local.toml"
+
+
+def demo():
+    """Läuft diese Instanz als Schaustück im Netz?
+
+    Gesetzt wird das über die Umgebung (`OFB_DEMO=1`), nicht über
+    konfig.toml – die Datei wandert mit dem Klon, die Umgebung nicht. Wer
+    das Verzeichnis kopiert, bekommt also wieder eine normale Werkstatt.
+
+    Der Schalter nimmt zwei Dinge weg, und beide aus demselben Grund: Ein
+    Fremder darf nicht auf Rechnung des Betreibers handeln.
+
+        Abschalten   `POST /api/beenden` – sonst beendet der erste
+                     Besucher den Server für alle folgenden.
+        Lesen        alles, was Claude anruft. Gemessen: 7 Seiten über
+                     Claude Code = 10,43 $. Die Demo liest ausschließlich
+                     aus `daten/pilot.json`.
+
+    Die Umgebung allein genügt dafür nicht. `ANTHROPIC_API_KEY` lässt sich
+    aus dem Dienst heraushalten, `claude` im Suchpfad nicht zuverlässig –
+    es liegt auf demselben Rechner. Deshalb steht die Sperre im Programm.
+    """
+    return os.environ.get("OFB_DEMO", "") == "1"
 
 
 def _misch(grund, oben):
