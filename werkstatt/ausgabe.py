@@ -60,14 +60,57 @@ def quelle_id(con):
 
 
 # ------------------------------------------------------- Records schreiben
-def gedcom_datum(datum):
-    """Datum durchreichen. GEDCOM-Formen bleiben, wie sie sind.
+MONAT = {"januar": "JAN", "jan": "JAN", "februar": "FEB", "feb": "FEB",
+         "febr": "FEB", "märz": "MAR", "maerz": "MAR", "märz.": "MAR",
+         "april": "APR", "apr": "APR", "mai": "MAY", "may": "MAY",
+         "juni": "JUN", "jun": "JUN", "juny": "JUN", "juli": "JUL",
+         "jul": "JUL", "july": "JUL", "august": "AUG", "aug": "AUG",
+         "september": "SEP", "sep": "SEP", "sept": "SEP",
+         "oktober": "OCT", "okt": "OCT", "october": "OCT", "oct": "OCT",
+         "november": "NOV", "nov": "NOV", "dezember": "DEC", "dez": "DEC",
+         "december": "DEC", "dec": "DEC"}
 
-    Bewusst keine Normalisierung: Was aus dem Bestand kommt, ist bereits
-    GEDCOM; was aus der Erfassung kommt, steht so im Kirchenbuch. Beides
-    umzurechnen hieße, eine Angabe zu erfinden, die niemand geprüft hat.
+_MON = r"(?:JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)"
+_GEDCOM_FERTIG = re.compile(
+    r"^(ABT |CAL |EST |BEF |AFT |BET |FROM |TO )?"
+    rf"(\d{{1,2}} )?({_MON} )?\d{{3,4}}"
+    rf"( (AND|TO) (\d{{1,2}} )?({_MON} )?\d{{3,4}})?$")
+_PUNKTE = re.compile(r"^(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})$")
+_DEUTSCH = re.compile(r"^(?:den\s+)?(\d{1,2})(?:\.|ten|sten|te)?\s+"
+                      r"([A-Za-zäöü]+)\.?\s+(\d{4})$")
+_MON_NR = ["", "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+           "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"]
+
+
+def gedcom_datum(datum):
+    """Datum in GEDCOM-Form bringen, wo das ohne Deutung möglich ist.
+
+    Umgeformt wird nur das Format, nie der Inhalt: `16.02.1808` und
+    `16. Februar 1808` sind dieselbe Angabe wie `16 FEB 1808`. Alles, was
+    sich nicht eindeutig lesen lässt (Doppelangaben, Uhrzeiten, Lücken),
+    wird zur Datumsphrase in Klammern – so sieht ein Programm, dass es
+    Text ist, statt ein ungültiges Datum zu melden. Die Wortform des
+    Kirchenbuchs steht ohnehin im Eintrag.
+
+    Anlass: Nach dem Import der Demo meldete die Datenprüfung in Gramps
+    40 ungültige Datumsangaben – alle nur der Form wegen.
     """
-    return (datum or "").strip()
+    d = (datum or "").strip()
+    if not d:
+        return d
+    if _GEDCOM_FERTIG.match(d):
+        return d
+    m = _PUNKTE.match(d)
+    if m and 1 <= int(m.group(2)) <= 12 and 1 <= int(m.group(1)) <= 31:
+        return f"{int(m.group(1))} {_MON_NR[int(m.group(2))]} {m.group(3)}"
+    m = _DEUTSCH.match(d)
+    if m:
+        mon = MONAT.get(m.group(2).lower().rstrip("."))
+        if mon and 1 <= int(m.group(1)) <= 31:
+            return f"{int(m.group(1))} {mon} {m.group(3)}"
+    if d.startswith("(") and d.endswith(")"):
+        return d
+    return f"({d})"
 
 
 # Diese Tags schreibt person_record schon unter 1 NAME – als Merkmal

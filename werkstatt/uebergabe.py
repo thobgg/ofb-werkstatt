@@ -89,6 +89,20 @@ GESCHLECHT = {"m": "M", "männlich": "M", "maennlich": "M", "knabe": "M",
               "mädchen": "F", "maedchen": "F", "tochter": "F"}
 
 
+def rollen_geschlecht(rolle):
+    """Was die Rolle im Formular über das Geschlecht sagt.
+
+    `vater`, `braeutigam_vater`, `braut_vater` sind Männer, die
+    Mutter- und Brautrollen Frauen. `kind` und `verstorbener` sagen
+    nichts – dort entscheidet allein das erfasste Feld.
+    """
+    if rolle.endswith("vater") or rolle == "braeutigam":
+        return "M"
+    if rolle.endswith("mutter") or rolle == "braut":
+        return "F"
+    return None
+
+
 def person_anlegen(con, hid, vorname, nachname, kb=None, sex=None):
     name = " ".join(x for x in (vorname, nachname) if x)
     sex = GESCHLECHT.get((sex or "").strip().lower())
@@ -272,7 +286,13 @@ def uebernimm(con, art, schreib=False, runde_id=None, marke=None):
                 nn = erbe
                 if nn:
                     z["nachname_geerbt"] += 1
-            sex = felder.get(f"{rolle}_geschlecht", {}).get("wert")
+            # Erst das erfasste Feld, dann die Rolle: Ein `vater` ist ein
+            # Mann, eine `braut` eine Frau – das steht im Registerformular,
+            # nicht erst im Eintrag. Ohne die Ableitung blieben 136 von
+            # 164 Personen der Demo ohne Geschlecht; gefunden von der
+            # Datenprüfung in Gramps nach dem Import.
+            sex = (felder.get(f"{rolle}_geschlecht", {}).get("wert")
+                   or rollen_geschlecht(rolle))
             if schreib:
                 pid[rolle] = person_anlegen(con, hid, vn, nn, f["kb"], sex)
                 journal.notiere(
