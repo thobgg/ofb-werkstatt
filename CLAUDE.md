@@ -69,6 +69,16 @@ und Änderung laufen deterministisch und landen im Journal.
 bleibt erhalten auch wenn falsch), `kb_form` (wörtlich, → `_KB_NAME`), `kanonisch`
 (normalisiert, → `NAME`).
 
+## Frontend liegt in static/, nicht in Python-Strings
+
+HTML, CSS und JavaScript der Maske liegen als echte Dateien in
+`werkstatt/web/static/`; die Module `web/start.py` und `web/seite.py`
+sind nur noch Lader. Anzeigecode nicht wieder in Python-Strings
+anwachsen lassen - das war Davids berechtigter Einwand im Forum:
+Strings haben kein Highlighting, kein Linting und unlesbare Diffs.
+Neue Dateien in static/ gehören sofort in Git, sonst fehlen sie jedem
+Klon (git ls-files ist die Quelle von Probelauf und Demo-Bau).
+
 ## Anker, nach Preis geordnet
 
 | Anker | braucht | trägt ab |
