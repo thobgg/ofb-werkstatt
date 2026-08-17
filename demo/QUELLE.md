@@ -1,6 +1,6 @@
 # Die Beispielseiten
 
-Fünfzehn Seiten, je fünf aus den drei Registern der Pfarrei Haberschlacht
+Zwölf Seiten aus den drei Registern der Pfarrei Haberschlacht
 (Dekanat Brackenheim, Württemberg). Sie sind hier, damit sich die Werkstatt
 ausprobieren lässt, ohne eigene Bücher zu haben – ohne Bilder gibt es keine
 Streifen, keinen Spaltenkopf, keine Seitenschau, und dann sieht man von der
@@ -10,7 +10,15 @@ Arbeitsweise nichts.
 
     Taufregister    Bd. 4, Bilder 1184798-00359 bis 00363, Jahrgänge 1808/09
     Eheregister     Bd. 6, Bilder 1184798-00917 bis 00921, ab 1808
-    Sterberegister  Bd. 7, Bilder 1184799-00018 bis 00022, ab 1808
+    Sterberegister  Bd. 7, Bilder 1184799-00018 und 00022, ab 1808
+
+Vom Sterberegister lagen zunächst fünf Bilder bei; `00019` bis `00021`
+waren aber weitere Aufnahmen derselben Buchöffnung wie `00018` – Ancestry
+fotografiert manche Öffnung mehrfach. Ihre Lesungen standen als eigene
+Seiten in den Testdaten, und jeder der acht Einträge landete vierfach im
+Bestand. Aufgefallen ist das beim Import in Ahnenblatt, dessen
+Plausibilitätsprüfung die Doppelten meldete. Seitdem liegt je Öffnung
+eine Aufnahme bei.
 
     Evangelische Kirchengemeinde Haberschlacht, Kirchenbücher.
     Digitalisate über Ancestry.
@@ -47,16 +55,16 @@ den Beispielseiten trifft. Geschnitten mit `python3 -m werkstatt.auszug`,
 die Records stehen wörtlich wie im Original.
 
 Ohne ihn bleibt alles gelb: Es gibt nichts, wogegen geprüft werden könnte.
-Mit ihm werden auf denselben Seiten 24 Felder grün, und zwar in allen
-drei Registern: Taufe 10, Ehe 6, Tod 8. Der erste Auszug war nur für die
+Mit ihm werden auf denselben Seiten 18 Felder grün, und zwar in allen
+drei Registern: Taufe 10, Ehe 6, Tod 2. Der erste Auszug war nur für die
 Taufrunde geschnitten – Ehe und Sterbeeinträge fanden deshalb nichts,
 nicht weil der Anker nicht trüge, sondern weil die Eltern der Brautleute
 im Auszug fehlten.
 
-Dazu passen die Rohlesungen in `daten/pilot.json`: 93 Einträge, so wie ein
+Dazu passen die Rohlesungen in `daten/pilot.json`: 69 Einträge, so wie ein
 Modell sie gelesen hat, vor jeder Korrektur. Sie decken mehr Seiten ab, als
 hier an Bildern liegen; gelesen wird nur, wozu auch ein Bild da ist, und das
-sind 81 Einträge auf dreizehn Seiten – Taufe 23, Ehe 19, Tod 39. Die
-vierzehnte, `1184798-00360`, ist dieselbe Buchöffnung wie `00359` und wird
-als Dublette übersprungen; genau dafür liegt sie bei.
+sind 57 Einträge auf zehn Seiten – Taufe 23, Ehe 19, Tod 15. Das elfte
+Bild, `1184798-00360`, ist dieselbe Buchöffnung wie `00359` und wird als
+Dublette übersprungen; genau dafür liegt es bei.
 Damit läuft der ganze Durchlauf ohne API-Schlüssel – Quelle *Testdaten*.

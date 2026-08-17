@@ -145,14 +145,14 @@ dafür ist die Maske da.
 
 ## Ausprobieren
 
-Fünfzehn Beispielseiten liegen bei (je fünf aus Tauf-, Ehe- und
-Sterberegister Haberschlacht ab 1808) und 93 Rohlesungen, wie das Modell
-sie geliefert hat. Damit läuft der ganze Durchlauf ohne eigene Bücher und
-ohne API-Schlüssel: einrichten, unter **Lesen** die Quelle *Testdaten*
+Zwölf Beispielseiten liegen bei (Tauf-, Ehe- und Sterberegister
+Haberschlacht ab 1808) und 69 Rohlesungen, wie das Modell sie geliefert
+hat. Damit läuft der ganze Durchlauf ohne eigene Bücher und ohne
+API-Schlüssel: einrichten, unter **Lesen** die Quelle *Testdaten*
 wählen, korrigieren, übergeben, GEDCOM ausgeben.
 
 Dazu ein kleiner Bestandsauszug (`demo/bestand.ged`, 28 Personen, 15
-Familien): Mit ihm werden auf denselben Seiten **24 Felder grün**, weil
+Familien): Mit ihm werden auf denselben Seiten **18 Felder grün**, weil
 die Elternehen im Bestand stehen — der Beleg steht jeweils daneben. Ohne
 ihn bleibt alles gelb; auch das ist ein gültiger Start, nur langsamer.
 Die von Hand geprüften Personenverweise liegen nicht bei — der Abgleich
@@ -166,7 +166,7 @@ python3 -m werkstatt.probelauf
 
 Er baut aus `git ls-files` einen Klon in ein Wegwerfverzeichnis, fährt
 dort den ganzen Durchlauf über die Web-Schnittstelle und vergleicht die
-Ergebnisse mit dieser Seite (81 Einträge, 24 grün, Fortschreibung
+Ergebnisse mit dieser Seite (57 Einträge, 18 grün, Fortschreibung
 zeichengleich, 0 tote Zeiger).
 
 ### Starten
@@ -210,7 +210,7 @@ Oberfläche.
 
 Scans von Archion, Ancestry und ähnlichen Diensten dürfen nicht
 weiterverbreitet werden; `bilder/` und `daten/` sind deshalb von der
-Versionsverwaltung ausgenommen. Die fünfzehn Beispielseiten und der
+Versionsverwaltung ausgenommen. Die Beispielseiten und der
 Bildstreifen oben sind die begründete Ausnahme: Vorlagen von 1808/09,
 gemeinfrei, nach § 68 UrhG auch als Reproduktion. Herkunft und Zitation
 stehen in `demo/QUELLE.md`.

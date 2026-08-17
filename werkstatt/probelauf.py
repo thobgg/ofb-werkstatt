@@ -32,7 +32,7 @@ from .klon import Maske, ausnahmen, baue, frei, warte
 
 # Was die README behauptet. Weicht der Lauf ab, wird es gemeldet -
 # entweder stimmt die Zahl nicht mehr, oder es ist etwas kaputt.
-ERWARTET = dict(eintraege=81, gruen=24, ohne_bild=0, tote_zeiger=0,
+ERWARTET = dict(eintraege=57, gruen=18, ohne_bild=0, tote_zeiger=0,
                 leerlauf=True)
 
 
