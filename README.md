@@ -1,5 +1,8 @@
 # OFB-Werkstatt
 
+[![Neu](https://img.shields.io/badge/neu-Mehrbenutzer_je_Instanz-2ea44f)](doku/mehrbenutzer.md)
+[![Lizenz](https://img.shields.io/badge/Lizenz-MIT-lightgrey)](LICENSE)
+
 Werkzeug für ein **Ortsfamilienbuch**: Kirchenbuchseite von einem
 Sprachmodell lesen lassen, gegen den vorhandenen Bestand abgleichen,
 korrigieren und als GEDCOM ausgeben.
@@ -190,7 +193,7 @@ Startskript beim ersten Lauf selbst.
 
 Beides endet auf `http://127.0.0.1:8765` im Browser.
 
-## Mehrbenutzer
+## Mehrbenutzer *(neu, August 2026)*
 
 Fuer eine Parochie-Instanz mit mehreren Bearbeitern gibt es Konten und
 zwei Rollen: Bearbeiter korrigieren und bestaetigen, der Redakteur
