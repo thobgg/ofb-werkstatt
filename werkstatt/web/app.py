@@ -116,7 +116,8 @@ class Handler(BaseHTTPRequestHandler):
         anfrage = args[0] if args else ""
         code = str(args[1]) if len(args) > 1 else ""
         if code != "401" and ("/bild/" in anfrage or "/api/stand" in anfrage
-                              or "/api/fortschritt" in anfrage):
+                              or "/api/fortschritt" in anfrage
+                              or "/stats" in anfrage):
             return
         wer = (self.headers.get("X-Forwarded-For", "").split(",")[0].strip()
                or self.client_address[0])
@@ -297,6 +298,26 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json(d)
             finally:
                 con.close()
+        if pfad == "/stats" and konfig.demo():
+            # Zugriffsauswertung für den Betreiber, hinter demselben
+            # Passwort wie alles andere - kein eigenes Token, das in
+            # Verläufen und Logs liegen bliebe. Nur im Demo-Modus:
+            # Am eigenen Rechner gibt es kein Log und keinen Bedarf.
+            import io
+            from .. import zugriffe
+            log = ROOT / "daten" / "zugriffe.log"
+            zeilen = (log.read_text(encoding="utf-8").split("\n")
+                      if log.exists() else [])
+            puffer = io.StringIO()
+            zugriffe.bericht(zugriffe.lies(zeilen), aus=puffer,
+                             eigene=zugriffe.eigene_adressen())
+            return self._send(
+                200, "text/html; charset=utf-8",
+                "<!doctype html><html lang=de><meta charset=utf-8>"
+                "<title>Zugriffe</title><body style='background:#111;"
+                "color:#ddd;font:14px/1.5 monospace;padding:2rem'>"
+                f"<h3>Vorführinstanz: Zugriffe</h3><pre>{puffer.getvalue()}"
+                "</pre></body></html>")
         if pfad == "/korrektur":
             return self._send(200, "text/html; charset=utf-8",
                               _nur_lokal(SEITE))
