@@ -71,20 +71,30 @@ def _nur_lokal(html):
 # Bewusst *nicht* gesperrt: speichern, feld, dubletten, perioden,
 # uebergib, ausgabe. Das ist die Arbeit, die vorgefuehrt werden soll, und
 # sie fasst nur die Datenbank an - die wird stuendlich zurueckgesetzt.
-# Was die Rolle `bearbeiter` im Kontenbetrieb nicht darf: alles, was
-# Geld kostet, Struktur ändert oder Erfassung zu Bestand macht. Das
-# Übergeben ist der Redaktionsentscheid - dasselbe Muster wie in den
-# Crowdsourcing-Projekten: Viele schlagen vor, einer übernimmt gegen
-# die Quelle. Korrigieren, Bestätigen und alles Lesende bleiben frei.
+# Was die Rolle `bearbeiter` im Kontenbetrieb nicht darf. Zwei Klassen,
+# aus zwei Gründen:
+#
+#   NUR_REDAKTEUR - Struktur, Bestand, Betrieb. Das Übergeben ist der
+#   Redaktionsentscheid (dasselbe Muster wie in den Crowdsourcing-
+#   Projekten: Viele schlagen vor, einer übernimmt gegen die Quelle),
+#   Einstellungen und Quellen prägen die ganze Instanz. Das bleibt hart.
+#
+#   KOSTET_GELD - Planen, Lesen, Nachlesen, Fragen laufen über den
+#   API-Schlüssel des Betreibers. Ob Bearbeiter das dürfen, entscheidet
+#   der Redakteur per Einstellung `rollen.bearbeiter_liest` - sonst ist
+#   er der Flaschenhals, an dem jede Tranche hängt, obwohl er nur das
+#   Geld schützen wollte. Vorgabe: aus.
 NUR_REDAKTEUR = {
-    "/api/runde/plane", "/api/einlesen", "/api/lesen-lassen",
-    "/api/anmelden", "/api/nachlesen", "/api/frage",
     "/api/runde/uebergib", "/api/ausgabe", "/api/ausgabe7",
     "/api/einstellungen", "/api/einrichten",
     "/api/quelle", "/api/quelle-weg", "/api/entpacken",
     "/api/feld", "/api/feld-weg", "/api/feld-leeren",
     "/api/spaltenraster", "/api/perioden", "/api/dubletten",
-    "/api/beenden",
+    "/api/anmelden", "/api/beenden",
+}
+KOSTET_GELD = {
+    "/api/runde/plane", "/api/einlesen", "/api/lesen-lassen",
+    "/api/nachlesen", "/api/frage",
 }
 
 GESPERRT = {
@@ -477,6 +487,20 @@ class Handler(BaseHTTPRequestHandler):
             return self._json(
                 {"ok": False, "fehler": "Das entscheidet der Redakteur.",
                  "meldung": "Das entscheidet der Redakteur."}, 403)
+        if self.rolle == "bearbeiter" and pfad in KOSTET_GELD:
+            con = db.verbinde()
+            try:
+                darf = einstellungen.wert(con, "rollen.bearbeiter_liest",
+                                          "0") == "1"
+            finally:
+                con.close()
+            if not darf:
+                return self._json(
+                    {"ok": False, "fehler":
+                     "Runden plant und liest hier der Redakteur. Er kann "
+                     "das freigeben: Einstellung rollen.bearbeiter_liest.",
+                     "meldung": "Runden plant und liest hier der "
+                     "Redakteur."}, 403)
         if konfig.demo() and pfad in GESPERRT:
             return self._json(
                 {"ok": False, "fehler": "Vorführinstanz: " + GESPERRT[pfad],
