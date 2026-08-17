@@ -88,6 +88,7 @@ Bestand und werden beim Abgleich trotzdem gefunden.
 | ✅ | GEDCOM-Ausgabe: Fortschreibung und Neuausgabe, Import in Gramps und Ahnenblatt getestet |
 | ✅ | GEDCOM 7 als zweiter Ausgang, gegen Grammatik, Verweise und Schema geprüft |
 | ✅ | Vorführinstanz: derselbe Code läuft als Docker-Container hinter einem Reverse Proxy |
+| ✅ | Mehrbenutzer je Instanz: Konten und Rollen (Redakteur/Bearbeiter), parallele Runden je Register, Nutzerverwaltung im Browser - ohne Kontendatei weiterhin der Einzelplatz ohne Anmeldung |
 | 🚧 | Bedienschleife: ein Eintrag zur Zeit statt der ganzen Runde auf einer Seite |
 | ⬜ | Batch-API, Kaskaden für Ehe und Tod, Bildausschnitt je Feld |
 
