@@ -32,7 +32,7 @@ from pathlib import Path
 
 from .seite import SEITE
 from .start import STARTSEITE
-from .. import (abgleich, ausgabe, db, einrichtung, einstellungen,
+from .. import (abgleich, ausgabe, ausgabe7, db, einrichtung, einstellungen,
                 dubletten, gespraech, katalog, nachlesen, perioden,
                 spaltenraster,
                 import_gedcom,
@@ -295,7 +295,23 @@ class Handler(BaseHTTPRequestHandler):
                 else:
                     daten, z = ausgabe.neuausgabe(con, schreib=False)
                     d.update(art="neu", zahlen=z, bytes=len(daten))
+                # Nur der Schalter, nicht das Ergebnis: Die 7er-Ausgabe zu
+                # bauen und zu pruefen dauert bei 4000 Personen gut eine
+                # Sekunde, und niemand wartet darauf beim Seitenaufbau.
+                d["sieben"] = ausgabe7.da()
                 return self._json(d)
+            finally:
+                con.close()
+        if pfad == "/api/ausgabe7":
+            if not ausgabe7.da():
+                return self._json(dict(sieben=False))
+            con = db.verbinde()
+            try:
+                daten, z = ausgabe7.neuausgabe(con, schreib=False)
+                ok, meldungen = ausgabe7.pruefe(daten)
+                return self._json(dict(sieben=True, zahlen=z,
+                                       bytes=len(daten), gueltig=ok,
+                                       meldungen=meldungen))
             finally:
                 con.close()
         if pfad == "/stats" and konfig.demo():
@@ -501,6 +517,25 @@ class Handler(BaseHTTPRequestHandler):
                 ziel.write_bytes(daten)
                 return self._json(dict(ok=True, datei=str(
                     ziel.relative_to(ROOT)), bytes=len(daten), zahlen=z))
+            finally:
+                con.close()
+        if pfad == "/api/ausgabe7":
+            if not ausgabe7.da():
+                return self._json(dict(ok=False, fehler="Paket gedcom7 fehlt"))
+            d = self._rumpf()
+            con = db.verbinde()
+            try:
+                daten, z = ausgabe7.neuausgabe(con, schreib=True)
+                ok, meldungen = ausgabe7.pruefe(daten)
+                name = d.get("datei") or (
+                    f"{konfig.konfig().get('gemeinde', {}).get('name', 'OFB')}"
+                    "_gedcom7.ged")
+                ziel = (ROOT / "ausgabe" / Path(name).name)
+                ziel.parent.mkdir(parents=True, exist_ok=True)
+                ziel.write_bytes(daten)
+                return self._json(dict(ok=True, datei=str(
+                    ziel.relative_to(ROOT)), bytes=len(daten), zahlen=z,
+                    gueltig=ok, meldungen=meldungen))
             finally:
                 con.close()
         if pfad == "/api/einstellungen":

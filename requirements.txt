@@ -2,3 +2,8 @@
 #     python3 -m pip install -r requirements.txt
 Pillow>=9.0      # Seitenbilder oeffnen, drehen, zuschneiden
 numpy>=1.21      # Zeilenerkennung im Seitenbild (werkstatt/raster.py)
+
+# Freiwillig, nur fuer den zweiten Ausgang (werkstatt/ausgabe7.py):
+# GEDCOM 7 schreiben und gegen die Spezifikation pruefen. Ohne dieses
+# Paket laeuft alles uebrige unveraendert, nur der Ausgang fehlt.
+#     python3 -m pip install gedcom7

@@ -48,6 +48,12 @@ kam.
   früheren Einträge ab — die ersten hundert tragen die nächsten tausend.
 - **Die Ausgabe ist verlustfrei**: unberührte Records gehen zeichengleich
   durch die Fortschreibung. Ein Leerlauftest belegt das bei jedem Export.
+- **GEDCOM 7 als zweiter Ausgang.** Die Fortschreibung bleibt 5.5.1, weil
+  die Bestände es sind und nur so zeichengleich durchgereicht werden kann.
+  Daneben steht eine Neuausgabe in GEDCOM 7, geschrieben und geprüft über
+  [`python-gedcom7`](https://github.com/DavidMStraub/python-gedcom7) von
+  David Straub. Dort werden die eigenen Tags des Ortsfamilienbuchs
+  (`_KB_NAME`, `_BERUF_KB` …) im Kopf der Datei erklärt statt geduldet.
 
 Wie gut die Maschine liest, hängt an Handschrift, Erhaltung und Scan —
 eine allgemeine Trefferquote wäre irreführend. Der Beitrag der Werkstatt
@@ -80,6 +86,7 @@ Bestand und werden beim Abgleich trotzdem gefunden.
 | ✅ | Rundenautomat mit Hintergrundläufer, Fehler je Seite statt je Lauf |
 | ✅ | Abgleich mit Ampel und Herkunftsrang (was darf bestätigen, was nur ranken) |
 | ✅ | GEDCOM-Ausgabe: Fortschreibung und Neuausgabe, Import in Gramps und Ahnenblatt getestet |
+| ✅ | GEDCOM 7 als zweiter Ausgang, gegen Grammatik, Verweise und Schema geprüft |
 | ✅ | Vorführinstanz: derselbe Code läuft als Docker-Container hinter einem Reverse Proxy |
 | 🚧 | Bedienschleife: ein Eintrag zur Zeit statt der ganzen Runde auf einer Seite |
 | ⬜ | Batch-API, Kaskaden für Ehe und Tod, Bildausschnitt je Feld |
@@ -232,6 +239,7 @@ getrennt werden, damit weitere Sprachen möglich sind.
 | `doku/ansatz.md` | Begründung der Entwurfsentscheidungen |
 | `doku/verknuepfung.md` | die Kaskade je Aktart |
 | `doku/workflow.md` | der Arbeitsablauf von der ersten Seite bis zur Ausgabe |
+| `doku/gedcom7-tags.md` | die eigenen Tags des Ortsfamilienbuchs, Ziel der Schema-URIs |
 | `doku/naechste-sitzung.md` | Stand und offene Punkte |
 
 Lizenz: MIT.

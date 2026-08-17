@@ -708,7 +708,68 @@ async function ausgabeHolen(){
    ${fort?`<button onclick="schreiben('neu')">stattdessen neu aufbauen</button>`:''}
    <span class=dim>nach <code>ausgabe/</code></span>
   </div>
-  <div id=ergebnis style="margin-top:.7rem"></div>`;
+  <div id=ergebnis style="margin-top:.7rem"></div>
+  <div id=sieben style="margin-top:1.4rem"></div>`;
+ if(d.sieben) sieben7Holen(); else document.getElementById('sieben').innerHTML=
+  `<div class=karte><b>GEDCOM 7</b>
+    <div class=dim style="font-size:.88rem;margin-top:.3rem">
+     Als zweite Ausfertigung möglich, dafür fehlt das Paket
+     <code>gedcom7</code>: <code>python3 -m pip install gedcom7</code>.
+     Für die Ausgabe oben wird es nicht gebraucht.</div></div>`;
+}
+
+// --------------------------------------------------------- GEDCOM 7
+// Zweiter Ausgang, kein Ersatz. Er wird nachgeladen, weil Bauen und
+// Prüfen bei einem gewachsenen Bestand gut eine Sekunde dauern.
+async function sieben7Holen(){
+ const el=document.getElementById('sieben'); if(!el) return;
+ el.innerHTML='<div class=karte><b>GEDCOM 7</b> <span class=dim>wird '
+             +'gebaut und geprüft…</span></div>';
+ const d=await (await fetch('/api/ausgabe7')).json();
+ const z=d.zahlen||{};
+ el.innerHTML=`<div class=karte>
+  <b>GEDCOM 7</b>
+  <div class=dim style="font-size:.88rem;margin:.3rem 0 .6rem">
+   Zweite Ausfertigung, alles aus den eigenen Tabellen. Die eigenen Tags
+   des Ortsfamilienbuchs (<code>_KB_NAME</code>, <code>_BERUF_KB</code> …)
+   stehen hier nicht mehr unerklärt in der Datei, sondern mit einer
+   Beschreibung im Kopf. Geschrieben und geprüft wird über
+   <code>python-gedcom7</code> von David Straub.
+   <b>Die Fortschreibung bleibt 5.5.1</b>, denn nur so gehen unberührte
+   Records der Vorlage zeichengleich hindurch.</div>
+  <div class=reihe style="margin-bottom:.6rem">
+   <span class=ampel><i class="pkt ${d.gueltig?'gruen':'rot'}"></i>
+    <b>Prüfung ${d.gueltig?'✓':'✗'}</b></span>
+   <span class=dim>${d.gueltig
+     ? 'Grammatik, Verweise, Schema und Rückschreiben stimmen'
+     : (d.meldungen||[]).length+' Beanstandung(en)'}</span></div>
+  ${(d.meldungen||[]).length?`<ul class=dim style="font-size:.84rem">`
+    +(d.meldungen||[]).slice(0,8).map(m=>`<li>${esc(m.grund)}`
+    +(m.anzahl>1?` <b>(${m.anzahl}×)</b>`:'')
+    +(m.beispiel?`<br><code>${esc(m.beispiel)}</code>`:'')+`</li>`).join('')
+    +`</ul>`:''}
+  <table>
+   ${Object.entries(z).map(([k,v])=>
+     `<tr><td>${esc(k.replace(/_/g,' '))}</td><td class=z>${v}</td></tr>`).join('')}
+   <tr><td class=dim>Dateigröße</td>
+       <td class="z dim">${(d.bytes/1024).toFixed(0)} kB</td></tr>
+  </table>
+  <div class=reihe style="margin-top:.7rem">
+   <button onclick="schreiben7()">GEDCOM 7 schreiben</button>
+   <span class=dim>nach <code>ausgabe/</code></span></div>
+  <div id=ergebnis7 style="margin-top:.7rem"></div>
+ </div>`;
+}
+
+async function schreiben7(){
+ const r=await fetch('/api/ausgabe7',{method:'POST',
+  headers:{'content-type':'application/json'},body:'{}'});
+ const j=await r.json();
+ const el=document.getElementById('ergebnis7');
+ el.innerHTML = j.ok
+  ? `<span style=color:#8fe3b4>✓ geschrieben:</span>
+     <code>${esc(j.datei)}</code> <span class=dim>${(j.bytes/1024).toFixed(0)} kB</span>`
+  : `<span style=color:#e06c5f>✗ ${esc(j.fehler||'fehlgeschlagen')}</span>`;
 }
 
 async function schreiben(art){

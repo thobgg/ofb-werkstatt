@@ -133,8 +133,28 @@ def lauf(behalten=False):
               f"{aus.get('zahlen', {}).get('neu_familien')} neue Familien, "
               f"{tot} tote Zeiger")
 
+        # Der zweite Ausgang, wenn das Paket da ist. Er darf die Zahlen
+        # oben nicht kippen: Ohne `gedcom7` bleibt die Werkstatt
+        # vollstaendig, nur dieser Ausgang fehlt.
+        s7 = m("/api/ausgabe7")
+        if not s7.get("sieben"):
+            print("GEDCOM 7 : Paket gedcom7 fehlt, uebersprungen")
+        else:
+            z7 = s7.get("zahlen", {})
+            print(f"GEDCOM 7 : {s7.get('bytes')} Byte, "
+                  f"{z7.get('personen')} Personen, {z7.get('familien')} "
+                  f"Familien, {z7.get('eigene_tags')} eigene Tags")
+            if s7.get("gueltig"):
+                print("           Grammatik, Verweise, Schema und "
+                      "Rueckschreiben stimmen")
+            else:
+                for x in (s7.get("meldungen") or [])[:10]:
+                    print(f"           {x['grund']} ({x['anzahl']}x)")
+
         abweichung = {k: (v, gemessen[k]) for k, v in ERWARTET.items()
                       if gemessen[k] != v}
+        if s7.get("sieben") and not s7.get("gueltig"):
+            abweichung["gedcom7"] = (True, False)
         if abweichung:
             print("\nAbweichung von der README:")
             for k, (soll, ist) in abweichung.items():
