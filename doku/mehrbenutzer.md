@@ -18,6 +18,12 @@ ausserhalb von Git. Sobald die Datei Konten enthaelt, verlangt der
 Server Anmeldung (Basic Auth, Name und Passwort). `--weg NAME` entfernt
 ein Konto.
 
+Ab dem ersten Konto geht es auch **im Browser**: Zahnrad, Reiter
+**Nutzer** - anlegen, Rolle aendern, entfernen. Sichtbar nur fuer den
+Redakteur (und am Einzelplatz fuer das allererste Konto, das immer
+Redakteur wird). Der letzte Redakteur laesst sich weder entfernen noch
+degradieren - sonst spertte man sich aus der Verwaltung aus.
+
 ## Rollen
 
 | | redakteur | bearbeiter |

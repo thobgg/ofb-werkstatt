@@ -1317,6 +1317,9 @@ let zahnradReiter = sessionStorage.getItem('zahnrad') || 'Bestand';
 
 const ZAHNRAD = { "Bestand": () => `
  ${quellenKarte()}
+`, "Nutzer": () => `
+ <h2>Nutzer dieser Instanz</h2>
+ <div class=karte id=nutzerkarte>${nutzerLaden()??'lade…'}</div>
 `, "Bücher": () => ` <h2>Reihenfolge der Register</h2>
  <div class=karte>
   <div class=reihe id=reihe>
@@ -1579,6 +1582,64 @@ function zahnradWaehlen(n){
  zahnradReiter=n; sessionStorage.setItem('zahnrad',n);
  document.getElementById('app').innerHTML=ansichtEinstellungen();
  quelleArt();
+}
+
+// ------------------------------------------------------------- Nutzer
+// Kontenverwaltung im Browser. Der Server entscheidet, wer sie sehen
+// darf (Redakteur, oder der Einzelplatz fuer das erste Konto); die
+// Karte zeigt sonst nur den Grund.
+function nutzerLaden(){
+ fetch('/api/nutzer').then(async a=>{
+  const k=document.getElementById('nutzerkarte'); if(!k) return;
+  if(a.status===403){k.innerHTML='<span class=dim>Die Nutzerverwaltung '
+    +'sieht nur der Redakteur.</span>'; return;}
+  const d=await a.json();
+  const zeilen=(d.konten||[]).map(x=>`<tr><td><b>${esc(x.name)}</b>
+    ${x.name===d.selbst?'<span class=dim>(Du)</span>':''}</td>
+   <td><select onchange="nutzerAktion('rolle','${esc(x.name)}',this.value)">
+    ${['redakteur','bearbeiter'].map(r=>`<option ${r===x.rolle?'selected':''}>${r}</option>`).join('')}
+   </select></td>
+   <td><button onclick="if(confirm('Konto ${esc(x.name)} entfernen?'))
+     nutzerAktion('weg','${esc(x.name)}')">entfernen</button></td></tr>`).join('');
+  k.innerHTML=`
+   ${d.kontenbetrieb?'':`<div class=warn style="margin-bottom:.8rem">Noch keine
+     Konten - die Werkstatt läuft als Einzelplatz ohne Anmeldung. Das erste
+     Konto wird der Redakteur; danach verlangt die Instanz eine Anmeldung.</div>`}
+   ${zeilen?`<table><tr><th style=text-align:left>Konto</th>
+     <th style=text-align:left>Rolle</th><th></th></tr>${zeilen}</table>`:''}
+   <div class=reihe style="margin-top:1rem">
+    <input id=nu_name placeholder=Name style=width:10rem>
+    <input id=nu_pw type=password placeholder="Passwort (min. 8)" style=width:12rem>
+    <select id=nu_rolle><option>bearbeiter</option><option>redakteur</option></select>
+    <button class=ja onclick="nutzerAnlegen()">Konto anlegen</button>
+    <span class=dim id=nu_meldung></span>
+   </div>
+   <div class=dim style="margin-top:.6rem">Bearbeiter korrigieren und
+    bestätigen; Übergeben, Ausgeben und Einstellungen bleiben beim
+    Redakteur. Ob Bearbeiter Runden planen und lesen dürfen, regelt die
+    Einstellung <code>rollen.bearbeiter_liest</code>.</div>`;
+ });
+ return null;
+}
+async function nutzerAktion(aktion,name,rolle){
+ const a=await fetch('/api/nutzer',{method:'POST',
+  headers:{'content-type':'application/json'},
+  body:JSON.stringify({aktion,name,rolle})});
+ const d=await a.json();
+ if(!d.ok) alert(d.fehler||'ging nicht');
+ nutzerLaden();
+}
+async function nutzerAnlegen(){
+ const name=document.getElementById('nu_name').value.trim();
+ const pw=document.getElementById('nu_pw').value;
+ const rolle=document.getElementById('nu_rolle').value;
+ const a=await fetch('/api/nutzer',{method:'POST',
+  headers:{'content-type':'application/json'},
+  body:JSON.stringify({aktion:'anlegen',name,passwort:pw,rolle})});
+ const d=await a.json();
+ document.getElementById('nu_meldung').textContent=
+  d.ok?`${name} angelegt`:(d.fehler||'ging nicht');
+ if(d.ok) nutzerLaden();
 }
 
 function merken(k,v){

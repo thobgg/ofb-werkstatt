@@ -95,6 +95,16 @@ def anlegen(name, passwort, rolle="bearbeiter"):
     _schreibe(konten)
 
 
+def setze_rolle(name, rolle):
+    if rolle not in ROLLEN:
+        raise SystemExit(f"Rolle {rolle!r} - erlaubt: {', '.join(ROLLEN)}")
+    konten = lade()
+    if name not in konten:
+        raise SystemExit(f"Kein Konto {name!r}.")
+    konten[name] = (konten[name][0], rolle)
+    _schreibe(konten)
+
+
 def entfernen(name):
     konten = lade()
     if name not in konten:

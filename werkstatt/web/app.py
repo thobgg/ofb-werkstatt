@@ -270,6 +270,18 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json(gespraech.verlauf(con, self._zahl("eintrag")))
             finally:
                 con.close()
+        if pfad == "/api/nutzer":
+            # Kontenverwaltung im Browser - nur für den Redakteur, und am
+            # Einzelplatz (Rolle 'allein'), damit sich das erste Konto
+            # ohne Kommandozeile anlegen lässt.
+            if self.rolle not in ("redakteur", "allein"):
+                return self._json({"fehler": "Das entscheidet der "
+                                   "Redakteur."}, 403)
+            from .. import nutzer as _nutzer
+            return self._json(dict(
+                konten=[dict(name=n, rolle=r)
+                        for n, (_, r) in sorted(_nutzer.lade().items())],
+                selbst=self.nutzer, kontenbetrieb=_nutzer.aktiv()))
         if pfad == "/api/anmeldestand":
             # neu=True: die Antwort wird gemerkt, hier will der Browser aber
             # gerade wissen, ob sich im Anmeldefenster etwas getan hat.
@@ -505,6 +517,48 @@ class Handler(BaseHTTPRequestHandler):
             return self._json(
                 {"ok": False, "fehler": "Vorführinstanz: " + GESPERRT[pfad],
                  "meldung": "Vorführinstanz: " + GESPERRT[pfad]}, 403)
+        if pfad == "/api/nutzer":
+            if self.rolle not in ("redakteur", "allein"):
+                return self._json({"ok": False, "fehler": "Das entscheidet "
+                                   "der Redakteur."}, 403)
+            from .. import nutzer as _nutzer
+            d = self._rumpf()
+            aktion = d.get("aktion")
+            name = (d.get("name") or "").strip()
+            konten = _nutzer.lade()
+            redakteure = [n for n, (_, r) in konten.items()
+                          if r == "redakteur"]
+            try:
+                if aktion == "anlegen":
+                    pw = d.get("passwort") or ""
+                    if len(pw) < 8:
+                        return self._json({"ok": False, "fehler":
+                                           "Mindestens 8 Zeichen."}, 400)
+                    rolle = d.get("rolle") or "bearbeiter"
+                    # Das erste Konto muss der Redakteur sein - sonst
+                    # schaltet man den Kontenbetrieb ein und sperrt sich
+                    # im selben Moment von seiner Verwaltung aus.
+                    if not konten:
+                        rolle = "redakteur"
+                    _nutzer.anlegen(name, pw, rolle)
+                elif aktion == "rolle":
+                    if (name in redakteure and len(redakteure) == 1
+                            and d.get("rolle") != "redakteur"):
+                        return self._json({"ok": False, "fehler":
+                            "Der letzte Redakteur bleibt Redakteur."}, 400)
+                    _nutzer.setze_rolle(name, d.get("rolle") or "")
+                elif aktion == "weg":
+                    if name in redakteure and len(redakteure) == 1:
+                        return self._json({"ok": False, "fehler":
+                            "Der letzte Redakteur lässt sich nicht "
+                            "entfernen."}, 400)
+                    _nutzer.entfernen(name)
+                else:
+                    return self._json({"ok": False,
+                                       "fehler": "unbekannte Aktion"}, 400)
+            except SystemExit as e:
+                return self._json({"ok": False, "fehler": str(e)}, 400)
+            return self._json({"ok": True})
         if pfad == "/api/speichern":
             return self.speichern()
         if pfad == "/api/runde/plane":
