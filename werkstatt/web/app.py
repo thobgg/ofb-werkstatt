@@ -101,8 +101,34 @@ def verbinde():
 
 
 class Handler(BaseHTTPRequestHandler):
-    def log_message(self, *a):
-        pass
+    def log_message(self, format, *args):
+        """Am eigenen Rechner still. In der Vorführinstanz eine Zeile je
+        Zugriff nach daten/zugriffe.log – der Betreiber sieht sonst nie,
+        ob überhaupt jemand da war. Kein Tracker: Zeit, Absender, Anfrage,
+        Antwortcode, mehr nicht. Der Absender kommt aus X-Forwarded-For,
+        denn direkt verbindet sich immer nur der Proxy (127.0.0.1)."""
+        if not konfig.demo():
+            return
+        # Bilder und Bestandsabfragen fluten das Log, sagen aber nichts
+        # darüber, was ein Besucher tut - jede Maskenseite löst Dutzende
+        # davon aus. 401 bleibt drin: Fehlversuche am Passwort gehören
+        # zum Bild.
+        anfrage = args[0] if args else ""
+        code = str(args[1]) if len(args) > 1 else ""
+        if code != "401" and ("/bild/" in anfrage or "/api/stand" in anfrage
+                              or "/api/fortschritt" in anfrage):
+            return
+        wer = (self.headers.get("X-Forwarded-For", "").split(",")[0].strip()
+               or self.client_address[0])
+        from datetime import datetime, timezone
+        zeile = (f"{datetime.now(timezone.utc).isoformat(timespec='seconds')} "
+                 f"{wer} {anfrage} {code}\n")
+        try:
+            with (ROOT / "daten" / "zugriffe.log").open(
+                    "a", encoding="utf-8") as f:
+                f.write(zeile)
+        except OSError:
+            pass
 
     def _zutritt(self):
         """Basic Auth, wenn ein Demo-Passwort gesetzt ist. True = weiter."""
