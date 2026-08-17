@@ -178,3 +178,28 @@ erwarten.
 3. **Eigenes Training auf die Hand** (Kraken/PyLaia mit einigen hundert
    korrigierten Zeilen als Wahrheit) - der einzige Weg zu einem lokalen
    Kurrent-Leser, mit echtem Aufwand und offenem Ausgang.
+
+## Methodische Schwäche und der saubere Messplan
+
+Die Claude-Referenz (~95 %) stammt aus dem Pilotprojekt, nicht aus dem
+Testrahmen dieser Messung: Dort bekam Claude ganze Seiten mit
+Spaltenkopf und den strukturierten Feld-Prompt der Werkstatt, die
+offenen Modelle hier nur nackte Streifen mit einem generischen
+Transkriptionsauftrag. Der Größenvergleich ist damit unsauber; das
+Urteil über die offenen Modelle bleibt bestehen, weil erfundene
+Personen unabhängig vom Rahmen disqualifizieren.
+
+Der saubere Messplan für die nächste Runde, mit vorhandenen Zutaten:
+
+- **Ground Truth:** die validierten Transkriptionen der Pilotseiten
+  00361, 00363, 00364, 00365 (geprüft, Feld für Feld, in der
+  Pilotdatenbank des Nachbarprojekts).
+- **Gleiche komplette Seiten, gleicher Prompt für alle Leser** -
+  einschließlich Claude über die API im selben Rahmen (Kosten im
+  Cent-Bereich).
+- **Metrik:** Wortfehlerrate gegen die validierte Wahrheit, getrennt
+  ausgewiesen: erfundene Inhalte, weil Halluzination schwerer wiegt
+  als ein Lesefehler.
+
+Erst damit entsteht eine Quote je Modell statt eines
+Prüfstein-Eindrucks.
