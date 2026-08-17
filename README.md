@@ -189,6 +189,16 @@ Startskript beim ersten Lauf selbst.
 
 Beides endet auf `http://127.0.0.1:8765` im Browser.
 
+## Mehrbenutzer
+
+Fuer eine Parochie-Instanz mit mehreren Bearbeitern gibt es Konten und
+zwei Rollen: Bearbeiter korrigieren und bestaetigen, der Redakteur
+uebergibt, gibt aus und verwaltet die Instanz. Je Register darf eine
+Runde offen sein, drei Leute arbeiten parallel gegen denselben Bestand.
+Eingeschaltet wird das ueber `python3 -m werkstatt.nutzer --anlegen`;
+ohne Konten bleibt alles der Einzelplatz ohne Anmeldung. Details in
+`doku/mehrbenutzer.md`.
+
 ## Einrichten
 
 Alles Ortsspezifische steht in `konfig.toml`; eigene Pfade gehören nach
