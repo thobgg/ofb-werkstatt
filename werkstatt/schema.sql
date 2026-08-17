@@ -156,6 +156,8 @@ CREATE TABLE IF NOT EXISTS eintrag (
   status     TEXT NOT NULL DEFAULT 'gelesen',
   herkunft   INTEGER REFERENCES herkunft(id),
   runde      INTEGER REFERENCES runde(id),   -- welche Tranche hat ihn gelesen
+  bearbeiter TEXT,                  -- wer zuletzt gespeichert oder bestätigt
+                                    -- hat; nur im Kontenbetrieb gefüllt
   bemerkung  TEXT,
   UNIQUE(register, bild, nr)
 );

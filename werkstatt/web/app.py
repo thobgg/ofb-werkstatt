@@ -71,6 +71,22 @@ def _nur_lokal(html):
 # Bewusst *nicht* gesperrt: speichern, feld, dubletten, perioden,
 # uebergib, ausgabe. Das ist die Arbeit, die vorgefuehrt werden soll, und
 # sie fasst nur die Datenbank an - die wird stuendlich zurueckgesetzt.
+# Was die Rolle `bearbeiter` im Kontenbetrieb nicht darf: alles, was
+# Geld kostet, Struktur ändert oder Erfassung zu Bestand macht. Das
+# Übergeben ist der Redaktionsentscheid - dasselbe Muster wie in den
+# Crowdsourcing-Projekten: Viele schlagen vor, einer übernimmt gegen
+# die Quelle. Korrigieren, Bestätigen und alles Lesende bleiben frei.
+NUR_REDAKTEUR = {
+    "/api/runde/plane", "/api/einlesen", "/api/lesen-lassen",
+    "/api/anmelden", "/api/nachlesen", "/api/frage",
+    "/api/runde/uebergib", "/api/ausgabe", "/api/ausgabe7",
+    "/api/einstellungen", "/api/einrichten",
+    "/api/quelle", "/api/quelle-weg", "/api/entpacken",
+    "/api/feld", "/api/feld-weg", "/api/feld-leeren",
+    "/api/spaltenraster", "/api/perioden", "/api/dubletten",
+    "/api/beenden",
+}
+
 GESPERRT = {
     "/api/beenden": "Der Server lässt sich von hier aus nicht beenden.",
     "/api/lesen-lassen": "Das Lesen ist abgeschaltet; gezeigt werden die "
@@ -121,6 +137,10 @@ class Handler(BaseHTTPRequestHandler):
             return
         wer = (self.headers.get("X-Forwarded-For", "").split(",")[0].strip()
                or self.client_address[0])
+        # Im Kontenbetrieb gehört der Name dazu - als Suffix an der
+        # Adresse, damit das Logformat (und sein Auswerter) gleich bleibt.
+        if getattr(self, "nutzer", None):
+            wer = f"{wer}({self.nutzer})"
         from datetime import datetime, timezone
         zeile = (f"{datetime.now(timezone.utc).isoformat(timespec='seconds')} "
                  f"{wer} {anfrage} {code}\n")
@@ -132,8 +152,22 @@ class Handler(BaseHTTPRequestHandler):
             pass
 
     def _zutritt(self):
-        """Basic Auth, wenn ein Demo-Passwort gesetzt ist. True = weiter."""
-        if not (konfig.demo() and _PASSWORT):
+        """Basic Auth in drei Betriebsarten. True = weiter.
+
+        Nebenbei werden `self.nutzer` und `self.rolle` gesetzt:
+
+            Konten (daten/nutzer.txt existiert)
+                Name und Passwort gegen die Kontenliste; die Rolle
+                kommt aus dem Konto (redakteur oder bearbeiter).
+            Demo-Passwort (OFB_DEMO_PASSWORT, keine Konten)
+                wie bisher: ein Passwort, Name egal - Rolle 'gast'.
+            Einzelplatz (weder noch)
+                offen wie immer - Rolle 'allein', alles erlaubt.
+        """
+        from .. import nutzer as _nutzer
+        self.nutzer, self.rolle = None, "allein"
+        konten = _nutzer.aktiv()
+        if not konten and not (konfig.demo() and _PASSWORT):
             return True
         import base64
         import binascii
@@ -141,13 +175,19 @@ class Handler(BaseHTTPRequestHandler):
         kopf = self.headers.get("Authorization", "")
         if kopf.startswith("Basic "):
             try:
-                _, _, kennwort = (base64.b64decode(kopf[6:])
-                                  .decode("utf-8").partition(":"))
+                name, _, kennwort = (base64.b64decode(kopf[6:])
+                                     .decode("utf-8").partition(":"))
             except (binascii.Error, UnicodeDecodeError):
-                kennwort = ""
+                name, kennwort = "", ""
+            if konten:
+                rolle = _nutzer.pruefe(name.strip(), kennwort)
+                if rolle:
+                    self.nutzer, self.rolle = name.strip(), rolle
+                    return True
             # compare_digest, damit sich das Passwort nicht über die
             # Antwortzeit erraten lässt.
-            if hmac.compare_digest(kennwort, _PASSWORT):
+            elif hmac.compare_digest(kennwort, _PASSWORT):
+                self.rolle = "gast"
                 return True
         body = "Zugang nur mit Passwort.".encode("utf-8")
         self.send_response(401)
@@ -433,6 +473,10 @@ class Handler(BaseHTTPRequestHandler):
         if not self._zutritt():
             return
         pfad = urllib.parse.urlparse(self.path).path
+        if self.rolle == "bearbeiter" and pfad in NUR_REDAKTEUR:
+            return self._json(
+                {"ok": False, "fehler": "Das entscheidet der Redakteur.",
+                 "meldung": "Das entscheidet der Redakteur."}, 403)
         if konfig.demo() and pfad in GESPERRT:
             return self._json(
                 {"ok": False, "fehler": "Vorführinstanz: " + GESPERRT[pfad],
@@ -993,6 +1037,7 @@ class Handler(BaseHTTPRequestHandler):
                 # heisst "nicht feststellbar" und zaehlt als anbieten.
                 claude_code=vorlage.bereitschaft()["angemeldet"] is not False,
                 demo=konfig.demo(),
+                nutzer=self.nutzer, rolle=self.rolle,
                 offen=_runde.offen_in_runde(con, r["id"]) if r else None,
                 bestand=db.stand(con),
             )
@@ -1145,6 +1190,11 @@ class Handler(BaseHTTPRequestHandler):
             if d.get("bestaetigt"):
                 con.execute("UPDATE eintrag SET status='bestaetigt' WHERE id=?",
                             (d["id"],))
+            # Wer war das? Nur im Kontenbetrieb gibt es eine Antwort;
+            # am Einzelplatz bleibt die Spalte leer wie bisher.
+            if self.nutzer:
+                con.execute("UPDATE eintrag SET bearbeiter=? WHERE id=?",
+                            (self.nutzer, d["id"]))
             con.commit()
         finally:
             con.close()
