@@ -466,6 +466,19 @@ def uebergib(con, runde_id, schreib=False):
             # Eine gescheiterte Kopie darf die Übergabe nicht zurücknehmen –
             # die Daten liegen in der Datenbank, die Datei ist ihr Abbild.
             z["arbeitskopie_fehler"] = f"{type(e).__name__}: {e}"
+        # Der Bestand ist gerade gewachsen - alle noch offenen Runden
+        # sofort dagegen neu abgleichen. Im Einzelplatz ist das ein
+        # Leerlauf (nach der Übergabe ist nichts offen); im Parallelbetrieb
+        # ist es die Stelle, an der die Ampel des Kollegen frisch wird:
+        # Ohne sie zeigte seine Maske "kein Treffer, neu anlegen" für eine
+        # Person, die seit fünf Minuten im Bestand steht - und die
+        # Dublette aus getrennter Erfassung wäre durch die Hintertür
+        # zurück. Menschliche Entscheidungen bleiben unangetastet
+        # (nur_offen), und die Suche vergisst ihren Zwischenspeicher.
+        if offene_runden(con):
+            from . import abgleich, suche
+            suche.frisch()
+            z["neu_geprueft"] = abgleich.runde_pruefen(con, nur_offen=True)
     return z
 
 
