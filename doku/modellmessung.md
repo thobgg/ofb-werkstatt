@@ -136,3 +136,45 @@ Korrekturarbeit gegenüber Claude aufwiegen würde. Die Messung hat rund
 3 USD gekostet; die Wiederholung mit künftigen Modellgenerationen
 kostet dasselbe und ist mit dem Paket in `kraken-experiment/gpu-test/`
 jederzeit reproduzierbar.
+
+## Einordnung: Waren die Modelle überhaupt geeignet?
+
+Zwei Nachfragen, die sich bei der Auswertung stellten:
+
+**Sind die Fragezeichen des 72B ein Messfehler?** Der Testrahmen ist
+validiert: Dasselbe Skript, derselbe Prompt und dieselbe Schnittstelle
+lieferten beim 7B und 32B sinnvolle Ausgaben. Die Fragezeichen sind ein
+Setup-Befund (Karte randvoll, Auslagerung korrumpiert die
+Bildverarbeitung), kein Urteil über das Modell selbst. Als Urteil über
+die 48-GB-Speicherklasse bleiben sie gültig.
+
+**Wie schlimm die Halluzination wirklich ist**, zeigen die Streifen:
+Gemma 27B machte aus dem Sterbeeintrag Johann Jakob Becks einen frei
+erfundenen Eintrag "Joh. Gottlieb Seifert, Sohn des Johann Georg
+Seifert und Anna Maria geb. Lehmann, getauft den 28. April 1808" und
+aus der Löffler-Totgeburt eine "Margarethe Graff aus Graffenhayn".
+Keine dieser Personen existiert. Solche Ausgaben sehen aus wie
+Transkriptionen und sind keine.
+
+**Prädestiniert war keines der Modelle - es gibt kein offenes Modell,
+das auf deutsche Kurrent trainiert wäre.** Getestet wurden die besten
+verfügbaren offenen Allzweck-Bildmodelle; ihr Training (moderne
+Dokumente, Fotos, gedruckter Text) enthält historische deutsche
+Handschrift praktisch nicht, und genau das zeigen die Ergebnisse.
+Weitere Modelle derselben Klasse (InternVL, Llama Vision, Pixtral,
+MiniCPM) teilen dieses Trainingsproblem; von ihnen ist dasselbe Bild zu
+erwarten.
+
+## Offene Prüfsteine
+
+1. **Transkribus** ist der einzige verbliebene Kandidat mit echten
+   Kurrent-Modellen (kommerzieller Dienst, Credits, Scans gehen in
+   dessen Cloud - dieselbe Abwägung wie bei der Anthropic-API). Es gibt
+   eine REST-API für die Erkennung, damit ließe sich das Messpaket
+   analog zum GPU-Lauf anwenden. Zu beachten: Transkribus liefert Text
+   ohne Felder; die Spaltenzuordnung bliebe Aufgabe der Werkstatt.
+2. **Qwen 72B auf 80 GB** - der Vollständigkeit halber, Erwartung nach
+   dem 32B-Ergebnis gedämpft. Kosten etwa 1 USD.
+3. **Eigenes Training auf die Hand** (Kraken/PyLaia mit einigen hundert
+   korrigierten Zeilen als Wahrheit) - der einzige Weg zu einem lokalen
+   Kurrent-Leser, mit echtem Aufwand und offenem Ausgang.
