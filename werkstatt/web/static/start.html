@@ -366,6 +366,10 @@ function schrittKarte(){
    ${S.offen?` · ${S.offen.bestaetigt}/${S.offen.eintraege} Einträge bestätigt`:''}</div>
   ${S.offen?`<div class=reihe style="margin-bottom:.7rem">${ampelReihe(a)}</div>`:''}
   <a href="${ziel}"><button class=ja>${text}</button></a>
+  ${(S.runden||[]).length>1?`<div class=warum style="margin-top:.6rem">
+    Weitere offene Runden: `+S.runden.filter(x=>x.id!==r.id).map(x=>
+    `<a href="/korrektur?runde=${x.id}" style=color:#7fb0ff>Runde ${x.nr}
+     · ${esc(x.register)} (${esc(x.stand)})</a>`).join(' · ')+`</div>`:''}
  </div>`;
 }
 function ampelReihe(a){

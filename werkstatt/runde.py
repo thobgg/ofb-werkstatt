@@ -78,11 +78,28 @@ def offene_bilder(con, register, quelle="api"):
     return [b for b in alle if b not in schon and b not in weg]
 
 
-def offene_runde(con):
-    """Die eine Runde, die noch läuft. Es gibt immer höchstens eine."""
-    r = con.execute("SELECT * FROM runde WHERE stand<>'fertig' "
-                    "ORDER BY id DESC LIMIT 1").fetchone()
+def offene_runde(con, register=None):
+    """Die offene Runde - je Register höchstens eine.
+
+    Ohne `register` die jüngste offene, wie es Startseite und Maske
+    erwarten. Mit `register` die offene Runde genau dieses Registers -
+    seit dem Mehrbenutzerbetrieb dürfen Taufen, Ehen und Tote je eine
+    eigene offene Runde haben, damit drei Bearbeiter parallel arbeiten.
+    Alle ankern gegen dieselbe Datenbank; die Registertrennung ersetzt
+    die Sperrlogik.
+    """
+    q, par = "SELECT * FROM runde WHERE stand<>'fertig'", []
+    if register:
+        q += " AND register=?"
+        par.append(register)
+    r = con.execute(q + " ORDER BY id DESC LIMIT 1", par).fetchone()
     return dict(r) if r else None
+
+
+def offene_runden(con):
+    """Alle offenen Runden, älteste zuerst."""
+    return [dict(r) for r in con.execute(
+        "SELECT * FROM runde WHERE stand<>'fertig' ORDER BY id")]
 
 
 def vorschlag(con, quelle="api"):
@@ -115,7 +132,11 @@ def vorschlag(con, quelle="api"):
 
 def plane(con, register, anzahl=None, quelle="api"):
     anzahl = anzahl or einstellungen.seitenzahl(con, register)
-    offen = offene_runde(con)
+    # Je Register eine offene Runde. Ein zweites Register darf parallel
+    # laufen - das ist der Mehrbenutzerfall; im selben Register bleibt
+    # die Reihenfolge Pflicht, sonst ankert die zweite Tranche nicht
+    # gegen die erste.
+    offen = offene_runde(con, register)
     if offen:
         raise SystemExit(
             f"Runde {offen['nr']} ({offen['register']}) steht noch auf "

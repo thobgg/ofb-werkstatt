@@ -1038,6 +1038,7 @@ class Handler(BaseHTTPRequestHandler):
                 claude_code=vorlage.bereitschaft()["angemeldet"] is not False,
                 demo=konfig.demo(),
                 nutzer=self.nutzer, rolle=self.rolle,
+                runden=_runde.offene_runden(con),
                 offen=_runde.offen_in_runde(con, r["id"]) if r else None,
                 bestand=db.stand(con),
             )

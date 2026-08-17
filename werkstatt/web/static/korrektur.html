@@ -248,6 +248,13 @@ document.addEventListener('click', ev => {
 async function laden(){
  const stand=await (await fetch('/api/stand')).json();
  runde=stand.runde;
+ // Seit dem Mehrbenutzerbetrieb kann je Register eine Runde offen sein;
+ // /korrektur?runde=N waehlt eine bestimmte, sonst gilt die juengste.
+ const gew=new URLSearchParams(location.search).get('runde');
+ if(gew&&stand.runden){
+  const t=stand.runden.find(r=>String(r.id)===gew);
+  if(t) runde=t;
+ }
  // Die Maske zeigt die gerade gelesene Tranche, nicht den ganzen Bestand.
  const q=runde?('?runde='+runde.id):'';
  daten=await (await fetch('/api/eintraege'+q)).json();
