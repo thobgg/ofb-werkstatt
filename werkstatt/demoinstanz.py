@@ -323,6 +323,7 @@ DOCKERFILE = """# Die Vorführinstanz im Container – gedacht für die Synology
 # mühsam wären. Das Verzeichnis wird eingehängt, nicht eingebacken:
 # `zuruecksetzen` und ein neues `--bauen` wirken dann ohne neues Image.
 FROM python:3.12-slim
+ENV PYTHONUNBUFFERED=1
 # gedcom7 ist freiwillig, im Container aber mit dabei: Sonst sieht der
 # Betrachter dort den zweiten Ausgang nicht, den die README nennt.
 RUN pip install --no-cache-dir pillow numpy gedcom7

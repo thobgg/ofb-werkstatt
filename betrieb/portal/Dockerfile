@@ -3,6 +3,9 @@
 # Provisionierung klont die Werkstatt aus `git ls-files`, und pillow/
 # numpy braucht der kurz gestartete Instanz-Klon beim Einrichten.
 FROM python:3.12-slim
+# Ohne das puffert Python seine Ausgabe im Container, und
+# `docker logs` bleibt leer, obwohl alles laeuft.
+ENV PYTHONUNBUFFERED=1
 RUN apt-get update && apt-get install -y --no-install-recommends git \
     && rm -rf /var/lib/apt/lists/* \
     && pip install --no-cache-dir pillow numpy gedcom7 \

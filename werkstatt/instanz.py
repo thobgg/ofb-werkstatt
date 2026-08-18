@@ -248,6 +248,7 @@ DOCKERFILE = """# Die Instanz im Container – dasselbe Bild wie die
 # Vorführinstanz, nur ohne Demo-Sperre. Das Verzeichnis wird eingehängt,
 # nicht eingebacken.
 FROM python:3.12-slim
+ENV PYTHONUNBUFFERED=1
 RUN pip install --no-cache-dir pillow numpy gedcom7
 WORKDIR /app
 EXPOSE {port}
