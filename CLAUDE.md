@@ -278,9 +278,10 @@ Der **Leerlauftest** ist der Beleg, nicht die Behauptung: Ohne Änderungen muss
 die Ausgabe Byte für Byte der Vorlage entsprechen. Bei Abweichung nennt er die
 Bytestelle.
 
-**Was noch fehlt:** Kaskaden für Ehe und Tod, Bildausschnitte je Feld, und
-die Auswertung des Journals beim Fortschreiben (nötig erst, wenn Records
-nicht nur ergänzt, sondern geändert werden).
+**Was noch fehlt:** Bildausschnitte je Feld, und die Auswertung des
+Journals beim Fortschreiben (nötig erst, wenn Records nicht nur ergänzt,
+sondern geändert werden). Die Kaskaden für Ehe und Tod sind seit dem
+18. August angeschlossen (`abgleich.register_anker`).
 
 ## Stand 6. August 2026 – was an diesem Tag entstand
 

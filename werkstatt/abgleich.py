@@ -37,16 +37,23 @@ def jahr_aus(s):
 
 # --------------------------------------------------------------- Bestand
 def _bestand(con):
-    """Personen, Familien und Trauungen einmal einlesen."""
+    """Personen, Familien und Trauungen einmal einlesen.
+
+    Neben den Jahren (für die Lebensgrenzen) bleiben die vollen
+    Geburts-/Taufdaten samt Ort erhalten – die registereigenen Anker von
+    Ehe und Tod vergleichen taggenau, und ein Jahr allein trägt dort
+    nichts. Dazu die Kindschaften: Der zweite Beleg („genannter Vater =
+    Vater der Taufe") braucht den Weg Person → Elternfamilie.
+    """
     beleg = db.belegherkuenfte(con)
     pers = {}
     nach = {}
     for r in con.execute("SELECT id, name, givn, surn, sex, herkunft FROM person"):
-        pers[r["id"]] = dict(r, geb=None, tod=None)
+        pers[r["id"]] = dict(r, geb=None, tod=None, geburten=[])
         s = falte(r["surn"])
         if s:
             nach.setdefault(s, []).append(r["id"])
-    for r in con.execute("SELECT person, art, datum FROM ereignis "
+    for r in con.execute("SELECT person, art, datum, ort FROM ereignis "
                          "WHERE person IS NOT NULL AND art IN "
                          "('BIRT','CHR','DEAT')"):
         p = pers.get(r["person"])
@@ -59,6 +66,7 @@ def _bestand(con):
             p["tod"] = min(p["tod"], j) if p["tod"] else j
         else:
             p["geb"] = min(p["geb"], j) if p["geb"] else j
+            p["geburten"].append((r["art"], r["datum"], r["ort"]))
     marr = {r["familie"]: r["datum"] for r in con.execute(
         "SELECT familie, datum FROM ereignis "
         "WHERE art='MARR' AND familie IS NOT NULL")}
@@ -67,7 +75,10 @@ def _bestand(con):
         fam.append(dict(id=r["id"], mann=r["mann"], frau=r["frau"],
                         herkunft=r["herkunft"], marr=marr.get(r["id"]),
                         jahr=jahr_aus(marr.get(r["id"]))))
-    return pers, nach, fam, beleg, einstellungen.grenzen(con)
+    kind = {}
+    for r in con.execute("SELECT familie, person FROM kind"):
+        kind.setdefault(r["person"], []).append(r["familie"])
+    return pers, nach, fam, beleg, einstellungen.grenzen(con), kind
 
 
 def _nullstart(bestand):
@@ -79,7 +90,7 @@ def _nullstart(bestand):
     Nutzer sieht sonst 44 rote Felder und hält die Werkstatt für kaputt –
     beim ersten Durchlauf nach dem Klonen genau so passiert.
     """
-    pers, nach, fam, beleg, gr = bestand
+    pers, nach, fam, beleg, gr, kind = bestand
     return not beleg or not pers
 
 
@@ -277,7 +288,7 @@ def paar_pruefen(con, e, bestand, vfeld, mfeld, jahr):
     Brautleuts. Fehlt es, prüft `_plausibel` nur noch, ob überhaupt ein
     Datum die Familie einordnet.
     """
-    pers, nach, fam, beleg, gr = bestand
+    pers, nach, fam, beleg, gr, kind = bestand
     fid_v, v = _feld(con, e["id"], vfeld)
     fid_m, m = _feld(con, e["id"], mfeld)
     if fid_v is None and fid_m is None:
@@ -356,6 +367,286 @@ def _jahr_fuer(con, e, rolle):
     return None
 
 
+# ----------------------------------------------- Datum, Alter, Tageszahl
+_MONAT_NR = {m: i + 1 for i, m in enumerate(randvermerk.GEDCOM_MONAT)}
+_D_GEDCOM = re.compile(r"(?:(\d{1,2})\s+)?([A-Z]{3})\s+(\d{4})")
+_D_PUNKTE = re.compile(r"(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})")
+_D_WORT = re.compile(r"(\d{1,2})\.?\s*([A-Za-zÄÖÜäöü]{3,12})\.?\s*(\d{4})")
+
+
+def datum_zerlegen(s):
+    """'23 FEB 1778' · '23.02.1778' · '9. Januar 1808' · 'FEB 1778' · '1778'
+    → (jahr, monat, tag), fehlende Teile None. None ganz ohne Jahr.
+
+    Die Lesung liefert meist schon die GEDCOM-Form, aber nicht immer –
+    die Ehe-Testdaten tragen Punktdaten, die Sterbedaten Monatsnamen.
+    """
+    s = str(s or "").strip()
+    m = _D_GEDCOM.fullmatch(s.upper())
+    if m and m.group(2) in _MONAT_NR:
+        return (int(m.group(3)), _MONAT_NR[m.group(2)],
+                int(m.group(1)) if m.group(1) else None)
+    m = _D_PUNKTE.fullmatch(s)
+    if m and 1 <= int(m.group(2)) <= 12:
+        return int(m.group(3)), int(m.group(2)), int(m.group(1))
+    m = _D_WORT.fullmatch(s)
+    if m:
+        w = m.group(2).lower()
+        mon = randvermerk.MONATE.get(w) or randvermerk.MONATE.get(w[:3])
+        if mon:
+            return int(m.group(3)), mon, int(m.group(1))
+    j = jahr_aus(s)
+    return (j, None, None) if j else None
+
+
+def _ordinal(j, m, t):
+    from datetime import date
+    try:
+        return date(j, m, t).toordinal()
+    except (ValueError, TypeError):
+        return None
+
+
+_ALTER_TEIL = re.compile(r"(\d+)\s*(jahr|monat|woche|tag)", re.IGNORECASE)
+
+
+def geburt_aus_alter(bezug, alter):
+    """'53 Jahre, 3 Monate, 10 Tage' vor dem Bezugsdatum → Geburtsdatum.
+
+    Rückgabe ((jahr, monat, tag), taggenau). Taggenau nur, wenn Tage
+    genannt sind – '53 Jahre, 3 Monate, 10 Tage' und '3 Tage' ja,
+    '65 Jahre' heißt ±1 Jahr und ergibt nur ein Jahr. Dieselbe Messlatte
+    wie im Machbarkeitsnachweis (kaskade_tod.py): errechnete Daten mit
+    Tagesangabe trafen die Taufe auf den Tag.
+    """
+    teile = {einheit[:3].lower(): int(zahl)
+             for zahl, einheit in _ALTER_TEIL.findall(str(alter or ""))}
+    b = datum_zerlegen(bezug)
+    if not teile or not b:
+        return None, False
+    j, m, t = b
+    if not (m and t):
+        return (j - teile.get("jah", 0), None, None), False
+    from datetime import date, timedelta
+    monate = (j * 12 + m - 1) - teile.get("jah", 0) * 12 - teile.get("mon", 0)
+    jj, mm = divmod(monate, 12)
+    # min(t, 28): der 31. eines kürzeren Monats wäre ungültig. Der Fehler
+    # von höchstens drei Tagen liegt innerhalb der Datumstoleranz.
+    d = (date(jj, mm + 1, min(t, 28))
+         - timedelta(days=teile.get("tag", 0), weeks=teile.get("woc", 0)))
+    return (d.year, d.month, d.day), "tag" in teile
+
+
+# ------------------------------------- Registereigene Anker (Ehe und Tod)
+# Bewertung wie im Machbarkeitsnachweis kaskade_tod.py (59,8 % Treffer
+# gegen kirchenbuch.db). Tragfähig ist ein Kandidat mit mindestens zwei
+# Merkmalen, von denen eines nicht der Nachname ist – sonst würde
+# `Johannes Bierle` still mit `Carl Heinrich Bierle` verknüpft.
+PUNKTE = {"datum_tag": 5, "datum_jahr": 2, "vorname": 3, "nachname": 1,
+          "eltern": 4, "ehe": 4}
+SCHWELLE = 6
+DATUM_TOLERANZ = 5          # Tage: die Taufe folgt der Geburt um wenige Tage
+MERKMAL_TEXT = {"datum_tag": "Datum taggenau", "datum_jahr": "Geburtsjahr",
+                "vorname": "Vorname", "nachname": "Nachname",
+                "eltern": "Eltern", "ehe": "über die Ehe"}
+RANG = {"grau": 0, "rot": 1, "gelb": 2, "gruen": 3}
+
+
+def _punkte(merkmale):
+    return sum(PUNKTE[m] for m in merkmale)
+
+
+def _tragfaehig(merkmale):
+    ohne = [m for m in merkmale if m != "nachname"]
+    return len(merkmale) >= 2 and ohne and _punkte(merkmale) >= SCHWELLE
+
+
+def _datum_merkmal(p, geb, taggenau):
+    """Wie Geburt/Taufe einer Bestandsperson zum gelesenen Datum passen.
+
+    Rückgabe (merkmal, ort) – merkmal None, wenn kein Datum passt. Ohne
+    passendes Datum ist eine Person hier kein Kandidat: Der ganze Anker
+    lebt davon, dass das Register das Geburtsdatum nennt.
+    """
+    bester, best_ort = None, None
+    for art, datum, ort in p["geburten"]:
+        z = datum_zerlegen(datum)
+        if not z:
+            continue
+        if taggenau and z[1] and z[2]:
+            a, b = _ordinal(*geb), _ordinal(*z)
+            if a and b and abs(a - b) <= DATUM_TOLERANZ:
+                return "datum_tag", ort
+        if z[0] == geb[0] and bester is None:
+            bester, best_ort = "datum_jahr", ort
+    return bester, best_ort
+
+
+def _eltern_beleg(con, e, bestand, rolle, pid, fam_by):
+    """Zweiter Beleg: genannte Eltern gegen die Eltern der Taufe."""
+    pers, nach, fam, beleg, gr, kind = bestand
+    _, v = _feld(con, e["id"], f"{rolle}_vater_name")
+    _, m = _feld(con, e["id"], f"{rolle}_mutter_name")
+    if not (v or m):
+        return False
+    for fid in kind.get(pid, []):
+        f = fam_by.get(fid)
+        if not f:
+            continue
+        if v and _passt(pers.get(f["mann"]), v)[0]:
+            return True
+        if m and _passt(pers.get(f["frau"]), m)[0]:
+            return True
+    return False
+
+
+def _ehegatten_umweg(con, e, bestand, rolle):
+    """Verheiratete Frau: die Taufe steht unter dem Mädchennamen.
+
+    Statt ihn zu raten, wird die Ehe im Bestand gesucht – dort hängt
+    dieselbe Person schon als Frau. Die Lektion aus kaskade_tod.py gilt
+    weiter: NICHT aufs Geschlecht prüfen (das Feld ist meist leer), ein
+    genannter Ehepartner genügt als Anlass.
+    """
+    pers, nach, fam, beleg, gr, kind = bestand
+    _, gatte = _feld(con, e["id"], "ehegatte")
+    _, name = _feld(con, e["id"], f"{rolle}_name")
+    if not gatte or not _teile(name):
+        return []
+    raus = []
+    vor = _teile(name)
+    for f in fam:
+        m, w = pers.get(f["mann"]), pers.get(f["frau"])
+        if not m or not w:
+            continue
+        if not _passt(m, gatte)[0]:
+            continue
+        if not (_teile(w["givn"]) & vor):
+            continue
+        raus.append(w)
+    return raus
+
+
+def _rolle_pruefen(con, e, bestand, rolle, sex=None, bezugsfeld=None):
+    """Der registereigene Anker für EINE Hauptrolle.
+
+    Ehe: das Geburtsdatum steht im Register (Spalte 6), oft taggenau –
+    der stärkste Anker überhaupt, weil er beide Brautleute trifft.
+    Tod: das Alter ('53 Jahre, 3 Monate, 10 Tage') ergibt das
+    Geburtsdatum; verheiratete Frauen laufen über die Ehe.
+
+    Rückgabe None, wenn der Anker nichts beizutragen hat – dann bleibt
+    stehen, was das Namensranking gesetzt hat.
+    """
+    pers, nach, fam, beleg, gr, kind = bestand
+    fid, name = _feld(con, e["id"], f"{rolle}_name")
+    if fid is None or not _teile(name):
+        return None
+    _, geborene = _feld(con, e["id"], f"{rolle}_geborene")
+    _, gd = _feld(con, e["id"], f"{rolle}_geburt_datum")
+    geb = datum_zerlegen(gd)
+    taggenau = bool(geb and geb[1] and geb[2])
+    anker = f"Geburtsdatum {gd}" if geb else None
+    if not geb and bezugsfeld:
+        alter = None
+        for altfeld in (f"{rolle}_alter", "alter"):
+            _, alter = _feld(con, e["id"], altfeld)
+            if alter:
+                break
+        _, bez = _feld(con, e["id"], bezugsfeld)
+        if alter and bez:
+            geb, taggenau = geburt_aus_alter(bez, alter)
+            if geb:
+                anker = (f"Alter „{alter}“ → geboren "
+                         + ("um " if not taggenau else "")
+                         + "-".join(str(x) for x in geb if x))
+
+    fam_by = {f["id"]: f for f in fam}
+    kandidaten = []
+    if geb:
+        _, gort = _feld(con, e["id"], f"{rolle}_geburt_ort")
+        for p in pers.values():
+            if sex and p["sex"] and p["sex"] != sex:
+                continue
+            merkmal, ort = _datum_merkmal(p, geb, taggenau)
+            if not merkmal:
+                continue
+            # Datum + Ort ist der Anker – widersprechen sich die Orte,
+            # ist es ein anderes Kind vom selben Tag.
+            if gort and ort and not (_teile(gort) & _teile(ort)):
+                continue
+            mk = [merkmal]
+            t = _teile(name) | _teile(geborene)
+            if falte(p["surn"]) and falte(p["surn"]) in t:
+                mk.append("nachname")
+            if _teile(p["givn"]) & _teile(name):
+                mk.append("vorname")
+            else:
+                # „Vorname ist Pflichtbedingung, sonst stille
+                # Fehlverknüpfung" (verknuepfung.md, dritter Fehlschlag):
+                # Datum + Nachname allein hätte hier `Anna Barbara` auf
+                # `Johann Friedrich` gelegt, weil beide am selben Tag
+                # getauft sind.
+                continue
+            if _eltern_beleg(con, e, bestand, rolle, p["id"], fam_by):
+                mk.append("eltern")
+            kandidaten.append((p, mk))
+
+    if not any(_tragfaehig(mk) for _, mk in kandidaten):
+        for w in _ehegatten_umweg(con, e, bestand, rolle):
+            mk = ["ehe", "vorname"]           # Vorname ist dort schon geprüft
+            if geb:
+                merkmal, _ = _datum_merkmal(w, geb, taggenau)
+                if merkmal:
+                    mk.append(merkmal)
+            kandidaten.append((w, mk))
+            anker = anker or "genannter Ehegatte"
+
+    gut = sorted(((p, mk) for p, mk in kandidaten if _tragfaehig(mk)),
+                 key=lambda x: -_punkte(x[1]))
+    if not gut:
+        return None
+    if len(gut) > 1 and _punkte(gut[0][1]) <= _punkte(gut[1][1]) + 2:
+        _setze(con, fid, None, "gelb",
+               f"{len(gut)} Kandidaten über {anker} – Entscheidung nötig")
+        return "gelb"
+    p, mk = gut[0]
+    grund = (f"{anker}: {p['name']} über "
+             + ", ".join(MERKMAL_TEXT[m] for m in mk))
+    if p["herkunft"] not in beleg:
+        _setze(con, fid, None, "gelb", grund + " – Quelle darf nicht bestätigen")
+        return "gelb"
+    if "datum_tag" not in mk:
+        # Nur das Jahr passt: ein guter Vorschlag, aber kein Anker.
+        # Grün braucht den Tag – der Vorname ist ohnehin Pflicht.
+        _setze(con, fid, None, "gelb", grund + " – nicht taggenau bestätigt")
+        return "gelb"
+    _setze(con, fid, p["id"], "gruen", grund, "verknuepft")
+    return "gruen"
+
+
+def register_anker(con, e, bestand, art):
+    """Die registereigenen Anker über alle Hauptrollen eines Eintrags.
+
+    Läuft NACH dem Namensranking und überschreibt nur, wo er mehr weiß.
+    Das Bezugsdatum für Altersangaben kommt aus dem Bauplan (MARR bei
+    der Ehe, DEAT beim Tod) – keine Registernamen im Code.
+    """
+    from . import katalog
+    bau = katalog.bauplan(art, con)
+    paar = tuple(bau.get("paar") or ())
+    bezug = next((ev["datum"] for ev in bau.get("ereignis") or []
+                  if ev["tag"] in ("MARR", "DEAT")), None)
+    farbe = None
+    for rolle in konfig.personen_rollen(art):
+        sex = ("M" if paar[:1] == (rolle,)
+               else "F" if rolle in paar[1:] else None)
+        f = _rolle_pruefen(con, e, bestand, rolle, sex, bezug)
+        if f and (farbe is None or RANG[f] > RANG[farbe]):
+            farbe = f
+    return farbe
+
+
 def allgemein_pruefen(con, e, bestand, art):
     """Für Register ohne eigene Kaskade: Namen ranken, nie bestätigen.
 
@@ -367,13 +658,12 @@ def allgemein_pruefen(con, e, bestand, art):
     werden und nicht ein Nachname allein.
     """
     from . import katalog
-    pers, nach, fam, beleg, gr = bestand
+    pers, nach, fam, beleg, gr, kind = bestand
     farbe = "rot"
-    rang = {"grau": 0, "rot": 1, "gelb": 2, "gruen": 3}
     for kindrolle, (vr, mr) in (katalog.bauplan(art, con).get("kinder") or []):
         f = paar_pruefen(con, e, bestand, f"{vr}_name", f"{mr}_name",
                          _jahr_fuer(con, e, kindrolle))
-        if rang.get(f, 0) > rang.get(farbe, 0):
+        if RANG.get(f, 0) > RANG.get(farbe, 0):
             farbe = f
     for rolle in konfig.personen_rollen(art):
         fid, w = _feld(con, e["id"], f"{rolle}_name")
@@ -420,6 +710,12 @@ def runde_pruefen(con, runde_id=None, nur_offen=False):
             f = taufe_pruefen(con, e, bestand)
         else:
             f = allgemein_pruefen(con, e, bestand, e["register"])
+            # Danach die registereigenen Anker – sie überschreiben das
+            # Ranking dort, wo Geburtsdatum, Alter oder Ehegatte mehr
+            # wissen als der Nachname.
+            f2 = register_anker(con, e, bestand, e["register"])
+            if f2 and RANG[f2] > RANG.get(f, 0):
+                f = f2
         z[f] = z.get(f, 0) + 1
     con.commit()
     return z

@@ -90,15 +90,15 @@ alle drei Register.
 ### 1. Bedienschleife (in Arbeit)
 Ein Eintrag zur Zeit statt der ganzen Runde auf einer Seite.
 
-### 2. Kaskaden für Ehe und Tod anschließen
-*Teilweise erledigt:* Der Elternehe-Anker aus `taufe_pruefen` ist zu
-`paar_pruefen` verallgemeinert und greift für die Elternpaare beider
-Register. Was fehlt, sind die registereigenen Anker – Ehegatte beim
-Sterbeeintrag, Proklamation bei der Ehe.
-`kaskade_tod.py` liegt fertig vor (59,8 % Treffer gemessen gegen
-`kirchenbuch.db`, siehe `doku/verknuepfung.md`), ist aber nicht an den
-Durchlauf angeschlossen – der Abgleich rankt bei Ehe und Tod bisher nur
-Nachnamen und macht nie grün. Die Ehe-Kaskade nach demselben Muster.
+### 2. ~~Kaskaden für Ehe und Tod anschließen~~ – erledigt 18. August
+Die registereigenen Anker stecken jetzt in `abgleich.register_anker`,
+nach dem Punkteschema des Machbarkeitsnachweises `kaskade_tod.py`:
+Geburtsdatum der Brautleute (Spalte 6, taggenau), Alter → errechnetes
+Geburtsdatum, Ehegatten-Umweg für verheiratete Frauen, genannte Eltern
+als zweiter Beleg. Grün nur bei taggenauem Datum plus Vorname aus einer
+Beleg-Quelle; Ortswiderspruch schließt aus. Probelauf: 21 statt 18 grün,
+u. a. „Zoller, 64 J 1 M 18 T → geb. 10.06.1744" taggenau auf Zöller.
+Offen bleibt die Proklamation als Plausibilitätsprüfung der Trauung.
 
 ### 3. Batch-API
 Halbiert die Kosten; bei seitenweiser Verarbeitung der natürliche Modus.

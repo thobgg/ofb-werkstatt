@@ -178,7 +178,7 @@ python3 -m werkstatt.probelauf
 
 Er baut aus `git ls-files` einen Klon in ein Wegwerfverzeichnis, fährt
 dort den ganzen Durchlauf über die Web-Schnittstelle und vergleicht die
-Ergebnisse mit dieser Seite (57 Einträge, 18 grün, Fortschreibung
+Ergebnisse mit dieser Seite (57 Einträge, 21 grün, Fortschreibung
 zeichengleich, 0 tote Zeiger).
 
 ### Starten
