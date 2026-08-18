@@ -94,7 +94,7 @@ NUR_REDAKTEUR = {
 }
 KOSTET_GELD = {
     "/api/runde/plane", "/api/einlesen", "/api/lesen-lassen",
-    "/api/nachlesen", "/api/frage",
+    "/api/nachlesen", "/api/frage", "/api/wiederlesen",
 }
 
 GESPERRT = {
@@ -103,6 +103,8 @@ GESPERRT = {
                          "mitgelieferten Lesungen des Pilotlaufs.",
     "/api/anmelden": "Es wird kein Claude-Konto angemeldet.",
     "/api/nachlesen": "Das zweite Lesen ruft Claude auf und ist abgeschaltet.",
+    "/api/wiederlesen": "Das Wiederlesen ruft Claude auf und ist "
+                        "abgeschaltet.",
     "/api/frage": "Das Gespräch ruft Claude auf und ist abgeschaltet.",
     "/api/quelle": "Es lassen sich keine Quellen vom Rechner nachladen.",
     "/api/quelle-weg": "Der mitgelieferte Beispielbestand bleibt stehen.",
@@ -435,6 +437,33 @@ class Handler(BaseHTTPRequestHandler):
                     geometrie=geo, fehler=v.get("fehler")))
             finally:
                 con.close()
+        if pfad == "/api/wiederlesen":
+            # Das Preisschild vor der Entscheidung: was ein Wiederlesen
+            # dieser Runde kosten würde, gemessen an den bisherigen
+            # Aufträgen - nicht geschätzt, wo Messwerte da sind.
+            con = db.verbinde()
+            try:
+                rid = self._zahl("runde")
+                r = con.execute("SELECT * FROM runde WHERE id=?",
+                                (rid,)).fetchone()
+                if not r:
+                    return self._json({"fehler": "keine solche Runde"}, 400)
+                v = (vorlage.stand(con, rid)
+                     if r["quelle"] == "datei" else None)
+                je = con.execute(
+                    "SELECT COALESCE(SUM(dauer_ms),0) d, "
+                    "COALESCE(SUM(seiten_fertig),0) s, "
+                    "COALESCE(SUM(dollar),0) g FROM auftrag "
+                    "WHERE tokens_ein>0 OR dollar>0").fetchone()
+                return self._json(dict(
+                    runde=rid, quelle=r["quelle"], seiten=r["seiten"],
+                    veraltet=(v or {}).get("veraltet", 0),
+                    minuten_je=(round(je["d"] / je["s"] / 60000, 1)
+                                if je["d"] and je["s"] else 3.5),
+                    dollar_je=(round(je["g"] / je["s"], 3)
+                               if je["g"] and je["s"] else 0.13)))
+            finally:
+                con.close()
         if pfad == "/api/eintraege":
             return self._json(self.eintraege(self._zahl("runde"),
                                              self._frage.get("nur", [""])[0]))
@@ -624,6 +653,46 @@ class Handler(BaseHTTPRequestHandler):
             threading.Thread(target=arbeite, daemon=True,
                              name=f"lesen-{rid}").start()
             return self._json({"ok": True, "gestartet": True})
+        if pfad == "/api/wiederlesen":
+            # Nie von selbst: Dieser Aufruf kommt nur vom Knopf, und der
+            # zeigt vorher Preisschild und zweite Bestätigung.
+            d = self._rumpf()
+            rid = int(d["runde"])
+            con = db.verbinde()
+            try:
+                r = con.execute("SELECT quelle FROM runde WHERE id=?",
+                                (rid,)).fetchone()
+                if not r:
+                    return self._json({"fehler": "keine solche Runde"}, 400)
+                ok, meldung = kontingent.frei(con, r["quelle"])
+                if not ok:
+                    return self._json({"ok": False, "fehler": meldung,
+                                       "meldung": meldung}, 403)
+                n = _runde.erneut_lesen(con, rid,
+                                        bool(d.get("nur_veraltet")))
+            except SystemExit as e:
+                return self._json({"fehler": str(e)}, 400)
+            finally:
+                con.close()
+            if not n:
+                return self._json({"ok": True, "seiten": 0,
+                                   "meldung": "Nichts ist veraltet – es "
+                                   "gibt nichts wiederzulesen."})
+            import threading
+            if r["quelle"] == "datei":
+                def arbeite():
+                    c = db.verbinde()
+                    try:
+                        vorlage.lesen_lassen(c, rid, still=True,
+                                             zeitlimit=7200)
+                        _runde.lauf(rid)
+                    finally:
+                        c.close()
+                threading.Thread(target=arbeite, daemon=True,
+                                 name=f"wiederlesen-{rid}").start()
+            else:
+                _runde.starte(rid)
+            return self._json({"ok": True, "seiten": n, "gestartet": True})
         if pfad == "/api/einlesen":
             d = self._rumpf()
             rid = int(d["runde"])
@@ -830,7 +899,29 @@ class Handler(BaseHTTPRequestHandler):
                 katalog.setze(con, art, name,
                               **{k: v for k, v in d.items()
                                  if k not in ("art", "name")})
-                return self._json(dict(ok=True))
+                # Wer ein Feld einschaltet, soll sehen, dass die schon
+                # gelesenen Einträge es nicht haben - sonst wundert er
+                # sich in der Maske über leere Zeilen und liest womöglich
+                # die halbe Runde von Hand nach, statt wiederzulesen.
+                hinweis = None
+                if str(d.get("aktiv")) in ("1", "True", "true"):
+                    gesamt = con.execute(
+                        "SELECT count(*) FROM eintrag WHERE register=?",
+                        (art,)).fetchone()[0]
+                    hat = con.execute(
+                        "SELECT count(DISTINCT e.id) FROM eintrag e "
+                        "JOIN feld f ON f.eintrag_id=e.id "
+                        "WHERE e.register=? AND f.name=? AND "
+                        "COALESCE(f.korrigiert, f.gelesen) IS NOT NULL",
+                        (art, name)).fetchone()[0]
+                    if gesamt and gesamt > hat:
+                        hinweis = (
+                            f"In {gesamt - hat} von {gesamt} vorhandenen "
+                            f"Einträgen ist dieses Feld leer – beim Lesen "
+                            f"hat niemand danach gefragt. Über „Seiten "
+                            f"neu lesen“ auf der Leseseite kommt es nach, "
+                            f"Korrekturen bleiben dabei erhalten.")
+                return self._json(dict(ok=True, hinweis=hinweis))
             finally:
                 con.close()
         if pfad == "/api/feld-leeren":

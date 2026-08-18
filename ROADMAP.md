@@ -87,8 +87,12 @@ alle drei Register.
 
 ## Offen – Reihenfolge
 
-### 1. Bedienschleife (in Arbeit)
-Ein Eintrag zur Zeit statt der ganzen Runde auf einer Seite.
+### 1. ~~Bedienschleife~~ – erledigt
+Ein Eintrag zur Zeit ist der Standard der Korrekturmaske (Fokus-Karte,
+Blättern mit Pfeiltasten/j/k, Enter-Fluss durch die Felder, „Fertig ·
+weiter" springt zum nächsten offenen Eintrag); die Listenansicht bleibt
+als Ausweich. Der Aufwand je Eintrag (Tasten, Klicks, Sekunden) wird
+dabei still mitgezählt.
 
 ### 2. ~~Kaskaden für Ehe und Tod anschließen~~ – erledigt 18. August
 Die registereigenen Anker stecken jetzt in `abgleich.register_anker`,

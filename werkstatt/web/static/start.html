@@ -536,8 +536,12 @@ function vorlageKarte(){
    Das Lesen läuft über Ihr Abonnement – kein API-Schlüssel, keine zweite
    Rechnung. Die Werkstatt hält dabei keine Anmeldedaten.</div>
   <div class=balken><i style="width:${p}%"></i></div>
-  <div class=seiten>${v.seiten.map(s=>`<div class="${s.da?'fertig':''}">
-    <span class=st>${s.da?'gelesen':'offen'}</span><span>${esc(s.bild)}</span>
+  ${v.veraltet?`<div class=warn>⚠ ${v.veraltet} Antwort${v.veraltet>1?'en':''}
+    ist${v.veraltet>1?' sind':''} älter als der Prompt – sie beantworten eine
+    frühere Fassung (etwa vor dem Schärfen der Aktkarte) und werden beim
+    Einlesen abgewiesen, nicht stillschweigend übernommen.</div>`:''}
+  <div class=seiten>${v.seiten.map(s=>`<div class="${s.veraltet?'fehler':s.da?'fertig':''}">
+    <span class=st>${s.veraltet?'veraltet':s.da?'gelesen':'offen'}</span><span>${esc(s.bild)}</span>
     <span class=dim>${s.eintraege>0?s.eintraege+' Einträge'
       :s.eintraege<0?'⚠ Antwort unlesbar':''}</span></div>`).join('')}</div>
   <div class=reihe style="margin-top:.9rem">
@@ -545,6 +549,9 @@ function vorlageKarte(){
      ?`<button class=ja onclick=lesenLassen()>Lesen lassen</button>
        <button onclick=einlesen()>Antworten einlesen</button>`
      :`<a href="/korrektur"><button class=ja>Weiter zum Korrigieren</button></a>`}
+   ${v.veraltet?`<button onclick=wiederlesen(true)
+      title="nur die veralteten Seiten, mit Preisschild vor dem Start"
+      >⚠ ${v.veraltet} veraltete Seite${v.veraltet>1?'n':''} neu lesen</button>`:''}
    <span class=dim>Ordner <code>${esc(v.ordner)}</code></span>
   </div>
   <p class=dim style="font-size:.86rem;margin:.7rem 0 0">
@@ -562,6 +569,31 @@ async function lesenLassen(){
  await fetch('/api/lesen-lassen',{method:'POST',
   headers:{'content-type':'application/json'},
   body:JSON.stringify({runde:S.runde.id})});
+ takt();
+}
+
+// Wiederlesen läuft nie von selbst: erst das Preisschild aus den
+// gemessenen Aufträgen, dann die ausdrückliche Bestätigung, dann der
+// Start. Korrekturen und bestätigte Einträge überstehen es unverändert.
+async function wiederlesen(nurVeraltet){
+ const p=await (await fetch('/api/wiederlesen?runde='+S.runde.id)).json();
+ if(p.fehler){alert(p.fehler);return}
+ const n=nurVeraltet?p.veraltet:p.seiten;
+ if(!n){alert('Nichts ist veraltet – es gibt nichts wiederzulesen.');return}
+ const min=Math.round(n*p.minuten_je), geld=(n*p.dollar_je).toFixed(2);
+ if(!confirm(`${n} Seite${n>1?'n':''} neu lesen?\n\n`
+  +`Dauert etwa ${min} Minute${min===1?'':'n'}`
+  +(p.quelle==='api'?` und kostet rund ${geld} $ über die API.`
+    :` über das Abonnement (Gegenwert rund ${geld} $, keine Rechnung).`)
+  +'\n\nKorrekturen und bestätigte Einträge bleiben erhalten; nur '
+  +'unangefasste Lesungen werden ersetzt.')) return;
+ const a=await (await fetch('/api/wiederlesen',{method:'POST',
+  headers:{'content-type':'application/json'},
+  body:JSON.stringify({runde:S.runde.id, nur_veraltet:!!nurVeraltet})})).json();
+ if(a.fehler){alert(a.fehler);return}
+ if(a.meldung){alert(a.meldung);return}
+ const m=document.getElementById('meldung');
+ if(m) m.textContent=`${a.seiten} Seite(n) zurückgesetzt – liest neu.`;
  takt();
 }
 async function einlesen(){
@@ -1256,8 +1288,12 @@ async function periodenPruefen(reg,btn){
 }
 
 async function feldSchalten(name,an){
- await fetch('/api/feld',{method:'POST',
-  body:JSON.stringify({art:karteArt, name, aktiv:an?1:0})});
+ const a=await (await fetch('/api/feld',{method:'POST',
+  body:JSON.stringify({art:karteArt, name, aktiv:an?1:0})})).json();
+ // Die Warnung beim Einschalten: das Feld fehlt in den schon gelesenen
+ // Einträgen. Wer das nicht sieht, sucht später leere Zeilen in der
+ // Maske und weiß nicht, dass beim Lesen niemand danach gefragt hat.
+ if(a.hinweis) alert(a.hinweis);
  await einstellungenHolen();
 }
 

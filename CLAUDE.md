@@ -381,12 +381,12 @@ Stichprobe von 24 auf rund 68 Namensfelder – damit wird der Grenzfall von
    gelöst: `uebergabe` leitet den Bauplan jetzt aus dem Katalog ab. Verdrahtet
    bleiben `katalog.KATALOG`, `PAAR`, `KIND` und die Maske
    (`vater`/`mutter`/`braeutigam`).
-6. **Katalogfelder in die Maske.** Die Aktkarte kennt 34 Felder, die
-   Korrekturmaske zeigt Personenrollen, Datumsfelder und „alle Felder" –
-   für Paten, Volltext und Unleserliches gibt es noch keine eigene Stelle.
-7. **Kirchenbuchform beim Eintragen.** `feld.kb_form` wird gelesen und
-   ausgegeben, aber in der Maske gibt es nur unter „alle Felder" ein
-   Eingabefeld dafür.
+6. ~~**Katalogfelder in die Maske.**~~ Erledigt: Der Nachtragsblock
+   zeigt dieselben Zeilen in jedem Eintrag der Runde, lange Felder
+   (Volltext, Paten, Zeugen, Unleserliches) als Textarea, Übriges über
+   „+ Feld".
+7. ~~**Kirchenbuchform beim Eintragen.**~~ Erledigt: Jede Zeile trägt
+   rechts die Zitat-Spalte („wie im Buch").
 
 **Spaltenraster bleibt Handarbeit.** Die Zeilen sitzen jetzt, die Spalten
 nicht: die äußerste Randlinie fehlt teils (00365 beginnt bei x=1264 statt

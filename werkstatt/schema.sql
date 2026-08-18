@@ -134,6 +134,10 @@ CREATE TABLE IF NOT EXISTS eintrag (
   bild       TEXT,
   nr         TEXT,
   jahr       INTEGER,
+  -- Wann die Lesung zuletzt gespeichert wurde. Ohne den Stempel ist nicht
+  -- zu erkennen, ob ein Eintrag noch aus einer aelteren Prompt-Fassung
+  -- stammt - am 16. August hat genau das eine halbe Stunde gekostet.
+  gelesen_am TEXT,
   ausschnitt TEXT,                  -- Zeilenstreifen, relativ zur Wurzel
   -- Wo der Streifen auf der Seite sitzt: "x,y,w,h". Ohne das laesst sich
   -- die ganze Buchoeffnung nicht mit der Zeile darin zeigen – und genau

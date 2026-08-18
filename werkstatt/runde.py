@@ -161,7 +161,7 @@ def plane(con, register, anzahl=None, quelle="api"):
     return rid
 
 
-def erneut_lesen(con, runde_id):
+def erneut_lesen(con, runde_id, nur_veraltet=False):
     """Die Seiten einer Runde noch einmal lesen lassen.
 
     Gebraucht, sobald sich der Leseprompt ändert: Die Aktkarte wird
@@ -169,22 +169,53 @@ def erneut_lesen(con, runde_id):
     und niemand kommt an sie heran. `lauf()` überspringt Seiten, die auf
     'fertig' stehen, also muss jemand sie zurücksetzen.
 
+    `nur_veraltet` beschränkt das auf Seiten, deren Antwortdatei älter
+    ist als der Prompt (Datei-Weg) - der Normalfall nach dem Schärfen
+    der Aktkarte. Nie von selbst: Der Aufruf kommt vom Knopf mit
+    Preisschild und zweiter Bestätigung, oder von der Kommandozeile.
+
     **Menschenarbeit bleibt.** Das Wiedereinlesen fasst nur Felder an, die
     niemand angefasst hat: `speichere()` schreibt nur, wo `korrigiert IS
     NULL` und der Eintrag nicht bestätigt ist. Korrekturen und bestätigte
     Einträge überstehen es unverändert.
     """
+    r = con.execute("SELECT nr, quelle FROM runde WHERE id=?",
+                    (runde_id,)).fetchone()
     a = con.execute("SELECT id FROM auftrag WHERE runde=? AND art='lesen' "
                     "ORDER BY id DESC LIMIT 1", (runde_id,)).fetchone()
-    if not a:
+    if not r or not a:
         raise SystemExit(f"kein Leseauftrag für Runde {runde_id}")
-    n = con.execute("UPDATE auftrag_seite SET stand='wartet', meldung=NULL "
-                    "WHERE auftrag=?", (a["id"],)).rowcount
+    seiten = list(con.execute(
+        "SELECT id, bild FROM auftrag_seite WHERE auftrag=?", (a["id"],)))
+    if nur_veraltet:
+        # Nur was zu einer älteren Prompt-Fassung gehört. Das gibt es nur
+        # beim Datei-Weg – dort liegen Prompt und Antworten nebeneinander
+        # und tragen Zeitstempel.
+        seiten = [s for s in seiten
+                  if r["quelle"] == "datei"
+                  and vorlage.veraltet(r["nr"], s["bild"])]
+    if not seiten:
+        return 0
+    if r["quelle"] == "datei":
+        # Die alten Antworten beiseite, nicht löschen: `lesen_lassen`
+        # überspringt Seiten, für die schon eine Antwort liegt – die
+        # alte bliebe sonst einfach stehen und würde wieder eingelesen.
+        z = vorlage.ordner(r["nr"]) / "antwort"
+        alt = z / "alt"
+        for s in seiten:
+            p = z / f"{s['bild']}.json"
+            if p.exists():
+                alt.mkdir(exist_ok=True)
+                p.rename(alt / f"{s['bild']}.{jetzt().replace(':', '-')}.json")
+    marken = [s["id"] for s in seiten]
+    con.execute(
+        f"UPDATE auftrag_seite SET stand='wartet', meldung=NULL "
+        f"WHERE id IN ({','.join('?' * len(marken))})", marken)
     con.execute("UPDATE auftrag SET stand='wartet', beendet=NULL WHERE id=?",
                 (a["id"],))
     con.execute("UPDATE runde SET stand='geplant' WHERE id=?", (runde_id,))
     con.commit()
-    return n
+    return len(seiten)
 
 
 # ------------------------------------------------------------------ Lesen
@@ -224,6 +255,11 @@ def speichere(con, art, bild, ergebnis, runde_id=None, hid=None):
         if not row:
             continue
         eid = row["id"]
+        # Der Zeitstempel gilt der Lesung, nicht dem Anlegen: Auch ein
+        # Wiedereinlesen stempelt neu, sonst saehe die zweite Fassung so
+        # alt aus wie die erste.
+        con.execute("UPDATE eintrag SET gelesen_am=? WHERE id=?",
+                    (jetzt(), eid))
         n_e += 1
         for name, f in (e.get("felder") or {}).items():
             if not isinstance(f, dict):
@@ -589,11 +625,25 @@ def main():
     ap.add_argument("--quelle", default="api",
                     choices=("api", "testdaten", "datei"))
     ap.add_argument("--lies", type=int)
+    ap.add_argument("--erneut", type=int, metavar="RUNDE",
+                    help="Seiten zurücksetzen und neu lesen lassen")
+    ap.add_argument("--nur-veraltet", action="store_true",
+                    help="mit --erneut: nur Antworten, die älter sind "
+                    "als der Prompt")
     ap.add_argument("--uebergib", type=int)
     ap.add_argument("--verwirf", type=int)
     ap.add_argument("--schreib", action="store_true")
     a = ap.parse_args()
     con = db.verbinde()
+
+    if a.erneut:
+        n = erneut_lesen(con, a.erneut, a.nur_veraltet)
+        if not n:
+            print("nichts veraltet – nichts zurückgesetzt")
+        else:
+            print(f"{n} Seite(n) zurückgesetzt – lesen mit --lies "
+                  f"{a.erneut} oder über die Leseseite")
+        return
 
     if a.verwirf:
         z = verwerfen(con, a.verwirf)

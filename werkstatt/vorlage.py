@@ -197,6 +197,22 @@ def lege_vor(con, runde_id, still=False):
     return ziel, bilder
 
 
+def veraltet(runde_nr, bild):
+    """Ist die Antwort älter als der Prompt, den sie beantworten soll?
+
+    Die Lektion vom 16. August: Nach dem Schärfen der Aktkarte lagen die
+    alten Antwortdateien noch da und wurden stillschweigend wieder
+    eingelesen – die neuen Felder fehlten, und niemand konnte wissen,
+    warum. Eine Antwort, die vor dem Prompt geschrieben wurde, beantwortet
+    eine frühere Fassung.
+    """
+    z = ordner(runde_nr)
+    p, a = z / "prompt.txt", z / "antwort" / f"{bild}.json"
+    if not p.exists() or not a.exists():
+        return False
+    return a.stat().st_mtime < p.stat().st_mtime
+
+
 def lies_seite(runde_nr, bild):
     """Eine abgelegte Antwort aufnehmen – Form wie bei API und Testdaten."""
     p = ordner(runde_nr) / "antwort" / f"{bild}.json"
@@ -204,6 +220,15 @@ def lies_seite(runde_nr, bild):
         raise FileNotFoundError(
             f"noch keine Antwort für {bild} – erwartet in "
             f"{p.relative_to(konfig.WURZEL)}")
+    if veraltet(runde_nr, bild):
+        # Fehler je Seite statt stiller Übernahme – der Läufer schreibt
+        # die Meldung an die Seite, und der Bearbeiter entscheidet:
+        # Wiederlesen, oder die alte Antwort bewusst gelten lassen
+        # (Datei anfassen, dann ist sie jünger als der Prompt).
+        raise ValueError(
+            f"{p.name} ist älter als prompt.txt – die Antwort gehört zu "
+            f"einer früheren Prompt-Fassung. Über „Seiten neu lesen“ "
+            f"wiederlesen, oder die Datei berühren, wenn sie gelten soll.")
     d = json.loads(p.read_text(encoding="utf-8"))
     if "eintraege" not in d:
         raise ValueError(f"{p.name}: Schlüssel 'eintraege' fehlt")
@@ -229,9 +254,11 @@ def stand(con, runde_id):
                         .get("eintraege", []))
             except Exception:
                 n = -1          # liegt da, ist aber nicht lesbar
-        da.append(dict(bild=b, da=p.exists(), eintraege=n))
+        da.append(dict(bild=b, da=p.exists(), eintraege=n,
+                       veraltet=veraltet(r["nr"], b)))
     return dict(ordner=str(ziel.relative_to(konfig.WURZEL)),
                 gesamt=len(bilder), fertig=sum(1 for x in da if x["da"]),
+                veraltet=sum(1 for x in da if x["veraltet"]),
                 seiten=da)
 
 
