@@ -154,7 +154,12 @@ Die Kontextquellen mit ihrem Rang in den Einstellungen:
 Die Korrekturmaske: oben der gedruckte Spaltenkopf, darunter die Zeile
 des Originals über beide Buchseiten, dann die Felder. *Ganze Seite* zeigt
 die Buchöffnung mit markierter Zeile, *nochmal lesen* stellt zwei
-Lesungen derselben Zeile gegenüber:
+Lesungen derselben Zeile gegenüber, und im Gesprächsfenster unter dem
+Eintrag lässt sich nachfragen („steht da Möß oder Wöß?") – das Modell
+antwortet mit Eintrag, Bildausschnitt und Bestandstreffern vor Augen
+und ändert nichts. Der Leseprompt selbst wächst mit der Arbeit: Die
+beim Korrigieren gemessenen Verwechslungen einer Schreiberhand gehen
+als Fehlerkatalog in ihr nächstes Lesen ein.
 
 ![Korrigieren](doku/screenshots/korrigieren.jpg)
 
