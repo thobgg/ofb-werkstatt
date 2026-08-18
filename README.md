@@ -79,8 +79,9 @@ kam.
   nächste, und jede korrigierte Verwechslung geht als Fehlerkatalog
   der Schreiberhand in ihr nächstes Lesen ein. Beides sind Daten, kein
   Modelltraining; dazwischen steht die Ampel, damit sich Fehler nicht
-  selbst verstärken. Die erste Schleife ist gemessen, die Wirkung der
-  zweiten noch nicht.
+  selbst verstärken. Belegt ist die erste Schleife bisher am
+  Testdurchlauf, die Wirkung der zweiten noch gar nicht – beides zu
+  messen ist der nächste Schritt, nicht der erledigte.
 - **Die Ausgabe ist verlustfrei**: unberührte Records gehen zeichengleich
   durch die Fortschreibung. Ein Leerlauftest belegt das bei jedem Export.
 - **GEDCOM 7 als zweiter Ausgang.** Die Fortschreibung bleibt 5.5.1, weil
