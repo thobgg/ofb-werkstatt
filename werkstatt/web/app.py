@@ -511,6 +511,17 @@ class Handler(BaseHTTPRequestHandler):
             d["herkunft_vater"] = suche.herkunft(v) if v else []
             d["herkunft_mutter"] = suche.herkunft(m) if m else []
             return self._json(d)
+        if pfad.startswith("/static/"):
+            # Gestaltungsdateien der Oberfläche (Kurrent-Schriftband).
+            # Nur Dateinamen, keine Pfade - und nur Bildformate.
+            name = Path(urllib.parse.unquote(pfad[len("/static/"):])).name
+            ziel = Path(__file__).resolve().parent / "static" / name
+            if (ziel.suffix.lower() in (".png", ".svg", ".webp")
+                    and ziel.is_file()):
+                typ = ("image/svg+xml" if ziel.suffix.lower() == ".svg"
+                       else f"image/{ziel.suffix[1:].lower()}")
+                return self._send(200, typ, ziel.read_bytes())
+            return self._send(404, "text/plain", "nicht gefunden")
         if pfad.startswith("/bild/"):
             rel = urllib.parse.unquote(pfad[len("/bild/"):])
             # Nicht `resolve()`: Die Scans liegen ueblicherweise als

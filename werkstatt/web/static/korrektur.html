@@ -4,7 +4,16 @@
 *{box-sizing:border-box}
 body{margin:0;font:15px/1.45 system-ui,sans-serif;background:#14161a;color:#e6e8ec}
 header{position:sticky;top:0;background:#1b1e24;border-bottom:1px solid #2c313a;
- padding:.55rem 1rem;display:flex;gap:1rem;align-items:center;z-index:9}
+ padding:.55rem 1rem;display:flex;gap:1rem;align-items:center;z-index:9;
+ overflow:hidden}
+/* Das Outfit: Kurrent-Schriftband im Kopf, blass und nach links
+   auslaufend - dieselbe Zeile, an der die Werkstatt ihre Arbeit zeigt. */
+header::after{content:'';position:absolute;inset:0;pointer-events:none;
+ background:url(/static/kurrent.png) right -.5rem center/auto 140% no-repeat;
+ opacity:.4;
+ -webkit-mask-image:linear-gradient(90deg,transparent 38%,#000 72%);
+ mask-image:linear-gradient(90deg,transparent 38%,#000 72%)}
+header>*{position:relative;z-index:1}
 header b{font-size:1rem}
 .zaehler{color:#9aa3b2;font-size:.86rem}
 kbd{background:#2b313b;border:1px solid #3a424f;border-bottom-width:2px;border-radius:4px;
@@ -195,6 +204,11 @@ input.kb::placeholder{font-style:italic}
 .anbind.warn .fid{background:#4a3a13;color:#f0d089}
 .anbind .hinw{color:#9aa3b2}
 .leer{padding:3rem;text-align:center;color:#9aa3b2}
+/* Leere Flaechen tragen das Kurrent-Schriftband als Wasserzeichen. */
+.leer{position:relative}
+.leer::before{content:'';position:absolute;inset:0;pointer-events:none;
+ background:url(/static/kurrent-block.png) center 30%/min(520px,80%) no-repeat;
+ opacity:.08}
 .fortschritt{height:.3rem;background:#262b33;position:sticky;top:2.6rem;z-index:8}
 .fortschritt i{display:block;height:100%;background:#2f6fdd;transition:width .25s}
 .tasten{display:flex;gap:.5rem;align-items:center;padding:.6rem .9rem;

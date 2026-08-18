@@ -130,6 +130,17 @@ class Handler(BaseHTTPRequestHandler):
         pfad = urllib.parse.urlparse(self.path).path
         if pfad in ("/", "/index.html"):
             return self._send(200, "text/html; charset=utf-8", SEITE)
+        if pfad.startswith("/static/"):
+            # Gestaltungsdateien (Kurrent-Schriftband) - nur Dateinamen,
+            # nur Bildformate, derselbe Bestand wie in der Instanz.
+            name = Path(urllib.parse.unquote(pfad[len("/static/"):])).name
+            ziel = (Path(__file__).resolve().parent / "web" / "static"
+                    / name)
+            if (ziel.suffix.lower() in (".png", ".svg", ".webp")
+                    and ziel.is_file()):
+                return self._send(200, f"image/{ziel.suffix[1:].lower()}",
+                                  ziel.read_bytes())
+            return self._send(404, "text/plain", "nicht gefunden")
         if pfad == "/api/projekte":
             return self._json(dict(
                 wurzel=str(WURZEL),
