@@ -211,7 +211,9 @@ zeichengleich, 0 tote Zeiger).
 
 Läuft unter Linux und Windows (getestet), macOS ist geschrieben, aber
 ungetestet. Gebraucht wird Python ab 3.11; Pillow und numpy holt das
-Startskript beim ersten Lauf selbst.
+Startskript beim ersten Lauf selbst, und fehlt Python unter Windows
+ganz, bietet die Startdatei die Installation an (über winget, Quelle
+python.org). Schritt für Schritt: `doku/windows-test.md`.
 
 | | |
 |---|---|

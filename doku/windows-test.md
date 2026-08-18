@@ -12,9 +12,18 @@ Beispielseiten und fertige Lesungen liegen bei.
 
 ## 1. Python holen
 
-`python.org/downloads` → der große gelbe Knopf lädt die aktuelle Fassung.
-Beim Installieren unten **„Add python.exe to PATH" ankreuzen**. Ohne das
-Häkchen findet Windows das Programm später nicht.
+Der einfachste Weg: **diesen Schritt überspringen** und gleich mit
+Schritt 2 weitermachen. Fehlt Python, merkt die Startdatei das und
+bietet an, es automatisch zu installieren (über winget, die
+App-Verwaltung von Windows 10/11; die Quelle ist das offizielle
+python.org). Danach die Startdatei einmal neu anklicken.
+○ *Dieser automatische Weg ist geschrieben, aber noch nicht auf einem
+echten Windows geprüft - beim nächsten Windows-Kontakt testen.*
+
+Von Hand geht es weiterhin: `python.org/downloads` → der große gelbe
+Knopf lädt die aktuelle Fassung. Beim Installieren unten **„Add
+python.exe to PATH" ankreuzen**. Ohne das Häkchen findet Windows das
+Programm später nicht.
 
 Gebraucht wird **3.11 oder neuer**. Prüfen: Windows-Taste drücken, `cmd`
 tippen, Enter, dann

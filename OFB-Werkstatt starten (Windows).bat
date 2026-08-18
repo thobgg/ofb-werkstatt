@@ -19,6 +19,13 @@ if not exist "start.py" (
 
 where py >nul 2>&1 && (set PY=py) || (set PY=python)
 %PY% --version >nul 2>&1
+if errorlevel 1 goto kein_python
+goto python_da
+
+:kein_python
+rem Python fehlt. Auf Windows 10/11 kann winget es holen - dann entfaellt
+rem der Gang zu python.org samt dem beruechtigten PATH-Haekchen.
+where winget >nul 2>&1
 if errorlevel 1 (
   echo.
   echo   Python ist nicht installiert oder nicht im Suchpfad.
@@ -28,6 +35,41 @@ if errorlevel 1 (
   pause
   exit /b 1
 )
+echo.
+echo   Python ist noch nicht installiert. Es kann jetzt automatisch
+echo   geholt werden - ueber winget, die App-Verwaltung von Windows;
+echo   die Quelle ist das offizielle python.org.
+echo.
+choice /C JN /M "  Python jetzt installieren (J) oder selbst kuemmern (N)"
+if errorlevel 2 (
+  echo.
+  echo   Dann bitte von Hand: python.org/downloads, beim Installieren
+  echo   "Add python.exe to PATH" ankreuzen, danach diese Datei erneut
+  echo   anklicken.
+  echo.
+  pause
+  exit /b 1
+)
+echo.
+echo   Das dauert ein bis zwei Minuten ...
+winget install -e --id Python.Python.3.12 --accept-package-agreements --accept-source-agreements --override "/quiet InstallAllUsers=0 PrependPath=1 Include_launcher=1"
+if errorlevel 1 (
+  echo.
+  echo   Das hat nicht geklappt. Dann bitte von Hand:
+  echo   python.org/downloads, "Add python.exe to PATH" ankreuzen.
+  echo.
+  pause
+  exit /b 1
+)
+echo.
+echo   Python ist installiert. Bitte dieses Fenster schliessen und die
+echo   Startdatei ERNEUT anklicken - erst ein neues Fenster kennt den
+echo   neuen Suchpfad.
+echo.
+pause
+exit /b 0
+
+:python_da
 
 rem Fehlende Pakete holt start.py selbst und sagt dabei, was es tut.
 
