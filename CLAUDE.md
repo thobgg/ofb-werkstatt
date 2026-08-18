@@ -88,11 +88,29 @@ Klon (git ls-files ist die Quelle von Probelauf und Demo-Bau).
 | Bestand: Person, Elternehe, Beruf | vorhandenes GEDCOM | sofort |
 | Verweise zwischen Tauf-, Ehe- und Totenregister | mehrere Register | nach Jahrgängen |
 
-## Nicht bauen
+## Zwei Betriebsarten, beide gleichwertig (Thomas, 18. August)
 
-Login, Hosting, Upload, Mehrbenutzerbetrieb, Web-Framework, Paket zum Doppelklick.
-Zielgruppe ist **eine Person**, die ihre eigene Parochie abschreibt und Python
-bedienen kann. `http.server` genügt.
+Die Werkstatt muss **allein betreibbar** bleiben (lokale Webapp:
+`python3 start.py`, eine Person, ihre Parochie, kein Login, kein Docker)
+**und** auf großen Servern laufen (Verein: Portal, Instanzen je
+Parochie, Konten und Rollen, Scan-Upload, KI-Kontingent). Keine der
+beiden darf die andere beschädigen.
+
+Die Regel dafür: **Alles Serverhafte ist Opt-in über einen Schalter,
+den der Einzelplatz nie umlegt.**
+
+    daten/nutzer.txt fehlt      → keine Anmeldung, keine Rollen
+    OFB_PORTAL_PASSWORT fehlt   → das Portal startet gar nicht
+    OFB_DEMO fehlt              → keine Demo-Sperren
+    kein Docker                 → http.server genügt weiter
+
+Der **Probelauf ist der Wächter des Einzelplatzes**: Er baut den nackten
+Klon ohne Konten, ohne Schlüssel, ohne Container und muss grün bleiben
+(README-Zahlen). Wer am Mehrbenutzerbetrieb baut, prüft damit zugleich,
+dass der Einzelplatz nichts davon merkt.
+
+Weiterhin nicht bauen: Web-Framework, Paket zum Doppelklick, Superuser
+über Instanzgrenzen (die Sicherheitsgrenze ist die Instanz).
 
 Gleich mitnehmen, weil später teuer: Anzeigetexte in Sprachdateien (Deutsch
 Standard, Englisch zweite Datei) und die `herkunft`-Spalte je Datensatz.
