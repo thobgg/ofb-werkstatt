@@ -1,0 +1,25 @@
+# Das Admin-Portal auf dem Wirt.   sudo docker compose up -d
+#
+# Erwartete Verzeichnisse auf dem Wirt (Pfade unten anpassen):
+#   /volume1/docker/ofb/werkstatt     das Werkstatt-Repo MIT .git -
+#                                     die Provisionierung klont daraus
+#   /volume1/docker/ofb-instanzen     die Wurzel der Instanzen
+#
+# `network_mode: host` wie ueberall hier: Das Portal bindet 127.0.0.1:8767
+# des Wirts, dort holt der Reverse Proxy es ab (eigener Hostname, Ziel
+# HTTP 127.0.0.1:8767). Ohne OFB_PORTAL_PASSWORT startet es nicht.
+#
+# Das Portal legt Instanzen nur an; ihre Container startet der Betreiber
+# einmalig selbst:  cd <instanz>/betrieb && sudo docker compose up -d
+# und im Proxy einen Hostnamen auf 127.0.0.1:<port> (steht in betrieb/port).
+services:
+  ofb-portal:
+    build: .
+    container_name: ofb-portal
+    volumes:
+      - /volume1/docker/ofb/werkstatt:/repo:ro
+      - /volume1/docker/ofb-instanzen:/instanzen
+    network_mode: host
+    environment:
+      OFB_PORTAL_PASSWORT: "HIER-PASSWORT-EINTRAGEN"
+    restart: unless-stopped
