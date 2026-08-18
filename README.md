@@ -9,9 +9,7 @@
   alt="Kurrentschrift, freigestellt: die Elternzeile eines Eheeintrags von 1808">
 </picture>
 
-*Eheregister Haberschlacht 1808, Eintrag Nr. 1, die Elternzeile –
-genau die Zeile, an der die Vorführinstanz zeigt, wie aus Kurrent ein
-Ortsfamilienbuch wird.*
+*Eheregister Haberschlacht 1808, Eintrag Nr. 1, die Elternzeile.*
 
 Werkzeug für ein **Ortsfamilienbuch**: Kirchenbuchseite von einem
 Sprachmodell lesen lassen, gegen den vorhandenen Bestand abgleichen,
@@ -22,26 +20,22 @@ korrigieren und als GEDCOM ausgeben.
 
 ## Eine App, zwei Betriebsarten
 
-Das Ungewöhnliche an der Werkstatt: **Derselbe Code läuft als
-Einzelplatz und als Vereinsserver.** Genealogie-Software entscheidet
-sich sonst für eine Seite – Ahnenblatt und Gramps sind
-Einzelplatz-Programme, webtrees ist ein Server. Hier gibt es keine
-zwei Fassungen und keinen Fork:
+Derselbe Code läuft als Einzelplatz und als Server für mehrere
+Parochien; es gibt keine zwei Fassungen.
 
-| | **allein** | **im Verein** |
+| | allein | im Verein |
 |---|---|---|
-| Start | `python3 start.py` – eine Zeile, kein Login, kein Docker, keine Serverkenntnisse | ein Admin-Portal legt je Parochie eine eigene Instanz an: eigene Datenbank, eigener Container, eigener Port |
-| Wer arbeitet | eine Person an ihrer Parochie | Redakteure, Bearbeiter und Gäste mit abgestuften Rechten; je Register eine Runde, drei Leute parallel |
-| Scans | liegen im Bildordner | kommen per Upload durch den Browser – die Instanz ist ohne Shell bedienbar |
-| Gäste | – | lesen alles und heften dem Redakteur Hinweise an Einträge (✎) |
+| Start | `python3 start.py` – kein Login, kein Docker | ein Admin-Portal legt je Parochie eine eigene Instanz an: eigene Datenbank, eigener Container, eigener Port |
+| Wer arbeitet | eine Person an ihrer Parochie | Redakteure, Bearbeiter und Gäste; je Register eine Runde, drei Leute parallel |
+| Scans | liegen im Bildordner | kommen per Upload durch den Browser |
+| Gäste | – | lesen und heften dem Redakteur Hinweise an Einträge (✎) |
 | KI-Kosten | eigener Schlüssel oder eigenes Abo | Kontingent je Projekt, vom Betreiber gedeckelt |
-| Sicherheitsgrenze | der eigene Rechner | die Instanz: kein Superuser – wer eine Parochie kompromittiert, hat nur sie |
+| Sicherheitsgrenze | der eigene Rechner | die Instanz: kein Superuser über Parochien hinweg |
 
-Alles Serverhafte ist **Opt-in über Schalter, die der Einzelplatz nie
-umlegt** (Kontendatei, Portal-Passwort). Ein Probelauf fährt bei jedem
-Umbau den nackten Einzelplatz-Klon durch und muss die Zahlen dieser
-Seite liefern – so bleibt die eine Zeile die eine Zeile. Details in
-[`doku/mehrbenutzer.md`](doku/mehrbenutzer.md) und
+Alles Serverhafte ist Opt-in über Schalter, die der Einzelplatz nie
+umlegt (Kontendatei, Portal-Passwort). Der Probelauf unten fährt den
+Einzelplatz-Klon ohne all das durch und muss die Zahlen dieser Seite
+liefern. Details in [`doku/mehrbenutzer.md`](doku/mehrbenutzer.md) und
 [`doku/portal.md`](doku/portal.md).
 
 ## Wofür
