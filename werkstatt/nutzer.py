@@ -44,12 +44,17 @@ def _hash(passwort, salz, runden=RUNDEN):
                                bytes.fromhex(salz), runden).hex()
 
 
-def lade():
-    """{name: (pbkdf2-feld, rolle)} - leer, wenn es die Datei nicht gibt."""
-    if not DATEI.exists():
+def lade(datei=None):
+    """{name: (pbkdf2-feld, rolle)} - leer, wenn es die Datei nicht gibt.
+
+    `datei` ist für das Portal da: Es verwaltet die Kontendateien fremder
+    Instanzen über deren Pfad, ohne die Vorgabe der eigenen zu berühren.
+    """
+    datei = datei or DATEI
+    if not datei.exists():
         return {}
     raus = {}
-    for zeile in DATEI.read_text(encoding="utf-8").split("\n"):
+    for zeile in datei.read_text(encoding="utf-8").split("\n"):
         zeile = zeile.strip()
         if not zeile or zeile.startswith("#"):
             continue
@@ -83,43 +88,44 @@ def pruefe(name, passwort):
     return rolle if hmac.compare_digest(ist, soll) else None
 
 
-def anlegen(name, passwort, rolle="bearbeiter"):
+def anlegen(name, passwort, rolle="bearbeiter", datei=None):
     if rolle not in ROLLEN:
         raise SystemExit(f"Rolle {rolle!r} - erlaubt: {', '.join(ROLLEN)}")
     if ":" in name or not name.strip():
         raise SystemExit("Der Name darf keinen Doppelpunkt enthalten.")
     salz = secrets.token_hex(16)
     feld = f"pbkdf2${RUNDEN}${salz}${_hash(passwort, salz)}"
-    konten = lade()
+    konten = lade(datei)
     konten[name.strip()] = (feld, rolle)
-    _schreibe(konten)
+    _schreibe(konten, datei)
 
 
-def setze_rolle(name, rolle):
+def setze_rolle(name, rolle, datei=None):
     if rolle not in ROLLEN:
         raise SystemExit(f"Rolle {rolle!r} - erlaubt: {', '.join(ROLLEN)}")
-    konten = lade()
+    konten = lade(datei)
     if name not in konten:
         raise SystemExit(f"Kein Konto {name!r}.")
     konten[name] = (konten[name][0], rolle)
-    _schreibe(konten)
+    _schreibe(konten, datei)
 
 
-def entfernen(name):
-    konten = lade()
+def entfernen(name, datei=None):
+    konten = lade(datei)
     if name not in konten:
         raise SystemExit(f"Kein Konto {name!r}.")
     del konten[name]
-    _schreibe(konten)
+    _schreibe(konten, datei)
 
 
-def _schreibe(konten):
-    DATEI.parent.mkdir(parents=True, exist_ok=True)
+def _schreibe(konten, datei=None):
+    datei = datei or DATEI
+    datei.parent.mkdir(parents=True, exist_ok=True)
     zeilen = ["# Konten der Werkstatt - eine Zeile je Konto:",
               "# name:pbkdf2$runden$salz$hash:rolle",
               "# Anlegen mit: python3 -m werkstatt.nutzer --anlegen NAME"]
     zeilen += [f"{n}:{f}:{r}" for n, (f, r) in sorted(konten.items())]
-    DATEI.write_text("\n".join(zeilen) + "\n", encoding="utf-8")
+    datei.write_text("\n".join(zeilen) + "\n", encoding="utf-8")
 
 
 def main():

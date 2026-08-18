@@ -1,0 +1,61 @@
+# Das Admin-Portal: Betreiber-Handgriffe im Browser
+
+Stufe 5 des Mehrbenutzer-Bauplans (`naechste-sitzung.md`). Eine eigene
+kleine App auf dem Wirt – eigener Port, eigenes Passwort, kein Login in
+die Instanzen. Sie arbeitet über das **Dateisystem** der
+Instanzverzeichnisse; wer eine Parochie kompromittiert, hat weiterhin
+nur sie. Der Shell-Zugriff bleibt der Generalschlüssel und Rettungsweg.
+
+## Starten
+
+```sh
+OFB_PORTAL_PASSWORT=... python3 -m werkstatt.portal
+OFB_PORTAL_PASSWORT=... python3 -m werkstatt.portal --wurzel ~/ofb-instanzen --port 8767
+```
+
+Ohne Passwort startet es nicht – das Portal legt Konten und Projekte
+an. Gehört wird nur 127.0.0.1; nach außen kommt es über den Reverse
+Proxy (eigener Hostname, Ziel `127.0.0.1:8767`), optional nur im LAN.
+Jede Änderung steht in `portal.log` neben den Instanzen.
+
+## Die vier Funktionen
+
+**Projektliste.** Alle Instanzen unter der Wurzel, mit Stand aus deren
+Dateien gelesen (nur lesend, `mode=ro`): Personen, Familien, Einträge,
+offene Runden, letzter Zugriff, Konten, Verbrauch gegen Kontingent.
+
+**Neues OFB anlegen.** Name, Kontext-GEDCOM (Upload, wird als
+`beleg` eingelesen), erstes Redakteurskonto – Pflicht, sonst ginge die
+Instanz ohne Anmeldung hinter den Proxy. Provisioniert wird über
+`werkstatt/instanz.py`: Klon aus `git ls-files`, kurz gestartet und
+über die eigene Web-Schnittstelle eingerichtet (derselbe Weg, den der
+Browser nimmt), dann `daten/nutzer.txt` und Betriebsdateien mit
+eigenem Port. Ports: 8765 Arbeitsplatz, 8766 Vorführinstanz, 8767
+Portal, Instanzen ab 8770 (`betrieb/port`). Ab da verwaltet der
+Redakteur seine Instanz selbst im Zahnrad.
+
+Von der Kommandozeile geht dasselbe:
+
+```sh
+python3 -m werkstatt.instanz --neu Neipperg --gedcom bestand.ged --redakteur maria
+python3 -m werkstatt.instanz --liste
+```
+
+**Nutzerverwaltung je Projekt.** Bearbeitet die `nutzer.txt` der
+Instanz – dieselbe Datei wie der Zahnrad-Reiter des Redakteurs, nur
+von oben, mit denselben Regeln (der letzte Redakteur bleibt).
+
+**KI-Kontingent je Projekt.** Setzt `ki.budget_dollar` in der
+Instanz-Datenbank. Geprüft wird **in der Instanz**
+(`werkstatt/kontingent.py`), vor `plane`, `einlesen` und
+`lesen-lassen`, gegen die Summe der verbuchten Auftragskosten
+(`auftrag.dollar` – gemessen, nicht geschätzt). Testdaten zählen
+nicht; der Abo-Weg zählt mit, denn in einer gehosteten Instanz läuft
+er über das Konto des Betreibers. Keine Einstellung = kein Deckel; der
+Einzelplatz des README merkt von alledem nichts.
+
+## Zugang für Interessierte
+
+Anfangs per Mail an den Admin: Er legt das Projekt im Portal an und
+schickt die Zugangsdaten des Redakteurskontos. Ein Anfrageformular
+kommt später, wenn es gebraucht wird.

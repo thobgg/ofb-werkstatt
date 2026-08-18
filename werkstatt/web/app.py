@@ -33,7 +33,7 @@ from pathlib import Path
 from .seite import SEITE
 from .start import STARTSEITE
 from .. import (abgleich, ausgabe, ausgabe7, db, einrichtung, einstellungen,
-                dubletten, gespraech, katalog, nachlesen, perioden,
+                dubletten, gespraech, katalog, kontingent, nachlesen, perioden,
                 spaltenraster,
                 import_gedcom,
                 import_wortschatz, konfig, lesen,
@@ -341,6 +341,8 @@ class Handler(BaseHTTPRequestHandler):
                         schluessel=(not konfig.demo()
                                     and bool(os.environ.get("ANTHROPIC_API_KEY"))),
                         cli=vorlage.bereitschaft(),
+                        budget_dollar=kontingent.budget(con),
+                        budget_verbraucht=kontingent.verbraucht(con),
                         verbrauch=self._verbrauch(con, modell)),
                     eigen=einstellungen.alle(con)))
             finally:
@@ -571,6 +573,12 @@ class Handler(BaseHTTPRequestHandler):
                     403)
             con = db.verbinde()
             try:
+                # Das Kontingent greift vor dem Planen, nicht erst beim
+                # Lesen: Eine geplante Runde, die nie lesen darf, stuende
+                # nur im Weg – je Register ist ja bloss eine offen.
+                ok, meldung = kontingent.frei(con, quelle)
+                if not ok:
+                    return self._json({"fehler": meldung}, 403)
                 rid = _runde.plane(con, d["register"], int(d.get("seiten", 20)),
                                    quelle)
                 _runde.starte(rid)
@@ -594,6 +602,14 @@ class Handler(BaseHTTPRequestHandler):
         if pfad == "/api/lesen-lassen":
             d = self._rumpf()
             rid = int(d["runde"])
+            con = db.verbinde()
+            try:
+                ok, meldung = kontingent.frei(con, "datei")
+            finally:
+                con.close()
+            if not ok:
+                return self._json({"ok": False, "fehler": meldung,
+                                   "meldung": meldung}, 403)
             # Im Hintergrund, sonst haengt der Browser an einer Sitzung, die
             # Minuten dauern kann.
             import threading
@@ -611,6 +627,17 @@ class Handler(BaseHTTPRequestHandler):
         if pfad == "/api/einlesen":
             d = self._rumpf()
             rid = int(d["runde"])
+            con = db.verbinde()
+            try:
+                r = con.execute("SELECT quelle FROM runde WHERE id=?",
+                                (rid,)).fetchone()
+                ok, meldung = kontingent.frei(
+                    con, r["quelle"] if r else "api")
+            finally:
+                con.close()
+            if not ok:
+                return self._json({"ok": False, "fehler": meldung,
+                                   "meldung": meldung}, 403)
             import threading
             threading.Thread(target=_runde.lauf, args=(rid,), daemon=True,
                              name=f"einlesen-{rid}").start()

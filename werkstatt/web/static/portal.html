@@ -1,0 +1,212 @@
+<!doctype html><html lang=de><head><meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<title>OFB-Portal</title><style>
+*{box-sizing:border-box}
+body{margin:0;font:15px/1.5 system-ui,sans-serif;background:#14161a;color:#e6e8ec}
+header{position:sticky;top:0;background:#1b1e24;border-bottom:1px solid #2c313a;
+ padding:.55rem 1rem;display:flex;gap:1rem;align-items:center;z-index:9}
+header b{font-size:1rem}
+.spruch{font-size:.76rem;color:#6f7887;letter-spacing:.02em;
+ border-left:1px solid #2c313a;padding-left:.5rem}
+main{padding:1.2rem;max-width:1100px;margin:0 auto}
+h2{font-size:1.05rem;margin:1.6rem 0 .6rem;color:#c3c9d4;font-weight:600}
+h2:first-child{margin-top:0}
+.karte{background:#1b1e24;border:1px solid #2c313a;border-radius:10px;
+ padding:.9rem 1.1rem;margin-bottom:.9rem}
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+th{text-align:left;color:#8b93a3;font-weight:500;font-size:.78rem;
+ text-transform:uppercase;letter-spacing:.04em;padding:.3rem .5rem;
+ border-bottom:1px solid #2c313a}
+td{padding:.42rem .5rem;border-bottom:1px solid #23272f}
+tr:last-child td{border-bottom:0}
+td.z{text-align:right;font-variant-numeric:tabular-nums}
+.dim{color:#8b93a3}
+button{background:#333a45;color:#e6e8ec;border:0;border-radius:7px;
+ padding:.45rem .9rem;font:inherit;cursor:pointer}
+button.ja{background:#2f6fdd;color:#fff;font-weight:600}
+button.klein{padding:.15rem .5rem;font-size:.82rem}
+button:disabled{opacity:.4;cursor:not-allowed}
+button:hover:not(:disabled){filter:brightness(1.15)}
+input,select{background:#12141a;border:1px solid #333a45;color:#e6e8ec;
+ border-radius:6px;padding:.35rem .5rem;font:inherit}
+.reihe{display:flex;gap:.7rem;align-items:center;flex-wrap:wrap}
+.warn{background:#2c2113;border:1px solid #4a3a13;color:#f0d089;
+ border-radius:8px;padding:.6rem .9rem;font-size:.88rem;margin:.6rem 0}
+.leer{padding:2.5rem;text-align:center;color:#9aa3b2}
+code{font-family:ui-monospace,monospace;font-size:.86em;background:#12141a;
+ padding:.08rem .35rem;border-radius:4px}
+.marke{display:inline-block;font-size:.72rem;padding:.1rem .45rem;border-radius:4px;
+ text-transform:uppercase;letter-spacing:.04em}
+.beleg{background:#1d4231;color:#8fe3b4}
+.vokabular{background:#3a3320;color:#e0c98a}
+.kopf{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;
+ flex-wrap:wrap}
+.kopf .gross{font-size:1.15rem;font-weight:600}
+.zahlen{display:flex;gap:1.4rem;flex-wrap:wrap;margin:.5rem 0;font-size:.9rem}
+.zahlen b{font-variant-numeric:tabular-nums}
+details{margin-top:.5rem}
+summary{cursor:pointer;color:#9aa3b2;font-size:.88rem}
+.feld{display:flex;flex-direction:column;gap:.15rem;font-size:.85rem;
+ color:#9aa3b2}
+</style></head><body>
+<header><b>OFB-Portal</b>
+ <span class=spruch>je Parochie eine Instanz – das Portal arbeitet über deren Dateien</span>
+ <span id=wurzel class="dim" style="margin-left:auto;font-size:.8rem"></span>
+</header>
+<main>
+<h2>Projekte</h2>
+<div id=projekte><div class=leer>lädt …</div></div>
+
+<h2>Neues OFB anlegen</h2>
+<div class=karte>
+ <div class="dim" style="font-size:.88rem;margin-bottom:.7rem">
+  Legt eine eigene Instanz an: Verzeichnis, Datenbank, Kontenliste,
+  Betriebsdateien mit eigenem Port. Das Kontext-GEDCOM wird als
+  <span class="marke beleg">beleg</span> eingelesen; das erste
+  Redakteurskonto verwaltet die Instanz danach selbst.</div>
+ <div class=reihe>
+  <label class=feld>Parochie
+   <input id=n_name placeholder="z. B. Neipperg" size=18></label>
+  <label class=feld>Kontext-GEDCOM (optional)
+   <input id=n_gedcom type=file accept=".ged"></label>
+  <label class=feld>Redakteur
+   <input id=n_redakteur placeholder="Name" size=12></label>
+  <label class=feld>Passwort (min. 8)
+   <input id=n_passwort type=password size=12></label>
+  <button class=ja id=n_los onclick="anlegen()">Anlegen</button>
+ </div>
+ <div id=n_meldung></div>
+</div>
+</main>
+<script>
+'use strict';
+const $ = s => document.querySelector(s);
+
+async function api(pfad, daten) {
+  const r = await fetch(pfad, daten ? {method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(daten)} : {});
+  return r.json();
+}
+const esc = t => String(t ?? '').replace(/[&<>"]/g,
+  c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+let offenes = null;             // welches Projekt aufgeklappt ist
+
+function dollar(x){ return x == null ? '–' : Number(x).toFixed(2) + ' $'; }
+
+function projektKarte(p){
+  const runden = p.runden.length
+    ? p.runden.map(r => `Runde ${r.nr} ${esc(r.register)} <span class=dim>${esc(r.stand)}</span>`).join(' · ')
+    : '<span class=dim>keine offene Runde</span>';
+  const budget = p.budget_dollar;
+  const knapp = budget != null && p.verbraucht_dollar >= budget;
+  const nutzer = (p.nutzer || []).map(n => `<tr>
+    <td>${esc(n.name)}</td>
+    <td><select onchange="rolle('${esc(p.name)}','${esc(n.name)}',this.value)">
+      <option${n.rolle==='redakteur'?' selected':''}>redakteur</option>
+      <option${n.rolle==='bearbeiter'?' selected':''}>bearbeiter</option>
+    </select></td>
+    <td><button class=klein onclick="weg('${esc(p.name)}','${esc(n.name)}')">entfernen</button></td>
+   </tr>`).join('');
+  return `<div class=karte>
+   <div class=kopf>
+    <span class=gross>${esc(p.gemeinde || p.name)}</span>
+    <span class=dim>${p.port ? 'Port ' + p.port : ''}
+      ${p.zugriff ? ' · zuletzt ' + esc(p.zugriff.slice(0,10)) : ''}</span>
+   </div>
+   ${p.fehler ? `<div class=warn>${esc(p.fehler)}</div>` : `
+   <div class=zahlen>
+    <span><b>${p.personen}</b> <span class=dim>Personen</span></span>
+    <span><b>${p.familien}</b> <span class=dim>Familien</span></span>
+    <span><b>${p.eintraege}</b> <span class=dim>Einträge</span></span>
+    <span><b>${p.bestaetigt}</b> <span class=dim>bestätigt</span></span>
+    <span><b>${dollar(p.verbraucht_dollar)}</b>
+      <span class=dim>verbraucht von</span>
+      <b${knapp?' style="color:#e06c5f"':''}>${budget==null?'∞':dollar(budget)}</b></span>
+   </div>
+   <div style="font-size:.88rem">${runden}</div>`}
+   <details${offenes===p.name?' open':''} ontoggle="if(this.open)offenes='${esc(p.name)}'">
+    <summary>Konten und Kontingent</summary>
+    <div class=reihe style="margin:.6rem 0">
+     <label class=feld>KI-Kontingent in Dollar (leer = keines)
+      <span class=reihe>
+       <input id="b_${esc(p.name)}" size=7
+        value="${budget==null?'':budget}">
+       <button class=klein onclick="budget('${esc(p.name)}')">setzen</button>
+      </span></label>
+    </div>
+    <table><tr><th>Konto</th><th>Rolle</th><th></th></tr>
+     ${nutzer || '<tr><td colspan=3 class=dim>keine Konten – die Instanz läuft offen</td></tr>'}
+    </table>
+    <div class=reihe style="margin-top:.6rem">
+     <input id="k_name_${esc(p.name)}" placeholder="Name" size=10>
+     <input id="k_pw_${esc(p.name)}" type=password placeholder="Passwort (min. 8)" size=14>
+     <select id="k_rolle_${esc(p.name)}">
+      <option>bearbeiter</option><option>redakteur</option></select>
+     <button class=klein onclick="konto('${esc(p.name)}')">Konto anlegen</button>
+    </div>
+   </details>
+  </div>`;
+}
+
+async function lade(){
+  const d = await api('/api/projekte');
+  $('#wurzel').textContent = d.wurzel;
+  let html = d.projekte.map(projektKarte).join('');
+  for (const e of d.entstehen)
+    html += `<div class=karte><div class=kopf>
+      <span class=gross>${esc(e.name)}</span></div>
+      <div class=warn>${esc(e.meldung)}</div></div>`;
+  $('#projekte').innerHTML = html ||
+    '<div class=leer>Noch keine Instanzen. Unten das erste OFB anlegen.</div>';
+  if (d.entstehen.length) setTimeout(lade, 3000);
+}
+
+async function anlegen(){
+  const name = $('#n_name').value.trim();
+  const datei = $('#n_gedcom').files[0];
+  const daten = {name, redakteur: $('#n_redakteur').value.trim(),
+                 passwort: $('#n_passwort').value};
+  if (datei) {
+    const puffer = await datei.arrayBuffer();
+    let s = ''; const b = new Uint8Array(puffer);
+    for (let i = 0; i < b.length; i += 0x8000)
+      s += String.fromCharCode.apply(null, b.subarray(i, i + 0x8000));
+    daten.gedcom_b64 = btoa(s);
+    daten.gedcom_name = datei.name;
+  }
+  $('#n_los').disabled = true;
+  const a = await api('/api/projekt', daten);
+  $('#n_los').disabled = false;
+  $('#n_meldung').innerHTML = a.ok ? '' : `<div class=warn>${esc(a.fehler)}</div>`;
+  if (a.ok) { $('#n_name').value = $('#n_redakteur').value = $('#n_passwort').value = ''; lade(); }
+}
+
+async function konto(p){
+  const a = await api('/api/nutzer', {projekt:p, aktion:'anlegen',
+    name:$('#k_name_'+CSS.escape(p)).value.trim(),
+    passwort:$('#k_pw_'+CSS.escape(p)).value,
+    rolle:$('#k_rolle_'+CSS.escape(p)).value});
+  if (!a.ok) alert(a.fehler); else { offenes = p; lade(); }
+}
+async function rolle(p, name, rolle){
+  const a = await api('/api/nutzer', {projekt:p, aktion:'rolle', name, rolle});
+  if (!a.ok) alert(a.fehler);
+  offenes = p; lade();
+}
+async function weg(p, name){
+  if (!confirm(`Konto ${name} entfernen?`)) return;
+  const a = await api('/api/nutzer', {projekt:p, aktion:'weg', name});
+  if (!a.ok) alert(a.fehler);
+  offenes = p; lade();
+}
+async function budget(p){
+  const a = await api('/api/budget', {projekt:p,
+    dollar: $('#b_'+CSS.escape(p)).value.trim()});
+  if (!a.ok) alert(a.fehler);
+  offenes = p; lade();
+}
+
+lade();
+</script></body></html>

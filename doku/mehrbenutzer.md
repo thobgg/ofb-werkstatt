@@ -70,8 +70,8 @@ als Suffix der Adresse: `84.44.1.2(anna)`.
 ## Abgrenzung
 
 Eine Instanz je Parochie (eigene Datenbank, eigener Container) - das
-Anlegen weiterer Projekte ist Provisionierung, kein Datenmodell. Kein
+Anlegen weiterer Projekte ist Provisionierung, kein Datenmodell - das
+macht das Admin-Portal des Betreibers (`doku/portal.md`). Kein
 gleichzeitiges Bearbeiten desselben Eintrags, keine Sperrlogik: die
 Registertrennung ersetzt sie. Offene Stufen (Gast mit Hinweis-Stift,
-Scan-Upload, Provisionierungswerkzeug) stehen in
-`doku/naechste-sitzung.md`.
+Scan-Upload) stehen in `doku/naechste-sitzung.md`.

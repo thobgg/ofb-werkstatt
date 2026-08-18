@@ -1423,6 +1423,14 @@ const ZAHNRAD = { "Bestand": () => `
    14 MP unlesbar ließ. Der Preis dafür ist klein – 1.600 statt 4.784 Bildtoken
    sind bei Opus 5 rund zwei Cent je Seite.</p>
 
+  ${E.ki.budget_dollar!=null
+    ? `<p style="font-size:.88rem;margin:.9rem 0 0
+        ${E.ki.budget_verbraucht>=E.ki.budget_dollar?';color:#e06c5f':''}">
+        KI-Kontingent: <b>${E.ki.budget_verbraucht.toFixed(2)} $</b> von
+        <b>${E.ki.budget_dollar.toFixed(2)} $</b> verbraucht
+        <span class=dim>– gesetzt vom Betreiber (ki.budget_dollar);
+        erschöpft sperrt es Planen und Lesen.</span></p>`
+    : ''}
   ${(E.ki.verbrauch.wege||[]).length
     ? `<table style="margin-top:.9rem">
         <tr><th>Weg</th><th class=z>Seiten</th><th class=z>Token ein</th>

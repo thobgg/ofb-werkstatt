@@ -297,7 +297,10 @@ def importiere(pfad, con=None, still=False):
               f"Familien, {z['ereignis']} Ereignisse, {z['namensform']} Namensformen")
     if eigen:
         con.close()
-    return len(idx_person), len(idx_familie)
+    # Die Herkunfts-ID, wie bei import_wortschatz: /api/quelle setzt darauf
+    # gilt und name. Vorher kam hier (personen, familien) zurück, und der
+    # GEDCOM-Zweig des Zahnrads scheiterte an einem Tupel als Parameter.
+    return hid
 
 
 def main():

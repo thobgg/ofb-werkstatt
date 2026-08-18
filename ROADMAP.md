@@ -76,6 +76,10 @@ alle drei Register.
   Namen still normalisiert (771 von 885 Kirchenbuchformen weichen ab).
   Vier Urteile: belegt, regelhaft, frei, widerspruch. Ändert nichts,
   markiert nur.
+- **Admin-Portal und Provisionierung** – `portal.py` (Projektliste,
+  neues OFB mit GEDCOM-Upload und Redakteurskonto, Nutzerverwaltung,
+  KI-Kontingent) über `instanz.py --neu`; der Deckel `ki.budget_dollar`
+  wird in der Instanz geprüft (`kontingent.py`). Siehe `doku/portal.md`.
 - **Probelauf** – `werkstatt/probelauf.py` baut aus `git ls-files` einen
   Klon, startet ihn und fährt den ganzen Durchlauf; meldet jede Abweichung
   von den Zahlen der README. Damit ist die Demo nicht mehr davon abhängig,

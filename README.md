@@ -92,6 +92,7 @@ Bestand und werden beim Abgleich trotzdem gefunden.
 | ✅ | GEDCOM 7 als zweiter Ausgang, gegen Grammatik, Verweise und Schema geprüft |
 | ✅ | Vorführinstanz: derselbe Code läuft als Docker-Container hinter einem Reverse Proxy |
 | ✅ | Mehrbenutzer je Instanz: Konten und Rollen (Redakteur/Bearbeiter), parallele Runden je Register, Nutzerverwaltung im Browser - ohne Kontendatei weiterhin der Einzelplatz ohne Anmeldung |
+| ✅ | Admin-Portal für den Wirt: neue OFB-Projekte als eigene Instanzen anlegen, Konten und KI-Kontingent je Projekt - `doku/portal.md` |
 | 🚧 | Bedienschleife: ein Eintrag zur Zeit statt der ganzen Runde auf einer Seite |
 | ⬜ | Batch-API, Kaskaden für Ehe und Tod, Bildausschnitt je Feld |
 
