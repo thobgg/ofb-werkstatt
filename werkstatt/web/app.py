@@ -90,7 +90,7 @@ NUR_REDAKTEUR = {
     "/api/quelle", "/api/quelle-weg", "/api/entpacken",
     "/api/feld", "/api/feld-weg", "/api/feld-leeren",
     "/api/spaltenraster", "/api/perioden", "/api/dubletten",
-    "/api/anmelden", "/api/beenden",
+    "/api/anmelden", "/api/beenden", "/api/hinweis-erledigt",
 }
 KOSTET_GELD = {
     "/api/runde/plane", "/api/einlesen", "/api/lesen-lassen",
@@ -110,6 +110,8 @@ GESPERRT = {
     "/api/quelle-weg": "Der mitgelieferte Beispielbestand bleibt stehen.",
     "/api/entpacken": "Es lassen sich keine PDF vom Rechner entpacken.",
     "/api/einrichten": "Die Einrichtung steht fest.",
+    "/api/scan": "Es lassen sich keine Dateien auf den Rechner des "
+                 "Betreibers laden.",
 }
 
 
@@ -437,6 +439,24 @@ class Handler(BaseHTTPRequestHandler):
                     geometrie=geo, fehler=v.get("fehler")))
             finally:
                 con.close()
+        if pfad == "/api/hinweise":
+            # Die Liste für den Redakteur: offene Anmerkungen samt Ort.
+            con = db.verbinde()
+            try:
+                eid = self._zahl("eintrag")
+                wo, par = "1=1", []
+                if eid:
+                    wo, par = "h.eintrag=?", [eid]
+                elif (self._frage.get("offen") or [""])[0]:
+                    wo = "h.erledigt IS NULL"
+                return self._json([dict(r) for r in con.execute(
+                    "SELECT h.id, h.eintrag, h.text, h.von, h.angelegt, "
+                    "h.erledigt, e.register, e.bild, e.nr "
+                    f"FROM hinweis h JOIN eintrag e ON e.id=h.eintrag "
+                    f"WHERE {wo} ORDER BY h.erledigt IS NOT NULL, h.id DESC",
+                    par)])
+            finally:
+                con.close()
         if pfad == "/api/wiederlesen":
             # Das Preisschild vor der Entscheidung: was ein Wiederlesen
             # dieser Runde kosten würde, gemessen an den bisherigen
@@ -526,6 +546,17 @@ class Handler(BaseHTTPRequestHandler):
         if not self._zutritt():
             return
         pfad = urllib.parse.urlparse(self.path).path
+        # Der Konten-Gast liest nur. Sein einziger Schreibweg ist der
+        # Hinweis-Stift - eine Anmerkung an den Redakteur, keine
+        # Datenänderung. Der Demo-Gast (Passwort ohne Konten,
+        # self.nutzer bleibt leer) darf weiter ausprobieren wie bisher:
+        # seine Datenbank wird stündlich zurückgesetzt.
+        if (self.rolle == "gast" and self.nutzer
+                and pfad != "/api/hinweis"):
+            return self._json(
+                {"ok": False, "fehler": "Gäste lesen nur. Für Anmerkungen "
+                 "gibt es den Hinweis-Stift am Eintrag.",
+                 "meldung": "Gäste lesen nur."}, 403)
         if self.rolle == "bearbeiter" and pfad in NUR_REDAKTEUR:
             return self._json(
                 {"ok": False, "fehler": "Das entscheidet der Redakteur.",
@@ -590,6 +621,43 @@ class Handler(BaseHTTPRequestHandler):
             except SystemExit as e:
                 return self._json({"ok": False, "fehler": str(e)}, 400)
             return self._json({"ok": True})
+        if pfad == "/api/hinweis":
+            d = self._rumpf()
+            text = (d.get("text") or "").strip()
+            if not text or not d.get("eintrag"):
+                return self._json({"ok": False,
+                                   "fehler": "Eintrag und Text nötig."}, 400)
+            con = db.verbinde()
+            try:
+                if not con.execute("SELECT 1 FROM eintrag WHERE id=?",
+                                   (int(d["eintrag"]),)).fetchone():
+                    return self._json({"ok": False,
+                                       "fehler": "kein solcher Eintrag"}, 400)
+                from datetime import datetime, timezone
+                con.execute(
+                    "INSERT INTO hinweis (eintrag, text, von, angelegt) "
+                    "VALUES (?,?,?,?)",
+                    (int(d["eintrag"]), text[:2000], self.nutzer,
+                     datetime.now(timezone.utc).isoformat(timespec="seconds")))
+                con.commit()
+                return self._json({"ok": True})
+            finally:
+                con.close()
+        if pfad == "/api/hinweis-erledigt":
+            d = self._rumpf()
+            con = db.verbinde()
+            try:
+                from datetime import datetime, timezone
+                # Abhaken und wieder öffnen - beides der Redakteur.
+                wert = (None if d.get("zurueck") else
+                        datetime.now(timezone.utc).isoformat(
+                            timespec="seconds"))
+                n = con.execute("UPDATE hinweis SET erledigt=? WHERE id=?",
+                                (wert, int(d["id"]))).rowcount
+                con.commit()
+                return self._json({"ok": bool(n)})
+            finally:
+                con.close()
         if pfad == "/api/speichern":
             return self.speichern()
         if pfad == "/api/runde/plane":
@@ -1039,6 +1107,58 @@ class Handler(BaseHTTPRequestHandler):
                                        neu_geprueft=z))
             finally:
                 con.close()
+        if pfad == "/api/scan":
+            # Stufe 4 des Mehrbenutzer-Bauplans: Scans kommen durch den
+            # Browser statt übers Dateisystem - erst damit ist eine
+            # gehostete Instanz ohne Shell bedienbar. Ein Aufruf je
+            # Datei; der Name wird gesäubert, die Endung geprüft,
+            # Vorhandenes nie überschrieben.
+            d = self._rumpf()
+            art = d.get("register")
+            name = Path(str(d.get("name") or "")).name
+            name = re.sub(r"\s+", "-", name)
+            name = re.sub(r"[^A-Za-z0-9._-]", "", name)
+            endung = Path(name).suffix.lower()
+            if art not in konfig.register() or not name:
+                return self._json({"ok": False,
+                                   "fehler": "Register und Name nötig."}, 400)
+            if endung not in (".jpg", ".jpeg", ".png", ".tif", ".tiff",
+                              ".pdf"):
+                return self._json({"ok": False, "fehler":
+                                   f"{endung or 'ohne Endung'}: erlaubt "
+                                   "sind jpg, png, tiff und pdf."}, 400)
+            import base64
+            import binascii
+            try:
+                rohdaten = base64.b64decode(d.get("b64") or "")
+            except (binascii.Error, ValueError):
+                return self._json({"ok": False,
+                                   "fehler": "Upload unlesbar."}, 400)
+            if not rohdaten:
+                return self._json({"ok": False, "fehler": "leere Datei"}, 400)
+            if len(rohdaten) > 200 * 1024 * 1024:
+                return self._json({"ok": False, "fehler":
+                                   "über 200 MB – das ist keine "
+                                   "Kirchenbuchseite."}, 400)
+            con = db.verbinde()
+            try:
+                ordner = einstellungen.ordner(con, art)
+                ordner.mkdir(parents=True, exist_ok=True)
+                ziel = ordner / name
+                if ziel.exists():
+                    return self._json({"ok": False, "fehler":
+                                       f"{name} gibt es schon – erst "
+                                       "umbenennen oder löschen."}, 400)
+                ziel.write_bytes(rohdaten)
+                return self._json(dict(
+                    ok=True, datei=name,
+                    bilder=len(seiten.bilder(ordner)),
+                    pdfs=len(seiten.pdfs(ordner)),
+                    # PDFs sind Behälter: Erst das Entpacken macht
+                    # daraus zählbare Seiten.
+                    entpacken_noetig=endung == ".pdf"))
+            finally:
+                con.close()
         if pfad == "/api/entpacken":
             d = self._rumpf()
             con = db.verbinde()
@@ -1234,6 +1354,9 @@ class Handler(BaseHTTPRequestHandler):
                 claude_code=vorlage.bereitschaft()["angemeldet"] is not False,
                 demo=konfig.demo(),
                 nutzer=self.nutzer, rolle=self.rolle,
+                hinweise_offen=con.execute(
+                    "SELECT count(*) FROM hinweis WHERE erledigt IS NULL"
+                ).fetchone()[0],
                 runden=_runde.offene_runden(con),
                 offen=_runde.offen_in_runde(con, r["id"]) if r else None,
                 bestand=db.stand(con),
@@ -1314,6 +1437,10 @@ class Handler(BaseHTTPRequestHandler):
                                  (e["register"], e["bild"]),
                                  perioden.zur_seite(con, e["register"],
                                                     e["bild"])),
+                             hinweise=[dict(h) for h in con.execute(
+                                 "SELECT id, text, von, angelegt, erledigt "
+                                 "FROM hinweis WHERE eintrag=? ORDER BY id",
+                                 (e["id"],))],
                              runde=e["runde"], felder=felder))
         con.close()
         return raus

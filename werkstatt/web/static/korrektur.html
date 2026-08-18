@@ -35,6 +35,14 @@ main{padding:1rem;max-width:1500px;margin:0 auto}
    Bei blassem Druck steht hier, was die Spalte ueberhaupt verlangt. */
 .warnung{padding:.4rem .9rem;background:#2c2113;color:#f0d089;
  font-size:.82rem;border-top:1px solid #4a3a13}
+/* Der Hinweis-Stift: Anmerkungen von Gaesten und Kollegen an diesem
+   Eintrag. Kein Datenfeld - eine Notiz an den Redakteur, der abhakt. */
+.hinweise{padding:.4rem .9rem;background:#1a2130;border-top:1px solid #26324a;
+ font-size:.85rem}
+.hinweise .h{display:flex;gap:.5rem;align-items:baseline;padding:.15rem 0}
+.hinweise .h.erl{opacity:.5;text-decoration:line-through}
+.hinweise .wer{color:#8b93a3;font-size:.78rem;flex:none}
+.hinweise button{padding:.1rem .45rem;font-size:.78rem}
 .spalten{display:flex;flex-wrap:wrap;gap:.3rem;padding:.35rem .9rem;
  background:#161a20;border-top:1px solid #262b34}
 .spalten span{font-size:.72rem;color:#8b93a3;background:#1d222a;
@@ -217,7 +225,7 @@ let daten=[],fokus=0;
 const esc=s=>(s??'').toString().replace(/[&<>"]/g,c=>
  ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
-let runde=null, i=0, liste=false;
+let runde=null, i=0, liste=false, gast=false, redakteur=false;
 
 // ------------------------------------------------------------- Aufwand
 // Der ehrlichere Massstab als eine Trefferquote: Eine Quote misst das
@@ -247,6 +255,11 @@ document.addEventListener('click', ev => {
 
 async function laden(){
  const stand=await (await fetch('/api/stand')).json();
+ // Der Konten-Gast liest nur; sein Werkzeug ist der Hinweis-Stift. Der
+ // Demo-Gast (Passwort ohne Konto, nutzer bleibt leer) probiert wie
+ // bisher alles aus.
+ gast = stand.rolle==='gast' && !!stand.nutzer;
+ redakteur = stand.rolle==='redakteur' || stand.rolle==='allein';
  runde=stand.runde;
  // Seit dem Mehrbenutzerbetrieb kann je Register eine Runde offen sein;
  // /korrektur?runde=N waehlt eine bestimmte, sonst gilt die juengste.
@@ -284,6 +297,13 @@ function zeichne(){
   if(erste) setTimeout(()=>erste.focus(), 60);
  }
  document.querySelectorAll('.gespraech').forEach(el=>verlaufHolen(el));
+ // Im Gastzugang bleibt alles anfassbar, was nur ansieht (Bild, Seite,
+ // Blättern, Stift) - Eingaben und Knöpfe, die Daten ändern oder Geld
+ // kosten, sind aus. Der Server blockt sie ohnehin; ein Knopf, der beim
+ // Drücken 403 sagt, wäre schlechter als keiner.
+ if(gast) document.querySelectorAll(
+   '#app input:not([data-gast-ok]), #app textarea, '
+   +'#app button:not([data-gast-ok])').forEach(el=>el.disabled=true);
  zaehler();
  document.getElementById('alle').textContent = liste ? 'Einzeln' : 'Liste';
  document.getElementById('tasten').innerHTML = liste ? '' :
@@ -306,12 +326,21 @@ function karte(e,k){
   <div class=kopf><span class=q>Nr. ${esc(e.nr)}</span>
    <span>${e.jahr||''}</span><span style=color:#6f7787>${esc(e.bild||'')}</span>
    <span style=flex:1></span>
-   ${e.seite?`<button onclick="ganzeSeite(${k})"
+   ${e.seite?`<button data-gast-ok onclick="ganzeSeite(${k})"
      title="die ganze Buchöffnung, mit dieser Zeile markiert">ganze Seite</button>`:''}
-   <button onclick="nochmalLesen(${k},this)"
+   ${gast?'':`<button onclick="nochmalLesen(${k},this)"
      title="dieselbe Zeile ein zweites Mal lesen lassen und vergleichen"
-     >nochmal lesen</button>
+     >nochmal lesen</button>`}
+   <button data-gast-ok onclick="hinweisGeben(${k})"
+     title="dem Redakteur eine Anmerkung zu diesem Eintrag hinterlassen –
+ändert nichts an den Daten">✎ Hinweis</button>
    <span class=zaehler>${liste?esc(e.status):`Eintrag ${k+1} von ${daten.length}`}</span></div>
+  ${(e.hinweise||[]).length?`<div class=hinweise>${e.hinweise.map(h=>`
+    <div class="h${h.erledigt?' erl':''}"><span>✎ ${esc(h.text)}</span>
+     <span class=wer>${esc(h.von||'')} ${esc((h.angelegt||'').slice(0,10))}</span>
+     ${redakteur?`<button data-gast-ok onclick="hinweisErledigt(${k},${h.id},${h.erledigt?'true':'false'})"
+       >${h.erledigt?'wieder öffnen':'erledigt'}</button>`:''}</div>`).join('')}
+   </div>`:''}
   ${e.bemerkung?`<div class=warnung>⚠ ${esc(e.bemerkung)} – die
     Zeilengrenzen sind hier nicht gemessen, sondern gleichmäßig geteilt.
     Der Streifen kann zu früh oder zu spät anfangen.</div>`:''}
@@ -362,11 +391,13 @@ function karte(e,k){
    <div class=zh>Antwortet mit Eintrag, Bildausschnitt und Bestandstreffern
     vor Augen. Ändert nichts – eintragen tust du selbst.</div>
   </div>
-  <div class=fuss><button class=ja onclick="fertig(${k})">Fertig · weiter</button>
-   <span class=zaehler>Strg+Enter</span>
+  <div class=fuss>${gast
+    ?`<span class=zaehler>Nur-Lesen-Zugang – Anmerkungen über ✎ Hinweis</span>`
+    :`<button class=ja onclick="fertig(${k})">Fertig · weiter</button>
+      <span class=zaehler>Strg+Enter</span>`}
    ${liste?'':`<span style=flex:1></span>
-     <button onclick="blaettern(-1)">zurück</button>
-     <button onclick="blaettern(1)">überspringen</button>`}</div>
+     <button data-gast-ok onclick="blaettern(-1)">zurück</button>
+     <button data-gast-ok onclick="blaettern(1)">${gast?'weiter':'überspringen'}</button>`}</div>
  </div>`;
 }
 
@@ -374,6 +405,31 @@ function blaettern(d){
  const n=i+d;
  if(n<0||n>=daten.length) return;
  i=n; zeichne(); window.scrollTo(0,0);
+}
+
+// ---------------------------------------------------- Hinweis-Stift
+async function hinweisGeben(k){
+ const e=daten[k];
+ const text=prompt('Hinweis an den Redakteur zu Nr. '+e.nr
+  +'\n\nÄndert nichts an den Daten – der Redakteur liest, entscheidet '
+  +'und hakt ab.');
+ if(!text||!text.trim()) return;
+ const a=await (await fetch('/api/hinweis',{method:'POST',
+  headers:{'content-type':'application/json'},
+  body:JSON.stringify({eintrag:e.id, text:text.trim()})})).json();
+ if(!a.ok){alert(a.fehler||'ging nicht');return}
+ (e.hinweise=e.hinweise||[]).push({id:0, text:text.trim(), von:'',
+  angelegt:new Date().toISOString(), erledigt:null});
+ zeichne();
+}
+async function hinweisErledigt(k,id,zurueck){
+ const a=await (await fetch('/api/hinweis-erledigt',{method:'POST',
+  headers:{'content-type':'application/json'},
+  body:JSON.stringify({id, zurueck})})).json();
+ if(!a.ok){alert(a.fehler||'ging nicht');return}
+ const h=(daten[k].hinweise||[]).find(x=>x.id===id);
+ if(h) h.erledigt = zurueck ? null : new Date().toISOString();
+ zeichne();
 }
 
 // ------------------------------------------------------------- Gespräch
@@ -796,6 +852,7 @@ function zaehler(){
    ' · <a href="/uebergabe" style=color:#8fe3b4>übergeben</a>';
 }
 async function fertig(k){
+ if(gast) return;                       // der Server blockt es ohnehin
  const el=document.querySelector(`.eintrag[data-i="${k}"]`);
  if(!el) return;
  const felder={};

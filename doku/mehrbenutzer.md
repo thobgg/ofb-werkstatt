@@ -73,5 +73,23 @@ Eine Instanz je Parochie (eigene Datenbank, eigener Container) - das
 Anlegen weiterer Projekte ist Provisionierung, kein Datenmodell - das
 macht das Admin-Portal des Betreibers (`doku/portal.md`). Kein
 gleichzeitiges Bearbeiten desselben Eintrags, keine Sperrlogik: die
-Registertrennung ersetzt sie. Offene Stufen (Gast mit Hinweis-Stift,
-Scan-Upload) stehen in `doku/naechste-sitzung.md`.
+Registertrennung ersetzt sie.
+
+## Gastrolle und Hinweis-Stift
+
+Die dritte Rolle `gast` liest ueberall und schreibt nichts - ausser dem
+Hinweis-Stift: der ✎-Knopf am Eintrag hinterlaesst dem Redakteur eine
+Anmerkung (Tabelle `hinweis`: eintrag, text, von, erledigt). Die
+Startseite des Redakteurs zeigt die offenen Hinweise mit Abhaken; in
+der Maske stehen sie am Eintrag. Das ist das bewaehrte Muster aus Kies
+und Schorndorf: Viele schauen und melden, einer entscheidet gegen die
+Quelle. Der Demo-Gast (OFB_DEMO_PASSWORT ohne Konten) bleibt der alte
+Spielplatz - seine Datenbank wird stuendlich zurueckgesetzt.
+
+## Scan-Upload
+
+"Scans hochladen" im Zahnrad je Register nimmt jpg/png/tiff/pdf durch
+den Browser in den Bildordner - Redakteur und Bearbeiter, nicht der
+Gast, im Demo-Modus gesperrt. Namen werden gesaeubert, nichts wird
+ueberschrieben, PDFs melden das noetige Entpacken. Damit ist eine
+gehostete Instanz komplett ohne Shell bedienbar.

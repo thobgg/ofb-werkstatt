@@ -149,6 +149,31 @@ async function laden(){
   takt();
  if(P==='/lesen' && !S.runde && document.getElementById('reg')){
   document.getElementById('reg').onchange=quelleGewaehlt; quelleGewaehlt();}
+ if(document.getElementById('hinweisliste')) hinweiseLaden();
+}
+
+// ------------------------------------------------------- Hinweis-Stift
+// Die Liste für den Redakteur: was Gäste und Kollegen an Einträgen
+// angemerkt haben. Abhaken heißt nur "gesehen und entschieden" - was
+// aus dem Hinweis wird, passiert in der Maske.
+async function hinweiseLaden(){
+ const el=document.getElementById('hinweisliste');
+ const h=await (await fetch('/api/hinweise?offen=1')).json();
+ if(!h.length){el.innerHTML='<span class=dim>keine offenen Hinweise</span>';return}
+ el.innerHTML=h.map(x=>`<div class=reihe style="padding:.2rem 0">
+   <span>✎ ${esc(x.text)}</span>
+   <span class=dim>${esc(x.register)} ${esc(x.bild)} Nr. ${esc(x.nr)}
+     · ${esc(x.von||'ohne Konto')} ${esc((x.angelegt||'').slice(0,10))}</span>
+   <a href="/korrektur" style=color:#7fb0ff>zur Maske</a>
+   <button onclick="hinweisAbhaken(${x.id},this)">erledigt</button>
+  </div>`).join('');
+}
+async function hinweisAbhaken(id,btn){
+ btn.disabled=true;
+ await fetch('/api/hinweis-erledigt',{method:'POST',
+  headers:{'content-type':'application/json'},
+  body:JSON.stringify({id})});
+ hinweiseLaden();
 }
 
 // ----------------------------------------------------------- Einrichtung
@@ -257,6 +282,9 @@ function ansichtStand(){
  const b=S.bestand;
  return `
  ${schrittKarte()}
+ ${S.hinweise_offen && (S.rolle==='redakteur'||S.rolle==='allein')?`
+ <h2>Hinweise (${S.hinweise_offen} offen)</h2>
+ <div class=karte id=hinweisliste><span class=dim>lädt…</span></div>`:''}
  <h2>Register</h2>
  <div class=karte><table>
   <tr><th>Register</th><th class=z>Bilder</th><th class=z>gelesen</th>
@@ -1387,10 +1415,16 @@ const ZAHNRAD = { "Bestand": () => `
        ${x.da?'':'<span style=color:#e06c5f>⚠ Ordner fehlt</span>'}</td>
    <td class="z ${x.bilder?'':'dim'}">${x.bilder}</td>
    <td class="z ${x.pdfs?'':'dim'}">${x.pdfs}</td>
-   <td>${x.pdfs?`<button onclick="entpacken('${esc(x.register)}',this)"
-     ${E.pdf_werkzeug?'':'disabled'}>PDFs zerlegen</button>`:''}</td>
+   <td class=reihe style="flex-wrap:nowrap">
+    ${x.pdfs?`<button onclick="entpacken('${esc(x.register)}',this)"
+      ${E.pdf_werkzeug?'':'disabled'}>PDFs zerlegen</button>`:''}
+    ${E.demo?'':`<button onclick="scanWaehlen('${esc(x.register)}',this)"
+      title="Scans (jpg, png, tiff, pdf) durch den Browser in den Bildordner
+laden – kein Dateisystem-Zugriff nötig">Scans hochladen</button>`}</td>
   </tr>`).join('')}
  </table>
+ <input type=file id=scandatei multiple style=display:none
+   accept=".jpg,.jpeg,.png,.tif,.tiff,.pdf">
  <p class=dim style="font-size:.86rem;margin:.7rem 0 0">
   Ungleiche Seitenzahlen mit Absicht: Ein Eheeintrag nennt <b>sechs</b>
   Personen, ein Taufeintrag drei. Zehn Ehe-Seiten sind ungefähr so viel
@@ -1641,7 +1675,7 @@ function nutzerLaden(){
   const zeilen=(d.konten||[]).map(x=>`<tr><td><b>${esc(x.name)}</b>
     ${x.name===d.selbst?'<span class=dim>(Du)</span>':''}</td>
    <td><select onchange="nutzerAktion('rolle','${esc(x.name)}',this.value)">
-    ${['redakteur','bearbeiter'].map(r=>`<option ${r===x.rolle?'selected':''}>${r}</option>`).join('')}
+    ${['redakteur','bearbeiter','gast'].map(r=>`<option ${r===x.rolle?'selected':''}>${r}</option>`).join('')}
    </select></td>
    <td><button onclick="if(confirm('Konto ${esc(x.name)} entfernen?'))
      nutzerAktion('weg','${esc(x.name)}')">entfernen</button></td></tr>`).join('');
@@ -1654,7 +1688,7 @@ function nutzerLaden(){
    <div class=reihe style="margin-top:1rem">
     <input id=nu_name placeholder=Name style=width:10rem>
     <input id=nu_pw type=password placeholder="Passwort (min. 8)" style=width:12rem>
-    <select id=nu_rolle><option>bearbeiter</option><option>redakteur</option></select>
+    <select id=nu_rolle><option>bearbeiter</option><option>redakteur</option><option>gast</option></select>
     <button class=ja onclick="nutzerAnlegen()">Konto anlegen</button>
     <span class=dim id=nu_meldung></span>
    </div>
@@ -1708,6 +1742,38 @@ async function einstellungenSpeichern(){
  const s=document.getElementById('espeichert');
  if(s) s.textContent='gespeichert';
 }
+// ------------------------------------------------------- Scan-Upload
+// Stufe 4 des Mehrbenutzer-Bauplans: Seiten kommen durch den Browser in
+// den Bildordner der Instanz. Ein Aufruf je Datei, damit ein Abbruch
+// mitten im Stapel nichts Halbes hinterlässt.
+function scanWaehlen(reg,btn){
+ const w=document.getElementById('scandatei');
+ w.onchange=async()=>{
+  const dateien=[...w.files]; w.value='';
+  if(!dateien.length) return;
+  btn.disabled=true; const alt=btn.textContent;
+  let gut=0, schlecht=[];
+  for(let k=0;k<dateien.length;k++){
+   btn.textContent=`lädt ${k+1}/${dateien.length} …`;
+   const d=dateien[k];
+   const puffer=await d.arrayBuffer();
+   let s=''; const b=new Uint8Array(puffer);
+   for(let i=0;i<b.length;i+=0x8000)
+    s+=String.fromCharCode.apply(null,b.subarray(i,i+0x8000));
+   const a=await (await fetch('/api/scan',{method:'POST',
+    headers:{'content-type':'application/json'},
+    body:JSON.stringify({register:reg,name:d.name,b64:btoa(s)})})).json();
+   if(a.ok) gut++; else schlecht.push(`${d.name}: ${a.fehler||a.meldung||'?'}`);
+  }
+  btn.disabled=false; btn.textContent=alt;
+  let text=`${gut} von ${dateien.length} Datei(en) hochgeladen.`;
+  if(schlecht.length) text+='\n\n'+schlecht.join('\n');
+  alert(text);
+  await einstellungenHolen();
+ };
+ w.click();
+}
+
 async function entpacken(reg,btn){
  btn.disabled=true; btn.textContent='zerlege…';
  const r=await fetch('/api/entpacken',{method:'POST',

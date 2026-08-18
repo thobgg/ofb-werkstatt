@@ -411,6 +411,20 @@ CREATE TABLE IF NOT EXISTS aufwand (
   beendet   TEXT
 );
 
+-- Der Hinweis-Stift: Gaeste (und alle anderen) koennen dem Redakteur
+-- eine Anmerkung an einen Eintrag heften - das bewaehrte Muster aus den
+-- Crowdsourcing-Projekten. Aendert nichts an den Daten; was daraus wird,
+-- entscheidet der Redakteur und hakt ab.
+CREATE TABLE IF NOT EXISTS hinweis (
+  id        INTEGER PRIMARY KEY,
+  eintrag   INTEGER NOT NULL REFERENCES eintrag(id) ON DELETE CASCADE,
+  text      TEXT NOT NULL,
+  von       TEXT,                         -- Kontoname, leer am Einzelplatz
+  angelegt  TEXT NOT NULL,
+  erledigt  TEXT                          -- Zeitpunkt, NULL = offen
+);
+CREATE INDEX IF NOT EXISTS ix_hinweis_eintrag ON hinweis(eintrag);
+
 -- Bequemer Zugriff auf den geltenden Wert
 CREATE VIEW IF NOT EXISTS wert AS
   SELECT e.register, e.bild, e.nr, e.jahr, f.name, f.rolle,

@@ -93,6 +93,7 @@ Bestand und werden beim Abgleich trotzdem gefunden.
 | ✅ | Vorführinstanz: derselbe Code läuft als Docker-Container hinter einem Reverse Proxy |
 | ✅ | Mehrbenutzer je Instanz: Konten und Rollen (Redakteur/Bearbeiter), parallele Runden je Register, Nutzerverwaltung im Browser - ohne Kontendatei weiterhin der Einzelplatz ohne Anmeldung |
 | ✅ | Admin-Portal für den Wirt: neue OFB-Projekte als eigene Instanzen anlegen, Konten und KI-Kontingent je Projekt - `doku/portal.md` |
+| ✅ | Gastrolle mit Hinweis-Stift (lesen und anmerken, der Redakteur hakt ab) und Scan-Upload im Browser - die Instanz ist ohne Shell bedienbar |
 | 🚧 | Bedienschleife: ein Eintrag zur Zeit statt der ganzen Runde auf einer Seite |
 | ⬜ | Batch-API, Kaskaden für Ehe und Tod, Bildausschnitt je Feld |
 

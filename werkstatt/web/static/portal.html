@@ -106,6 +106,7 @@ function projektKarte(p){
     <td><select onchange="rolle('${esc(p.name)}','${esc(n.name)}',this.value)">
       <option${n.rolle==='redakteur'?' selected':''}>redakteur</option>
       <option${n.rolle==='bearbeiter'?' selected':''}>bearbeiter</option>
+      <option${n.rolle==='gast'?' selected':''}>gast</option>
     </select></td>
     <td><button class=klein onclick="weg('${esc(p.name)}','${esc(n.name)}')">entfernen</button></td>
    </tr>`).join('');
@@ -143,7 +144,7 @@ function projektKarte(p){
      <input id="k_name_${esc(p.name)}" placeholder="Name" size=10>
      <input id="k_pw_${esc(p.name)}" type=password placeholder="Passwort (min. 8)" size=14>
      <select id="k_rolle_${esc(p.name)}">
-      <option>bearbeiter</option><option>redakteur</option></select>
+      <option>bearbeiter</option><option>redakteur</option><option>gast</option></select>
      <button class=klein onclick="konto('${esc(p.name)}')">Konto anlegen</button>
     </div>
    </details>

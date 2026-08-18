@@ -19,6 +19,9 @@ schlagen vor, einer übernimmt gegen die Quelle):
                 ausgeben, Einstellungen, Quellen
     bearbeiter  korrigieren und bestätigen; übergeben, ausgeben und
                 alles Kostende oder Strukturelle bleibt beim Redakteur
+    gast        nur lesen - plus der Hinweis-Stift: ein Knopf am
+                Eintrag, der dem Redakteur eine Anmerkung hinterlässt
+                (das bewährte Muster aus Kies und Schorndorf)
 
 **Das Format** ist eine Zeile je Konto, von Hand lesbar:
 
@@ -35,7 +38,7 @@ import secrets
 from . import konfig
 
 DATEI = konfig.WURZEL / "daten" / "nutzer.txt"
-ROLLEN = ("redakteur", "bearbeiter")
+ROLLEN = ("redakteur", "bearbeiter", "gast")
 RUNDEN = 200_000
 
 
