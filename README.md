@@ -115,7 +115,7 @@ Bestand und werden beim Abgleich trotzdem gefunden.
 | ✅ | GEDCOM 7 als zweiter Ausgang, gegen Grammatik, Verweise und Schema geprüft |
 | ✅ | Vorführinstanz: derselbe Code läuft als Docker-Container hinter einem Reverse Proxy |
 | ✅ | Mehrbenutzer je Instanz: Konten und Rollen (Redakteur/Bearbeiter), parallele Runden je Register, Nutzerverwaltung im Browser - ohne Kontendatei weiterhin der Einzelplatz ohne Anmeldung |
-| ✅ | Admin-Portal für den Wirt: neue OFB-Projekte als eigene Instanzen anlegen, Konten und KI-Kontingent je Projekt - `doku/portal.md` |
+| ✅ | Admin-Portal mit Wirt: ein Container betreibt alle Instanzen; Projekte anlegen, starten, sichern, Support-Zugang, Konten und KI-Kontingent je Projekt - `doku/portal.md` |
 | ✅ | Gastrolle mit Hinweis-Stift (lesen und anmerken, der Redakteur hakt ab) und Scan-Upload im Browser - die Instanz ist ohne Shell bedienbar |
 | ✅ | Bedienschleife: ein Eintrag zur Zeit, Blättern und Bestätigen per Tastatur; Aufwand je Eintrag wird mitgezählt |
 | ✅ | Kaskaden für Ehe und Tod: Geburtsdatum der Brautleute, Alter und Ehegatten-Umweg führen zur Taufe im Bestand |
@@ -189,8 +189,9 @@ API-Schlüssel: einrichten, unter **Lesen** die Quelle *Testdaten*
 wählen, korrigieren, übergeben, GEDCOM ausgeben.
 
 Dazu ein kleiner Bestandsauszug (`demo/bestand.ged`, 28 Personen, 15
-Familien): Mit ihm werden auf denselben Seiten **18 Felder grün**, weil
-die Elternehen im Bestand stehen – der Beleg steht jeweils daneben. Ohne
+Familien): Mit ihm werden auf denselben Seiten **21 Felder grün** –
+über Elternehen, taggenaue Geburtsdaten und den Ehegatten-Umweg; der
+Beleg steht jeweils daneben. Ohne
 ihn bleibt alles gelb; auch das ist ein gültiger Start, nur langsamer.
 Die von Hand geprüften Personenverweise liegen nicht bei – der Abgleich
 soll sie selbst wiederfinden.
@@ -222,12 +223,15 @@ Beides endet auf `http://127.0.0.1:8765` im Browser.
 ## Mehrbenutzer *(neu, August 2026)*
 
 Fuer eine Parochie-Instanz mit mehreren Bearbeitern gibt es Konten und
-zwei Rollen: Bearbeiter korrigieren und bestaetigen, der Redakteur
-uebergibt, gibt aus und verwaltet die Instanz. Je Register darf eine
-Runde offen sein, drei Leute arbeiten parallel gegen denselben Bestand.
-Eingeschaltet wird das ueber `python3 -m werkstatt.nutzer --anlegen`;
-ohne Konten bleibt alles der Einzelplatz ohne Anmeldung. Details in
-`doku/mehrbenutzer.md`.
+drei Rollen: Bearbeiter korrigieren und bestaetigen, der Redakteur
+uebergibt, gibt aus und verwaltet die Instanz im Zahnrad, Gaeste lesen
+und heften Hinweise an Eintraege. Je Register darf eine Runde offen
+sein, drei Leute arbeiten parallel gegen denselben Bestand.
+Eingeschaltet wird das ueber das erste Konto (Zahnrad oder
+`python3 -m werkstatt.nutzer --anlegen`); ohne Konten bleibt alles der
+Einzelplatz ohne Anmeldung. Details in `doku/mehrbenutzer.md`;
+Mehrparochien-Betrieb mit Wirt und Portal in `doku/portal.md` -
+gebaut und geprueft, aber noch ohne lange Betriebserfahrung.
 
 ## Einrichten
 
@@ -293,6 +297,7 @@ register) from parish registers: a model transcribes the page, you
 correct it, and each named person is matched against your existing
 dataset. Output is GEDCOM. The reading step presupposes tabular,
 pre-printed registers (in Württemberg the rule from 1808 onward) and
-sends scans to the Anthropic API – check your image licence. Built for a
-single researcher working on their own parish: local, SQLite, no
-accounts. Interface and documentation are in German.
+sends scans to the Anthropic API – check your image licence. Runs
+either as a local single-user app (one command, no accounts) or as a
+multi-parish server with role-based accounts and an admin portal.
+Interface and documentation are in German.
