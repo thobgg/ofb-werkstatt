@@ -9,7 +9,10 @@
   alt="Kurrentschrift, freigestellt: die Elternzeile eines Eheeintrags von 1808">
 </picture>
 
-*Eheregister Haberschlacht 1808, Eintrag Nr. 1, die Elternzeile.*
+*Eheregister Haberschlacht Bd. 6, Bild 1184798-00917, Eintrag Nr. 1
+von 1808, die Elternzeile. Evangelische Kirchengemeinde Haberschlacht,
+Digitalisat über Ancestry; gemeinfrei (§ 68 UrhG), Herkunft in
+[`demo/QUELLE.md`](demo/QUELLE.md).*
 
 Werkzeug für ein **Ortsfamilienbuch**: Kirchenbuchseite von einem
 Sprachmodell lesen lassen, gegen den vorhandenen Bestand abgleichen,

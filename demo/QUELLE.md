@@ -23,6 +23,11 @@ eine Aufnahme bei.
     Evangelische Kirchengemeinde Haberschlacht, Kirchenbücher.
     Digitalisate über Ancestry.
 
+Aus Bild `1184798-00917` (Eheregister, Eintrag Nr. 1 von 1808,
+Elternspalte) sind auch die freigestellten Schriftbilder geschnitten:
+`doku/schrift-dunkel.png` und `-hell.png` im README, `kurrent.png` und
+`kurrent-block.png` als Schriftband der Oberfläche.
+
 Die Bücher selbst stammen aus dem frühen 19. Jahrhundert und sind
 gemeinfrei; nach § 68 UrhG gilt das seit 2021 auch für originalgetreue
 Reproduktionen gemeinfreier Werke. Zitiert wird nach der obigen Angabe.
