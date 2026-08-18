@@ -88,6 +88,45 @@ lesen, korrigiert; Gäste schauen zu und hinterlassen Hinweise. Der
 Shell-Zugriff bleibt Rettungsweg und wird für den Alltag nicht mehr
 gebraucht.
 
+## Support-Zugang: als Betreiber in eine Instanz
+
+Der Betreiber hat kein stehendes Konto in den Instanzen. Braucht eine
+Parochie Hilfe, gibt es im Portal je Projekt den Knopf
+**Support-Zugang anlegen**: Er legt dort das Redakteurskonto `support`
+mit einem Zufallspasswort an und zeigt das Passwort genau einmal.
+Damit meldet man sich auf der Instanz-Seite an, behebt die Sache und
+entfernt den Zugang mit demselben Knopf wieder.
+
+Warum so und nicht als festes Admin-Konto: Das Konto steht sichtbar in
+der Kontenliste der Instanz (der Redakteur sieht es), jeder Schritt
+steht im `portal.log`, und ein geleaktes Passwort öffnet eine Parochie
+statt alle. Der Komfort ist derselbe - ein Klick.
+
+## Sicherung
+
+Je Projekt im Portal: **Sicherung erstellen** packt eine ZIP-Datei mit
+der Datenbank (als konsistenter Schnappschuss, nicht als Dateikopie),
+der Kontenliste, beiden Konfigurationsdateien, den Kontextquellen und
+den GEDCOM-Ausgaben nach `sicherungen/` in der Instanz. Die letzten
+zehn bleiben liegen, alle sind im Portal herunterladbar - eine Kopie
+gehört regelmäßig weg vom Wirt (Download genügt).
+
+Die Scans sind nicht enthalten (groß, liegen beim Bearbeiter oder
+kommen per Upload wieder); wer sie mitsichern will:
+`python3 -m werkstatt.sicherung --mit-bildern` in der Instanz.
+
+**Wiederherstellen** ist bewusst kein Knopf, sondern Kommandozeile mit
+Rückfrage - es überschreibt den aktuellen Stand:
+
+```sh
+python3 -m werkstatt.sicherung --wiederherstellen sicherungen/NAME.zip
+```
+
+Die laufende Datenbank bleibt dabei als `.vorher` liegen, ein
+Fehlgriff ist umkehrbar. Danach den Server neu starten. Zusätzlich
+gilt auf einer Synology: Hyper Backup über die Instanzen-Wurzel
+sichert auch die Sicherungen mit.
+
 ## Zugang für Interessierte
 
 Anfangs per Mail an den Admin: Er legt das Projekt im Portal an und

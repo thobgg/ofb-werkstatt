@@ -40,7 +40,7 @@ from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-from . import einstellungen, instanz, kontingent
+from . import einstellungen, instanz, kontingent, sicherung
 from . import nutzer as _nutzer
 
 PORT = 8767
@@ -147,6 +147,29 @@ class Handler(BaseHTTPRequestHandler):
                 projekte=instanz.liste(WURZEL),
                 entstehen=[dict(name=n, meldung=m)
                            for n, m in sorted(LAUFEND.items())]))
+        if pfad == "/api/sicherungen":
+            p = _projekt_pfad((self._frage.get("projekt") or [""])[0])
+            if not p:
+                return self._json({"fehler": "Kein solches Projekt."}, 400)
+            return self._json(sicherung.liste(p))
+        if pfad.startswith("/sicherung/"):
+            # Download einer Sicherung: /sicherung/<projekt>/<datei>.
+            # Beides wird gegen das geprüft, was wirklich daliegt.
+            teile = pfad[len("/sicherung/"):].split("/")
+            p = _projekt_pfad(teile[0]) if len(teile) == 2 else None
+            datei = Path(urllib.parse.unquote(teile[1])).name if p else ""
+            ziel = p / "sicherungen" / datei if p else None
+            if not (ziel and datei.endswith(".zip") and ziel.is_file()):
+                return self._send(404, "text/plain", "nicht gefunden")
+            body = ziel.read_bytes()
+            self.send_response(200)
+            self.send_header("Content-Type", "application/zip")
+            self.send_header("Content-Disposition",
+                             f'attachment; filename="{datei}"')
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
         self._send(404, "text/plain", "nicht gefunden")
 
     # ------------------------------------------------------------- POST
@@ -160,6 +183,10 @@ class Handler(BaseHTTPRequestHandler):
             return self.nutzer_verwalten()
         if pfad == "/api/budget":
             return self.budget_setzen()
+        if pfad == "/api/support":
+            return self.support_zugang()
+        if pfad == "/api/sicherung":
+            return self.sicherung_erstellen()
         self._send(404, "text/plain", "nicht gefunden")
 
     # ------------------------------------------------------ Neues Projekt
@@ -302,6 +329,63 @@ class Handler(BaseHTTPRequestHandler):
         _log(f"budget {p.name}: {roh or 'keines'}")
         return self._json({"ok": True,
                            "budget_dollar": wert if roh else None})
+
+
+    # ------------------------------------------------------ Support-Zugang
+    def support_zugang(self):
+        """Der Betreiber-Zugang mit einem Klick.
+
+        Legt in der Instanz das Redakteurskonto `support` mit einem
+        Zufallspasswort an - das Passwort wird genau einmal angezeigt.
+        Kein stehender Generalschlüssel: Das Konto steht sichtbar in der
+        Kontenliste der Instanz, jeder Schritt im portal.log, und nach
+        getaner Arbeit nimmt derselbe Knopf es wieder weg.
+        """
+        import secrets
+        d = self._rumpf()
+        p = _projekt_pfad(d.get("projekt") or "")
+        if not p:
+            return self._json({"ok": False,
+                               "fehler": "Kein solches Projekt."}, 400)
+        datei = p / "daten" / "nutzer.txt"
+        konten = _nutzer.lade(datei)
+        if d.get("aktion") == "weg":
+            if "support" not in konten:
+                return self._json({"ok": False,
+                                   "fehler": "Kein Support-Zugang da."}, 400)
+            redakteure = [n for n, (_, r) in konten.items()
+                          if r == "redakteur"]
+            if redakteure == ["support"]:
+                return self._json({"ok": False, "fehler":
+                                   "support ist der einzige Redakteur - "
+                                   "erst dem Projekt einen eigenen "
+                                   "Redakteur anlegen."}, 400)
+            _nutzer.entfernen("support", datei=datei)
+            _log(f"support {p.name}: entfernt")
+            return self._json({"ok": True, "weg": True})
+        # Anlegen oder erneuern - ein frisches Passwort in beiden Fällen.
+        passwort = secrets.token_urlsafe(9)
+        _nutzer.anlegen("support", passwort, "redakteur", datei=datei)
+        _log(f"support {p.name}: angelegt/erneuert")
+        return self._json({"ok": True, "name": "support",
+                           "passwort": passwort})
+
+    # ----------------------------------------------------------- Sicherung
+    def sicherung_erstellen(self):
+        d = self._rumpf()
+        p = _projekt_pfad(d.get("projekt") or "")
+        if not p:
+            return self._json({"ok": False,
+                               "fehler": "Kein solches Projekt."}, 400)
+        try:
+            ziel = sicherung.erstellen(p)
+        except SystemExit as e:
+            return self._json({"ok": False, "fehler": str(e)}, 400)
+        weg = sicherung.aufraeumen(p, behalten=10)
+        _log(f"sicherung {p.name}: {ziel.name}"
+             + (f", {weg} alte entfernt" if weg else ""))
+        return self._json({"ok": True, "datei": ziel.name,
+                           "sicherungen": sicherung.liste(p)})
 
 
 def main():

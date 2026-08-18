@@ -141,7 +141,7 @@ function projektKarte(p){
    </div>
    <div style="font-size:.88rem">${runden}</div>`}
    <details${offenes===p.name?' open':''} ontoggle="if(this.open)offenes='${esc(p.name)}'">
-    <summary>Konten und Kontingent</summary>
+    <summary>Konten, Kontingent, Support, Sicherung</summary>
     <div class=reihe style="margin:.6rem 0">
      <label class=feld>KI-Kontingent in Dollar (leer = keines)
       <span class=reihe>
@@ -159,6 +159,26 @@ function projektKarte(p){
      <select id="k_rolle_${esc(p.name)}">
       <option>bearbeiter</option><option>redakteur</option><option>gast</option></select>
      <button class=klein onclick="konto('${esc(p.name)}')">Konto anlegen</button>
+    </div>
+    <div class=reihe style="margin-top:.8rem">
+     <button class=klein onclick="support('${esc(p.name)}',${
+       (p.nutzer||[]).some(n=>n.name==='support')?'true':'false'})">${
+       (p.nutzer||[]).some(n=>n.name==='support')
+        ?'Support-Zugang entfernen':'Support-Zugang anlegen'}</button>
+     <span class=dim style="font-size:.8rem">legt dir ein sichtbares
+      Redakteurskonto „support" in dieser Instanz an; das Passwort wird
+      genau einmal angezeigt</span>
+    </div>
+    <div style="margin-top:.8rem">
+     <div class=reihe>
+      <button class=klein onclick="sichern('${esc(p.name)}')">Sicherung erstellen</button>
+      <a href="#" style=color:#7fb0ff onclick="event.preventDefault();
+        sicherungen('${esc(p.name)}')">vorhandene anzeigen</a>
+      <span class=dim style="font-size:.8rem">Datenbank-Schnappschuss,
+       Konten, Konfiguration, Quellen und Ausgaben; die letzten zehn
+       bleiben liegen</span>
+     </div>
+     <div id="s_${esc(p.name)}" style="font-size:.85rem;margin-top:.4rem"></div>
     </div>
    </details>
   </div>`;
@@ -220,6 +240,39 @@ async function budget(p){
     dollar: $('#b_'+CSS.escape(p)).value.trim()});
   if (!a.ok) alert(a.fehler);
   offenes = p; lade();
+}
+
+async function support(p, weg){
+  if (weg && !confirm('Support-Zugang aus ' + p + ' entfernen?')) return;
+  const a = await api('/api/support', {projekt:p, aktion: weg?'weg':'anlegen'});
+  if (!a.ok) { alert(a.fehler); return; }
+  if (!weg)
+    alert('Support-Zugang für ' + p + ':\n\n'
+      + '  Name:     support\n  Passwort: ' + a.passwort + '\n\n'
+      + 'Das Passwort wird nur dieses eine Mal angezeigt. Anmelden auf '
+      + 'der Instanz-Seite; nach getaner Arbeit den Zugang hier wieder '
+      + 'entfernen.');
+  offenes = p; lade();
+}
+
+function sicherungsliste(p, liste){
+  $('#s_'+CSS.escape(p)).innerHTML = liste.length
+    ? liste.map(s=>`<div class=reihe style="padding:.1rem 0">
+        <a style=color:#7fb0ff href="/sicherung/${esc(p)}/${esc(s.datei)}"
+          >${esc(s.datei)}</a>
+        <span class=dim>${Math.round(s.bytes/1024)} kB · ${esc(s.zeit)}</span>
+       </div>`).join('')
+    : '<span class=dim>noch keine Sicherung</span>';
+}
+async function sichern(p){
+  const a = await api('/api/sicherung', {projekt:p});
+  if (!a.ok) { alert(a.fehler); return; }
+  offenes = p;
+  sicherungsliste(p, a.sicherungen);
+}
+async function sicherungen(p){
+  offenes = p;
+  sicherungsliste(p, await api('/api/sicherungen?projekt='+encodeURIComponent(p)));
 }
 
 lade();
