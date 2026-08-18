@@ -116,12 +116,31 @@ def vorschlag(con, quelle="api"):
     reihe = register_reihe(con)
     letzte = con.execute("SELECT register FROM runde WHERE stand='fertig' "
                          "ORDER BY id DESC LIMIT 1").fetchone()
+    # Der Start hängt am Altbestand (Regel von Thomas, 18. August):
+    # Liegt ein Bestand als Beleg im Haus, sind die Elternehen der
+    # ersten Taufjahrgänge schon da – dann ist das Taufregister der
+    # beste Einstieg (drei Personen je Eintrag, der Vater ortsansässig,
+    # „kein Treffer" heißt dort zuverlässig „Lesefehler"). Ohne
+    # Altbestand bauen die Ehen den Anker zuerst. Das Taufregister wird
+    # am Bauplan erkannt (die Aktart mit einem Kind), nicht am Namen.
+    altbestand = con.execute(
+        "SELECT 1 FROM person p JOIN herkunft h ON h.id=p.herkunft "
+        "WHERE h.gilt='beleg' LIMIT 1").fetchone()
+    if not letzte and altbestand:
+        from . import katalog
+        tauf = next((a for a in reihe
+                     if katalog.bauplan(a, con).get("kind")), None)
+        if tauf:
+            reihe = [tauf] + [a for a in reihe if a != tauf]
     start = (reihe.index(letzte["register"]) + 1) % len(reihe) if letzte else 0
     for i in range(len(reihe)):
         reg = reihe[(start + i) % len(reihe)]
         rest = offene_bilder(con, reg, "api")
         if rest:
-            grund = ("erste Runde – Ehen zuerst, sie bauen den Anker"
+            grund = (("erste Runde – mit Altbestand zuerst die Taufen: "
+                      "ihre Elternehen liegen schon im Bestand"
+                      if altbestand else
+                      "erste Runde – Ehen zuerst, sie bauen den Anker")
                      if not letzte and reg == reihe[0]
                      else f"{len(rest)} Seiten offen")
             if quelle == "testdaten" and not offene_bilder(con, reg, "testdaten"):

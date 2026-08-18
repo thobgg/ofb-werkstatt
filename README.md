@@ -54,7 +54,10 @@ die zusammen gelesen, korrigiert und übergeben werden:
 Die Reihenfolge ist **Ehen → Taufen → Tode**: Die Eltern einer Taufe von
 1825 haben nach dem Ende des alten Bestands geheiratet. Werden die Ehen
 zuerst erfasst und übergeben, findet der Abgleich sie wieder; sonst
-versiegt dieser Anker mit jedem Jahrgang.
+versiegt dieser Anker mit jedem Jahrgang. Eine Ausnahme schlägt die
+Werkstatt selbst vor: Liegt ein Altbestand als Beleg im Haus, beginnt
+die **erste** Runde bei den Taufen – deren Elternehen stehen schon im
+Bestand, und das Taufregister ist der sauberste Einstieg.
 
 Der Zustand liegt in der Datenbank. Der Läufer arbeitet weiter, wenn das
 Browserfenster zugeht, und nach einem Abbruch ist ablesbar, wie weit er
