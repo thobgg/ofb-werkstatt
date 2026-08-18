@@ -18,26 +18,6 @@ korrigieren und als GEDCOM ausgeben.
 > **In Arbeit.** Entwickelt und gemessen an den Kirchenbüchern von
 > Haberschlacht, Württemberg, ab 1808.
 
-## Eine App, zwei Betriebsarten
-
-Derselbe Code läuft als Einzelplatz und als Server für mehrere
-Parochien; es gibt keine zwei Fassungen.
-
-| | allein | im Verein |
-|---|---|---|
-| Start | `python3 start.py` – kein Login, kein Docker | ein Admin-Portal legt je Parochie eine eigene Instanz an: eigene Datenbank, eigener Container, eigener Port |
-| Wer arbeitet | eine Person an ihrer Parochie | Redakteure, Bearbeiter und Gäste; je Register eine Runde, drei Leute parallel |
-| Scans | liegen im Bildordner | kommen per Upload durch den Browser |
-| Gäste | – | lesen und heften dem Redakteur Hinweise an Einträge (✎) |
-| KI-Kosten | eigener Schlüssel oder eigenes Abo | Kontingent je Projekt, vom Betreiber gedeckelt |
-| Sicherheitsgrenze | der eigene Rechner | die Instanz: kein Superuser über Parochien hinweg |
-
-Alles Serverhafte ist Opt-in über Schalter, die der Einzelplatz nie
-umlegt (Kontendatei, Portal-Passwort). Der Probelauf unten fährt den
-Einzelplatz-Klon ohne all das durch und muss die Zahlen dieser Seite
-liefern. Details in [`doku/mehrbenutzer.md`](doku/mehrbenutzer.md) und
-[`doku/portal.md`](doku/portal.md).
-
 ## Wofür
 
 Ahnenblatt, Gramps und webtrees verwalten einen Bestand gut, aber das
@@ -45,6 +25,19 @@ Erweitern aus einer Quelle ist mühsam: Jeder Registereintrag stellt die
 Frage, ob eine Person schon im Bestand steht oder neu angelegt werden
 muss. Die Werkstatt beantwortet diese Frage vorab und legt sie nur noch
 zur Bestätigung vor.
+
+## Zwei Betriebsarten
+
+Derselbe Code läuft als Einzelplatz und als Server für mehrere
+Parochien. Allein: `python3 start.py`, kein Login, kein Docker. Im
+Verein: je Parochie eine eigene Instanz mit eigener Datenbank und
+eigenem Container, Konten mit den Rollen Redakteur, Bearbeiter und
+Gast, Scan-Upload im Browser, KI-Kontingent je Projekt; Instanzen legt
+ein Admin-Portal an. Alles Serverhafte ist Opt-in über Schalter, die
+der Einzelplatz nie umlegt; der Probelauf unten prüft den
+Einzelplatz-Klon ohne all das. Details in
+[`doku/mehrbenutzer.md`](doku/mehrbenutzer.md) und
+[`doku/portal.md`](doku/portal.md).
 
 ## Der Durchlauf
 
