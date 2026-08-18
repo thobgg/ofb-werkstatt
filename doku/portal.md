@@ -6,6 +6,41 @@ die Instanzen. Sie arbeitet über das **Dateisystem** der
 Instanzverzeichnisse; wer eine Parochie kompromittiert, hat weiterhin
 nur sie. Der Shell-Zugriff bleibt der Generalschlüssel und Rettungsweg.
 
+## Gesamtbild
+
+Ein OFB ist ein **Ordner auf dem Wirt**; Container, Proxy-Eintrag und
+App sind nur die Bedienung dieses Ordners.
+
+```
+                         Internet
+                            │
+                   Reverse Proxy (einer für alles)
+        ┌───────────────────┼───────────────────────┐
+  haberschlacht.xyz    neipperg.xyz         portal.xyz (besser: nur LAN)
+        │                   │                       │
+  127.0.0.1:8770      127.0.0.1:8771          127.0.0.1:8767
+  ┌─────▼──────┐      ┌─────▼──────┐          ┌─────▼──────┐
+  │ Container   │      │ Container  │          │ Container  │
+  │ Werkstatt   │      │ Werkstatt  │          │ Portal     │
+  └─────┬──────┘      └─────┬──────┘          └─────┬──────┘
+        │                   │                       │ liest/schreibt
+  ══════▼═══════════════════▼═══════════════════════▼══ Dateisystem ══
+  ofb-instanzen/
+     haberschlacht/                 neipperg/
+        daten/erfassung.sqlite  ◄── das OFB lebt hier
+        daten/nutzer.txt            (Konten dieser Parochie)
+        bilder/  quellen/  ausgabe/  sicherungen/
+```
+
+Daraus folgt alles Weitere: Der Container ist wegwerfbar, dem OFB
+passiert dabei nichts. Backup eines OFB ist ein Ordner, Umzug auf einen
+anderen Server ist Ordner kopieren. Das Repo `ofb-werkstatt` ist nur
+der Bauplan; beim Anlegen kopiert das Portal den Code in den neuen
+Ordner. Und das Portal geht nie über HTTP in die Instanzen, sondern
+arbeitet direkt auf deren Ordnern - deshalb braucht es dort keinen
+Login. Je neuem OFB bleiben drei Handgriffe: der Klick im Portal,
+einmal `docker compose up`, eine Proxy-Zeile.
+
 ## Starten
 
 ```sh
