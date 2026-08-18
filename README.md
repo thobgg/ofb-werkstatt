@@ -41,7 +41,7 @@ Einzelplatz-Klon ohne all das. Details in
 
 ## Der Durchlauf
 
-Gearbeitet wird in **Runden** — eine Tranche von Seiten eines Registers,
+Gearbeitet wird in **Runden** – eine Tranche von Seiten eines Registers,
 die zusammen gelesen, korrigiert und übergeben werden:
 
     geplant ──lesen──► korrigieren ──übergeben──► fertig
@@ -57,18 +57,18 @@ kam.
 
 ## Grundsätze
 
-- **Erfasst wird, was dasteht** — eine Zeile je Registereintrag, die
+- **Erfasst wird, was dasteht** – eine Zeile je Registereintrag, die
   GEDCOM-Ausgabe wird daraus abgeleitet. Zuordnung und Lesung lassen sich
   getrennt korrigieren.
 - **Der Ausgangsbestand bleibt unangetastet.** Jede Ergänzung ist ein
   festgehaltener Vorgang mit Beleg; Rücknahme heißt, den Vorgang zu
   deaktivieren.
-- **Grün wird nur, was ein Beleg bestätigt** — etwa `Elternehe F1149,
+- **Grün wird nur, was ein Beleg bestätigt** – etwa `Elternehe F1149,
   oo 14.02.1798`. Die Selbsteinschätzung des Modells und die Häufigkeit
   eines Namens zählen nicht; ein Name, der hundertmal vorkommt, kann
   trotzdem der falsche sein.
 - **Ohne vorhandenes GEDCOM** gleicht die Werkstatt gegen die eigenen
-  früheren Einträge ab — die ersten hundert tragen die nächsten tausend.
+  früheren Einträge ab – die ersten hundert tragen die nächsten tausend.
 - **Die Ausgabe ist verlustfrei**: unberührte Records gehen zeichengleich
   durch die Fortschreibung. Ein Leerlauftest belegt das bei jedem Export.
 - **GEDCOM 7 als zweiter Ausgang.** Die Fortschreibung bleibt 5.5.1, weil
@@ -78,7 +78,7 @@ kam.
   David Straub. Dort werden die eigenen Tags des Ortsfamilienbuchs
   (`_KB_NAME`, `_BERUF_KB` …) im Kopf der Datei erklärt statt geduldet.
 
-Wie gut die Maschine liest, hängt an Handschrift, Erhaltung und Scan —
+Wie gut die Maschine liest, hängt an Handschrift, Erhaltung und Scan –
 eine allgemeine Trefferquote wäre irreführend. Der Beitrag der Werkstatt
 ist der Schritt danach: die Entscheidung, welche der genannten Personen
 im Bestand schon stehen, samt Beleg.
@@ -114,8 +114,9 @@ Bestand und werden beim Abgleich trotzdem gefunden.
 | ✅ | Mehrbenutzer je Instanz: Konten und Rollen (Redakteur/Bearbeiter), parallele Runden je Register, Nutzerverwaltung im Browser - ohne Kontendatei weiterhin der Einzelplatz ohne Anmeldung |
 | ✅ | Admin-Portal für den Wirt: neue OFB-Projekte als eigene Instanzen anlegen, Konten und KI-Kontingent je Projekt - `doku/portal.md` |
 | ✅ | Gastrolle mit Hinweis-Stift (lesen und anmerken, der Redakteur hakt ab) und Scan-Upload im Browser - die Instanz ist ohne Shell bedienbar |
-| 🚧 | Bedienschleife: ein Eintrag zur Zeit statt der ganzen Runde auf einer Seite |
-| ⬜ | Batch-API, Kaskaden für Ehe und Tod, Bildausschnitt je Feld |
+| ✅ | Bedienschleife: ein Eintrag zur Zeit, Blättern und Bestätigen per Tastatur; Aufwand je Eintrag wird mitgezählt |
+| ✅ | Kaskaden für Ehe und Tod: Geburtsdatum der Brautleute, Alter und Ehegatten-Umweg führen zur Taufe im Bestand |
+| ⬜ | Batch-API, Bildausschnitt je Feld |
 
 ## Einblick
 
@@ -173,7 +174,7 @@ Das Lesen hängt an einer einzigen Funktion (Bilder und Anweisung als JSON
 an einen Endpunkt). Ein lokales Modell über Ollama, llama.cpp oder vLLM
 lässt sich dort einhängen; ob es Kurrent brauchbar liest, kann man mit
 den beiliegenden Seiten und dem Knopf *nochmal lesen* in einer Stunde
-messen. Liest es schlechter, verschiebt sich die Arbeit zur Korrektur —
+messen. Liest es schlechter, verschiebt sich die Arbeit zur Korrektur –
 dafür ist die Maske da.
 
 ## Ausprobieren
@@ -186,9 +187,9 @@ wählen, korrigieren, übergeben, GEDCOM ausgeben.
 
 Dazu ein kleiner Bestandsauszug (`demo/bestand.ged`, 28 Personen, 15
 Familien): Mit ihm werden auf denselben Seiten **18 Felder grün**, weil
-die Elternehen im Bestand stehen — der Beleg steht jeweils daneben. Ohne
+die Elternehen im Bestand stehen – der Beleg steht jeweils daneben. Ohne
 ihn bleibt alles gelb; auch das ist ein gültiger Start, nur langsamer.
-Die von Hand geprüften Personenverweise liegen nicht bei — der Abgleich
+Die von Hand geprüften Personenverweise liegen nicht bei – der Abgleich
 soll sie selbst wiederfinden.
 
 Die Zahlen sind mit einem Befehl nachprüfbar:
@@ -263,7 +264,7 @@ Transkriptionen.
 
 ## Sprache
 
-Deutsch: Code, Kommentare, Konfiguration und Oberfläche — die Register
+Deutsch: Code, Kommentare, Konfiguration und Oberfläche – die Register
 und ihre Bearbeiter sind es auch. Anzeigetexte sollen später vom Code
 getrennt werden, damit weitere Sprachen möglich sind.
 
@@ -289,6 +290,6 @@ register) from parish registers: a model transcribes the page, you
 correct it, and each named person is matched against your existing
 dataset. Output is GEDCOM. The reading step presupposes tabular,
 pre-printed registers (in Württemberg the rule from 1808 onward) and
-sends scans to the Anthropic API — check your image licence. Built for a
+sends scans to the Anthropic API – check your image licence. Built for a
 single researcher working on their own parish: local, SQLite, no
 accounts. Interface and documentation are in German.
