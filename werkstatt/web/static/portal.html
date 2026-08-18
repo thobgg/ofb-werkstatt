@@ -140,6 +140,9 @@ function projektKarte(p){
        ? `<button class=klein onclick="steuern('${esc(p.name)}','neustart')">neu starten</button>
           <button class=klein onclick="steuern('${esc(p.name)}','stoppen')">stoppen</button>`
        : `<button class=klein onclick="steuern('${esc(p.name)}','starten')">starten</button>`}
+     <button class=klein onclick="aktualisieren('${esc(p.name)}')"
+       title="den aktuellen Code-Stand des Repos in diese Instanz kopieren;
+Datenbank, Konten, Scans und Konfiguration bleiben unberührt">aktualisieren</button>
      <span class=dim>${p.port ? 'Port ' + p.port : ''}
       ${p.zugriff ? ' · zuletzt ' + esc(p.zugriff.slice(0,10)) : ''}</span>
     </span>
@@ -255,6 +258,16 @@ async function budget(p){
     dollar: $('#b_'+CSS.escape(p)).value.trim()});
   if (!a.ok) alert(a.fehler);
   offenes = p; lade();
+}
+
+async function aktualisieren(p){
+  if (!confirm(p+' auf den aktuellen Code-Stand bringen?\n\n'
+    +'Kopiert nur Programmdateien - Datenbank, Konten, Scans und '
+    +'Konfiguration bleiben unberührt. Die Instanz startet dabei neu.')) return;
+  const a = await api('/api/aktualisieren', {projekt:p});
+  if (!a.ok) { alert(a.fehler); return; }
+  offenes = p;
+  setTimeout(lade, 800);
 }
 
 async function steuern(p, aktion){

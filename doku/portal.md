@@ -127,6 +127,15 @@ lesen, korrigiert; Gäste schauen zu und hinterlassen Hinweise. Der
 Shell-Zugriff bleibt Rettungsweg und wird für den Alltag nicht mehr
 gebraucht.
 
+## Code aktualisieren je Instanz
+
+Jede Instanz traegt eine Kopie des Codes. Der Knopf **aktualisieren**
+am Projekt kopiert den aktuellen Stand des Repos hinein (nur getrackte
+Programmdateien - Datenbank, Konten, Scans und konfig.local.toml
+stehen nicht im Git und bleiben unberuehrt) und startet die Instanz
+neu. Bugfix-Verteilung ist damit: auf dem Wirt `git pull` im Repo,
+dann je Instanz ein Klick.
+
 ## Support-Zugang: als Betreiber in eine Instanz
 
 Der Betreiber hat kein stehendes Konto in den Instanzen. Braucht eine

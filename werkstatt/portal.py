@@ -191,6 +191,31 @@ class Handler(BaseHTTPRequestHandler):
             return self.support_zugang()
         if pfad == "/api/sicherung":
             return self.sicherung_erstellen()
+        if pfad == "/api/aktualisieren":
+            # Bugfix-Verteilung als Knopf: den Code-Stand des Repos in
+            # den Instanzordner kopieren (nur getrackte Dateien - die
+            # Daten der Instanz stehen nicht im Git und bleiben
+            # unberührt), dann neu starten.
+            from .klon import baue
+            d = self._rumpf()
+            p = _projekt_pfad(d.get("projekt") or "")
+            if not p:
+                return self._json({"ok": False,
+                                   "fehler": "Kein solches Projekt."}, 400)
+            lief = wirt.status(p.name) == "laeuft"
+            if lief:
+                wirt.stoppe(p.name)
+            try:
+                n = baue(p)
+            except Exception as e:
+                return self._json({"ok": False, "fehler":
+                                   f"{type(e).__name__}: {e}"}, 500)
+            finally:
+                if lief:
+                    wirt.starte(p)
+            _log(f"aktualisiert {p.name}: {n} Dateien")
+            return self._json({"ok": True, "dateien": n,
+                               "laeuft": wirt.laeuft(p)})
         if pfad == "/api/instanz":
             # Der Wirt: Instanzen starten und stoppen ohne Shell. Laeuft
             # eine Instanz als eigener Container (altes Modell), sagt
