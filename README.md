@@ -36,9 +36,9 @@ Parochien. Allein: `python3 start.py`, kein Login, kein Docker. Im
 Verein: je Parochie eine eigene Instanz mit eigener Datenbank,
 betrieben von einem Wirt-Container; Konten mit den Rollen Redakteur,
 Bearbeiter und Gast, Scan-Upload im Browser, KI-Kontingent je Projekt.
-Instanzen legt, startet und sichert ein Admin-Portal. Alles Serverhafte ist Opt-in über Schalter, die
-der Einzelplatz nie umlegt; der Probelauf unten prüft den
-Einzelplatz-Klon ohne all das. Details in
+Instanzen legt, startet und sichert ein Admin-Portal. Alles
+Serverhafte ist Opt-in über Schalter, die der Einzelplatz nie umlegt;
+der Probelauf unten prüft den Einzelplatz-Klon ohne all das. Details in
 [`doku/mehrbenutzer.md`](doku/mehrbenutzer.md) und
 [`doku/portal.md`](doku/portal.md).
 
@@ -224,16 +224,17 @@ Beides endet auf `http://127.0.0.1:8765` im Browser.
 
 ## Mehrbenutzer *(neu, August 2026)*
 
-Fuer eine Parochie-Instanz mit mehreren Bearbeitern gibt es Konten und
-drei Rollen: Bearbeiter korrigieren und bestaetigen, der Redakteur
-uebergibt, gibt aus und verwaltet die Instanz im Zahnrad, Gaeste lesen
-und heften Hinweise an Eintraege. Je Register darf eine Runde offen
+Für eine Parochie-Instanz mit mehreren Bearbeitern gibt es Konten und
+drei Rollen: Bearbeiter korrigieren und bestätigen, der Redakteur
+übergibt, gibt aus und verwaltet die Instanz im Zahnrad, Gäste lesen
+und heften Hinweise an Einträge. Je Register darf eine Runde offen
 sein, drei Leute arbeiten parallel gegen denselben Bestand.
-Eingeschaltet wird das ueber das erste Konto (Zahnrad oder
+Eingeschaltet wird das über das erste Konto (Zahnrad oder
 `python3 -m werkstatt.nutzer --anlegen`); ohne Konten bleibt alles der
-Einzelplatz ohne Anmeldung. Details in `doku/mehrbenutzer.md`;
-Mehrparochien-Betrieb mit Wirt und Portal in `doku/portal.md` -
-gebaut und geprueft, aber noch ohne lange Betriebserfahrung.
+Einzelplatz ohne Anmeldung. Details in
+[`doku/mehrbenutzer.md`](doku/mehrbenutzer.md); Mehrparochien-Betrieb
+mit Wirt und Portal in [`doku/portal.md`](doku/portal.md) – gebaut und
+geprüft, aber noch ohne lange Betriebserfahrung.
 
 ## Einrichten
 
@@ -286,6 +287,8 @@ getrennt werden, damit weitere Sprachen möglich sind.
 | `doku/verknuepfung.md` | die Kaskade je Aktart |
 | `doku/workflow.md` | der Arbeitsablauf von der ersten Seite bis zur Ausgabe |
 | `doku/gedcom7-tags.md` | die eigenen Tags des Ortsfamilienbuchs, Ziel der Schema-URIs |
+| `doku/mehrbenutzer.md` | Konten, Rollen, Gastrolle und Hinweis-Stift |
+| `doku/portal.md` | Mehrparochien-Betrieb: Wirt, Portal, Support-Zugang, Sicherung |
 | `doku/naechste-sitzung.md` | Stand und offene Punkte |
 
 Lizenz: MIT.

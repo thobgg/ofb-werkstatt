@@ -62,8 +62,8 @@ die Records stehen wörtlich wie im Original.
 Ohne ihn bleibt alles gelb: Es gibt nichts, wogegen geprüft werden könnte.
 Mit ihm werden auf denselben Seiten 21 Felder grün, und zwar in allen
 drei Registern: Taufe 10, Ehe 6, Tod 5 (seit den Kaskaden für Ehe und
-Tod zählen dort auch taggenaue Geburtsdaten und der Ehegatten-Umweg). Der erste Auszug war nur für die
-Taufrunde geschnitten – Ehe und Sterbeeinträge fanden deshalb nichts,
+Tod zählen dort auch taggenaue Geburtsdaten und der Ehegatten-Umweg).
+Der erste Auszug war nur für die Taufrunde geschnitten – Ehe und Sterbeeinträge fanden deshalb nichts,
 nicht weil der Anker nicht trüge, sondern weil die Eltern der Brautleute
 im Auszug fehlten.
 
