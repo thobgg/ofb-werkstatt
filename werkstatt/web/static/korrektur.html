@@ -3,6 +3,13 @@
 <title>OFB-Werkstatt</title><style>
 *{box-sizing:border-box}
 body{margin:0;font:15px/1.45 system-ui,sans-serif;background:#14161a;color:#e6e8ec}
+/* Die Kurrent des Eheeintrags Nr. 1 als Wasserzeichen ueber die ganze
+   Flaeche - sehr blass, fest hinter allem; die Karten decken es ab, es
+   schimmert auf dem Seitengrund dazwischen durch. */
+body::before{content:'';position:fixed;inset:0;z-index:-1;
+ pointer-events:none;opacity:.07;
+ background:url(/static/kurrent-block.png) center 40%/min(1200px,94%)
+ no-repeat}
 header{position:sticky;top:0;background:#1b1e24;border-bottom:1px solid #2c313a;
  padding:.55rem 1rem;display:flex;gap:1rem;align-items:center;z-index:9;
  overflow:hidden}
