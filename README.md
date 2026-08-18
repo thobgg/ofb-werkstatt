@@ -74,6 +74,13 @@ kam.
   trotzdem der falsche sein.
 - **Ohne vorhandenes GEDCOM** gleicht die Werkstatt gegen die eigenen
   früheren Einträge ab – die ersten hundert tragen die nächsten tausend.
+- **Das System wird durch Benutzung besser – ohne Training.** Zwei
+  Schleifen: Jede übergebene Tranche wird Bestand und ankert die
+  nächste, und jede korrigierte Verwechslung geht als Fehlerkatalog
+  der Schreiberhand in ihr nächstes Lesen ein. Beides sind Daten, kein
+  Modelltraining; dazwischen steht die Ampel, damit sich Fehler nicht
+  selbst verstärken. Die erste Schleife ist gemessen, die Wirkung der
+  zweiten noch nicht.
 - **Die Ausgabe ist verlustfrei**: unberührte Records gehen zeichengleich
   durch die Fortschreibung. Ein Leerlauftest belegt das bei jedem Export.
 - **GEDCOM 7 als zweiter Ausgang.** Die Fortschreibung bleibt 5.5.1, weil
