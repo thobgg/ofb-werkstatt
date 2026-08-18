@@ -36,7 +36,9 @@ Parochien. Allein: `python3 start.py`, kein Login, kein Docker. Im
 Verein: je Parochie eine eigene Instanz mit eigener Datenbank,
 betrieben von einem Wirt-Container; Konten mit den Rollen Redakteur,
 Bearbeiter und Gast, Scan-Upload im Browser, KI-Kontingent je Projekt.
-Instanzen legt, startet und sichert ein Admin-Portal. Alles
+Instanzen legt, startet und sichert ein Admin-Portal; nach außen
+bekommt jede Parochie ihre eigene Subdomain, ein Wildcard-DNS und je
+eine Zeile im Reverse Proxy genügen. Alles
 Serverhafte ist Opt-in über Schalter, die der Einzelplatz nie umlegt;
 der Probelauf unten prüft den Einzelplatz-Klon ohne all das. Details in
 [`doku/mehrbenutzer.md`](doku/mehrbenutzer.md) und
@@ -155,6 +157,12 @@ die Buchöffnung mit markierter Zeile, *nochmal lesen* stellt zwei
 Lesungen derselben Zeile gegenüber:
 
 ![Korrigieren](doku/screenshots/korrigieren.jpg)
+
+Das Portal des Serverbetriebs: je Parochie eine Instanz mit eigener
+Datenbank und Subdomain – anlegen, starten, aktualisieren und sichern
+als Knopf, dazu Konten, Support-Zugang und KI-Kontingent:
+
+![Portal](doku/screenshots/portal.jpg)
 
 *Bildstreifen: Evangelische Kirchengemeinde Haberschlacht, Taufregister
 Bd. 4, Bild 1184798-00359, Eintrag Nr. 1 von 1808. Digitalisat über
