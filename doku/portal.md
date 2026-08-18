@@ -19,12 +19,13 @@ App sind nur die Bedienung dieses Ordners.
   haberschlacht.xyz    neipperg.xyz         portal.xyz (besser: nur LAN)
         │                   │                       │
   127.0.0.1:8770      127.0.0.1:8771          127.0.0.1:8767
-  ┌─────▼──────┐      ┌─────▼──────┐          ┌─────▼──────┐
-  │ Container   │      │ Container  │          │ Container  │
-  │ Werkstatt   │      │ Werkstatt  │          │ Portal     │
-  └─────┬──────┘      └─────┬──────┘          └─────┬──────┘
-        │                   │                       │ liest/schreibt
-  ══════▼═══════════════════▼═══════════════════════▼══ Dateisystem ══
+  ┌─────▼───────────────────▼───────────────────────▼─────┐
+  │ EIN Container: der Wirt                               │
+  │   Portal (8767) startet und überwacht je Instanz      │
+  │   einen Werkstatt-Prozess (8770, 8771, ...)           │
+  └─────┬─────────────────────────────────────────────────┘
+        │ liest/schreibt
+  ══════▼═════════════════════════════════════ Dateisystem ══
   ofb-instanzen/
      haberschlacht/                 neipperg/
         daten/erfassung.sqlite  ◄── das OFB lebt hier
@@ -32,14 +33,21 @@ App sind nur die Bedienung dieses Ordners.
         bilder/  quellen/  ausgabe/  sicherungen/
 ```
 
-Daraus folgt alles Weitere: Der Container ist wegwerfbar, dem OFB
+Daraus folgt alles Weitere: Der Container ist wegwerfbar, den OFBs
 passiert dabei nichts. Backup eines OFB ist ein Ordner, Umzug auf einen
 anderen Server ist Ordner kopieren. Das Repo `ofb-werkstatt` ist nur
 der Bauplan; beim Anlegen kopiert das Portal den Code in den neuen
 Ordner. Und das Portal geht nie über HTTP in die Instanzen, sondern
 arbeitet direkt auf deren Ordnern - deshalb braucht es dort keinen
-Login. Je neuem OFB bleiben drei Handgriffe: der Klick im Portal,
-einmal `docker compose up`, eine Proxy-Zeile.
+Login. Je neuem OFB bleiben zwei Handgriffe: der Klick im Portal (die
+Instanz startet dabei gleich mit) und eine Proxy-Zeile.
+
+Start, Stopp und Neustart je Parochie sind Knöpfe im Portal
+(`werkstatt/wirt.py` überwacht die Prozesse und startet Abgestürzte
+neu). Wer Instanzen lieber als eigene Container fährt, startet das
+Portal mit `--ohne-instanzen` und nutzt je Instanz deren
+`betrieb/compose.yaml` - der Wirt erkennt belegte Ports und lässt
+solche Instanzen in Ruhe.
 
 ## Starten
 
@@ -109,13 +117,9 @@ Einrichten:
     # Reverse Proxy im DSM: eigener Hostname → HTTP 127.0.0.1:8767,
     # Proxy-Timeout 300 s (die Provisionierung importiert GEDCOM)
 
-Das Portal legt Instanzen nur an. Ihren Container startet der Betreiber
-einmalig selbst - `docker` braucht auf der Synology sudo, und ein
-Portal, das Container starten dürfte, hätte den Generalschlüssel, den
-der Bauplan ausdrücklich nicht will:
+Das Portal startet die Instanzen selbst (der Wirt). Je neuem OFB
+bleibt nur der Proxy-Eintrag:
 
-    cd /volume1/docker/ofb-instanzen/<slug>/betrieb
-    sudo docker compose up -d
     # Proxy: <parochie>.example → 127.0.0.1:<port>  (steht in betrieb/port)
 
 Ab da läuft alles im Browser: Der Redakteur lädt Scans hoch, lässt

@@ -1,5 +1,5 @@
-# Das Admin-Portal im Container - fuer den Wirt (NAS oder Vereinsserver),
-# wo das System-Python zu alt ist. git gehoert ins Bild: Die
+# Der Wirt-Container: Portal plus alle Instanzen als Prozesse - fuer
+# NAS oder Vereinsserver, wo das System-Python zu alt ist. git gehoert ins Bild: Die
 # Provisionierung klont die Werkstatt aus `git ls-files`, und pillow/
 # numpy braucht der kurz gestartete Instanz-Klon beim Einrichten.
 FROM python:3.12-slim

@@ -1,25 +1,35 @@
-# Das Admin-Portal auf dem Wirt.   sudo docker compose up -d
+# Der Wirt: EIN Container fuer das Portal und alle Instanzen.
+#     sudo docker compose up -d
 #
 # Erwartete Verzeichnisse auf dem Wirt (Pfade unten anpassen):
 #   /volume1/docker/ofb/werkstatt     das Werkstatt-Repo MIT .git -
 #                                     die Provisionierung klont daraus
 #   /volume1/docker/ofb-instanzen     die Wurzel der Instanzen
 #
-# `network_mode: host` wie ueberall hier: Das Portal bindet 127.0.0.1:8767
-# des Wirts, dort holt der Reverse Proxy es ab (eigener Hostname, Ziel
-# HTTP 127.0.0.1:8767). Ohne OFB_PORTAL_PASSWORT startet es nicht.
+# Das Portal startet beim Hochfahren jede Instanz als eigenen Prozess
+# auf ihrem Port (steht in <instanz>/betrieb/port) und ueberwacht sie;
+# Start, Stopp und Neustart je Parochie stehen als Knoepfe im Portal.
+# `docker compose` je Parochie braucht es nicht mehr - nur noch die
+# eine Zeile im Reverse Proxy: <parochie>.example -> 127.0.0.1:<port>.
 #
-# Das Portal legt Instanzen nur an; ihre Container startet der Betreiber
-# einmalig selbst:  cd <instanz>/betrieb && sudo docker compose up -d
-# und im Proxy einen Hostnamen auf 127.0.0.1:<port> (steht in betrieb/port).
+# `network_mode: host`: Portal (8767) und Instanzen (ab 8770) binden
+# 127.0.0.1 des Wirts, dort holt der Proxy sie ab. Ohne
+# OFB_PORTAL_PASSWORT startet nichts.
+#
+# Wer Instanzen doch als eigene Container fahren will (alter Weg):
+# Kommando um --ohne-instanzen ergaenzen und je Instanz deren
+# betrieb/compose.yaml benutzen.
 services:
-  ofb-portal:
+  ofb-wirt:
     build: .
-    container_name: ofb-portal
+    container_name: ofb-wirt
     volumes:
       - /volume1/docker/ofb/werkstatt:/repo:ro
       - /volume1/docker/ofb-instanzen:/instanzen
     network_mode: host
     environment:
       OFB_PORTAL_PASSWORT: "HIER-PASSWORT-EINTRAGEN"
+      # Nur noetig, wenn ueber die API gelesen wird; gilt dann fuer alle
+      # Instanzen, gedeckelt je Projekt durch das KI-Kontingent.
+      # ANTHROPIC_API_KEY: "..."
     restart: unless-stopped

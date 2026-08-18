@@ -40,7 +40,7 @@ from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-from . import einstellungen, instanz, kontingent, sicherung
+from . import einstellungen, instanz, kontingent, sicherung, wirt
 from . import nutzer as _nutzer
 
 PORT = 8767
@@ -54,6 +54,7 @@ _PASSWORT = os.environ.get("OFB_PORTAL_PASSWORT", "")
 # dauert eine halbe Minute und mehr (GEDCOM-Import); der Browser pollt
 # die Projektliste, statt an einem Aufruf zu hängen.
 LAUFEND = {}
+INSTANZEN = True                # der Wirt startet die Instanzen mit
 
 
 def _log(zeile):
@@ -142,9 +143,12 @@ class Handler(BaseHTTPRequestHandler):
                                   ziel.read_bytes())
             return self._send(404, "text/plain", "nicht gefunden")
         if pfad == "/api/projekte":
+            projekte = instanz.liste(WURZEL)
+            for x in projekte:
+                x["laeuft"] = wirt.laeuft(x["verzeichnis"])
             return self._json(dict(
                 wurzel=str(WURZEL),
-                projekte=instanz.liste(WURZEL),
+                projekte=projekte,
                 entstehen=[dict(name=n, meldung=m)
                            for n, m in sorted(LAUFEND.items())]))
         if pfad == "/api/sicherungen":
@@ -187,6 +191,26 @@ class Handler(BaseHTTPRequestHandler):
             return self.support_zugang()
         if pfad == "/api/sicherung":
             return self.sicherung_erstellen()
+        if pfad == "/api/instanz":
+            # Der Wirt: Instanzen starten und stoppen ohne Shell. Laeuft
+            # eine Instanz als eigener Container (altes Modell), sagt
+            # starte() nur "da antwortet schon jemand" und laesst sie.
+            d = self._rumpf()
+            p = _projekt_pfad(d.get("projekt") or "")
+            if not p:
+                return self._json({"ok": False,
+                                   "fehler": "Kein solches Projekt."}, 400)
+            aktion = d.get("aktion")
+            if aktion in ("stoppen", "neustart"):
+                wirt.stoppe(p.name)
+            if aktion in ("starten", "neustart"):
+                port = wirt.starte(p)
+                if not port:
+                    return self._json({"ok": False, "fehler":
+                                       "startet nicht - betrieb/port "
+                                       "fehlt oder wirt.log ansehen"}, 400)
+            _log(f"instanz {p.name}: {aktion}")
+            return self._json({"ok": True, "laeuft": wirt.laeuft(p)})
         self._send(404, "text/plain", "nicht gefunden")
 
     # ------------------------------------------------------ Neues Projekt
@@ -229,8 +253,11 @@ class Handler(BaseHTTPRequestHandler):
 
         def arbeite():
             try:
-                instanz.neu(name, WURZEL, gedcom, redakteur, passwort,
-                            melde=lambda z: LAUFEND.update({slug: str(z)}))
+                ziel = instanz.neu(
+                    name, WURZEL, gedcom, redakteur, passwort,
+                    melde=lambda z: LAUFEND.update({slug: str(z)}))
+                if INSTANZEN:
+                    wirt.starte(ziel)
                 _log(f"projekt {slug}: fertig")
                 del LAUFEND[slug]
             except SystemExit as e:
@@ -393,15 +420,31 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--wurzel", type=Path, default=WURZEL)
     ap.add_argument("--port", type=int, default=PORT)
+    ap.add_argument("--ohne-instanzen", action="store_true",
+                    help="nur das Portal - Instanzen laufen anderswo "
+                    "(etwa als eigene Container)")
     a = ap.parse_args()
     WURZEL = a.wurzel.expanduser().resolve()
     instanz.WURZEL = WURZEL
+    global INSTANZEN
+    INSTANZEN = not a.ohne_instanzen
     if not _PASSWORT:
         raise SystemExit(
             "OFB_PORTAL_PASSWORT ist nicht gesetzt.\nDas Portal legt "
             "Projekte und Konten an - ohne eigenes Passwort startet es "
             "nicht.\n  OFB_PORTAL_PASSWORT=... python3 -m werkstatt.portal")
     WURZEL.mkdir(parents=True, exist_ok=True)
+    # SIGTERM (docker stop, kill) soll denselben Weg gehen wie Strg-C -
+    # sonst überleben die Instanz-Prozesse das Portal als Waisen.
+    import signal
+
+    def _ende(*_):
+        raise SystemExit
+    signal.signal(signal.SIGTERM, _ende)
+    if INSTANZEN:
+        n = wirt.alle_starten(WURZEL)
+        wirt.ueberwachung(WURZEL)
+        print(f"Wirt: {n} Instanz(en) gestartet")
     srv = ThreadingHTTPServer(("127.0.0.1", a.port), Handler)
     print(f"Portal läuft:  http://127.0.0.1:{a.port}    "
           f"Instanzen in {WURZEL}    (Strg-C beendet)")
@@ -411,6 +454,7 @@ def main():
         print("\nbeendet")
     finally:
         srv.server_close()
+        wirt.alle_stoppen()
 
 
 if __name__ == "__main__":

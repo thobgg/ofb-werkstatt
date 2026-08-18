@@ -33,10 +33,10 @@ zur Bestätigung vor.
 
 Derselbe Code läuft als Einzelplatz und als Server für mehrere
 Parochien. Allein: `python3 start.py`, kein Login, kein Docker. Im
-Verein: je Parochie eine eigene Instanz mit eigener Datenbank und
-eigenem Container, Konten mit den Rollen Redakteur, Bearbeiter und
-Gast, Scan-Upload im Browser, KI-Kontingent je Projekt; Instanzen legt
-ein Admin-Portal an. Alles Serverhafte ist Opt-in über Schalter, die
+Verein: je Parochie eine eigene Instanz mit eigener Datenbank,
+betrieben von einem Wirt-Container; Konten mit den Rollen Redakteur,
+Bearbeiter und Gast, Scan-Upload im Browser, KI-Kontingent je Projekt.
+Instanzen legt, startet und sichert ein Admin-Portal. Alles Serverhafte ist Opt-in über Schalter, die
 der Einzelplatz nie umlegt; der Probelauf unten prüft den
 Einzelplatz-Klon ohne all das. Details in
 [`doku/mehrbenutzer.md`](doku/mehrbenutzer.md) und
