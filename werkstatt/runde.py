@@ -26,7 +26,8 @@ import traceback
 from datetime import datetime, timezone
 from pathlib import Path
 
-from . import db, einstellungen, konfig, seiten, streifen, testdaten, vorlage
+from . import (db, einstellungen, konfig, kontingent, seiten, streifen,
+               testdaten, vorlage)
 
 STAENDE = ("geplant", "liest", "korrigieren", "uebergeben", "fertig")
 
@@ -376,6 +377,21 @@ def lauf(runde_id):
     for s in list(con.execute(
             "SELECT * FROM auftrag_seite WHERE auftrag=? AND stand<>'fertig' "
             "ORDER BY bild", (aid,))):
+        # Der Deckel gilt je Seite, nicht nur je Runde. Sonst waere er bei
+        # einer Tranche von zwanzig Seiten wirkungslos: Geprueft wurde beim
+        # Planen, gelesen wird zwanzigmal. Die restlichen Seiten bleiben
+        # 'wartet', damit ein spaeterer Lauf sie nachholt, sobald der
+        # Betreiber den Deckel anhebt - derselbe Weg wie bei der Quelle
+        # 'datei'. Ueberschritten wird um hoechstens eine Seite, weil erst
+        # der verbuchte Verbrauch zaehlt und nicht der erwartete.
+        ok, meldung = kontingent.frei(con, quelle)
+        if not ok:
+            con.execute("UPDATE auftrag_seite SET stand='wartet', meldung=? "
+                        "WHERE auftrag=? AND stand<>'fertig'",
+                        (meldung[:400], aid))
+            con.commit()
+            break
+
         bild = s["bild"]
         con.execute("UPDATE auftrag_seite SET stand='laeuft' WHERE id=?", (s["id"],))
         con.execute("UPDATE auftrag SET aktuell=? WHERE id=?", (bild, aid))

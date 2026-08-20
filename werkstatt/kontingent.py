@@ -5,9 +5,18 @@
     python3 -m werkstatt.einstellungen --setze ki.budget_dollar 5
 
 Die Einstellung `ki.budget_dollar` deckelt, was das Modell in dieser
-Instanz lesen darf. Geprüft wird **vor** dem Planen und Lesen gegen die
-Summe der verbuchten Auftragskosten (`auftrag.dollar`) – gemessen, nicht
-geschätzt, dieselbe Quelle wie die Verbrauchsanzeige im Zahnrad.
+Instanz lesen darf. Geprüft wird gegen die Summe der verbuchten
+Auftragskosten (`auftrag.dollar`) – gemessen, nicht geschätzt, dieselbe
+Quelle wie die Verbrauchsanzeige im Zahnrad.
+
+Geprüft wird an zwei Stellen: **vor** dem Planen und Lesen, und noch
+einmal **vor jeder einzelnen Seite** im Läufer. Nur die erste Prüfung
+wäre wirkungslos, sobald eine Runde mehrere Seiten umfasst – geprüft
+würde einmal, gelesen zwanzigmal. Reißt der Deckel mitten in einer
+Runde, bleiben die restlichen Seiten `wartet`; ein späterer Lauf holt
+sie nach, sobald der Deckel angehoben ist. Überschritten wird um
+höchstens eine Seite, weil der verbuchte Verbrauch zählt und nicht der
+erwartete.
 
 Der Weg über das Abonnement (`quelle='datei'`) zählt mit: `claude -p`
 meldet den Gegenwert selbst, und in einer gehosteten Instanz läuft er
