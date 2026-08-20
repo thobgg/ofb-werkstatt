@@ -16,7 +16,6 @@ einem Lauf gegen ein reiches Ortsfamilienbuch mit 4.111 Personen.
    gefragt wird und wie**
 2. `doku/ansatz.md` – Begründung aller Entwurfsentscheidungen, mit Messwerten
 3. `doku/verknuepfung.md` – die Kaskade je Aktart, der anspruchsvollste Teil
-4. `doku/naechste-sitzung.md` – Stand und offene Punkte
 
 ## Die drei Regeln der Zusammenarbeit
 
@@ -37,7 +36,7 @@ werkstatt/     Paket: db, konfig, suche, import_gedcom, raster, klassen, web/
 konfig.toml      Registerarten, Felder, Vorbelegungen – alles Ortsspezifische
 bilder/{ehe,taufe,tod}/   Scans je Aktart (nie einchecken)
 daten/           erfassung.sqlite (nie einchecken)
-doku/            ansatz.md, naechste-sitzung.md
+doku/            ansatz.md, landkarte.md, verknuepfung.md
 start.py         python3 start.py → http://127.0.0.1:8765
 ```
 
@@ -88,7 +87,7 @@ Klon (git ls-files ist die Quelle von Probelauf und Demo-Bau).
 | Bestand: Person, Elternehe, Beruf | vorhandenes GEDCOM | sofort |
 | Verweise zwischen Tauf-, Ehe- und Totenregister | mehrere Register | nach Jahrgängen |
 
-## Zwei Betriebsarten, beide gleichwertig (Thomas, 18. August)
+## Zwei Betriebsarten, beide gleichwertig
 
 Die Werkstatt muss **allein betreibbar** bleiben (lokale Webapp:
 `python3 start.py`, eine Person, ihre Parochie, kein Login, kein Docker)

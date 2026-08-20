@@ -1,6 +1,6 @@
 # Das Admin-Portal: Betreiber-Handgriffe im Browser
 
-Stufe 5 des Mehrbenutzer-Bauplans (`naechste-sitzung.md`). Eine eigene
+Stufe 5 des Mehrbenutzer-Bauplans. Eine eigene
 kleine App auf dem Wirt – eigener Port, eigenes Passwort, kein Login in
 die Instanzen. Sie arbeitet über das **Dateisystem** der
 Instanzverzeichnisse; wer eine Parochie kompromittiert, hat weiterhin

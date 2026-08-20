@@ -45,3 +45,9 @@ venv/
 .env
 konfig.local.toml
 .DS_Store
+
+# Arbeitsdateien: lokal wichtig, gehoeren nicht ins oeffentliche Repo
+doku/naechste-sitzung.md
+doku/antwort-*.md
+doku/pn-*.md
+doku/forumsbeitrag*.md

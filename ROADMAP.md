@@ -1,8 +1,7 @@
 # Roadmap
 
 Abgeglichen am 15. August 2026 mit dem Stand im README. Die konzeptionellen
-Grundlagen stehen in `doku/ansatz.md` und `doku/verknuepfung.md`; der jeweils
-letzte Arbeitsstand in `doku/naechste-sitzung.md`.
+Grundlagen stehen in `doku/ansatz.md` und `doku/verknuepfung.md`.
 
 ## Was NICHT gebaut wird – weil ofb-ki es hat
 

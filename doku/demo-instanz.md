@@ -57,7 +57,8 @@ schreibt in die Datenbank und stünde sonst jedem Vorbeikommenden offen.
 
 ## Was der Betrieb noch braucht
 
-- **Basic Auth** am Proxy, solange es um Eingeladene geht.
+- **Basic Auth** am Proxy, solange es um einen kleinen Kreis
+  Eingeladener geht.
 - `POST /api/beenden` **sperren** – sonst schaltet der erste Besucher den
   Server ab. Vorschlag: Umgebungsvariable `OFB_DEMO=1`, die den Endpunkt
   verweigert.

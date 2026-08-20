@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Lesen über eine Sitzung statt über die API – ohne zweite Rechnung.
+"""Lesen über eine Sitzung statt über die API.
 
     python3 -m werkstatt.vorlage --lege-vor 3
     python3 -m werkstatt.vorlage --stand 3
 
-Wer ein Claude-Abonnement hat, zahlt für die API ein zweites Mal. Das ist
-der Grund für diese Quelle: Die Werkstatt legt Seiten und Prompt in einen
+Wer ohnehin mit Claude Code arbeitet, braucht für das Lesen keinen eigenen
+API-Schlüssel zu hinterlegen: Die Werkstatt legt Seiten und Prompt in einen
 Ordner, eine Sitzung liest sie, die Werkstatt nimmt die Antworten wieder auf.
 
     Werkstatt legt vor  ──►  ausgabe/lesen/runde-3/

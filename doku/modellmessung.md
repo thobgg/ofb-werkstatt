@@ -1,9 +1,8 @@
 # Modellmessung: Können offene Modelle das Lesen übernehmen?
 
-*Gemessen am 17. August 2026, lokal, ohne GPU. Anlass war die Diskussion
-im CompGen-Forum und die Frage von einem Forumsteilnehmer, ob ein
-gemieteter GPU-Server (Hetzner GEX44, 234 Euro/Monat) für einen
-Vereinsbetrieb sinnvoll wäre. Bis zu dieser Messung stand im README nur:
+*Gemessen am 17. August 2026, lokal, ohne GPU. Anlass war die Frage, ob
+sich ein eigener oder gemieteter GPU-Server für einen Vereinsbetrieb
+lohnt. Bis zu dieser Messung stand im README nur:
 "Ob ein offenes Modell Kurrent brauchbar liest, ist eine Messung und
 keine Meinung." Jetzt liegt die erste Messung vor.*
 
@@ -99,8 +98,8 @@ liest und Ergebnisse samt Laufzeiten ablegt. Erwartete Kosten unter
 5 Euro, Dauer ein bis zwei Stunden.
 
 Erst wenn diese Zahlen vorliegen, ist die Frage nach gekaufter oder
-gemieteter Hardware (GEX44 mit 20 GB trägt bis ~32B; zwei RTX 3090 mit
-48 GB tragen 72B) sinnvoll zu beantworten.
+gemieteter Hardware (20 GB VRAM tragen bis ~32B; 48 GB tragen 72B)
+sinnvoll zu beantworten.
 
 ## Nachtrag: die großen offenen Modelle auf gemieteter GPU (17. August, abends)
 
@@ -130,10 +129,9 @@ Erkenntnisse aus dem GPU-Lauf:
    R statt K. Kein Modellwechsel ersetzt den Beleg-Abgleich.
 
 **Konsequenz für die Vereinsserver-Frage:** Nach diesem Stand lohnt ein
-GPU-Server (GEX44, 2x RTX 3090 oder Vergleichbares) für das *Lesen*
-nicht - die offenen Modelle liefern keine Qualität, die die
-Korrekturarbeit gegenüber Claude aufwiegen würde. Die Messung hat rund
-3 USD gekostet; die Wiederholung mit künftigen Modellgenerationen
+GPU-Server für das *Lesen* nicht - die offenen Modelle liefern keine
+Qualität, die die Korrekturarbeit gegenüber Claude aufwiegen würde. Die
+Messung hat rund 3 USD gekostet; die Wiederholung mit künftigen Modellgenerationen
 kostet dasselbe und ist mit dem Paket in `kraken-experiment/gpu-test/`
 jederzeit reproduzierbar.
 

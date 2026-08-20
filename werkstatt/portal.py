@@ -9,7 +9,7 @@ dem Proxy, eigenes Admin-Passwort. Sie arbeitet über das **Dateisystem**
 der Instanzverzeichnisse – es gibt keinen Superuser-Login in den
 Instanzen; wer eine Parochie kompromittiert, hat weiterhin nur sie.
 
-**Was es kann** (der Bauplan aus doku/naechste-sitzung.md):
+**Was es kann:**
 
     Projektliste       Instanzen mit Stand, aus deren Dateien gelesen
     Neues OFB anlegen  Name, Kontext-GEDCOM, erstes Redakteurskonto ->

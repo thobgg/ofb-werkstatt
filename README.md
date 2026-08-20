@@ -313,7 +313,6 @@ getrennt werden, damit weitere Sprachen möglich sind.
 | `doku/gedcom7-tags.md` | die eigenen Tags des Ortsfamilienbuchs, Ziel der Schema-URIs |
 | `doku/mehrbenutzer.md` | Konten, Rollen, Gastrolle und Hinweis-Stift |
 | `doku/portal.md` | Mehrparochien-Betrieb: Wirt, Portal, Support-Zugang, Sicherung |
-| `doku/naechste-sitzung.md` | Stand und offene Punkte |
 
 Lizenz: MIT.
 
