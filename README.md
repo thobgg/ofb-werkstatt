@@ -284,6 +284,19 @@ bestätigen, `vokabular` rankt nur. Betriebswerte (Seiten je Runde,
 Modell, Plausibilitätsgrenzen) stehen unter **Einstellungen** in der
 Oberfläche.
 
+### Was das Lesen kosten darf
+
+Eine frische Werkstatt liest für höchstens **5 $**, das reicht für rund
+eine Tranche. Danach sperrt sie Planen und Lesen, bis jemand die Grenze
+anhebt; das Feld dafür steht unter **Einstellungen** neben der Modellwahl,
+und `aus` hebt sie ganz auf. Geprüft wird vor jeder einzelnen Seite, nicht
+nur beim Start einer Runde: Bleibt eine Runde an der Grenze stehen, warten
+die restlichen Seiten und werden nachgeholt, sobald wieder Luft ist.
+
+Das ist eine Bremse gegen Versehen, kein Schutz. Wer mit einem eigenen
+Schlüssel arbeitet, setzt das eigentliche Limit **im Konto beim Anbieter**
+– das greift auch dann, wenn hier etwas schiefgeht.
+
 ## Rechtliches
 
 Scans von Archion, Ancestry und ähnlichen Diensten dürfen nicht

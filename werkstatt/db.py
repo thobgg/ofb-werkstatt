@@ -70,10 +70,50 @@ def wandere(con, melde=None):
                 defi = re.sub(r"\bNOT\s+NULL\b", "", defi, flags=re.I).strip()
             con.execute(f"ALTER TABLE {tabelle} ADD COLUMN {spalte} {defi}")
             getan.append(f"{tabelle}.{spalte}")
+    _bestandsschutz_kontingent(con)
     con.commit()
     if getan and melde:
         melde("nachgerüstet: " + ", ".join(getan))
     return getan
+
+
+def _bestandsschutz_kontingent(con):
+    """Wer schon gelesen hat, behält seinen unbegrenzten Stand.
+
+    Der KI-Deckel ist seit August 2026 Opt-out: Ohne Einstellung gilt
+    `kontingent.VORGABE`. Für eine Datenbank, in der schon Aufträge
+    stehen, wäre das eine Grenze, die nie jemand gesetzt hat, und der
+    verbuchte Verbrauch liegt womöglich längst darüber – der nächste Lauf
+    liefe gegen eine Wand. Deshalb bekommen solche Datenbanken `aus`
+    eingetragen, den ausdrücklichen Verzicht auf einen Deckel. Neu
+    angelegte bleiben unberührt und laufen mit der Vorgabe los.
+
+    Läuft bei jeder Verbindung, solange kein Wert dasteht, nicht nur beim
+    ersten Mal. Das ist Absicht: Wer das Feld in der Maske leert, löscht
+    die Zeile, und auf einem Bestand mit Verbrauch soll daraus wieder
+    „kein Deckel" werden und nicht eine Vorgabe, die den Betrieb sperrt.
+    Wer eine Grenze will, trägt eine Zahl ein.
+    """
+    try:
+        da = con.execute(
+            "SELECT 1 FROM einstellung WHERE schluessel=?",
+            ("ki.budget_dollar",)).fetchone()
+        if da:
+            return
+        gelesen = con.execute(
+            "SELECT 1 FROM auftrag WHERE tokens_ein>0 OR dollar>0 "
+            "LIMIT 1").fetchone()
+        if not gelesen:
+            return
+        con.execute(
+            "INSERT INTO einstellung (schluessel, wert, geaendert) "
+            "VALUES (?,?,?)",
+            ("ki.budget_dollar", "aus",
+             datetime.now(timezone.utc).isoformat(timespec="seconds")))
+    except sqlite3.Error:
+        # Frische Datenbank ohne die Tabellen: dann gibt es auch nichts
+        # zu schützen.
+        pass
 
 
 def verbinde():

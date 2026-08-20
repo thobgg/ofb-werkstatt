@@ -1535,14 +1535,24 @@ laden – kein Dateisystem-Zugriff nötig">Scans hochladen</button>`}</td>
    14 MP unlesbar ließ. Der Preis dafür ist klein – 1.600 statt 4.784 Bildtoken
    sind bei Opus 5 rund zwei Cent je Seite.</p>
 
+  <div class=reihe style="margin-top:.9rem">
+   <label class=dim>Kontingent</label>
+   <input type=text value="${E.ki.budget_dollar!=null
+       ? E.ki.budget_dollar.toFixed(2) : 'aus'}" style=width:6rem
+    onchange="merken('ki.budget_dollar',this.value)">
+   <span class=dim>$ für diese Instanz, <code>aus</code> hebt die Grenze auf</span>
+  </div>
   ${E.ki.budget_dollar!=null
-    ? `<p style="font-size:.88rem;margin:.9rem 0 0
+    ? `<p style="font-size:.88rem;margin:.5rem 0 0
         ${E.ki.budget_verbraucht>=E.ki.budget_dollar?';color:#e06c5f':''}">
-        KI-Kontingent: <b>${E.ki.budget_verbraucht.toFixed(2)} $</b> von
-        <b>${E.ki.budget_dollar.toFixed(2)} $</b> verbraucht
-        <span class=dim>– gesetzt vom Betreiber (ki.budget_dollar);
-        erschöpft sperrt es Planen und Lesen.</span></p>`
-    : ''}
+        Davon verbraucht: <b>${E.ki.budget_verbraucht.toFixed(2)} $</b>
+        <span class=dim>– erschöpft sperrt es Planen und Lesen, auch mitten
+        in einer Runde. Die restlichen Seiten bleiben stehen und werden
+        nachgeholt, sobald die Grenze steigt.</span></p>`
+    : `<p class=dim style="font-size:.88rem;margin:.5rem 0 0">
+        Ohne Grenze. Bisher verbraucht:
+        <b>${E.ki.budget_verbraucht.toFixed(2)} $</b>. Ein Ausgabenlimit im
+        Konto beim Anbieter wirkt zuverlässiger als jede Einstellung hier.</p>`}
   ${(E.ki.verbrauch.wege||[]).length
     ? `<table style="margin-top:.9rem">
         <tr><th>Weg</th><th class=z>Seiten</th><th class=z>Token ein</th>

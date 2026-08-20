@@ -23,22 +23,53 @@ meldet den Gegenwert selbst, und in einer gehosteten Instanz läuft er
 über das Konto des Betreibers. Die Testdaten zählen nicht – sie kosten
 nichts und sollen nie an einem Deckel scheitern.
 
-Keine Einstellung = kein Deckel. Der Einzelplatz des README merkt von
-alledem nichts; gesetzt wird der Wert vom Betreiber über das Portal oder
-von Hand über `ki.budget_dollar`.
+**Der Deckel ist Opt-out, nicht Opt-in.** Eine frische Datenbank läuft
+mit `VORGABE` los; wer mehr will, hebt ihn an, und wer gar keinen will,
+leert das Feld. Vorher galt das Umgekehrte: keine Einstellung, kein
+Deckel. Das ist der falsche Auslieferungszustand für etwas, das mit dem
+Schlüssel eines anderen Geld ausgibt, denn der Schutz fehlt genau dem,
+der ihn am nötigsten hat, nämlich dem, der die Werkstatt zum ersten Mal
+startet.
+
+Die Vorgabe deckt rund eine Tranche ab (20 Seiten zu etwa 0,24 $). Die
+erste Runde läuft also durch, die zweite verlangt eine bewusste
+Entscheidung.
+
+Datenbanken, die schon gelesen haben, sind ausgenommen: `db.wandere()`
+trägt ihnen einmalig den leeren Wert ein. Sonst würde eine Vorgabe
+greifen, die nie jemand gesetzt hat, und einen laufenden Bestand
+aussperren.
 """
 from . import einstellungen, lesen
 
 SCHLUESSEL = "ki.budget_dollar"
+VORGABE = 5.0
+# Abschalten braucht ein Wort, keine leere Eingabe: Die Einstellungsmaske
+# löscht leere Werte aus der Tabelle, und eine fehlende Zeile heißt hier
+# „nie entschieden", also Vorgabe. Wer keinen Deckel will, schreibt es hin.
+AUS = ("aus", "kein", "keiner", "unbegrenzt", "")
 
 
 def budget(con):
-    """Der Deckel in Dollar – None, wenn keiner gesetzt ist."""
-    w = einstellungen.wert(con, SCHLUESSEL)
-    try:
-        return float(str(w).replace(",", ".")) if w not in (None, "") else None
-    except ValueError:
+    """Der Deckel in Dollar – None, wenn ausdrücklich keiner gilt.
+
+    Direkt in die Tabelle statt über `einstellungen.wert()`: Dort gilt ein
+    leerer Wert als „nicht gesetzt". Hier ist er die ausdrückliche
+    Abschaltung, und der Unterschied trägt die ganze Entscheidung – „noch
+    nie entschieden" heißt Vorgabe, „bewusst geleert" heißt kein Deckel.
+    """
+    r = con.execute("SELECT wert FROM einstellung WHERE schluessel=?",
+                    (SCHLUESSEL,)).fetchone()
+    if r is None or r[0] is None:     # nie gesetzt: die Vorgabe gilt
+        return VORGABE
+    w = str(r[0]).strip().lower()
+    if w in AUS:                      # ausdrücklich abgeschaltet
         return None
+    try:
+        return float(w.replace(",", "."))
+    except ValueError:
+        # Ein Tippfehler darf den Schutz nicht abschalten.
+        return VORGABE
 
 
 def verbraucht(con):
