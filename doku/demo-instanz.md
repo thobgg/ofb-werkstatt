@@ -29,6 +29,32 @@ unberührt und läuft weiter.
 Aufruf spielt sie zurück. Stündlich per cron, sonst hat der zweite
 Besucher die Korrekturen des ersten vor sich.
 
+## Nachtrag 18. August: Zuschauen ohne Passwort
+
+Gemessen an der Wirklichkeit: Mehrere Besucher haben die Instanz
+aufgerufen und bei der Passwortabfrage wieder aufgelegt, statt nach dem
+Passwort zu fragen – die Hemmschwelle war höher als die Neugier. Für ein
+Schaustück ist eine Tür, hinter der man nichts erkennen kann, die
+falsche Tür.
+
+Seither gilt: **Zuschauen ohne Passwort, Mitarbeiten mit.**
+Eingeschaltet über `OFB_DEMO_OFFEN=1` (Umgebung) oder die Datei
+`daten/demo-offen`; ohne den Schalter bleibt alles wie zuvor.
+
+    lesen (GET)     ohne Anmeldung – Seiten, Bildstreifen, Ampel,
+                    Belege, Übergabe-Probelauf, GEDCOM-Vorschau
+    ändern (POST)   401 – Korrigieren, Bestätigen, Übergeben,
+                    Ausgeben, Hinweis-Stift
+    /stats          401 – das Zugriffslog geht Besucher nichts an
+
+Die Oberfläche sagt es oben in einem Band („Sie schauen zu …") und
+schaltet alle Bedienelemente ab; der Link *anmelden* führt auf
+`/anmelden`, das für Zuschauer 401 liefert und damit die Passwortabfrage
+auslöst – ein `fetch` täte das nicht, eine Navigation schon.
+
+Der Hinweis-Stift bleibt dem angemeldeten Zugang vorbehalten: Er
+schreibt in die Datenbank und stünde sonst jedem Vorbeikommenden offen.
+
 ## Was der Betrieb noch braucht
 
 - **Basic Auth** am Proxy, solange es um Eingeladene geht.

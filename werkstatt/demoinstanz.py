@@ -286,10 +286,16 @@ STARTEN = """#!/bin/sh
 # OFB_DEMO_PASSWORT setzt das gemeinsame Passwort der Eingeladenen;
 # gesetzt lassen, ungesetzt ist die Instanz offen.
 #
+# OFB_DEMO_OFFEN=1 laesst Fremde ohne Passwort ZUSCHAUEN (lesen), waehrend
+# Aendern, Lesenlassen und Uebergeben am Passwort haengen. Gebaut, weil
+# viele Besucher an der Passwortabfrage wieder abgesprungen sind, statt
+# nach dem Passwort zu fragen. Dasselbe schaltet die Datei
+# daten/demo-offen - praktisch, wenn gerade kein Compose zur Hand ist.
+#
 # Gehört bleibt 127.0.0.1. Nach außen kommt die Instanz nur über den
 # Reverse Proxy.
 cd "$(dirname "$0")" || exit 1
-exec env -u ANTHROPIC_API_KEY OFB_DEMO=1 \\
+exec env -u ANTHROPIC_API_KEY OFB_DEMO=1 OFB_DEMO_OFFEN=1 \\
      python3 start.py --port {port} --kein-browser
 """
 
@@ -352,6 +358,8 @@ services:
     network_mode: host
     environment:
       OFB_DEMO_PASSWORT: "HIER-PASSWORT-EINTRAGEN"
+      # Zuschauen ohne Passwort; Mitarbeiten braucht es weiterhin.
+      OFB_DEMO_OFFEN: "1"
     restart: unless-stopped
 
   # Der stündliche Rücksetzer, im selben Verzeichnis. Kein Aufgabenplaner
@@ -424,7 +432,11 @@ Reverse Proxy im DSM (Systemsteuerung → Anmeldeportal → Erweitert):
 Das Zugangskontrollprofil bleibt „Nicht konfiguriert" – es kann nur
 IP-Filter, keine Passwörter. Die Anmeldung macht die Werkstatt selbst:
 `OFB_DEMO_PASSWORT` in `compose.yaml` ist das gemeinsame Passwort der
-Eingeladenen (Benutzername im Anmeldefenster ist egal). In den
+Eingeladenen (Benutzername im Anmeldefenster ist egal). Mit
+`OFB_DEMO_OFFEN: "1"` daneben darf jeder **zuschauen**, ohne sich
+anzumelden – Seitenbilder, Ampel, Belege, GEDCOM-Ausgabe sind zu
+sehen, alles Ändernde bleibt hinter dem Passwort. Ohne diesen Schalter
+verhält sich die Instanz wie früher. In den
 erweiterten Einstellungen des Proxys den **Proxy-Timeout auf 300 s**
 stellen: Übergeben und Ausgeben rechnen über den ganzen Bestand und
 brauchen bei größeren Runden mehr als die üblichen 60 Sekunden.
@@ -457,6 +469,12 @@ systemd-Unit setzen); ungesetzt ist die Instanz offen.
 - `POST /api/beenden`
 - Endpunkte, die einen Dateipfad vom Besucher entgegennehmen:
   `quelle`, `entpacken`, `einrichten`
+
+**Zuschauen ohne Passwort** (`OFB_DEMO_OFFEN=1` oder die Datei
+`daten/demo-offen`): Lesende Aufrufe gehen ohne Anmeldung durch, die
+Oberfläche sagt oben, dass man zuschaut, und alle Bedienelemente sind
+abgeschaltet. `POST` und `/stats` verlangen weiterhin das Passwort;
+über den Link *anmelden* kommt man zur Passwortabfrage.
 
 Offen bleibt die Arbeit, die vorgeführt werden soll: Korrigieren,
 Aktkarte, Dubletten, Perioden, Übergeben, Ausgeben. Alles davon fasst

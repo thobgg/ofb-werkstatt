@@ -166,6 +166,31 @@ async function laden(){
  if(P==='/lesen' && !S.runde && document.getElementById('reg')){
   document.getElementById('reg').onchange=quelleGewaehlt; quelleGewaehlt();}
  if(document.getElementById('hinweisliste')) hinweiseLaden();
+ schauModus();
+}
+
+// ---------------------------------------------------- Zuschauen
+// In der Vorführinstanz darf man ohne Passwort lesen. Alles, was
+// schreibt, liest lassen oder Geld kostet, ist dann aus - der Server
+// verweigert es ohnehin, und ein Knopf, der beim Drücken nach einem
+// Passwort fragt, ist eine Falle. Oben steht stattdessen, wie man
+// mitmacht.
+function schauModus(){
+ if(!S || S.rolle!=='schau') return;
+ document.querySelectorAll('#app button, #app input, #app select, #app textarea')
+   .forEach(el=>el.disabled=true);
+ if(document.getElementById('schaubanner')) return;
+ const d=document.createElement('div');
+ d.id='schaubanner'; d.className='warn';
+ d.style.background='#13263a'; d.style.borderColor='#2f4260';
+ d.style.color='#c3d3ea';
+ d.innerHTML='<b>Sie schauen zu.</b> Alles ist zu sehen – Seitenbilder, '
+  +'Ampel, Belege, die fertige GEDCOM-Ausgabe. Ändern, Lesen lassen und '
+  +'Übergeben sind dem angemeldeten Zugang vorbehalten: '
+  +'<a href="/anmelden" style=color:#7fb0ff>anmelden</a> '
+  +'<span class=dim>(Benutzername beliebig; das Passwort gibt es auf '
+  +'Anfrage – im Forum oder per Nachricht)</span>.';
+ document.getElementById('app').before(d);
 }
 
 // ------------------------------------------------------- Hinweis-Stift
@@ -1386,6 +1411,7 @@ async function feldDazu(btn){
 function neuZeichnen(){
  document.getElementById('app').innerHTML =
    P==='/formular' ? ansichtFormular() : ansichtEinstellungen();
+ schauModus();
  quelleArt();
 }
 

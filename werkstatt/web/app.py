@@ -124,6 +124,25 @@ GESPERRT = {
 _PASSWORT = os.environ.get("OFB_DEMO_PASSWORT", "")
 
 
+def _offen():
+    """Darf man in der Vorführinstanz auch ohne Passwort zuschauen?
+
+    Gemessen an der Wirklichkeit: Viele haben die Instanz aufgerufen und
+    bei der Passwortabfrage wieder aufgelegt, statt nach dem Passwort zu
+    fragen. Eine Tür, hinter der man nichts erkennen kann, ist für ein
+    Schaustück die falsche Tür.
+
+    Also: **Schauen ohne Passwort, Mitmachen mit.** Wer nur liest,
+    braucht nichts; wer korrigiert, übergibt oder ausgibt, bekommt die
+    Anmeldung vorgelegt.
+
+    Zwei Wege, den Schalter zu legen - Umgebung für den Container,
+    Marker-Datei für den, der gerade kein Compose bearbeiten kann.
+    """
+    return (os.environ.get("OFB_DEMO_OFFEN", "") == "1"
+            or (ROOT / "daten" / "demo-offen").exists())
+
+
 def verbinde():
     con = sqlite3.connect(DB, timeout=10)
     con.row_factory = sqlite3.Row
@@ -203,7 +222,18 @@ class Handler(BaseHTTPRequestHandler):
             elif hmac.compare_digest(kennwort, _PASSWORT):
                 self.rolle = "gast"
                 return True
-        body = "Zugang nur mit Passwort.".encode("utf-8")
+        # Schauen ohne Passwort: Lesen ja, Ändern nein. Der Zuschauer
+        # bekommt die Rolle 'schau'; sobald er etwas tun will, verlangt
+        # do_POST die Anmeldung. /stats bleibt außen vor - das
+        # Zugriffslog geht Besucher nichts an.
+        if (konfig.demo() and not konten and _offen()
+                and self.command == "GET"
+                and urllib.parse.urlparse(self.path).path
+                not in ("/stats", "/anmelden")):
+            self.rolle = "schau"
+            return True
+        body = ("Zum Mitarbeiten anmelden - Benutzername beliebig, "
+                "Passwort auf Anfrage.").encode("utf-8")
         self.send_response(401)
         self.send_header("WWW-Authenticate", 'Basic realm="OFB-Werkstatt"')
         self.send_header("Content-Type", "text/plain; charset=utf-8")
@@ -402,6 +432,17 @@ class Handler(BaseHTTPRequestHandler):
                 "color:#ddd;font:14px/1.5 monospace;padding:2rem'>"
                 f"<h3>Vorführinstanz: Zugriffe</h3><pre>{puffer.getvalue()}"
                 "</pre></body></html>")
+        if pfad == "/anmelden":
+            # Hierher kommt nur, wer die Anmeldung schon hinter sich hat
+            # (`_zutritt` nimmt diesen Pfad vom Zuschauen aus). Der Knopf
+            # „Anmelden" in der Oberfläche zeigt hierhin, weil ein
+            # `fetch` keinen Passwortdialog auslöst, eine Navigation aber
+            # schon. Danach zurück auf die Startseite.
+            self.send_response(303)
+            self.send_header("Location", "/")
+            self.send_header("Content-Length", "0")
+            self.end_headers()
+            return
         if pfad == "/korrektur":
             return self._send(200, "text/html; charset=utf-8",
                               _nur_lokal(SEITE))

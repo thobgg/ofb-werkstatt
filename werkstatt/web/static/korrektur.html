@@ -246,7 +246,7 @@ let daten=[],fokus=0;
 const esc=s=>(s??'').toString().replace(/[&<>"]/g,c=>
  ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
-let runde=null, i=0, liste=false, gast=false, redakteur=false;
+let runde=null, i=0, liste=false, gast=false, redakteur=false, schau=false;
 
 // ------------------------------------------------------------- Aufwand
 // Der ehrlichere Massstab als eine Trefferquote: Eine Quote misst das
@@ -279,7 +279,11 @@ async function laden(){
  // Der Konten-Gast liest nur; sein Werkzeug ist der Hinweis-Stift. Der
  // Demo-Gast (Passwort ohne Konto, nutzer bleibt leer) probiert wie
  // bisher alles aus.
- gast = stand.rolle==='gast' && !!stand.nutzer;
+ // 'schau' ist der Zuschauer ohne Passwort in der Vorführinstanz:
+ // liest alles, ändert nichts, hat auch keinen Hinweis-Stift (der
+ // schriebe in die Datenbank und stünde jedem Vorbeikommenden offen).
+ schau = stand.rolle==='schau';
+ gast = schau || (stand.rolle==='gast' && !!stand.nutzer);
  redakteur = stand.rolle==='redakteur' || stand.rolle==='allein';
  runde=stand.runde;
  // Seit dem Mehrbenutzerbetrieb kann je Register eine Runde offen sein;
@@ -352,9 +356,9 @@ function karte(e,k){
    ${gast?'':`<button onclick="nochmalLesen(${k},this)"
      title="dieselbe Zeile ein zweites Mal lesen lassen und vergleichen"
      >nochmal lesen</button>`}
-   <button data-gast-ok onclick="hinweisGeben(${k})"
+   ${schau?'':`<button data-gast-ok onclick="hinweisGeben(${k})"
      title="dem Redakteur eine Anmerkung zu diesem Eintrag hinterlassen –
-ändert nichts an den Daten">✎ Hinweis</button>
+ändert nichts an den Daten">✎ Hinweis</button>`}
    <span class=zaehler>${liste?esc(e.status):`Eintrag ${k+1} von ${daten.length}`}</span></div>
   ${(e.hinweise||[]).length?`<div class=hinweise>${e.hinweise.map(h=>`
     <div class="h${h.erledigt?' erl':''}"><span>✎ ${esc(h.text)}</span>
@@ -412,7 +416,10 @@ function karte(e,k){
    <div class=zh>Antwortet mit Eintrag, Bildausschnitt und Bestandstreffern
     vor Augen. Ändert nichts – eintragen tust du selbst.</div>
   </div>
-  <div class=fuss>${gast
+  <div class=fuss>${schau
+    ?`<span class=zaehler>Sie schauen zu – zum Mitarbeiten
+       <a href="/anmelden" style=color:#7fb0ff>anmelden</a></span>`
+    :gast
     ?`<span class=zaehler>Nur-Lesen-Zugang – Anmerkungen über ✎ Hinweis</span>`
     :`<button class=ja onclick="fertig(${k})">Fertig · weiter</button>
       <span class=zaehler>Strg+Enter</span>`}
