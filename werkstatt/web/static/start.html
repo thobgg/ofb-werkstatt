@@ -102,6 +102,18 @@ code{font-family:ui-monospace,monospace;font-size:.86em;background:#12141a;
 input{background:#12141a;border:1px solid #333a45;color:#e6e8ec;border-radius:6px;
  padding:.35rem .5rem;font:inherit}
 label input[type=radio]{margin-right:.4rem}
+/* Seitenende: Urheber, Lizenz und Kontakt - auf jeder Seite und in jeder
+   Rolle. Bewusst statisches Markup und nicht aus /api/einstellungen
+   gespeist: Die Angaben gab es schon, aber nur in der Ueber-Ansicht
+   hinter dem Zahnrad, wo ein Besucher sie nicht sucht. Was hier steht,
+   kann nicht verschwinden, weil sich an einem Endpunkt etwas aendert. */
+footer{max-width:1100px;margin:2.6rem auto 0;padding:.9rem 1.2rem 1.6rem;
+ border-top:1px solid #2c313a;display:flex;flex-wrap:wrap;
+ gap:.25rem .85rem;font-size:.78rem;color:#6f7887}
+footer a{color:#9aa3b2;text-decoration:none}
+footer a:hover{color:#e6e8ec;text-decoration:underline}
+footer a:focus-visible{outline:2px solid #2f6fdd;outline-offset:2px;
+ border-radius:3px}
 </style></head><body>
 <header><span class=logo title="Kurrent-Initial aus Eheeintrag Nr. 1 (1808) – der Zeile, an der die Werkstatt ihre Arbeit zeigt.">
  <!-- Das Logo ist echte Kurrent: ein Initial aus der Elternzeile des
@@ -121,6 +133,13 @@ label input[type=radio]{margin-right:.4rem}
  <!--nur-lokal--><a href="#" onclick="beenden();return false" title="Werkstatt beenden"
     style="font-size:1.05rem">⏻</a><!--/nur-lokal--></header>
 <main id=app class=leer>lade…</main>
+<footer>
+ <span>OFB-Werkstatt · MIT-Lizenz</span>
+ <span>Thomas Bugge ·
+  <a href="mailto:thomas@bgg-mail.de">thomas@bgg-mail.de</a></span>
+ <a href="https://github.com/thobgg/ofb-werkstatt"
+    target="_blank" rel="noopener">Quelltext</a>
+</footer>
 <script>
 const esc=s=>(s??'').toString().replace(/[&<>"]/g,c=>
  ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
