@@ -32,8 +32,7 @@ zur Bestätigung vor.
 ## Gebaut für eine Parochie
 
 Die Werkstatt ist für **eine Parochie in Eigenregie** gebaut:
-`python3 start.py`, kein Login, kein Docker, kein Hosting. Das ist keine
-Sparfassung, sondern die Bauform, die zur Sache passt. Ein
+`python3 start.py`, kein Login, kein Docker, kein Hosting. Ein
 Ortsfamilienbuch entsteht dadurch, dass **jeder neue Eintrag gegen den
 schon vorhandenen Bestand abgeglichen wird**; die ersten hundert tragen
 die nächsten tausend. Wer die Register aufteilt und die Ergebnisse
