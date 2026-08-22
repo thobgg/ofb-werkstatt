@@ -43,7 +43,7 @@ Login. Je neuem OFB bleiben zwei Handgriffe: der Klick im Portal (die
 Instanz startet dabei gleich mit) und eine Proxy-Zeile.
 
 Start, Stopp und Neustart je Parochie sind Knöpfe im Portal
-(`werkstatt/wirt.py` überwacht die Prozesse und startet Abgestürzte
+(`werkstatt/verein/wirt.py` überwacht die Prozesse und startet Abgestürzte
 neu). Wer Instanzen lieber als eigene Container fährt, startet das
 Portal mit `--ohne-instanzen` und nutzt je Instanz deren
 `betrieb/compose.yaml` - der Wirt erkennt belegte Ports und lässt
@@ -52,8 +52,8 @@ solche Instanzen in Ruhe.
 ## Starten
 
 ```sh
-OFB_PORTAL_PASSWORT=... python3 -m werkstatt.portal
-OFB_PORTAL_PASSWORT=... python3 -m werkstatt.portal --wurzel ~/ofb-instanzen --port 8767
+OFB_PORTAL_PASSWORT=... python3 -m werkstatt.verein.portal
+OFB_PORTAL_PASSWORT=... python3 -m werkstatt.verein.portal --wurzel ~/ofb-instanzen --port 8767
 ```
 
 Ohne Passwort startet es nicht – das Portal legt Konten und Projekte
@@ -70,7 +70,7 @@ offene Runden, letzter Zugriff, Konten, Verbrauch gegen Kontingent.
 **Neues OFB anlegen.** Name, Kontext-GEDCOM (Upload, wird als
 `beleg` eingelesen), erstes Redakteurskonto – Pflicht, sonst ginge die
 Instanz ohne Anmeldung hinter den Proxy. Provisioniert wird über
-`werkstatt/instanz.py`: Klon aus `git ls-files`, kurz gestartet und
+`werkstatt/verein/instanz.py`: Klon aus `git ls-files`, kurz gestartet und
 über die eigene Web-Schnittstelle eingerichtet (derselbe Weg, den der
 Browser nimmt), dann `daten/nutzer.txt` und Betriebsdateien mit
 eigenem Port. Ports: 8765 Arbeitsplatz, 8766 Vorführinstanz, 8767
@@ -80,8 +80,8 @@ Redakteur seine Instanz selbst im Zahnrad.
 Von der Kommandozeile geht dasselbe:
 
 ```sh
-python3 -m werkstatt.instanz --neu Neipperg --gedcom bestand.ged --redakteur maria
-python3 -m werkstatt.instanz --liste
+python3 -m werkstatt.verein.instanz --neu Neipperg --gedcom bestand.ged --redakteur maria
+python3 -m werkstatt.verein.instanz --liste
 ```
 
 **Nutzerverwaltung je Projekt.** Bearbeitet die `nutzer.txt` der
@@ -161,13 +161,13 @@ gehört regelmäßig weg vom Wirt (Download genügt).
 
 Die Scans sind nicht enthalten (groß, liegen beim Bearbeiter oder
 kommen per Upload wieder); wer sie mitsichern will:
-`python3 -m werkstatt.sicherung --mit-bildern` in der Instanz.
+`python3 -m werkstatt.verein.sicherung --mit-bildern` in der Instanz.
 
 **Wiederherstellen** ist bewusst kein Knopf, sondern Kommandozeile mit
 Rückfrage - es überschreibt den aktuellen Stand:
 
 ```sh
-python3 -m werkstatt.sicherung --wiederherstellen sicherungen/NAME.zip
+python3 -m werkstatt.verein.sicherung --wiederherstellen sicherungen/NAME.zip
 ```
 
 Die laufende Datenbank bleibt dabei als `.vorher` liegen, ein

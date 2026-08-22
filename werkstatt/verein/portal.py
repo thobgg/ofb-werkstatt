@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Das Admin-Portal des Wirts – Betreiber-Handgriffe im Browser.
 
-    OFB_PORTAL_PASSWORT=... python3 -m werkstatt.portal
-    OFB_PORTAL_PASSWORT=... python3 -m werkstatt.portal --wurzel ~/ofb-instanzen --port 8767
+    OFB_PORTAL_PASSWORT=... python3 -m werkstatt.verein.portal
+    OFB_PORTAL_PASSWORT=... python3 -m werkstatt.verein.portal --wurzel ~/ofb-instanzen --port 8767
 
 **Was es ist.** Eine eigene kleine App auf dem Wirt, eigener Port hinter
 dem Proxy, eigenes Admin-Passwort. Sie arbeitet über das **Dateisystem**
@@ -13,7 +13,7 @@ Instanzen; wer eine Parochie kompromittiert, hat weiterhin nur sie.
 
     Projektliste       Instanzen mit Stand, aus deren Dateien gelesen
     Neues OFB anlegen  Name, Kontext-GEDCOM, erstes Redakteurskonto ->
-                       werkstatt.instanz provisioniert
+                       werkstatt.verein.instanz provisioniert
     Nutzerverwaltung   bearbeitet die nutzer.txt der Instanz - dieselbe
                        Datei wie der Zahnrad-Reiter des Redakteurs
     KI-Kontingent      setzt ki.budget_dollar in der Instanz-Datenbank;
@@ -40,11 +40,12 @@ from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-from . import einstellungen, instanz, kontingent, sicherung, wirt
-from . import nutzer as _nutzer
+from .. import einstellungen, kontingent
+from . import instanz, sicherung, wirt
+from .. import nutzer as _nutzer
 
 PORT = 8767
-SEITE = (Path(__file__).resolve().parent / "web" / "static"
+SEITE = (Path(__file__).resolve().parent.parent / "web" / "static"
          / "portal.html").read_text(encoding="utf-8")
 
 WURZEL = instanz.WURZEL
@@ -135,7 +136,7 @@ class Handler(BaseHTTPRequestHandler):
             # Gestaltungsdateien (Kurrent-Schriftband) - nur Dateinamen,
             # nur Bildformate, derselbe Bestand wie in der Instanz.
             name = Path(urllib.parse.unquote(pfad[len("/static/"):])).name
-            ziel = (Path(__file__).resolve().parent / "web" / "static"
+            ziel = (Path(__file__).resolve().parent.parent / "web" / "static"
                     / name)
             if (ziel.suffix.lower() in (".png", ".svg", ".webp")
                     and ziel.is_file()):
@@ -196,7 +197,7 @@ class Handler(BaseHTTPRequestHandler):
             # den Instanzordner kopieren (nur getrackte Dateien - die
             # Daten der Instanz stehen nicht im Git und bleiben
             # unberührt), dann neu starten.
-            from .klon import baue
+            from ..klon import baue
             d = self._rumpf()
             p = _projekt_pfad(d.get("projekt") or "")
             if not p:
@@ -457,7 +458,7 @@ def main():
         raise SystemExit(
             "OFB_PORTAL_PASSWORT ist nicht gesetzt.\nDas Portal legt "
             "Projekte und Konten an - ohne eigenes Passwort startet es "
-            "nicht.\n  OFB_PORTAL_PASSWORT=... python3 -m werkstatt.portal")
+            "nicht.\n  OFB_PORTAL_PASSWORT=... python3 -m werkstatt.verein.portal")
     WURZEL.mkdir(parents=True, exist_ok=True)
     # SIGTERM (docker stop, kill) soll denselben Weg gehen wie Strg-C -
     # sonst überleben die Instanz-Prozesse das Portal als Waisen.

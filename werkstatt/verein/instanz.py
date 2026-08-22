@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Eine neue OFB-Instanz anlegen – Stufe 5 des Mehrbenutzer-Bauplans.
 
-    python3 -m werkstatt.instanz --neu Neipperg
-    python3 -m werkstatt.instanz --neu Neipperg --gedcom bestand.ged \\
+    python3 -m werkstatt.verein.instanz --neu Neipperg
+    python3 -m werkstatt.verein.instanz --neu Neipperg --gedcom bestand.ged \\
         --redakteur maria --passwort ...
-    python3 -m werkstatt.instanz --liste
+    python3 -m werkstatt.verein.instanz --liste
 
 **Wozu.** „Projekt anlegen" ist Provisionierung, kein Datenmodell: je
 Parochie eine eigene Instanz mit eigener Datenbank und eigenem Container
@@ -33,8 +33,8 @@ import time
 import tomllib
 from pathlib import Path
 
-from . import nutzer as _nutzer
-from .klon import Maske, ausnahmen, baue, frei, warte
+from .. import nutzer as _nutzer
+from ..klon import Maske, ausnahmen, baue, frei, warte
 
 WURZEL = Path("~/ofb-instanzen").expanduser()
 REGISTER = ("taufe", "ehe", "tod")
@@ -218,7 +218,7 @@ def stand(ziel):
             d["runden"] = [dict(r) for r in con.execute(
                 "SELECT nr, register, stand, seiten FROM runde "
                 "WHERE stand<>'fertig' ORDER BY nr")]
-            from . import kontingent
+            from .. import kontingent
             d["budget_dollar"] = kontingent.budget(con)
             d["verbraucht_dollar"] = kontingent.verbraucht(con)
         finally:
@@ -276,7 +276,7 @@ services:
 
 LIESMICH = """# Instanz {name}
 
-Angelegt von `python3 -m werkstatt.instanz --neu`. Port: {port}.
+Angelegt von `python3 -m werkstatt.verein.instanz --neu`. Port: {port}.
 
     ./starten.sh                          am Rechner
     cd betrieb && docker compose up -d    im Container

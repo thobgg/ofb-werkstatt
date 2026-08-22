@@ -98,7 +98,7 @@ hier, damit man sie wiederfindet, nicht damit man sie liest:
 | Namen und Formen | `normalform`, `klassen`, `personenzeile`, `randvermerk`, `suche` | wenn der Abgleich danebengreift |
 | Einlesen | `import_gedcom`, `import_wortschatz`, `bestand` | beim Einrichten eines Bestands |
 | Andere Lesewege | `vorlage` (Sitzung), `testdaten`, `nachlesen`, `gespraech` | Alternativen zur API |
-| Mehrbenutzer | `nutzer`, `instanz`, `portal`, `wirt`, `kontingent`, `sicherung`, `zugriffe` | nur im Vereinsbetrieb |
+| Mehrbenutzer | `verein/` (instanz, wirt, portal, sicherung), dazu `nutzer`, `kontingent`, `zugriffe` | nur im Vereinsbetrieb |
 | Demo und Prüfung | `probelauf`, `klon`, `demoinstanz`, `musterbuch`, `auszug`, `pruefung`, `journal` | beim Vorführen und Prüfen |
 
 ## Wo ändere ich was

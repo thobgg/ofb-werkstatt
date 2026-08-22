@@ -15,5 +15,5 @@ RUN apt-get update && apt-get install -y --no-install-recommends git \
     && git config --global --add safe.directory /repo
 WORKDIR /repo
 EXPOSE 8767
-CMD ["python3", "-m", "werkstatt.portal", "--wurzel", "/instanzen", \
+CMD ["python3", "-m", "werkstatt.verein.portal", "--wurzel", "/instanzen", \
      "--port", "8767"]

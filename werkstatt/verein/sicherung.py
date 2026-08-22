@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Sicherung einer Instanz: eine ZIP-Datei mit allem, was Arbeit war.
 
-    python3 -m werkstatt.sicherung                     eigene Instanz
-    python3 -m werkstatt.sicherung --ziel /pfad/ab.zip
-    python3 -m werkstatt.sicherung --wiederherstellen sicherung.zip
+    python3 -m werkstatt.verein.sicherung                     eigene Instanz
+    python3 -m werkstatt.verein.sicherung --ziel /pfad/ab.zip
+    python3 -m werkstatt.verein.sicherung --wiederherstellen sicherung.zip
 
 **Was hinein kommt:** die Datenbank als konsistenter Schnappschuss
 (`Connection.backup()`, nicht Dateikopie - eine offene SQLite-Datei
@@ -129,7 +129,7 @@ def wiederherstellen(wurzel, zip_pfad):
 
 
 def main():
-    from . import konfig
+    from .. import konfig
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--ziel", help="Pfad der ZIP-Datei (sonst "
                     "sicherungen/<name>-<datum>.zip)")
