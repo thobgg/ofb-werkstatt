@@ -1234,7 +1234,7 @@ class Handler(BaseHTTPRequestHandler):
         """Was die Über-Seite zeigt – Stand aus der Datenbank, nicht aus Text.
 
         Zahlenstände gehören in die Datenbank, nicht in Markdown, sonst
-        veralten sie unbemerkt (Regel aus doku/landkarte.md). Das gilt für
+        veralten sie unbemerkt. Das gilt für
         eine Über-Seite genauso.
         """
         import subprocess

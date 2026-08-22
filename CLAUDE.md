@@ -12,10 +12,14 @@ die ersten hundert tragen die nächsten tausend. Zwei der vier Ankertypen
 einem Lauf gegen ein reiches Ortsfamilienbuch mit 4.111 Personen.
 
 **Vor der Arbeit lesen – in dieser Reihenfolge:**
-1. `doku/landkarte.md` – wo liegt was, welcher Bestand gilt wofür, **wann Thomas
-   gefragt wird und wie**
+1. `doku/code.md` – der Weg durch den Code: welche sieben Module die Arbeit
+   tragen, was Zubehör ist, wo man eingreift
 2. `doku/ansatz.md` – Begründung aller Entwurfsentscheidungen, mit Messwerten
 3. `doku/verknuepfung.md` – die Kaskade je Aktart, der anspruchsvollste Teil
+
+Örtliches (Pfade der Bestände, welche Quelle wofür gilt, wann Thomas gefragt
+wird) steht in `doku/landkarte.md`. Die Datei liegt nur lokal: Sie nennt
+Verzeichnisse und Bestände dieses Rechners und gehört niemandem sonst.
 
 ## Die drei Regeln der Zusammenarbeit
 
@@ -36,7 +40,8 @@ werkstatt/     Paket: db, konfig, suche, import_gedcom, raster, klassen, web/
 konfig.toml      Registerarten, Felder, Vorbelegungen – alles Ortsspezifische
 bilder/{ehe,taufe,tod}/   Scans je Aktart (nie einchecken)
 daten/           erfassung.sqlite (nie einchecken)
-doku/            ansatz.md, landkarte.md, verknuepfung.md
+doku/            code.md, ansatz.md, verknuepfung.md
+tests/           schnelle Pruefungen, Standardbibliothek
 start.py         python3 start.py → http://127.0.0.1:8765
 ```
 

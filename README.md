@@ -297,6 +297,30 @@ Das ist eine Bremse gegen Versehen, kein Schutz. Wer mit einem eigenen
 Schlüssel arbeitet, setzt das eigentliche Limit **im Konto beim Anbieter**
 – das greift auch dann, wenn hier etwas schiefgeht.
 
+## Mitarbeiten, oder erst mal verstehen
+
+Der Code ist deutsch kommentiert und erklärt meist das Warum, nicht das
+Was. Der Einstieg führt über [`doku/code.md`](doku/code.md): welche sieben
+Module den Durchlauf tragen, was Zubehör ist und wo man für ein bestimmtes
+Vorhaben eingreift. Wer nur einen Abschnitt liest, nimmt dort *Der Weg
+einer Seite*.
+
+Zwei Prüfungen halten die Zusagen fest:
+
+```sh
+python3 -m unittest discover tests   # Sekunden, Standardbibliothek
+python3 -m werkstatt.probelauf       # der ganze Durchlauf, ein bis zwei Minuten
+```
+
+Der Probelauf ist der Wächter. Er baut einen Klon aus `git ls-files`, fährt
+Lesen, Abgleich, Übergabe und Ausgabe durch und muss unverändert **57
+Einträge, 21 grün, zeichengleich, 0 tote Zeiger** melden. Weicht eine der
+vier Zahlen ab, hat sich das Verhalten geändert. Beides braucht weder
+Modell noch Netz noch eigene Scans.
+
+Fehlermeldungen und Fragen gern als Issue, auch Kleinkram wie eine
+unverständliche Beschriftung.
+
 ## Rechtliches
 
 Scans von Archion, Ancestry und ähnlichen Diensten dürfen nicht
@@ -319,7 +343,7 @@ getrennt werden, damit weitere Sprachen möglich sind.
 
 | | |
 |---|---|
-| `doku/landkarte.md` | wo liegt was, welcher Bestand gilt wofür |
+| `doku/code.md` | der Weg durch den Code, für alle, die etwas ändern wollen |
 | `doku/ansatz.md` | Begründung der Entwurfsentscheidungen |
 | `doku/verknuepfung.md` | die Kaskade je Aktart |
 | `doku/workflow.md` | der Arbeitsablauf von der ersten Seite bis zur Ausgabe |
