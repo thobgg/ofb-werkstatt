@@ -1,6 +1,6 @@
 # OFB-Werkstatt
 
-[![Einzelplatz](https://img.shields.io/badge/gebaut_f%C3%BCr-eine_Parochie_in_Eigenregie-2ea44f)](#ein-ort-ein-bestand-ein-bearbeiter)
+[![Einzelplatz](https://img.shields.io/badge/gebaut_f%C3%BCr-eine_Parochie_in_Eigenregie-2ea44f)](#gebaut-für-eine-parochie)
 [![Lizenz](https://img.shields.io/badge/Lizenz-MIT-lightgrey)](LICENSE)
 
 <picture>
@@ -29,7 +29,7 @@ Frage, ob eine Person schon im Bestand steht oder neu angelegt werden
 muss. Die Werkstatt beantwortet diese Frage vorab und legt sie nur noch
 zur Bestätigung vor.
 
-## Ein Ort, ein Bestand, ein Bearbeiter
+## Gebaut für eine Parochie
 
 Die Werkstatt ist für **eine Parochie in Eigenregie** gebaut:
 `python3 start.py`, kein Login, kein Docker, kein Hosting. Das ist keine
