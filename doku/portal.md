@@ -102,25 +102,25 @@ Einzelplatz des README merkt von alledem nichts.
 Die Betriebsdateien liegen in `betrieb/portal/` (Dockerfile,
 compose.yaml). Der Wirt braucht drei Verzeichnisse:
 
-    /volume1/docker/ofb/werkstatt      das Repo MIT .git (git clone oder
+    /srv/ofb/werkstatt                 das Repo MIT .git (git clone oder
                                        tar inkl. .git) - Quelle der
                                        Provisionierung, nur lesend
-    /volume1/docker/ofb-instanzen      Wurzel der Instanzen
-    /volume1/docker/ofb-instanzen/<slug>   entsteht durch das Portal
+    /srv/ofb/instanzen                 Wurzel der Instanzen
+    /srv/ofb/instanzen/<slug>          entsteht durch das Portal
 
 Einrichten:
 
     # Repo und betrieb/portal aufs NAS bringen, Passwort in compose.yaml
-    cd /volume1/docker/ofb/werkstatt/betrieb/portal
+    cd /srv/ofb/werkstatt/betrieb/portal
     sudo docker compose up -d          # Portal auf 127.0.0.1:8767
 
-    # Reverse Proxy im DSM: eigener Hostname → HTTP 127.0.0.1:8767,
+    # Reverse Proxy: portal.example.org → HTTP 127.0.0.1:8767,
     # Proxy-Timeout 300 s (die Provisionierung importiert GEDCOM)
 
 Das Portal startet die Instanzen selbst (der Wirt). Je neuem OFB
 bleibt nur der Proxy-Eintrag:
 
-    # Proxy: <parochie>.example → 127.0.0.1:<port>  (steht in betrieb/port)
+    # Proxy: <parochie>.example.org → 127.0.0.1:<port>  (steht in betrieb/port)
 
 Ab da läuft alles im Browser: Der Redakteur lädt Scans hoch, lässt
 lesen, korrigiert; Gäste schauen zu und hinterlassen Hinweise. Der

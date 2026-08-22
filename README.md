@@ -1,6 +1,6 @@
 # OFB-Werkstatt
 
-[![Neu](https://img.shields.io/badge/neu-Einzelplatz_und_Vereinsserver-2ea44f)](doku/mehrbenutzer.md)
+[![Einzelplatz](https://img.shields.io/badge/gebaut_f%C3%BCr-eine_Parochie_in_Eigenregie-2ea44f)](#ein-ort-ein-bestand-ein-bearbeiter)
 [![Lizenz](https://img.shields.io/badge/Lizenz-MIT-lightgrey)](LICENSE)
 
 <picture>
@@ -29,20 +29,39 @@ Frage, ob eine Person schon im Bestand steht oder neu angelegt werden
 muss. Die Werkstatt beantwortet diese Frage vorab und legt sie nur noch
 zur Bestätigung vor.
 
-## Zwei Betriebsarten
+## Ein Ort, ein Bestand, ein Bearbeiter
 
-Derselbe Code läuft als Einzelplatz und als Server für mehrere
-Parochien. Allein: `python3 start.py`, kein Login, kein Docker. Im
-Verein: je Parochie eine eigene Instanz mit eigener Datenbank,
-betrieben von einem Wirt-Container; Konten mit den Rollen Redakteur,
-Bearbeiter und Gast, Scan-Upload im Browser, KI-Kontingent je Projekt.
-Instanzen legt, startet und sichert ein Admin-Portal; nach außen
-bekommt jede Parochie ihre eigene Subdomain, ein Wildcard-DNS und je
-eine Zeile im Reverse Proxy genügen. Alles
-Serverhafte ist Opt-in über Schalter, die der Einzelplatz nie umlegt;
-der Probelauf unten prüft den Einzelplatz-Klon ohne all das. Details in
-[`doku/mehrbenutzer.md`](doku/mehrbenutzer.md) und
-[`doku/portal.md`](doku/portal.md).
+Die Werkstatt ist für **eine Parochie in Eigenregie** gebaut:
+`python3 start.py`, kein Login, kein Docker, kein Hosting. Das ist keine
+Sparfassung, sondern die Bauform, die zur Sache passt. Ein
+Ortsfamilienbuch entsteht dadurch, dass **jeder neue Eintrag gegen den
+schon vorhandenen Bestand abgeglichen wird**; die ersten hundert tragen
+die nächsten tausend. Wer die Register aufteilt und die Ergebnisse
+hinterher zusammenführen will, verliert genau diesen Anker und bekommt
+zwei Bestände voller Dubletten, die niemand mehr auflösen kann.
+
+Die Einheit ist deshalb der **Ort**, nicht die Person: Zwanzig Leute
+erschließen zwanzig Parochien, nicht zwanzigstel einer. Zusammen kommen
+die Bestände erst bei der Nutzung, über GEDCOM in Ahnenblatt, Gramps,
+webtrees oder ein Portal. Dafür ist die Ausgabe verlustfrei und ohne
+Bindung an dieses Werkzeug: Wer aufhört, behält seine Daten.
+
+### Wenn mehrere an derselben Parochie arbeiten
+
+Für diesen einen Fall gibt es einen Serverbetrieb: je Parochie eine
+eigene Instanz mit eigener Datenbank, Konten mit den Rollen Redakteur,
+Bearbeiter und Gast, Scan-Upload im Browser, KI-Kontingent je Projekt,
+verwaltet über ein Admin-Portal. Derselbe Code, derselbe Zweig; alles
+Serverhafte ist Opt-in über Schalter, die der Einzelplatz nie umlegt.
+Dazu kommt, was außerhalb der App liegt und dort auch hingehört: Domain,
+Reverse Proxy und Zertifikate.
+
+> **Status:** gebaut und geprüft, im Feld aber noch nie gelaufen. Er
+> wird derzeit **nicht weiterentwickelt** – die Arbeit geht in den
+> Einzelplatz. Wenn ein Verein ihn braucht, ist er da; melden Sie sich
+> über ein Issue. Details in
+> [`doku/mehrbenutzer.md`](doku/mehrbenutzer.md) und
+> [`doku/portal.md`](doku/portal.md).
 
 ## Der Durchlauf
 
