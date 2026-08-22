@@ -52,8 +52,22 @@ eigene Instanz mit eigener Datenbank, Konten mit den Rollen Redakteur,
 Bearbeiter und Gast, Scan-Upload im Browser, KI-Kontingent je Projekt,
 verwaltet über ein Admin-Portal. Derselbe Code, derselbe Zweig; alles
 Serverhafte ist Opt-in über Schalter, die der Einzelplatz nie umlegt.
-Dazu kommt, was außerhalb der App liegt und dort auch hingehört: Domain,
-Reverse Proxy und Zertifikate.
+
+Der Unterschied liegt nicht in der Software, sondern darin, was ein
+Verein drumherum aufsetzen muss:
+
+| | allein | im Verein |
+|---|---|---|
+| Start | Startdatei doppelklicken, oder `python3 start.py` | Wirt-Container einmalig hochfahren |
+| Rechner | der eigene | einer, der durchläuft (Server, NAS, VM) |
+| Erreichbarkeit | `127.0.0.1:8765` | Domain, Reverse Proxy, Zertifikat |
+| Zugang | keiner nötig | Portal-Passwort, Konten je Parochie |
+| Kosten | eigener API-Schlüssel | Schlüssel des Vereins, Kontingent je Projekt |
+| Sicherung | eigene Dateien | je Instanz als ZIP aus dem Portal |
+
+Neue Parochien legt danach das Portal an; von Hand bleibt je Ort eine
+Zeile im Reverse Proxy. Der ganze Weg steht in
+[`doku/portal.md`](doku/portal.md).
 
 > **Status:** gebaut und geprüft, im Feld aber noch nie gelaufen. Er
 > wird derzeit **nicht weiterentwickelt** – die Arbeit geht in den
